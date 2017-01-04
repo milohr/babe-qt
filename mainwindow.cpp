@@ -7,11 +7,15 @@
 #include <QPixmap>
 #include <QPushButton>
 #include <QStatusBar>
+#include <QStringList>
+
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
     playback = new QToolBar();
     playback->setMovable(false);
     this->setWindowTitle("Babe ...");
@@ -21,6 +25,20 @@ MainWindow::MainWindow(QWidget *parent) :
     //this->setMinimumSize (200, 250);
     this->mini_mode=0;
     //this->setStyle();
+
+    connect(updater, SIGNAL(timeout()), this, SLOT(update()));
+    player->setVolume(100);
+    ui->listWidget->setCurrentRow(0);
+
+    if(ui->listWidget->count() != 0)
+    {
+        loadTrack();
+        player->pause();
+        updater->start();
+
+    }
+
+
 
    auto *left_spacer = new QWidget();
     left_spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -46,10 +64,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     /* playback toolbar*/
 
-    playback->addWidget(ui->toolButton_7);
+    playback->addWidget(ui->backward_btn);
     playback->addWidget(ui->fav_btn);
-    playback->addWidget(ui->toolButton_9);
-    playback->addWidget(ui->toolButton_8);
+    playback->addWidget(ui->play_btn);
+    playback->addWidget(ui->foward_btn);
 
 
     //playback->addWidget();
@@ -60,15 +78,19 @@ MainWindow::MainWindow(QWidget *parent) :
 
     /*status bar*/
     auto *status = new QToolBar();
-    auto *info=new QLabel("Song Title - Artist Name");
+    info=new QLabel(" Babe ... \xe2\x99\xa1  \xe2\x99\xa1 \xe2\x99\xa1 ");
     //info->setStyleSheet("color:white;");
     status->addWidget(ui->shuffle_btn);
+    auto *sp = new QWidget();
+    sp->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    status->addWidget(sp);
     status->addWidget(info);
     auto *spacer = new QWidget();
     spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     status->addWidget(spacer);
     status->addWidget(ui->hide_sidebar_btn);    
     status->setIconSize(QSize(16, 16));
+    status->setMovable(false);
 
     this->addToolBar(Qt::BottomToolBarArea,status);
     //status->setStyleSheet("QToolButton { color:#fff; } QToolBar {background-color:#575757; color:#fff; border:1px solid #575757;} QToolBar QLabel { color:#fff;}" );
@@ -90,7 +112,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     album_view->addWidget(album_art, 0,0,Qt::AlignTop);
     album_view->addWidget(playback,1,0,Qt::AlignHCenter);
-    album_view->addWidget(ui->horizontalSlider,2,0,Qt::AlignTop);
+    album_view->addWidget(ui->seekBar,2,0,Qt::AlignTop);
     album_view->addWidget(ui->listWidget,3,0);
     album_view->setContentsMargins(0,0,5,0);
 
@@ -189,5 +211,189 @@ void MainWindow::on_hide_sidebar_btn_clicked()
 
 void MainWindow::on_shuffle_btn_clicked()
 {
-    ui->shuffle_btn->setIcon(QIcon::fromTheme("media-playlist-repeat-symbolic-rtl"));
+
+    shuffle = !shuffle;
+    if(shuffle)
+    {
+        shufflePlaylist();
+        ui->shuffle_btn->setIcon(QIcon::fromTheme("media-playlist-shuffle-symbolic"));
+    }
 }
+
+void MainWindow::on_open_btn_clicked()
+{
+    //bool startUpdater = false;
+
+    //if(ui->listWidget->count() == 0) startUpdater = true;
+
+    QStringList files = QFileDialog::getOpenFileNames(this, tr("Select Music Files"));
+    if(!files.empty())
+    {
+        playlist.add(files);
+        updateList();
+        //ui->save->setChecked(false);
+        if(shuffle) shufflePlaylist();
+        //if(startUpdater) updater->start();
+    }
+}
+
+void MainWindow::updateList()
+{
+    ui->listWidget->clear();
+    ui->listWidget->addItems(playlist.getTracksNameList());
+}
+
+void MainWindow::on_listWidget_doubleClicked(const QModelIndex &index)
+{
+    lCounter = getIndex();
+
+    ui->play_btn->setChecked(false);
+    //ui->searchBar->clear();
+    loadTrack();
+    player->play();
+    updater->start();
+    playing= true;
+    ui->play_btn->setIcon(QIcon::fromTheme("media-playback-pause-symbolic"));
+
+}
+
+void MainWindow::loadTrack()
+{
+     QString qstr = QString::fromStdString(playlist.tracks[getIndex()].getLocation());
+     player->setMedia(QUrl::fromLocalFile(qstr));
+     qstr = QString::fromStdString(playlist.tracks[getIndex()].getTitle()+" by "+playlist.tracks[getIndex()].getArtist());
+     info->setText(qstr);
+}
+
+int MainWindow::getIndex()
+{
+    return ui->listWidget->currentIndex().row();
+}
+
+
+
+void MainWindow::on_seekBar_sliderMoved(int position)
+{
+    player->setPosition(player->duration() / 1000 * position);
+}
+
+
+
+
+
+
+void MainWindow::update()
+{   if(!ui->seekBar->isSliderDown())
+        ui->seekBar->setValue((double)player->position()/player->duration() * 1000);
+
+    if(player->state() == QMediaPlayer::StoppedState)
+    {
+        next();
+    }
+}
+
+void MainWindow::next()
+{
+    lCounter++;
+
+    if(repeat)
+    {
+        lCounter--;
+    }
+
+    if(lCounter >= ui->listWidget->count())
+        lCounter = 0;
+
+    (!shuffle or repeat) ? ui->listWidget->setCurrentRow(lCounter) : ui->listWidget->setCurrentRow(shuffledPlaylist[lCounter]);
+
+    //ui->play->setChecked(false);
+    //ui->searchBar->clear();
+
+    loadTrack();
+    player->play();
+
+}
+
+void MainWindow::back()
+{
+     lCounter--;
+
+     if(lCounter < 0)
+        lCounter = ui->listWidget->count() - 1;
+
+
+     (!shuffle) ? ui->listWidget->setCurrentRow(lCounter) : ui->listWidget->setCurrentRow(shuffledPlaylist[lCounter]);
+
+     //ui->play->setChecked(false);
+     //ui->searchBar->clear();
+
+     loadTrack();
+     player->play();
+}
+
+void MainWindow::shufflePlaylist()
+{
+    shuffledPlaylist.resize(0);
+
+    for(int i = 0; i < ui->listWidget->count(); i++)
+    {
+        shuffledPlaylist.push_back(i);
+    }
+
+    random_shuffle(shuffledPlaylist.begin(), shuffledPlaylist.end());
+}
+
+void MainWindow::on_play_btn_clicked()
+{
+    if(ui->listWidget->count() != 0)
+        if(player->state() == QMediaPlayer::PlayingState)
+        {
+            player->pause();
+            ui->play_btn->setIcon(QIcon::fromTheme("media-playback-start-symbolic"));
+        }
+       else
+       {
+            player->play();
+            updater->start();
+            ui->play_btn->setIcon(QIcon::fromTheme("media-playback-pause-symbolic"));
+       }
+}
+
+void MainWindow::on_backward_btn_clicked()
+{
+    if(ui->listWidget->count() != 0)
+        if(player->position() > 3000)
+        {
+           player->setPosition(0);
+        }
+        else
+        {
+
+            back();
+            ui->play_btn->setIcon(QIcon::fromTheme("media-playback-pause-symbolic"));
+        }
+}
+
+void MainWindow::on_foward_btn_clicked()
+{
+    if(ui->listWidget->count() != 0)
+    {
+        if(repeat)
+        {
+            repeat = !repeat;next();repeat = !repeat;
+        }
+        else
+        {
+            next();
+            ui->play_btn->setIcon(QIcon::fromTheme("media-playback-pause-symbolic"));
+        }
+     }
+}
+
+
+
+
+
+
+
+
