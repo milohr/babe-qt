@@ -8,6 +8,7 @@
 #include "QFileDialog"
 #include <QLabel>
 #include "QTimer"
+#include <QStackedWidget>
 
 namespace Ui {
 class MainWindow;
@@ -24,11 +25,6 @@ public:
     void updateList();
 
 private slots:
-    void on_toolButton_4_clicked();
-
-    void on_toolButton_3_clicked();
-
-    void on_hide_up_btn_clicked();
 
     void on_hide_sidebar_btn_clicked();
 
@@ -48,7 +44,18 @@ private slots:
 
     void on_foward_btn_clicked();
 
+    void tracksView();
+    void albumsView();
+    void babesView();
+    void queueView();
+    void playlistsView();
+    void infoView();
+    void settingsView();
 
+
+    void on_info_view_clicked(bool checked);
+
+    void on_tracks_view_clicked(bool checked);
 
 private:
     void loadTrack();
@@ -56,10 +63,23 @@ private:
     void next();
     void back();
     void shufflePlaylist();
+    void expand();
+    void go_mini();
 
     Ui::MainWindow *ui;
+    QStackedWidget *views;
     QToolBar *playback;
     int mini_mode;
+
+    bool allow = false;
+    bool tracks_hide=false;
+    bool albums_hide=false;
+    bool babes_hide=false;
+    bool queue_hide=false;
+    bool playlists_hide=false;
+    bool settings_hide=false;
+    bool info_hide=false;
+
     QWidget *main_widget;
     QGridLayout * layout;
     QLabel *info;
@@ -69,10 +89,12 @@ private:
     QTimer *updater = new QTimer(this);
 
     int lCounter = 0;
+    int  shuffle_state=0;
     bool repeat = false;
     bool muted = false;
     bool playing = false;
-    vector<unsigned short int> shuffledPlaylist;bool shuffle = false;
+    vector<unsigned short int> shuffledPlaylist;
+    bool shuffle = false;
 
 };
 

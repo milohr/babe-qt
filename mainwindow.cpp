@@ -40,23 +40,42 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
 
-   auto *left_spacer = new QWidget();
-    left_spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-   auto *right_spacer = new QWidget();
-    right_spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     /*sidebar toolbar*/
 
-    ui->toolButton->setToolTip("helllooo");
+    auto *left_spacer = new QWidget();
+     left_spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+    auto *right_spacer = new QWidget();
+     right_spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
     ui->mainToolBar->addWidget(left_spacer);
-    ui->mainToolBar->addWidget(ui->toolButton);
-    ui->mainToolBar->addWidget(ui->toolButton_2);
-    ui->mainToolBar->addWidget(ui->toolButton_3);
-    ui->mainToolBar->addWidget(ui->toolButton_4);
-    ui->mainToolBar->addWidget(ui->toolButton_5);
-    ui->mainToolBar->addWidget(ui->toolButton_6);
+
+    ui->tracks_view->setToolTip("Songs");
+    ui->mainToolBar->addWidget(ui->tracks_view);
+
+    ui->albums_view->setToolTip("Albums");
+    ui->mainToolBar->addWidget(ui->albums_view);
+
+    ui->babes_view->setToolTip("Babes");
+    ui->mainToolBar->addWidget(ui->babes_view);
+
+    ui->playlists_view->setToolTip("Playlists");
+    ui->mainToolBar->addWidget(ui->playlists_view);
+
+    ui->queue_view->setToolTip("Queue");
+    ui->mainToolBar->addWidget(ui->queue_view);
+
+    ui->info_view->setToolTip("Info");
+    ui->mainToolBar->addWidget(ui->info_view);
+
+    ui->settings_view->setToolTip("Setings");
+    ui->mainToolBar->addWidget(ui->settings_view);
+
     ui->mainToolBar->addWidget(right_spacer);
+
+    ui->open_btn->setToolTip("Open...");
     ui->mainToolBar->addWidget(ui->open_btn);
 
     this->addToolBar(Qt::LeftToolBarArea, ui->mainToolBar);
@@ -77,6 +96,8 @@ MainWindow::MainWindow(QWidget *parent) :
     //this->addToolBar(Qt::BottomToolBarArea, playback);
 
     /*status bar*/
+    ui->hide_sidebar_btn->setToolTip("Go Mini");
+    ui->shuffle_btn->setToolTip("Shuffle");
     auto *status = new QToolBar();
     info=new QLabel(" Babe ... \xe2\x99\xa1  \xe2\x99\xa1 \xe2\x99\xa1 ");
     //info->setStyleSheet("color:white;");
@@ -96,6 +117,20 @@ MainWindow::MainWindow(QWidget *parent) :
     //status->setStyleSheet("QToolButton { color:#fff; } QToolBar {background-color:#575757; color:#fff; border:1px solid #575757;} QToolBar QLabel { color:#fff;}" );
 
     /* setup widgets*/
+
+    views = new QStackedWidget;
+    views->addWidget(ui->tableWidget);
+
+    auto* testing = new QLabel("hahaha tetsing this if it might work");
+    views->addWidget(testing);
+
+    connect(ui->tracks_view, SIGNAL(clicked()), this, SLOT(tracksView()));
+    connect(ui->albums_view, SIGNAL(clicked()), this, SLOT(albumsView()));
+    connect(ui->babes_view, SIGNAL(clicked()), this, SLOT(babesView()));
+    connect(ui->playlists_view, SIGNAL(clicked()), this, SLOT(playlistsView()));
+    connect(ui->queue_view, SIGNAL(clicked()), this, SLOT(queueView()));
+    connect(ui->info_view, SIGNAL(clicked()), this, SLOT(infoView()));
+    connect(ui->settings_view, SIGNAL(clicked()), this, SLOT(settingsView()));
 
     main_widget= new QWidget();
     layout = new QGridLayout();
@@ -125,7 +160,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     album_widget->setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Expanding  );
 
-    layout->addWidget(ui->tableWidget, 0,0 );
+    layout->addWidget(views, 0,0 );
     layout->addWidget(album_widget,0,1, Qt::AlignRight);
 
 
@@ -138,6 +173,69 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+
+void MainWindow::tracksView()
+{
+           qDebug()<< "something clicked";
+    views->setCurrentIndex(0);
+    if(mini_mode!=0) expand();
+
+}
+
+void MainWindow::albumsView()
+{
+    views->setCurrentIndex(1);
+    if(mini_mode!=0) expand();
+}
+void MainWindow::playlistsView()
+{
+    views->setCurrentIndex(0);
+    if(mini_mode!=0) expand();
+}
+void MainWindow::queueView()
+{
+    views->setCurrentIndex(1);
+    if(mini_mode!=0) expand();
+}
+void MainWindow::infoView()
+{
+
+    views->setCurrentIndex(0);
+    if(mini_mode!=0) expand();
+}
+void MainWindow::babesView()
+{
+    views->setCurrentIndex(0);
+    if(mini_mode!=0) expand();
+}
+void MainWindow::settingsView()
+{
+    views->setCurrentIndex(0);
+    if(mini_mode!=0) expand();
+}
+
+void MainWindow::expand()
+{
+    views->show();
+    this->setMaximumSize(QWIDGETSIZE_MAX,QWIDGETSIZE_MAX);
+    this->resize(600,400);
+    ui->hide_sidebar_btn->setToolTip("Go Mini");
+    mini_mode=0;
+
+}
+
+void MainWindow::go_mini()
+{
+    //this->setMaximumSize (0, 0);
+    views->hide();
+    this->resize(minimumSizeHint());
+    main_widget->resize(minimumSizeHint());
+    this->setFixedSize(minimumSizeHint());
+    ui->hide_sidebar_btn->setToolTip("Go Extra-Mini");
+    mini_mode=1;
+
+}
+
 void MainWindow::setStyle()
 {
 
@@ -148,35 +246,14 @@ void MainWindow::setStyle()
 
 }
 
-void MainWindow::on_toolButton_4_clicked()
-{
 
-}
-
-void MainWindow::on_toolButton_3_clicked()
-{
-    ui->listWidget->hide();
-   // ui->mainToolBar->hide();
-    ui->tableWidget->hide();
-    //this->setMaximumSize (200, 300);
-    //this->setFixedSize(200, 250);
-}
-
-void MainWindow::on_hide_up_btn_clicked()
-{
-
-}
 
 void MainWindow::on_hide_sidebar_btn_clicked()
 {
     if(mini_mode==0)
     {
-        //this->setMaximumSize (0, 0);
-        ui->tableWidget->hide();
-        this->resize(minimumSizeHint());
-        main_widget->resize(minimumSizeHint());
-        this->setFixedSize(minimumSizeHint());
-        mini_mode=1;
+        go_mini();
+
     }else if(mini_mode==1)
     {
 
@@ -189,6 +266,7 @@ void MainWindow::on_hide_sidebar_btn_clicked()
         this->resize(minimumSizeHint());
 
         this->setFixedSize(210,300);
+        ui->hide_sidebar_btn->setToolTip("Expand");
         mini_mode=2;
 
     }else if(mini_mode==2)
@@ -196,14 +274,12 @@ void MainWindow::on_hide_sidebar_btn_clicked()
          ui->mainToolBar->show();
         ui->listWidget->show();
         this->resize(minimumSizeHint());
-
+        this->setFixedSize(230,400);
+        ui->hide_sidebar_btn->setToolTip("Full View");
         mini_mode=3;
     }else if (mini_mode==3)
     {
-        ui->tableWidget->show();
-        this->setMaximumSize(QWIDGETSIZE_MAX,QWIDGETSIZE_MAX);
-
-        mini_mode=0;
+        expand();
     }
 
 
@@ -211,13 +287,38 @@ void MainWindow::on_hide_sidebar_btn_clicked()
 
 void MainWindow::on_shuffle_btn_clicked()
 {
-
-    shuffle = !shuffle;
-    if(shuffle)
+    /*state 0: media-playlist-consecutive-symbolic
+            1: media-playlist-shuffle-symbolic
+            2:media-playlist-repeat-symbolic
+    */
+    if(shuffle_state==0)
     {
+        shuffle = true;
         shufflePlaylist();
         ui->shuffle_btn->setIcon(QIcon::fromTheme("media-playlist-shuffle-symbolic"));
+        ui->shuffle_btn->setToolTip("Repeat");
+        shuffle_state=1;
+
+    }else if (shuffle_state==1)
+    {
+
+        repeat = true;
+        ui->shuffle_btn->setIcon(QIcon::fromTheme("media-playlist-repeat-symbolic"));
+        ui->shuffle_btn->setToolTip("Consecutive");
+        shuffle_state=2;
+
+
+    }else if(shuffle_state==2)
+    {
+        repeat = false;
+        shuffle = false;
+        ui->shuffle_btn->setIcon(QIcon::fromTheme("media-playlist-consecutive-symbolic"));
+        ui->shuffle_btn->setToolTip("Shuffle");
+        shuffle_state=0;
     }
+
+
+
 }
 
 void MainWindow::on_open_btn_clicked()
@@ -261,7 +362,7 @@ void MainWindow::loadTrack()
 {
      QString qstr = QString::fromStdString(playlist.tracks[getIndex()].getLocation());
      player->setMedia(QUrl::fromLocalFile(qstr));
-     qstr = QString::fromStdString(playlist.tracks[getIndex()].getTitle()+" by "+playlist.tracks[getIndex()].getArtist());
+     qstr = QString::fromStdString(playlist.tracks[getIndex()].getTitle()+" \xe2\x99\xa1 "+playlist.tracks[getIndex()].getArtist());
      info->setText(qstr);
 }
 
@@ -346,6 +447,7 @@ void MainWindow::shufflePlaylist()
 void MainWindow::on_play_btn_clicked()
 {
     if(ui->listWidget->count() != 0)
+    {
         if(player->state() == QMediaPlayer::PlayingState)
         {
             player->pause();
@@ -357,11 +459,13 @@ void MainWindow::on_play_btn_clicked()
             updater->start();
             ui->play_btn->setIcon(QIcon::fromTheme("media-playback-pause-symbolic"));
        }
+      }
 }
 
 void MainWindow::on_backward_btn_clicked()
 {
     if(ui->listWidget->count() != 0)
+    {
         if(player->position() > 3000)
         {
            player->setPosition(0);
@@ -372,6 +476,7 @@ void MainWindow::on_backward_btn_clicked()
             back();
             ui->play_btn->setIcon(QIcon::fromTheme("media-playback-pause-symbolic"));
         }
+     }
 }
 
 void MainWindow::on_foward_btn_clicked()
@@ -397,3 +502,15 @@ void MainWindow::on_foward_btn_clicked()
 
 
 
+
+void MainWindow::on_info_view_clicked(bool checked)
+{
+
+}
+
+void MainWindow::on_tracks_view_clicked(bool checked)
+{
+
+
+
+}

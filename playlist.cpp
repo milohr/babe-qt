@@ -85,7 +85,7 @@ QStringList Playlist::getTracksNameList()
     QStringList list;
     for(int i = 0; i < tracks.size(); i++)
     {
-        QString qstr = QString::fromStdString(tracks[i].getTitle()+" by "+tracks[i].getArtist());
+        QString qstr = QString::fromStdString(tracks[i].getTitle()+"\nby "+tracks[i].getArtist());
         list.push_back(qstr);
     }
     return list;
