@@ -8,6 +8,7 @@
 #include<taglib/tag.h>
 #include<taglib/fileref.h>
 #include<QString>
+#include"track.h"
 Playlist::Playlist()
 {
     std::ifstream read("playlist");
@@ -35,11 +36,16 @@ void Playlist::add(QStringList files)
 
         Track track;
 
-         qDebug()<<QString::fromStdWString(file.tag()->title().toWString());
+         //qDebug()<<QString::fromStdWString(file.tag()->title().toWString());
          QString title = QString::fromStdWString(file.tag()->title().toWString());
          QString artist = QString::fromStdWString(file.tag()->artist().toWString());
          QString album = QString::fromStdWString(file.tag()->album().toWString());
-qDebug()<<title+artist+album;
+//qDebug()<<title+artist+album;
+
+        title = title.size()>0 ? title : QString::fromStdString( getNameFromLocation(files[i].toStdString()));
+        artist = artist.size()>0 ? artist : "UNKWON";
+        album = album.size()>0 ? album : "UNKWON";
+
         track.setTitle(title.toStdString());
 
         track.setArtist(artist.toStdString());
@@ -91,4 +97,13 @@ QStringList Playlist::getTracksNameList()
     return list;
 }
 
+QList<Track> Playlist::getTracks()
+{
+    QList<Track> list;
+    for(int i = 0; i < tracks.size(); i++)
+    {
 
+        list.push_back(tracks[i]);
+    }
+    return list;
+}

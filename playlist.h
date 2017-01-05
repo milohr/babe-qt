@@ -21,6 +21,8 @@ public:
 
     std::vector<Track> tracks;
 
+     QList<Track> getTracks();
+
 private:
     QMediaPlayer *p;
     void setMetaData(QString,QString,QString,QString);

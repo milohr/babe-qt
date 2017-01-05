@@ -8,8 +8,11 @@
 #include <QPushButton>
 #include <QStatusBar>
 #include <QStringList>
-
-
+#include <QTableWidgetItem>
+#include <QMessageBox>
+#include<QDir>
+#include<QDirIterator>
+#include <QStringList>
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -17,19 +20,22 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     playback = new QToolBar();
-    playback->setMovable(false);
-    this->setWindowTitle("Babe ...");
+    //playback->setMovable(false);
+    this->setWindowTitle(" Babe ... \xe2\x99\xa1  \xe2\x99\xa1 \xe2\x99\xa1 ");
     //this->adjustSize();
    // this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
 
     //this->setMinimumSize (200, 250);
     this->mini_mode=0;
-    //this->setStyle();
+
+    setUpViews();
 
     connect(updater, SIGNAL(timeout()), this, SLOT(update()));
     player->setVolume(100);
     ui->listWidget->setCurrentRow(0);
-
+    ui->tableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->tableWidget->setColumnHidden(LOCATION, true);
+    ui->tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
     if(ui->listWidget->count() != 0)
     {
         loadTrack();
@@ -83,10 +89,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
     /* playback toolbar*/
 
+
+    playback->addWidget(ui->hide_sidebar_btn);
     playback->addWidget(ui->backward_btn);
     playback->addWidget(ui->fav_btn);
     playback->addWidget(ui->play_btn);
     playback->addWidget(ui->foward_btn);
+    playback->addWidget(ui->shuffle_btn);
 
 
     //playback->addWidget();
@@ -98,9 +107,12 @@ MainWindow::MainWindow(QWidget *parent) :
     /*status bar*/
     ui->hide_sidebar_btn->setToolTip("Go Mini");
     ui->shuffle_btn->setToolTip("Shuffle");
-    auto *status = new QToolBar();
+
+    /*
+    status = new QToolBar();
     info=new QLabel(" Babe ... \xe2\x99\xa1  \xe2\x99\xa1 \xe2\x99\xa1 ");
     //info->setStyleSheet("color:white;");
+
     status->addWidget(ui->shuffle_btn);
     auto *sp = new QWidget();
     sp->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -114,7 +126,7 @@ MainWindow::MainWindow(QWidget *parent) :
     status->setMovable(false);
 
     this->addToolBar(Qt::BottomToolBarArea,status);
-    //status->setStyleSheet("QToolButton { color:#fff; } QToolBar {background-color:#575757; color:#fff; border:1px solid #575757;} QToolBar QLabel { color:#fff;}" );
+    */
 
     /* setup widgets*/
 
@@ -123,6 +135,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     auto* testing = new QLabel("hahaha tetsing this if it might work");
     views->addWidget(testing);
+    views->addWidget(new settings());
 
     connect(ui->tracks_view, SIGNAL(clicked()), this, SLOT(tracksView()));
     connect(ui->albums_view, SIGNAL(clicked()), this, SLOT(albumsView()));
@@ -149,7 +162,7 @@ MainWindow::MainWindow(QWidget *parent) :
     album_view->addWidget(playback,1,0,Qt::AlignHCenter);
     album_view->addWidget(ui->seekBar,2,0,Qt::AlignTop);
     album_view->addWidget(ui->listWidget,3,0);
-    album_view->setContentsMargins(0,0,5,0);
+    album_view->setContentsMargins(5,0,5,0);
 
 
     album_widget->setStyleSheet("QWidget { padding:0; margin:0; }");
@@ -158,11 +171,12 @@ MainWindow::MainWindow(QWidget *parent) :
     album_widget->setLayout(album_view);
     //auto *btn = new QPushButton("babe me");
 
+
     album_widget->setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Expanding  );
 
     layout->addWidget(views, 0,0 );
     layout->addWidget(album_widget,0,1, Qt::AlignRight);
-
+    //this->setStyle();
 
 
 
@@ -173,6 +187,10 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::setUpViews()
+{
+
+}
 
 void MainWindow::tracksView()
 {
@@ -207,10 +225,31 @@ void MainWindow::babesView()
 {
     views->setCurrentIndex(0);
     if(mini_mode!=0) expand();
+
+    QString url= QFileDialog::getExistingDirectory();
+
+qDebug()<<url;
+
+    QStringList urlCollection;
+//QDir dir = new QDir(url);
+    QDirIterator it(url, QStringList() << "*.mp4" << "*.mp3" << "*.wav" <<"*.flac" <<"*.ogg", QDir::Files, QDirIterator::Subdirectories);
+    while (it.hasNext())
+    {
+        urlCollection<<it.next();
+
+        qDebug() << it.next();
+    }
+
+    collection.add(urlCollection);
+    //updateList();
+    populateTableView();
+
+
+
 }
 void MainWindow::settingsView()
 {
-    views->setCurrentIndex(0);
+    views->setCurrentIndex(2);
     if(mini_mode!=0) expand();
 }
 
@@ -242,7 +281,7 @@ void MainWindow::setStyle()
     ui->mainToolBar->setStyleSheet(" QToolBar { border-right: 1px solid #575757; } QToolButton:hover { background-color: #d8dfe0; border-right: 1px solid #575757;}");
     playback->setStyleSheet("QToolBar { border:none;} QToolBar QToolButton { border:none;} QToolBar QSlider { border:none;}");
     this->setStyleSheet("QToolButton { border: none; padding: 5px; }  QMainWindow { border-top: 1px solid #575757; }");
-
+    //status->setStyleSheet("QToolButton { color:#fff; } QToolBar {background-color:#575757; color:#fff; border:1px solid #575757;} QToolBar QLabel { color:#fff;}" );
 
 }
 
@@ -265,7 +304,7 @@ void MainWindow::on_hide_sidebar_btn_clicked()
         main_widget->resize(minimumSizeHint());
         this->resize(minimumSizeHint());
 
-        this->setFixedSize(210,300);
+        this->setFixedSize(210,250);
         ui->hide_sidebar_btn->setToolTip("Expand");
         mini_mode=2;
 
@@ -332,9 +371,32 @@ void MainWindow::on_open_btn_clicked()
     {
         playlist.add(files);
         updateList();
+        //populateTableView();
         //ui->save->setChecked(false);
         if(shuffle) shufflePlaylist();
         //if(startUpdater) updater->start();
+    }
+}
+
+void MainWindow::populateTableView()
+{
+    for (Track track : collection.getTracks() )
+    {
+     ui->tableWidget->insertRow(ui->tableWidget->rowCount());
+     auto *title= new QTableWidgetItem( QString::fromStdString(track.getTitle()));
+     //title->setFlags(title->flags() & ~Qt::ItemIsEditable);
+
+     ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, TITLE, title);
+
+     auto *artist= new QTableWidgetItem( QString::fromStdString(track.getArtist()));
+     ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, ARTIST, artist);
+
+     auto *album= new QTableWidgetItem( QString::fromStdString(track.getAlbum()));
+     ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, ALBUM, album);
+
+     auto *location= new QTableWidgetItem( QString::fromStdString(track.getLocation()));
+     ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, LOCATION, location);
+
     }
 }
 
@@ -348,7 +410,7 @@ void MainWindow::on_listWidget_doubleClicked(const QModelIndex &index)
 {
     lCounter = getIndex();
 
-    ui->play_btn->setChecked(false);
+    //ui->play_btn->setChecked(false);
     //ui->searchBar->clear();
     loadTrack();
     player->play();
@@ -358,12 +420,32 @@ void MainWindow::on_listWidget_doubleClicked(const QModelIndex &index)
 
 }
 
+void MainWindow::on_tableWidget_doubleClicked(const QModelIndex &index)
+{
+    //QMessageBox::information(NULL,"QTableView Item Double Clicked",index.sibling(ui->tableWidget->currentIndex().row(),LOCATION).data().toString());
+
+   /*
+   player->setMedia(QUrl::fromLocalFile(index.sibling(ui->tableWidget->currentIndex().row(),LOCATION).data().toString()));
+   player->play();
+   updater->start();
+   this->setWindowTitle(index.sibling(ui->tableWidget->currentIndex().row(),TITLE).data().toString() +" \xe2\x99\xa1 " +index.sibling(ui->tableWidget->currentIndex().row(),ARTIST).data().toString());
+   */
+    QStringList files;
+    files << index.sibling(ui->tableWidget->currentIndex().row(),LOCATION).data().toString();
+    playlist.add(files);
+    updateList();
+    //populateTableView();
+    //ui->save->setChecked(false);
+    if(shuffle) shufflePlaylist();
+    //if(startUpdater) updater->start();
+}
+
 void MainWindow::loadTrack()
 {
      QString qstr = QString::fromStdString(playlist.tracks[getIndex()].getLocation());
      player->setMedia(QUrl::fromLocalFile(qstr));
      qstr = QString::fromStdString(playlist.tracks[getIndex()].getTitle()+" \xe2\x99\xa1 "+playlist.tracks[getIndex()].getArtist());
-     info->setText(qstr);
+     this->setWindowTitle(qstr);
 }
 
 int MainWindow::getIndex()
@@ -514,3 +596,5 @@ void MainWindow::on_tracks_view_clicked(bool checked)
 
 
 }
+
+

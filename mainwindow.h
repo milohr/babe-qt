@@ -9,6 +9,8 @@
 #include <QLabel>
 #include "QTimer"
 #include <QStackedWidget>
+#include <QToolBar>
+#include "settings.h"
 
 namespace Ui {
 class MainWindow;
@@ -23,6 +25,12 @@ public:
     ~MainWindow();
     void setStyle();
     void updateList();
+    void populateTableView();
+
+    enum columns
+    {
+        TITLE,ARTIST,ALBUM,LOCATION
+    };
 
 private slots:
 
@@ -57,7 +65,10 @@ private slots:
 
     void on_tracks_view_clicked(bool checked);
 
+    void on_tableWidget_doubleClicked(const QModelIndex &index);
+
 private:
+    void setUpViews();
     void loadTrack();
     int getIndex();
     void next();
@@ -69,6 +80,7 @@ private:
     Ui::MainWindow *ui;
     QStackedWidget *views;
     QToolBar *playback;
+    QToolBar *status;
     int mini_mode;
 
     bool allow = false;
@@ -84,7 +96,9 @@ private:
     QGridLayout * layout;
     QLabel *info;
 
+    settings settings_widget;
     Playlist playlist;
+    Playlist collection;
     QMediaPlayer *player = new QMediaPlayer();
     QTimer *updater = new QTimer(this);
 

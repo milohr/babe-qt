@@ -23,10 +23,19 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
         playlist.cpp \
-        track.cpp
+        track.cpp \
+    settings.cpp \
+    info.cpp \
+    babes.cpp
 
 HEADERS  += mainwindow.h \
             playlist.h \
-            track.h
+            track.h \
+    settings.h \
+    info.h \
+    babes.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    settings.ui \
+    info.ui \
+    babes.ui
