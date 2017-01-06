@@ -26,14 +26,16 @@ SOURCES += main.cpp\
         track.cpp \
     settings.cpp \
     info.cpp \
-    babes.cpp
+    babes.cpp \
+    collection.cpp
 
 HEADERS  += mainwindow.h \
             playlist.h \
             track.h \
     settings.h \
     info.h \
-    babes.h
+    babes.h \
+    collection.h
 
 FORMS    += mainwindow.ui \
     settings.ui \

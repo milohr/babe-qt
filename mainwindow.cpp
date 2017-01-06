@@ -84,7 +84,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->open_btn->setToolTip("Open...");
     ui->mainToolBar->addWidget(ui->open_btn);
 
-    this->addToolBar(Qt::LeftToolBarArea, ui->mainToolBar);
+    this->addToolBar(Qt::BottomToolBarArea, ui->mainToolBar);
    // this->setCentralWidget(ui->listView);
 
     /* playback toolbar*/
@@ -129,13 +129,16 @@ MainWindow::MainWindow(QWidget *parent) :
     */
 
     /* setup widgets*/
+    settings_widget = new settings();
+    connect(settings_widget, SIGNAL(toolbarIconSizeChanged(int)),
+                         this, SLOT(setToolbarIconSize(int)));
 
     views = new QStackedWidget;
     views->addWidget(ui->tableWidget);
-
     auto* testing = new QLabel("hahaha tetsing this if it might work");
     views->addWidget(testing);
-    views->addWidget(new settings());
+    views->addWidget(settings_widget);
+    views->addWidget(new babes());
 
     connect(ui->tracks_view, SIGNAL(clicked()), this, SLOT(tracksView()));
     connect(ui->albums_view, SIGNAL(clicked()), this, SLOT(albumsView()));
@@ -187,14 +190,25 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+
+void MainWindow::setToolbarIconSize(int iconSize)
+{
+    qDebug()<< "Toolbar icons size changed";
+    ui->mainToolBar->setIconSize(QSize(iconSize,iconSize));
+    playback->setIconSize(QSize(iconSize,iconSize));
+    ui->mainToolBar->update();
+    playback->update();
+}
+
 void MainWindow::setUpViews()
 {
 
 }
 
+
 void MainWindow::tracksView()
 {
-           qDebug()<< "something clicked";
+    qDebug()<< "All songs view";
     views->setCurrentIndex(0);
     if(mini_mode!=0) expand();
 
@@ -207,7 +221,7 @@ void MainWindow::albumsView()
 }
 void MainWindow::playlistsView()
 {
-    views->setCurrentIndex(0);
+    views->setCurrentIndex(3);
     if(mini_mode!=0) expand();
 }
 void MainWindow::queueView()
@@ -237,7 +251,7 @@ qDebug()<<url;
     {
         urlCollection<<it.next();
 
-        qDebug() << it.next();
+        //qDebug() << it.next();
     }
 
     collection.add(urlCollection);
@@ -313,7 +327,8 @@ void MainWindow::on_hide_sidebar_btn_clicked()
          ui->mainToolBar->show();
         ui->listWidget->show();
         this->resize(minimumSizeHint());
-        this->setFixedSize(230,400);
+        main_widget->resize(minimumSizeHint());
+        this->setFixedSize(minimumSizeHint());
         ui->hide_sidebar_btn->setToolTip("Full View");
         mini_mode=3;
     }else if (mini_mode==3)
@@ -327,14 +342,14 @@ void MainWindow::on_hide_sidebar_btn_clicked()
 void MainWindow::on_shuffle_btn_clicked()
 {
     /*state 0: media-playlist-consecutive-symbolic
-            1: media-playlist-shuffle-symbolic
+            1: media-playlist-shuffle
             2:media-playlist-repeat-symbolic
     */
     if(shuffle_state==0)
     {
         shuffle = true;
         shufflePlaylist();
-        ui->shuffle_btn->setIcon(QIcon::fromTheme("media-playlist-shuffle-symbolic"));
+        ui->shuffle_btn->setIcon(QIcon::fromTheme("media-playlist-shuffle"));
         ui->shuffle_btn->setToolTip("Repeat");
         shuffle_state=1;
 
@@ -342,7 +357,7 @@ void MainWindow::on_shuffle_btn_clicked()
     {
 
         repeat = true;
-        ui->shuffle_btn->setIcon(QIcon::fromTheme("media-playlist-repeat-symbolic"));
+        ui->shuffle_btn->setIcon(QIcon::fromTheme("media-playlist-repeat"));
         ui->shuffle_btn->setToolTip("Consecutive");
         shuffle_state=2;
 
@@ -416,7 +431,7 @@ void MainWindow::on_listWidget_doubleClicked(const QModelIndex &index)
     player->play();
     updater->start();
     playing= true;
-    ui->play_btn->setIcon(QIcon::fromTheme("media-playback-pause-symbolic"));
+    ui->play_btn->setIcon(QIcon::fromTheme("media-playback-pause"));
 
 }
 
@@ -533,13 +548,13 @@ void MainWindow::on_play_btn_clicked()
         if(player->state() == QMediaPlayer::PlayingState)
         {
             player->pause();
-            ui->play_btn->setIcon(QIcon::fromTheme("media-playback-start-symbolic"));
+            ui->play_btn->setIcon(QIcon::fromTheme("media-playback-start"));
         }
        else
        {
             player->play();
             updater->start();
-            ui->play_btn->setIcon(QIcon::fromTheme("media-playback-pause-symbolic"));
+            ui->play_btn->setIcon(QIcon::fromTheme("media-playback-pause"));
        }
       }
 }
@@ -556,7 +571,7 @@ void MainWindow::on_backward_btn_clicked()
         {
 
             back();
-            ui->play_btn->setIcon(QIcon::fromTheme("media-playback-pause-symbolic"));
+            ui->play_btn->setIcon(QIcon::fromTheme("media-playback-pause"));
         }
      }
 }
@@ -572,7 +587,7 @@ void MainWindow::on_foward_btn_clicked()
         else
         {
             next();
-            ui->play_btn->setIcon(QIcon::fromTheme("media-playback-pause-symbolic"));
+            ui->play_btn->setIcon(QIcon::fromTheme("media-playback-pause"));
         }
      }
 }

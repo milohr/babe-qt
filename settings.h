@@ -14,9 +14,22 @@ class settings : public QWidget
 public:
     explicit settings(QWidget *parent = 0);
     ~settings();
+    int toolbarIconSize()  {return iconSize;}
+
+private slots:
+    void on_comboBox_activated(const QString &arg1);
+
+
+public slots:
+
 
 private:
     Ui::settings *ui;
+    int iconSize = 16;
+
+signals:
+    void toolbarIconSizeChanged(int newSize);
+
 };
 
 #endif // SETTINGS_H

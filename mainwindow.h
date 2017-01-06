@@ -11,6 +11,7 @@
 #include <QStackedWidget>
 #include <QToolBar>
 #include "settings.h"
+#include "babes.h"
 
 namespace Ui {
 class MainWindow;
@@ -67,6 +68,8 @@ private slots:
 
     void on_tableWidget_doubleClicked(const QModelIndex &index);
 
+    void setToolbarIconSize(int iconSize);
+
 private:
     void setUpViews();
     void loadTrack();
@@ -96,7 +99,8 @@ private:
     QGridLayout * layout;
     QLabel *info;
 
-    settings settings_widget;
+    settings *settings_widget;
+    babes babes_widget;
     Playlist playlist;
     Playlist collection;
     QMediaPlayer *player = new QMediaPlayer();

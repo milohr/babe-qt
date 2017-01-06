@@ -1,7 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <author/>
- <comment/>
- <exportmacro/>
  <class>babes</class>
  <widget class="QWidget" name="babes">
   <property name="geometry">
@@ -15,7 +13,8 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <layout class="QVBoxLayout" name="verticalLayout_2"/>
  </widget>
- <pixmapfunction/>
+ <resources/>
  <connections/>
 </ui>

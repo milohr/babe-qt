@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>763</width>
+    <width>842</width>
     <height>334</height>
    </rect>
   </property>
@@ -42,6 +42,9 @@ border-radius: 4px;
   <property name="tabShape">
    <enum>QTabWidget::Triangular</enum>
   </property>
+  <property name="unifiedTitleAndToolBarOnMac">
+   <bool>true</bool>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <widget class="QToolButton" name="playlists_view">
     <property name="geometry">
@@ -56,8 +59,13 @@ border-radius: 4px;
      <string>...</string>
     </property>
     <property name="icon">
-     <iconset theme="format-indent-more-symbolic">
-      <normaloff>.</normaloff>.</iconset>
+     <iconset theme="amarok_lyrics"/>
+    </property>
+    <property name="checkable">
+     <bool>true</bool>
+    </property>
+    <property name="autoExclusive">
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QToolButton" name="babes_view">
@@ -73,8 +81,13 @@ border-radius: 4px;
      <string>...</string>
     </property>
     <property name="icon">
-     <iconset theme="emblem-favorite-symbolic">
-      <normaloff>.</normaloff>.</iconset>
+     <iconset theme="love"/>
+    </property>
+    <property name="checkable">
+     <bool>true</bool>
+    </property>
+    <property name="autoExclusive">
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QToolButton" name="queue_view">
@@ -90,8 +103,13 @@ border-radius: 4px;
      <string>...</string>
     </property>
     <property name="icon">
-     <iconset theme="alarm-symbolic">
-      <normaloff>.</normaloff>.</iconset>
+     <iconset theme="amarok_clock"/>
+    </property>
+    <property name="checkable">
+     <bool>true</bool>
+    </property>
+    <property name="autoExclusive">
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QToolButton" name="settings_view">
@@ -110,8 +128,13 @@ border-radius: 4px;
      <string>...</string>
     </property>
     <property name="icon">
-     <iconset theme="open-menu-symbolic">
-      <normaloff>.</normaloff>.</iconset>
+     <iconset theme="games-config-options"/>
+    </property>
+    <property name="checkable">
+     <bool>true</bool>
+    </property>
+    <property name="autoExclusive">
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QToolButton" name="albums_view">
@@ -130,8 +153,13 @@ border-radius: 4px;
      <string>...</string>
     </property>
     <property name="icon">
-     <iconset theme="media-optical-bd-symbolic">
-      <normaloff>.</normaloff>.</iconset>
+     <iconset theme="media-album-track"/>
+    </property>
+    <property name="checkable">
+     <bool>true</bool>
+    </property>
+    <property name="autoExclusive">
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QToolButton" name="tracks_view">
@@ -147,8 +175,13 @@ border-radius: 4px;
      <string>...</string>
     </property>
     <property name="icon">
-     <iconset theme="emblem-music-symbolic">
-      <normaloff>.</normaloff>.</iconset>
+     <iconset theme="filename-filetype-amarok"/>
+    </property>
+    <property name="checkable">
+     <bool>true</bool>
+    </property>
+    <property name="autoExclusive">
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QToolButton" name="backward_btn">
@@ -164,8 +197,7 @@ border-radius: 4px;
      <string>...</string>
     </property>
     <property name="icon">
-     <iconset theme="media-skip-backward-symbolic">
-      <normaloff>.</normaloff>.</iconset>
+     <iconset theme="media-skip-backward"/>
     </property>
    </widget>
    <widget class="QToolButton" name="foward_btn">
@@ -181,8 +213,7 @@ border-radius: 4px;
      <string>...</string>
     </property>
     <property name="icon">
-     <iconset theme="media-skip-backward-symbolic-rtl">
-      <normaloff>.</normaloff>.</iconset>
+     <iconset theme="media-skip-forward"/>
     </property>
    </widget>
    <widget class="QToolButton" name="play_btn">
@@ -198,8 +229,7 @@ border-radius: 4px;
      <string>...</string>
     </property>
     <property name="icon">
-     <iconset theme="media-playback-start-symbolic">
-      <normaloff>.</normaloff>.</iconset>
+     <iconset theme="media-playback-start"/>
     </property>
    </widget>
    <widget class="QSlider" name="seekBar">
@@ -263,9 +293,15 @@ margin-bottom: -2px;
      <rect>
       <x>40</x>
       <y>1</y>
-      <width>141</width>
-      <height>241</height>
+      <width>200</width>
+      <height>221</height>
      </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>0</width>
+      <height>0</height>
+     </size>
     </property>
     <property name="maximumSize">
      <size>
@@ -293,9 +329,9 @@ margin-bottom: -2px;
     <property name="geometry">
      <rect>
       <x>190</x>
-      <y>0</y>
+      <y>10</y>
       <width>561</width>
-      <height>211</height>
+      <height>231</height>
      </rect>
     </property>
     <property name="layoutDirection">
@@ -407,8 +443,7 @@ margin-bottom: -2px;
      <string>...</string>
     </property>
     <property name="icon">
-     <iconset theme="view-dual-symbolic">
-      <normaloff>.</normaloff>.</iconset>
+     <iconset theme="object-columns"/>
     </property>
    </widget>
    <widget class="QToolButton" name="fav_btn">
@@ -424,8 +459,7 @@ margin-bottom: -2px;
      <string>...</string>
     </property>
     <property name="icon">
-     <iconset theme="emblem-favorite-symbolic">
-      <normaloff>.</normaloff>.</iconset>
+     <iconset theme="love"/>
     </property>
    </widget>
    <widget class="QToolButton" name="shuffle_btn">
@@ -441,7 +475,7 @@ margin-bottom: -2px;
      <string>...</string>
     </property>
     <property name="icon">
-     <iconset theme="media-playlist-consecutive-symbolic"/>
+     <iconset theme="media-playlist-repeat-amarok"/>
     </property>
    </widget>
    <widget class="QToolButton" name="open_btn">
@@ -457,24 +491,29 @@ margin-bottom: -2px;
      <string>...</string>
     </property>
     <property name="icon">
-     <iconset theme="folder-open-symbolic">
-      <normaloff>.</normaloff>.</iconset>
+     <iconset theme="filename-title-amarok"/>
     </property>
    </widget>
    <widget class="QToolButton" name="info_view">
     <property name="geometry">
      <rect>
-      <x>230</x>
-      <y>210</y>
-      <width>31</width>
-      <height>33</height>
+      <x>0</x>
+      <y>250</y>
+      <width>21</width>
+      <height>21</height>
      </rect>
     </property>
     <property name="text">
      <string>...</string>
     </property>
     <property name="icon">
-     <iconset theme="mail-attachment-symbolic"/>
+     <iconset theme="internet-amarok"/>
+    </property>
+    <property name="checkable">
+     <bool>true</bool>
+    </property>
+    <property name="autoExclusive">
+     <bool>true</bool>
     </property>
    </widget>
   </widget>
