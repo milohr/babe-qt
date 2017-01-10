@@ -34,7 +34,7 @@ void CollectionDB::prepareCollectionDB(QString path)
     m_db.setDatabaseName(path);
     m_db.open();
     QSqlQuery query;
-    query.exec("CREATE TABLE tracks(title text, album text, artist text, location text, stars integer, babe integer);");
+    query.exec("CREATE TABLE tracks(title text, artist text, album text, location text, stars integer, babe integer);");
 
 
 }

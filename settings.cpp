@@ -227,6 +227,7 @@ void settings::finishedAddingTracks(bool state)
     if(state)
     {
         qDebug()<<"good to hear it g¿finished yay!";
+        ui->progressBar->hide();
         emit collectionDBFinishedAdding(true);
     }
 }
