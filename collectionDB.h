@@ -7,7 +7,11 @@
 #include <track.h>
 #include <QThread>
 #include <QWidget>
-
+#include <typeinfo>
+#include<QDebug>
+#include <QSqlQuery>
+#include <QSqlError>
+#include <QSqlRecord>
 
 class CollectionDB : public QObject
 {
@@ -15,18 +19,26 @@ class CollectionDB : public QObject
 public:
 
     CollectionDB();
+    //CollectionDB(bool connect);
     virtual ~CollectionDB(){}
-    void setCollectionDB(QString path);
+    void openCollection(QString path);
+
+QSqlQuery getQuery(QString queryTxt);
+    bool insertInto(QString tableName, QString column, QString location, int value);
+
+
+
 
     void setTrackList(QList <Track>);
     void prepareCollectionDB(QString path);
+    bool check_existance(QString tableName, QString searchId, QString search);
 private:
-    QSqlDatabase m_db;
+QSqlDatabase m_db;
     QList <Track> trackList;
 
 public slots:
     void addTrack();
-
+ void closeConnection();
 
 signals:
     void progress(int);

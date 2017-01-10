@@ -9,6 +9,7 @@
 #include<QStringList>
 #include <QThread>
 #include<collectionDB.h>
+#include<QMessageBox>
 
 settings::settings(QWidget *parent) :
     QWidget(parent),
@@ -17,11 +18,14 @@ settings::settings(QWidget *parent) :
     ui->setupUi(this);
     connect(this, SIGNAL(collectionPathChanged(QString)),
                          this, SLOT(populateDB(QString)));
+
     thread = new QThread(parent);
         // Do not set a parent. The object cannot be moved if it has a parent.
+    collection_db.openCollection("../player/collection.db");
         collection_db.moveToThread(thread);
 
         connect(thread, SIGNAL(finished()), &collection_db, SLOT(deleteLater()));
+        // connect(thread, SIGNAL(finished()), &collection_db, SLOT(closeConnection()));
         connect(&collection_db, SIGNAL(DBactionFinished(bool)),this, SLOT(finishedAddingTracks(bool)));
 
             connect(thread, SIGNAL(started()), &collection_db, SLOT(addTrack()));
@@ -33,6 +37,13 @@ ui->progressBar->hide();
 settings::~settings()
 {
     delete ui;
+    collection_db.closeConnection();
+}
+
+CollectionDB& settings::getCollectionDB()
+{
+
+    return collection_db;
 }
 
 void settings::on_toolbarIconSize_activated(const QString &arg1)
@@ -232,4 +243,11 @@ void settings::finishedAddingTracks(bool state)
     }
 }
 
+
+
+void settings::on_pushButton_clicked()
+{
+   QMessageBox::about(this, "Babe Tiny Music Player","Version: 0.0 Alpha\nWritten and designed\nby: Camilo Higuita");
+
+}
 

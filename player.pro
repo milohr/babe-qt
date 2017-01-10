@@ -11,7 +11,7 @@ DEPENDPATH += $$PWD/3rdparty/taglib-1.9.1/taglib/Headers
 
 QT       += core gui
 QT       += multimedia
-
+QT       += sql
 CONFIG   += c++14
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -27,7 +27,7 @@ SOURCES += main.cpp\
     settings.cpp \
     info.cpp \
     babes.cpp \
-    collection.cpp
+    collectionDB.cpp
 
 HEADERS  += mainwindow.h \
             playlist.h \
@@ -35,7 +35,7 @@ HEADERS  += mainwindow.h \
     settings.h \
     info.h \
     babes.h \
-    collection.h
+    collectionDB.h
 
 FORMS    += mainwindow.ui \
     settings.ui \

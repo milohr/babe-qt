@@ -4,17 +4,42 @@
 #include <QSqlRecord>
 #include <QDebug>
 #include <track.h>
-
+#include <typeinfo>
 
 CollectionDB::CollectionDB()
 {
 
 }
 
-void CollectionDB::setCollectionDB(QString path)
+/*CollectionDB::CollectionDB(bool connect)
 {
-   m_db = QSqlDatabase::addDatabase("QSQLITE");
-   m_db.setDatabaseName(path);
+    if(connect)
+    {
+        m_db = QSqlDatabase::addDatabase("QSQLITE");
+        m_db.setDatabaseName("../player/collection.db");
+        m_db.open();
+
+        if (!m_db.open())
+        {
+           qDebug() << "Error: connection with database fail";
+        }
+        else
+        {
+           qDebug() << "Database: connection ok";
+
+        }
+    }
+}*/
+
+void CollectionDB::closeConnection()
+{
+    m_db.close();
+}
+
+void CollectionDB::openCollection(QString path)
+{
+    m_db = QSqlDatabase::addDatabase("QSQLITE");
+    m_db.setDatabaseName(path);
 
    if (!m_db.open())
    {
@@ -30,20 +55,25 @@ void CollectionDB::setCollectionDB(QString path)
 
 void CollectionDB::prepareCollectionDB(QString path)
 {
-    m_db = QSqlDatabase::addDatabase("QSQLITE");
-    m_db.setDatabaseName(path);
-    m_db.open();
+
+
     QSqlQuery query;
     query.exec("CREATE TABLE tracks(title text, artist text, album text, location text, stars integer, babe integer);");
 
 
 }
 
-
+QSqlQuery CollectionDB::getQuery(QString queryTxt)
+{
+    QSqlQuery query(queryTxt);
+    return query;
+}
 
 void CollectionDB::addTrack()
 {
     //bool success = false;
+
+
         QSqlQuery query;
 
         query.exec("PRAGMA synchronous=OFF");
@@ -78,7 +108,6 @@ emit progress(i+1);
       }
 
      qDebug()<<"finished wrrting to database";
-      m_db.close();
 
 emit DBactionFinished(true);
 }
@@ -91,6 +120,68 @@ void CollectionDB::setTrackList(QList <Track> trackList)
         {
             qDebug()<<QString::fromStdString(tr.getTitle());
         }*/
+}
+
+bool CollectionDB::check_existance(QString tableName, QString searchId, QString search)
+{
+
+
+
+    QSqlQuery query;
+    query.prepare("SELECT * FROM "+tableName+" WHERE "+searchId+" = (:search)");
+    query.bindValue(":search", search);
+
+    if (query.exec())
+    {
+       if (query.next())
+       {
+          qDebug()<< "it exists";
+          return true;
+       }else
+       {
+           qDebug()<<"currnt song doesn't exists in db";
+           return false;
+       }
+
+
+
+    }else
+    {
+
+
+        return false;
+    }
+
+
+}
+
+
+bool CollectionDB::insertInto(QString tableName, QString column, QString location, int value)
+{
+
+
+
+    QSqlQuery query;
+    query.prepare("UPDATE "+tableName+" SET "+column+" = (:value) WHERE location = (:location)" );
+    //query.prepare("SELECT * FROM "+tableName+" WHERE "+searchId+" = (:search)");
+
+    query.bindValue(":value", value);
+    query.bindValue(":location", location);
+    if(query.exec())
+    {
+        qDebug()<<"insertInto<<"<<"UPDATE "+tableName+" SET "+column+" = "+ value + " WHERE location = "+location;
+
+        return true;
+    }else
+    {
+        return false;
+    }
+
+
+
+   // qDebug()<< QString::fromStdString(typeid(query).name());
+   // return true;
+
 }
 
 

@@ -12,6 +12,7 @@
 #include <QToolBar>
 #include "settings.h"
 #include "babes.h"
+#include "collectionDB.h"
 
 
 namespace Ui {
@@ -28,7 +29,7 @@ public:
     void setStyle();
     void updateList();
     void populateTableView();
-
+    void populateMainList();
     enum columns
     {
         TITLE,ARTIST,ALBUM,LOCATION
@@ -73,6 +74,8 @@ private slots:
     void collectionDBFinishedAdding(bool state);
 
 
+    void on_fav_btn_clicked();
+
 private:
 
     void setUpViews();
@@ -89,6 +92,7 @@ private:
     QStackedWidget *views;
     QToolBar *playback;
     QToolBar *status;
+    //CollectionDB collection_db;
     int mini_mode;
 
     bool allow = false;
@@ -110,7 +114,7 @@ private:
 
     QMediaPlayer *player = new QMediaPlayer();
     QTimer *updater = new QTimer(this);
-
+    QString current_song_url;
     int lCounter = 0;
     int  shuffle_state=0;
     bool repeat = false;
@@ -120,5 +124,8 @@ private:
     bool shuffle = false;
 
 };
+
+
+
 
 #endif // MAINWINDOW_H

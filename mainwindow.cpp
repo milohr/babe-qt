@@ -15,6 +15,9 @@
 #include <QStringList>
 #include "collectionDB.h"
 #include<QSqlQuery>
+#include <QFileInfo>
+#include <QMimeDatabase>
+#include <QMimeType>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -32,12 +35,19 @@ MainWindow::MainWindow(QWidget *parent) :
     this->mini_mode=0;
     //checkCollection();
     settings_widget = new settings();
+    //settings_widget->setContentsMargins(0,0,0,0);
+    //settings_widget->setStyleSheet("background:red;");
     connect(settings_widget, SIGNAL(toolbarIconSizeChanged(int)),
                          this, SLOT(setToolbarIconSize(int)));
     connect(settings_widget, SIGNAL(collectionDBFinishedAdding(bool)),
                                     this, SLOT(collectionDBFinishedAdding(bool)));
 
-if(settings_widget->checkCollection())  populateTableView();
+    //collection_db.openCollection("../player/collection.db");
+    if(settings_widget->checkCollection())
+    {
+        populateTableView();
+        populateMainList();
+    }
     settings_widget->readSettings();
     setToolbarIconSize(settings_widget->getToolbarIconSize());
 
@@ -164,7 +174,7 @@ if(settings_widget->checkCollection())  populateTableView();
     layout = new QGridLayout();
     main_widget->setLayout(layout);
     this->setCentralWidget(main_widget);
-    layout->setContentsMargins(0,0,0,0);
+    layout->setContentsMargins(6,0,0,0);
 
 
     /*album view*/
@@ -394,9 +404,15 @@ void MainWindow::on_open_btn_clicked()
 
     //if(ui->listWidget->count() == 0) startUpdater = true;
 
-    QStringList files = QFileDialog::getOpenFileNames(this, tr("Select Music Files"));
+
+
+
+      QStringList files = QFileDialog::getOpenFileNames(this, tr("Select Music Files"),"/home/Music", tr("Audio (*.mp3 *.wav *.mp4 *.flac *.ogg)"));
     if(!files.empty())
     {
+
+
+
         playlist.add(files);
         updateList();
         //populateTableView();
@@ -409,19 +425,7 @@ void MainWindow::on_open_btn_clicked()
 void MainWindow::populateTableView()
 {
 
-    auto m_db = QSqlDatabase::addDatabase("QSQLITE");
-    m_db.setDatabaseName("../player/collection.db");
-    m_db.open();
-
-    if (!m_db.open())
-    {
-       qDebug() << "Error: connection with database fail";
-    }
-    else
-    {
-       qDebug() << "Database: connection ok";
-
-       QSqlQuery query("SELECT * FROM tracks");
+    QSqlQuery query= settings_widget->getCollectionDB().getQuery("SELECT * FROM tracks");
 
        while (query.next())
        {
@@ -444,13 +448,6 @@ void MainWindow::populateTableView()
 
        }
 
-    }
-
-
-
-
-
-
 
     /*for (Track track : collection.getTracks() )
     {
@@ -470,6 +467,27 @@ void MainWindow::populateTableView()
      ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, LOCATION, location);
 
     }*/
+}
+
+void MainWindow::populateMainList()
+{
+    QSqlQuery query= settings_widget->getCollectionDB().getQuery("SELECT * FROM tracks WHERE babe = 1");
+
+    QStringList files;
+       while (query.next())
+       {
+
+
+
+        files << query.value(3).toString();
+
+       }
+
+       playlist.add(files);
+       updateList();
+       //populateTableView();
+       //ui->save->setChecked(false);
+       if(shuffle) shufflePlaylist();
 }
 
 void MainWindow::updateList()
@@ -514,10 +532,11 @@ void MainWindow::on_tableWidget_doubleClicked(const QModelIndex &index)
 
 void MainWindow::loadTrack()
 {
-     QString qstr = QString::fromStdString(playlist.tracks[getIndex()].getLocation());
-     player->setMedia(QUrl::fromLocalFile(qstr));
-     qstr = QString::fromStdString(playlist.tracks[getIndex()].getTitle()+" \xe2\x99\xa1 "+playlist.tracks[getIndex()].getArtist());
+     current_song_url = QString::fromStdString(playlist.tracks[getIndex()].getLocation());
+     player->setMedia(QUrl::fromLocalFile(current_song_url));
+     auto qstr = QString::fromStdString(playlist.tracks[getIndex()].getTitle()+" \xe2\x99\xa1 "+playlist.tracks[getIndex()].getArtist());
      this->setWindowTitle(qstr);
+     qDebug()<<"Current song playing is: "<< current_song_url;
 }
 
 int MainWindow::getIndex()
@@ -677,3 +696,20 @@ void MainWindow::on_tracks_view_clicked(bool checked)
 }
 
 
+
+void MainWindow::on_fav_btn_clicked()
+{
+
+
+    if(settings_widget->getCollectionDB().check_existance("tracks","location",current_song_url))
+    {
+        settings_widget->getCollectionDB().insertInto("tracks","babe",current_song_url,1);
+        qDebug()<<"trying to babe sth";
+    }else
+    {
+
+    }
+
+
+
+}

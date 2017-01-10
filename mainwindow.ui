@@ -59,7 +59,8 @@ border-radius: 4px;
      <string>...</string>
     </property>
     <property name="icon">
-     <iconset theme="amarok_lyrics"/>
+     <iconset theme="amarok_lyrics">
+      <normaloff>.</normaloff>.</iconset>
     </property>
     <property name="checkable">
      <bool>true</bool>
@@ -81,7 +82,7 @@ border-radius: 4px;
      <string>...</string>
     </property>
     <property name="icon">
-     <iconset theme="love"/>
+     <iconset theme="draw-star"/>
     </property>
     <property name="checkable">
      <bool>true</bool>
@@ -103,7 +104,8 @@ border-radius: 4px;
      <string>...</string>
     </property>
     <property name="icon">
-     <iconset theme="amarok_clock"/>
+     <iconset theme="amarok_clock">
+      <normaloff>.</normaloff>.</iconset>
     </property>
     <property name="checkable">
      <bool>true</bool>
@@ -128,7 +130,8 @@ border-radius: 4px;
      <string>...</string>
     </property>
     <property name="icon">
-     <iconset theme="games-config-options"/>
+     <iconset theme="games-config-options">
+      <normaloff>.</normaloff>.</iconset>
     </property>
     <property name="checkable">
      <bool>true</bool>
@@ -153,7 +156,8 @@ border-radius: 4px;
      <string>...</string>
     </property>
     <property name="icon">
-     <iconset theme="media-album-track"/>
+     <iconset theme="media-album-track">
+      <normaloff>.</normaloff>.</iconset>
     </property>
     <property name="checkable">
      <bool>true</bool>
@@ -175,7 +179,8 @@ border-radius: 4px;
      <string>...</string>
     </property>
     <property name="icon">
-     <iconset theme="filename-filetype-amarok"/>
+     <iconset theme="filename-filetype-amarok">
+      <normaloff>.</normaloff>.</iconset>
     </property>
     <property name="checkable">
      <bool>true</bool>
@@ -197,7 +202,8 @@ border-radius: 4px;
      <string>...</string>
     </property>
     <property name="icon">
-     <iconset theme="media-skip-backward"/>
+     <iconset theme="media-skip-backward">
+      <normaloff>.</normaloff>.</iconset>
     </property>
    </widget>
    <widget class="QToolButton" name="foward_btn">
@@ -213,7 +219,8 @@ border-radius: 4px;
      <string>...</string>
     </property>
     <property name="icon">
-     <iconset theme="media-skip-forward"/>
+     <iconset theme="media-skip-forward">
+      <normaloff>.</normaloff>.</iconset>
     </property>
    </widget>
    <widget class="QToolButton" name="play_btn">
@@ -229,7 +236,8 @@ border-radius: 4px;
      <string>...</string>
     </property>
     <property name="icon">
-     <iconset theme="media-playback-start"/>
+     <iconset theme="media-playback-start">
+      <normaloff>.</normaloff>.</iconset>
     </property>
    </widget>
    <widget class="QSlider" name="seekBar">
@@ -443,7 +451,8 @@ margin-bottom: -2px;
      <string>...</string>
     </property>
     <property name="icon">
-     <iconset theme="object-columns"/>
+     <iconset theme="object-columns">
+      <normaloff>.</normaloff>.</iconset>
     </property>
    </widget>
    <widget class="QToolButton" name="fav_btn">
@@ -459,7 +468,8 @@ margin-bottom: -2px;
      <string>...</string>
     </property>
     <property name="icon">
-     <iconset theme="love"/>
+     <iconset theme="love">
+      <normaloff>.</normaloff>.</iconset>
     </property>
    </widget>
    <widget class="QToolButton" name="shuffle_btn">
@@ -475,7 +485,8 @@ margin-bottom: -2px;
      <string>...</string>
     </property>
     <property name="icon">
-     <iconset theme="media-playlist-repeat-amarok"/>
+     <iconset theme="media-playlist-repeat-amarok">
+      <normaloff>.</normaloff>.</iconset>
     </property>
    </widget>
    <widget class="QToolButton" name="open_btn">
@@ -491,7 +502,8 @@ margin-bottom: -2px;
      <string>...</string>
     </property>
     <property name="icon">
-     <iconset theme="filename-title-amarok"/>
+     <iconset theme="filename-title-amarok">
+      <normaloff>.</normaloff>.</iconset>
     </property>
    </widget>
    <widget class="QToolButton" name="info_view">
@@ -507,7 +519,8 @@ margin-bottom: -2px;
      <string>...</string>
     </property>
     <property name="icon">
-     <iconset theme="internet-amarok"/>
+     <iconset theme="internet-amarok">
+      <normaloff>.</normaloff>.</iconset>
     </property>
     <property name="checkable">
      <bool>true</bool>

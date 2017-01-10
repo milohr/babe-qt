@@ -23,7 +23,7 @@ public:
     explicit settings(QWidget *parent = 0);
     ~settings();
     bool checkCollection();
-
+    CollectionDB &getCollectionDB();
     int getToolbarIconSize()  {return iconSize;}
     QString getCollectionPath() {return collectionPath;}
     void setSettings(QStringList setting);
@@ -40,6 +40,8 @@ void populateDB(QString path);
 
     void on_toolbarIconSize_activated(const QString &arg1);
 void finishedAddingTracks(bool state);
+void on_pushButton_clicked();
+
 public slots:
 
 
