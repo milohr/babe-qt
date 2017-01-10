@@ -37,7 +37,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(settings_widget, SIGNAL(collectionDBFinishedAdding(bool)),
                                     this, SLOT(collectionDBFinishedAdding(bool)));
 
-settings_widget->checkCollection();
+if(settings_widget->checkCollection())  populateTableView();
     settings_widget->readSettings();
     setToolbarIconSize(settings_widget->getToolbarIconSize());
 

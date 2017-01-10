@@ -169,7 +169,7 @@ void settings::on_toolButton_2_clicked()
 
 
 
-void settings::checkCollection()
+bool settings::checkCollection()
 {
     QString collection_db_path="../player/collection.db";
     QFileInfo check_db (collection_db_path);
@@ -177,13 +177,16 @@ void settings::checkCollection()
     if (check_db.exists())
     {
         qDebug()<<"La base de datos existe. Ahora la voy a abrir";
-       collection_db.setCollectionDB(collection_db_path);
+       //collection_db.setCollectionDB(collection_db_path);
        qDebug()<<"Ahora obtener la informacion de ella y populate tableView";
        //populateTableView();
+
+       return true;
     }else
     {
         collection_db.prepareCollectionDB(collection_db_path);
         qDebug()<<"Database doesn't exists. Going to create the database and tables";
+        return false;
     }
 }
 

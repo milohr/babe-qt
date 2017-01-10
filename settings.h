@@ -22,7 +22,7 @@ class settings : public QWidget
 public:
     explicit settings(QWidget *parent = 0);
     ~settings();
-    void checkCollection();
+    bool checkCollection();
 
     int getToolbarIconSize()  {return iconSize;}
     QString getCollectionPath() {return collectionPath;}

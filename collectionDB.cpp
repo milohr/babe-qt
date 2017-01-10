@@ -77,8 +77,8 @@ emit progress(i+1);
 
       }
 
-     /* qDebug()<<"finished wrrting to database";
-      m_db.close();*/
+     qDebug()<<"finished wrrting to database";
+      m_db.close();
 
 emit DBactionFinished(true);
 }
