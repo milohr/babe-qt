@@ -10,9 +10,11 @@
 #include <QStringList>
 #include <QTableWidgetItem>
 #include <QMessageBox>
-#include<QDir>
-#include<QDirIterator>
+#include <QDir>
+#include <QDirIterator>
 #include <QStringList>
+#include "collectionDB.h"
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -28,7 +30,15 @@ MainWindow::MainWindow(QWidget *parent) :
     //this->setMinimumSize (200, 250);
     this->mini_mode=0;
 
+    settings_widget = new settings();
+    connect(settings_widget, SIGNAL(toolbarIconSizeChanged(int)),
+                         this, SLOT(setToolbarIconSize(int)));
+    settings_widget->readSettings();
+    setToolbarIconSize(settings_widget->getToolbarIconSize());
+
+
     setUpViews();
+    checkCollection();
 
     connect(updater, SIGNAL(timeout()), this, SLOT(update()));
     player->setVolume(100);
@@ -129,9 +139,6 @@ MainWindow::MainWindow(QWidget *parent) :
     */
 
     /* setup widgets*/
-    settings_widget = new settings();
-    connect(settings_widget, SIGNAL(toolbarIconSizeChanged(int)),
-                         this, SLOT(setToolbarIconSize(int)));
 
     views = new QStackedWidget;
     views->addWidget(ui->tableWidget);
@@ -190,6 +197,24 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::checkCollection()
+{
+    QString collection_db_path="../player/collection.db";
+    QFileInfo check_db (collection_db_path);
+
+    if (check_db.exists())
+    {
+        qDebug()<<"La base de datos existe. Ahora la voy a abrir";
+       collection_db.setCollectionDB(collection_db_path);
+       qDebug()<<"Ahora obtener la informacion de ella y populate tableView";
+       //populateTableView();
+    }else
+    {
+        collection_db.prepareCollectionDB(collection_db_path);
+        qDebug()<<"Database doesn't exists. Going to create the database and tables";
+    }
+}
+
 
 void MainWindow::setToolbarIconSize(int iconSize)
 {
@@ -198,6 +223,7 @@ void MainWindow::setToolbarIconSize(int iconSize)
     playback->setIconSize(QSize(iconSize,iconSize));
     ui->mainToolBar->update();
     playback->update();
+   // this->update();
 }
 
 void MainWindow::setUpViews()
@@ -257,9 +283,6 @@ qDebug()<<url;
     collection.add(urlCollection);
     //updateList();
     populateTableView();
-
-
-
 }
 void MainWindow::settingsView()
 {

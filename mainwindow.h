@@ -12,6 +12,7 @@
 #include <QToolBar>
 #include "settings.h"
 #include "babes.h"
+#include "collectionDB.h"
 
 namespace Ui {
 class MainWindow;
@@ -71,6 +72,7 @@ private slots:
     void setToolbarIconSize(int iconSize);
 
 private:
+    void checkCollection();
     void setUpViews();
     void loadTrack();
     int getIndex();
@@ -81,6 +83,7 @@ private:
     void go_mini();
 
     Ui::MainWindow *ui;
+    CollectionDB collection_db;
     QStackedWidget *views;
     QToolBar *playback;
     QToolBar *status;
