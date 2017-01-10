@@ -4,10 +4,16 @@
 #include <QWidget>
 #include<QString>
 #include<QStringList>
-
+#include "collectionDB.h"
+#include<QDebug>
+#include <QThread>
+#include "playlist.h"
 namespace Ui {
 class settings;
 }
+
+
+
 
 class settings : public QWidget
 {
@@ -16,6 +22,8 @@ class settings : public QWidget
 public:
     explicit settings(QWidget *parent = 0);
     ~settings();
+    void checkCollection();
+
     int getToolbarIconSize()  {return iconSize;}
     QString getCollectionPath() {return collectionPath;}
     void setSettings(QStringList setting);
@@ -27,11 +35,11 @@ public:
 private slots:
 
     void on_toolButton_clicked();
-
+void populateDB(QString path);
     void on_toolButton_2_clicked();
 
     void on_toolbarIconSize_activated(const QString &arg1);
-
+void finishedAddingTracks(bool state);
 public slots:
 
 
@@ -40,13 +48,19 @@ private:
     const std::string settingPath="../player/settings.conf";
     int iconSize = 16;
     QString collectionPath="";
-
-
-
+    CollectionDB collection_db;
+Playlist collection;
+ QThread* thread;
 signals:
     void toolbarIconSizeChanged(int newSize);
     void collectionPathChanged(QString newPath);
+    void collectionDBFinishedAdding(bool state);
+
 
 };
+
+
+
+
 
 #endif // SETTINGS_H

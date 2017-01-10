@@ -12,7 +12,7 @@
 #include <QToolBar>
 #include "settings.h"
 #include "babes.h"
-#include "collectionDB.h"
+
 
 namespace Ui {
 class MainWindow;
@@ -70,9 +70,11 @@ private slots:
     void on_tableWidget_doubleClicked(const QModelIndex &index);
 
     void setToolbarIconSize(int iconSize);
+    void collectionDBFinishedAdding(bool state);
+
 
 private:
-    void checkCollection();
+
     void setUpViews();
     void loadTrack();
     int getIndex();
@@ -83,7 +85,7 @@ private:
     void go_mini();
 
     Ui::MainWindow *ui;
-    CollectionDB collection_db;
+
     QStackedWidget *views;
     QToolBar *playback;
     QToolBar *status;
@@ -105,7 +107,7 @@ private:
     settings *settings_widget;
     babes babes_widget;
     Playlist playlist;
-    Playlist collection;
+
     QMediaPlayer *player = new QMediaPlayer();
     QTimer *updater = new QTimer(this);
 

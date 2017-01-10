@@ -7,13 +7,27 @@
 #include <fstream>
 #include<iostream>
 #include<QStringList>
-
+#include <QThread>
+#include<collectionDB.h>
 
 settings::settings(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::settings)
 {
     ui->setupUi(this);
+    connect(this, SIGNAL(collectionPathChanged(QString)),
+                         this, SLOT(populateDB(QString)));
+    thread = new QThread(parent);
+        // Do not set a parent. The object cannot be moved if it has a parent.
+        collection_db.moveToThread(thread);
+
+        connect(thread, SIGNAL(finished()), &collection_db, SLOT(deleteLater()));
+        connect(&collection_db, SIGNAL(DBactionFinished(bool)),this, SLOT(finishedAddingTracks(bool)));
+
+            connect(thread, SIGNAL(started()), &collection_db, SLOT(addTrack()));
+            connect(&collection_db, SIGNAL(progress(int)), ui->progressBar, SLOT(setValue(int)));
+ui->progressBar->hide();
+
 }
 
 settings::~settings()
@@ -39,7 +53,7 @@ void settings::on_toolButton_clicked()
 //qDebug()<<url;
 
 
-if(collectionPath!=url)
+if(collectionPath!=url && url.size()!=0)
 {
     ui->collectionPath->setText(url);
 collectionPath=url;
@@ -151,6 +165,67 @@ void settings::readSettings()
 void settings::on_toolButton_2_clicked()
 {
     readSettings();
+}
+
+
+
+void settings::checkCollection()
+{
+    QString collection_db_path="../player/collection.db";
+    QFileInfo check_db (collection_db_path);
+
+    if (check_db.exists())
+    {
+        qDebug()<<"La base de datos existe. Ahora la voy a abrir";
+       collection_db.setCollectionDB(collection_db_path);
+       qDebug()<<"Ahora obtener la informacion de ella y populate tableView";
+       //populateTableView();
+    }else
+    {
+        collection_db.prepareCollectionDB(collection_db_path);
+        qDebug()<<"Database doesn't exists. Going to create the database and tables";
+    }
+}
+
+void settings::populateDB(QString path)
+{
+    qDebug() << "Function Name: " << Q_FUNC_INFO << "new path for database action: "<< path;
+
+    QStringList urlCollection;
+//QDir dir = new QDir(url);
+    QDirIterator it(path, QStringList() << "*.mp4" << "*.mp3" << "*.wav" <<"*.flac" <<"*.ogg", QDir::Files, QDirIterator::Subdirectories);
+    while (it.hasNext())
+    {
+        urlCollection<<it.next();
+
+        //qDebug() << it.next();
+    }
+
+    collection.add(urlCollection);
+    //updateList();
+   collection_db.setTrackList(collection.getTracks());
+    ui->progressBar->setMaximum(urlCollection.size());
+   thread->start();
+   ui->progressBar->show();
+
+
+
+//collection_db.start();
+
+    /*for(auto tr:urlCollection)
+    {
+        qDebug()<<tr;
+    }
+    //populateTableView();*/
+}
+
+void settings::finishedAddingTracks(bool state)
+{
+    if(state)
+    {
+        qDebug()<<"good to hear it g¿finished yay!";
+        emit collectionDBFinishedAdding(true);
+    }
 }
 
 

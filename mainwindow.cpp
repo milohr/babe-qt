@@ -14,6 +14,7 @@
 #include <QDirIterator>
 #include <QStringList>
 #include "collectionDB.h"
+#include<QSqlQuery>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -29,16 +30,20 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //this->setMinimumSize (200, 250);
     this->mini_mode=0;
-
+    //checkCollection();
     settings_widget = new settings();
     connect(settings_widget, SIGNAL(toolbarIconSizeChanged(int)),
                          this, SLOT(setToolbarIconSize(int)));
+    connect(settings_widget, SIGNAL(collectionDBFinishedAdding(bool)),
+                                    this, SLOT(collectionDBFinishedAdding(bool)));
+
+settings_widget->checkCollection();
     settings_widget->readSettings();
     setToolbarIconSize(settings_widget->getToolbarIconSize());
 
 
     setUpViews();
-    checkCollection();
+
 
     connect(updater, SIGNAL(timeout()), this, SLOT(update()));
     player->setVolume(100);
@@ -197,23 +202,8 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::checkCollection()
-{
-    QString collection_db_path="../player/collection.db";
-    QFileInfo check_db (collection_db_path);
 
-    if (check_db.exists())
-    {
-        qDebug()<<"La base de datos existe. Ahora la voy a abrir";
-       collection_db.setCollectionDB(collection_db_path);
-       qDebug()<<"Ahora obtener la informacion de ella y populate tableView";
-       //populateTableView();
-    }else
-    {
-        collection_db.prepareCollectionDB(collection_db_path);
-        qDebug()<<"Database doesn't exists. Going to create the database and tables";
-    }
-}
+
 
 
 void MainWindow::setToolbarIconSize(int iconSize)
@@ -266,7 +256,7 @@ void MainWindow::babesView()
     views->setCurrentIndex(0);
     if(mini_mode!=0) expand();
 
-    QString url= QFileDialog::getExistingDirectory();
+   /* QString url= QFileDialog::getExistingDirectory();
 
 qDebug()<<url;
 
@@ -280,9 +270,9 @@ qDebug()<<url;
         //qDebug() << it.next();
     }
 
-    collection.add(urlCollection);
+   // collection.add(urlCollection);
     //updateList();
-    populateTableView();
+    populateTableView();*/
 }
 void MainWindow::settingsView()
 {
@@ -418,7 +408,51 @@ void MainWindow::on_open_btn_clicked()
 
 void MainWindow::populateTableView()
 {
-    for (Track track : collection.getTracks() )
+
+    auto m_db = QSqlDatabase::addDatabase("QSQLITE");
+    m_db.setDatabaseName("../player/collection.db");
+    m_db.open();
+
+    if (!m_db.open())
+    {
+       qDebug() << "Error: connection with database fail";
+    }
+    else
+    {
+       qDebug() << "Database: connection ok";
+
+       QSqlQuery query("SELECT * FROM tracks");
+
+       while (query.next())
+       {
+
+
+           ui->tableWidget->insertRow(ui->tableWidget->rowCount());
+           auto *title= new QTableWidgetItem( query.value(0).toString());
+           //title->setFlags(title->flags() & ~Qt::ItemIsEditable);
+
+           ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, TITLE, title);
+
+           auto *artist= new QTableWidgetItem( query.value(1).toString());
+           ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, ARTIST, artist);
+
+           auto *album= new QTableWidgetItem( query.value(2).toString());
+           ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, ALBUM, album);
+
+           auto *location= new QTableWidgetItem( query.value(3).toString());
+           ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, LOCATION, location);
+
+       }
+
+    }
+
+
+
+
+
+
+
+    /*for (Track track : collection.getTracks() )
     {
      ui->tableWidget->insertRow(ui->tableWidget->rowCount());
      auto *title= new QTableWidgetItem( QString::fromStdString(track.getTitle()));
@@ -435,7 +469,7 @@ void MainWindow::populateTableView()
      auto *location= new QTableWidgetItem( QString::fromStdString(track.getLocation()));
      ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, LOCATION, location);
 
-    }
+    }*/
 }
 
 void MainWindow::updateList()
@@ -616,7 +650,14 @@ void MainWindow::on_foward_btn_clicked()
 }
 
 
-
+void MainWindow::collectionDBFinishedAdding(bool state)
+{
+    if(state)
+    {
+        qDebug()<<"now it i time to put the tracks in the table ;)";
+        populateTableView();
+    }
+}
 
 
 
