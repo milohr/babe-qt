@@ -61,6 +61,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->tableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tableWidget->setColumnHidden(LOCATION, true);
     ui->tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->tableWidget->sortByColumn(1,Qt::AscendingOrder);
     if(ui->listWidget->count() != 0)
     {
         loadTrack();
@@ -80,6 +81,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     auto *right_spacer = new QWidget();
      right_spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+     ui->tracks_view->setToolTip("Search...");
+     ui->mainToolBar->addWidget(ui->searchField);
 
     ui->mainToolBar->addWidget(left_spacer);
 
@@ -126,7 +130,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //playback->addWidget();
     //playback->addWidget(ui->horizontalSlider);
 
-    playback->setIconSize(QSize(16, 16));
+    //playback->setIconSize(QSize(16, 16));
     //this->addToolBar(Qt::BottomToolBarArea, playback);
 
     /*status bar*/
@@ -154,6 +158,13 @@ MainWindow::MainWindow(QWidget *parent) :
     */
 
     /* setup widgets*/
+
+    utilsBar = new QToolBar();
+    utilsBar->addWidget(ui->search);
+    utilsBar->setMovable(false);
+    ui->search->setPlaceholderText("Search...");
+    //this->addToolBar(Qt::BottomToolBarArea,utilsBar);
+
 
     views = new QStackedWidget;
     views->addWidget(ui->tableWidget);
@@ -200,7 +211,8 @@ MainWindow::MainWindow(QWidget *parent) :
     album_widget->setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Expanding  );
 
     layout->addWidget(views, 0,0 );
-    layout->addWidget(album_widget,0,1, Qt::AlignRight);
+    layout->addWidget(utilsBar, 1,0 );
+    layout->addWidget(album_widget,0,1,0,1, Qt::AlignRight);
     //this->setStyle();
 
 
@@ -243,6 +255,7 @@ void MainWindow::tracksView()
 void MainWindow::albumsView()
 {
     views->setCurrentIndex(1);
+    utilsBar->show();
     if(mini_mode!=0) expand();
 }
 void MainWindow::playlistsView()
@@ -259,7 +272,9 @@ void MainWindow::infoView()
 {
 
     views->setCurrentIndex(0);
+
     if(mini_mode!=0) expand();
+    utilsBar->hide();
 }
 void MainWindow::babesView()
 {
@@ -293,6 +308,8 @@ void MainWindow::settingsView()
 void MainWindow::expand()
 {
     views->show();
+    utilsBar->show();
+
     this->setMaximumSize(QWIDGETSIZE_MAX,QWIDGETSIZE_MAX);
     this->resize(600,400);
     ui->hide_sidebar_btn->setToolTip("Go Mini");
@@ -304,6 +321,8 @@ void MainWindow::go_mini()
 {
     //this->setMaximumSize (0, 0);
     views->hide();
+    utilsBar->hide();
+
     this->resize(minimumSizeHint());
     main_widget->resize(minimumSizeHint());
     this->setFixedSize(minimumSizeHint());
@@ -712,4 +731,27 @@ void MainWindow::on_fav_btn_clicked()
 
 
 
+}
+
+void MainWindow::on_searchField_clicked()
+{
+
+    if(hideSearch)
+    {
+        utilsBar->hide();
+        hideSearch=false;
+    }else
+    {
+
+        utilsBar->show();
+        hideSearch=true;
+
+    }
+
+    if(mini_mode!=0)
+    {
+        expand();
+        utilsBar->show();
+        hideSearch=true;
+    }
 }

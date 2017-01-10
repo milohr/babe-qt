@@ -76,6 +76,8 @@ private slots:
 
     void on_fav_btn_clicked();
 
+    void on_searchField_clicked();
+
 private:
 
     void setUpViews();
@@ -91,18 +93,12 @@ private:
 
     QStackedWidget *views;
     QToolBar *playback;
-    QToolBar *status;
+    QToolBar *utilsBar;
+
     //CollectionDB collection_db;
     int mini_mode;
 
-    bool allow = false;
-    bool tracks_hide=false;
-    bool albums_hide=false;
-    bool babes_hide=false;
-    bool queue_hide=false;
-    bool playlists_hide=false;
-    bool settings_hide=false;
-    bool info_hide=false;
+    bool hideSearch=true;
 
     QWidget *main_widget;
     QGridLayout * layout;
