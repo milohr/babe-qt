@@ -14,6 +14,10 @@ class babes : public QWidget
 public:
     explicit babes(QWidget *parent = 0);
     ~babes();
+    enum columns
+    {
+        TITLE,ARTIST,ALBUM,LOCATION
+    };
 
 private:
     Ui::babes *ui;

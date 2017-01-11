@@ -77,9 +77,14 @@ private slots:
     void on_fav_btn_clicked();
 
     void on_searchField_clicked();
+    void uninstallAppletClickedSlot();
+
+    void on_tableWidget_clicked(const QModelIndex &index);
+    void rateGroup(int id);
+    void hoverEvent();
 
 private:
-
+    void keepOnTop(bool state);
     void setUpViews();
     void loadTrack();
     int getIndex();
@@ -105,7 +110,7 @@ private:
     QLabel *info;
 
     settings *settings_widget;
-    babes babes_widget;
+    babes *babes_widget;
     Playlist playlist;
 
     QMediaPlayer *player = new QMediaPlayer();

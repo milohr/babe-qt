@@ -69,6 +69,36 @@ QSqlQuery CollectionDB::getQuery(QString queryTxt)
     return query;
 }
 
+bool CollectionDB::checkQuery(QString queryTxt)
+{
+    QSqlQuery query(queryTxt);
+
+    qDebug()<<"The Query is: "<<queryTxt;
+
+    if (query.exec())
+    {
+       if (query.next())
+       {
+          qDebug()<< "found the query";
+          return true;
+       }else
+       {
+           qDebug()<<"the query failed!";
+           return false;
+       }
+
+
+
+    }else
+    {
+    qDebug()<<"the query failed!";
+
+        return false;
+    }
+
+
+}
+
 void CollectionDB::addTrack()
 {
     //bool success = false;

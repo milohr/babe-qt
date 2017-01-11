@@ -22,23 +22,21 @@ public:
     //CollectionDB(bool connect);
     virtual ~CollectionDB(){}
     void openCollection(QString path);
-
-QSqlQuery getQuery(QString queryTxt);
+    QSqlQuery getQuery(QString queryTxt);
+    bool checkQuery(QString queryTxt);
     bool insertInto(QString tableName, QString column, QString location, int value);
-
-
-
-
     void setTrackList(QList <Track>);
     void prepareCollectionDB(QString path);
     bool check_existance(QString tableName, QString searchId, QString search);
+
 private:
-QSqlDatabase m_db;
+
+    QSqlDatabase m_db;
     QList <Track> trackList;
 
 public slots:
     void addTrack();
- void closeConnection();
+    void closeConnection();
 
 signals:
     void progress(int);
