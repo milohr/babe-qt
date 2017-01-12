@@ -35,26 +35,26 @@ public:
         TITLE,ARTIST,ALBUM,LOCATION
     };
 
+protected:
+    virtual void enterEvent(QEvent *event);
+    virtual void leaveEvent(QEvent *event);
+    virtual void	dragEnterEvent(QDragEnterEvent *event);
+    virtual void	dragLeaveEvent(QDragLeaveEvent *event);
+    virtual void	dragMoveEvent(QDragMoveEvent *event);
+    virtual void	dropEvent(QDropEvent *event);
+
+
 private slots:
 
     void on_hide_sidebar_btn_clicked();
-
     void on_shuffle_btn_clicked();
-
     void on_open_btn_clicked();
-
     void on_listWidget_doubleClicked(const QModelIndex &index);
-
     void update();
-
     void on_seekBar_sliderMoved(int position);
-
     void on_play_btn_clicked();
-
     void on_backward_btn_clicked();
-
     void on_foward_btn_clicked();
-
     void tracksView();
     void albumsView();
     void babesView();
@@ -62,26 +62,17 @@ private slots:
     void playlistsView();
     void infoView();
     void settingsView();
-
-
     void on_info_view_clicked(bool checked);
-
     void on_tracks_view_clicked(bool checked);
-
     void on_tableWidget_doubleClicked(const QModelIndex &index);
-
     void setToolbarIconSize(int iconSize);
     void collectionDBFinishedAdding(bool state);
-
-
     void on_fav_btn_clicked();
-
     void on_searchField_clicked();
     void uninstallAppletClickedSlot();
-
     void on_tableWidget_clicked(const QModelIndex &index);
     void rateGroup(int id);
-    void hoverEvent();
+    void hideControls();
 
 private:
     void keepOnTop(bool state);
@@ -99,7 +90,7 @@ private:
     QStackedWidget *views;
     QToolBar *playback;
     QToolBar *utilsBar;
-
+    QTimer *timer;
     //CollectionDB collection_db;
     int mini_mode;
 
@@ -108,7 +99,7 @@ private:
     QWidget *main_widget;
     QGridLayout * layout;
     QLabel *info;
-
+    QWidget *controls;
     settings *settings_widget;
     babes *babes_widget;
     Playlist playlist;

@@ -18,12 +18,17 @@
 #include <QFileInfo>
 #include <QMimeDatabase>
 #include <QMimeType>
+#include <QMimeData>
 #include <QMenu>
 #include <QWidgetAction>
 #include <QButtonGroup>
 #include<QCheckBox>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
+#include <QEvent>
+#include <QDragMoveEvent>
+#include <QDropEvent>
+#include <QTimer>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -32,6 +37,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //setWindowFlags(Qt::WindowStaysOnTopHint);
     ui->setupUi(this);
 
+    this->setAcceptDrops(true);
     playback = new QToolBar();
     //playback->setMovable(false);
     this->setWindowTitle(" Babe ... \xe2\x99\xa1  \xe2\x99\xa1 \xe2\x99\xa1 ");
@@ -66,6 +72,16 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(updater, SIGNAL(timeout()), this, SLOT(update()));
     player->setVolume(100);
     ui->listWidget->setCurrentRow(0);
+    QAction *babe, *remove;
+
+    babe = new QAction("Babe it");
+    remove = new QAction("Remove from list");
+
+    ui->listWidget->setContextMenuPolicy(Qt::ActionsContextMenu);
+    ui->listWidget->addAction(babe);
+    ui->listWidget->addAction(remove);
+
+
     ui->tableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tableWidget->setColumnHidden(LOCATION, true);
     ui->tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -240,7 +256,7 @@ gr->setLayout(ty);
 
     //album_art->addAction(chkBoxAction);
 
-    auto controls = new QWidget(album_art);
+    controls = new QWidget(album_art);
     auto controls_layout = new QGridLayout();
 controls->setLayout(controls_layout);
 controls->setGeometry(0,150,200,50);
@@ -279,10 +295,62 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::hoverEvent()
+ void MainWindow::enterEvent(QEvent *event)
 {
-    qDebug()<<"hover event";
+    qDebug()<<"entered the window";
+    controls->show();
+
 }
+
+ void MainWindow::leaveEvent(QEvent *event)
+{
+    qDebug()<<"left the window";
+    controls->hide();
+    //timer = new QTimer(this);
+      /*connect(timer, SIGNAL(timeout()), this, SLOT(hideControls()));
+
+      connect(timer,SIGNAL(timeout()), this, [&timer, this]() {
+          qDebug()<<"ime is up";
+          timer->stop();
+      });*/
+
+        //timer->start(3000);
+
+
+}
+
+ void MainWindow::hideControls()
+ {
+     /*qDebug()<<"ime is up";
+     controls->hide();
+     timer->stop();*/
+ }
+  void	MainWindow::dragEnterEvent(QDragEnterEvent *event)
+ {
+     event->accept();
+ }
+
+  void	MainWindow::dragLeaveEvent(QDragLeaveEvent *event){
+     event->accept();
+ }
+
+  void	MainWindow::dragMoveEvent(QDragMoveEvent *event)
+ {
+     event->accept();
+ }
+
+  void	MainWindow::dropEvent(QDropEvent *event)
+ {
+     QList<QUrl> urls;
+     urls = event->mimeData()->urls();
+
+     for( auto url  : urls)
+     {
+         qDebug()<<url.path();
+     }
+ }
+
+
 
 void MainWindow::rateGroup(int id)
 {
@@ -398,7 +466,8 @@ void MainWindow::expand()
     this->resize(600,400);
     ui->hide_sidebar_btn->setToolTip("Go Mini");
     mini_mode=0;
-keepOnTop(false);
+    ui->mainToolBar->actions().at(0)->setVisible(true);
+//keepOnTop(false);
 }
 
 void MainWindow::go_mini()
@@ -408,13 +477,14 @@ void MainWindow::go_mini()
     views->hide();
     utilsBar->hide();
     hideSearch=true;
-    ui->searchField->setVisible(false);
+    ui->mainToolBar->actions().at(0)->setVisible(false);
+   // ui->searchField->setVisible(false);
     this->resize(minimumSizeHint());
     main_widget->resize(minimumSizeHint());
     this->setFixedSize(minimumSizeHint());
     ui->hide_sidebar_btn->setToolTip("Go Extra-Mini");
     mini_mode=1;
-keepOnTop(true);
+//keepOnTop(true);
 
 }
 
@@ -428,7 +498,7 @@ show();
     }else
     {
         //setWindowFlags(~ Qt::WindowStaysOnTopHint);
-       // show();
+       //show();
     }
 }
 
