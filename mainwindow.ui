@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>891</width>
+    <width>523</width>
     <height>335</height>
    </rect>
   </property>
@@ -170,8 +170,8 @@
    <widget class="QToolButton" name="backward_btn">
     <property name="geometry">
      <rect>
-      <x>80</x>
-      <y>240</y>
+      <x>290</x>
+      <y>0</y>
       <width>31</width>
       <height>33</height>
      </rect>
@@ -187,8 +187,8 @@
    <widget class="QToolButton" name="foward_btn">
     <property name="geometry">
      <rect>
-      <x>160</x>
-      <y>240</y>
+      <x>370</x>
+      <y>0</y>
       <width>31</width>
       <height>33</height>
      </rect>
@@ -204,8 +204,8 @@
    <widget class="QToolButton" name="play_btn">
     <property name="geometry">
      <rect>
-      <x>120</x>
-      <y>240</y>
+      <x>330</x>
+      <y>0</y>
       <width>31</width>
       <height>33</height>
      </rect>
@@ -221,8 +221,8 @@
    <widget class="QSlider" name="seekBar">
     <property name="geometry">
      <rect>
-      <x>220</x>
-      <y>250</y>
+      <x>250</x>
+      <y>120</y>
       <width>211</width>
       <height>16</height>
      </rect>
@@ -329,116 +329,11 @@ border-radius: 4px;
      <enum>QListView::SinglePass</enum>
     </property>
    </widget>
-   <widget class="QTableWidget" name="tableWidget">
+   <widget class="QToolButton" name="hide_sidebar_btn">
     <property name="geometry">
      <rect>
       <x>250</x>
       <y>0</y>
-      <width>601</width>
-      <height>241</height>
-     </rect>
-    </property>
-    <property name="layoutDirection">
-     <enum>Qt::LeftToRight</enum>
-    </property>
-    <property name="autoFillBackground">
-     <bool>false</bool>
-    </property>
-    <property name="styleSheet">
-     <string notr="true"/>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::StyledPanel</enum>
-    </property>
-    <property name="frameShadow">
-     <enum>QFrame::Sunken</enum>
-    </property>
-    <property name="sizeAdjustPolicy">
-     <enum>QAbstractScrollArea::AdjustIgnored</enum>
-    </property>
-    <property name="dragEnabled">
-     <bool>true</bool>
-    </property>
-    <property name="dragDropOverwriteMode">
-     <bool>false</bool>
-    </property>
-    <property name="dragDropMode">
-     <enum>QAbstractItemView::NoDragDrop</enum>
-    </property>
-    <property name="alternatingRowColors">
-     <bool>true</bool>
-    </property>
-    <property name="selectionBehavior">
-     <enum>QAbstractItemView::SelectRows</enum>
-    </property>
-    <property name="verticalScrollMode">
-     <enum>QAbstractItemView::ScrollPerPixel</enum>
-    </property>
-    <property name="horizontalScrollMode">
-     <enum>QAbstractItemView::ScrollPerItem</enum>
-    </property>
-    <property name="showGrid">
-     <bool>false</bool>
-    </property>
-    <property name="gridStyle">
-     <enum>Qt::NoPen</enum>
-    </property>
-    <property name="sortingEnabled">
-     <bool>true</bool>
-    </property>
-    <property name="wordWrap">
-     <bool>true</bool>
-    </property>
-    <property name="cornerButtonEnabled">
-     <bool>true</bool>
-    </property>
-    <attribute name="horizontalHeaderVisible">
-     <bool>true</bool>
-    </attribute>
-    <attribute name="horizontalHeaderCascadingSectionResizes">
-     <bool>false</bool>
-    </attribute>
-    <attribute name="horizontalHeaderDefaultSectionSize">
-     <number>150</number>
-    </attribute>
-    <attribute name="horizontalHeaderHighlightSections">
-     <bool>false</bool>
-    </attribute>
-    <attribute name="horizontalHeaderStretchLastSection">
-     <bool>true</bool>
-    </attribute>
-    <attribute name="verticalHeaderVisible">
-     <bool>false</bool>
-    </attribute>
-    <attribute name="verticalHeaderStretchLastSection">
-     <bool>false</bool>
-    </attribute>
-    <column>
-     <property name="text">
-      <string>Song</string>
-     </property>
-    </column>
-    <column>
-     <property name="text">
-      <string>Artist</string>
-     </property>
-    </column>
-    <column>
-     <property name="text">
-      <string>Album</string>
-     </property>
-    </column>
-    <column>
-     <property name="text">
-      <string>location</string>
-     </property>
-    </column>
-   </widget>
-   <widget class="QToolButton" name="hide_sidebar_btn">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>240</y>
       <width>31</width>
       <height>33</height>
      </rect>
@@ -454,8 +349,8 @@ border-radius: 4px;
    <widget class="QToolButton" name="fav_btn">
     <property name="geometry">
      <rect>
-      <x>80</x>
-      <y>280</y>
+      <x>290</x>
+      <y>40</y>
       <width>31</width>
       <height>33</height>
      </rect>
@@ -471,8 +366,8 @@ border-radius: 4px;
    <widget class="QToolButton" name="shuffle_btn">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>280</y>
+      <x>250</x>
+      <y>40</y>
       <width>31</width>
       <height>33</height>
      </rect>
@@ -488,8 +383,8 @@ border-radius: 4px;
    <widget class="QToolButton" name="open_btn">
     <property name="geometry">
      <rect>
-      <x>120</x>
-      <y>280</y>
+      <x>330</x>
+      <y>40</y>
       <width>31</width>
       <height>33</height>
      </rect>
@@ -528,8 +423,8 @@ border-radius: 4px;
    <widget class="QLineEdit" name="search">
     <property name="geometry">
      <rect>
-      <x>210</x>
-      <y>270</y>
+      <x>250</x>
+      <y>80</y>
       <width>161</width>
       <height>31</height>
      </rect>
@@ -538,8 +433,8 @@ border-radius: 4px;
    <widget class="QToolButton" name="searchField">
     <property name="geometry">
      <rect>
-      <x>160</x>
-      <y>280</y>
+      <x>370</x>
+      <y>40</y>
       <width>31</width>
       <height>33</height>
      </rect>
@@ -551,12 +446,15 @@ border-radius: 4px;
      <iconset theme="search">
       <normaloff>.</normaloff>.</iconset>
     </property>
+    <property name="checkable">
+     <bool>true</bool>
+    </property>
    </widget>
    <widget class="QToolButton" name="fav1">
     <property name="geometry">
      <rect>
-      <x>410</x>
-      <y>260</y>
+      <x>250</x>
+      <y>150</y>
       <width>16</width>
       <height>16</height>
      </rect>
@@ -590,8 +488,8 @@ border-radius: 4px;
    <widget class="QToolButton" name="fav2">
     <property name="geometry">
      <rect>
-      <x>440</x>
-      <y>260</y>
+      <x>280</x>
+      <y>150</y>
       <width>16</width>
       <height>16</height>
      </rect>
@@ -625,8 +523,8 @@ border-radius: 4px;
    <widget class="QToolButton" name="fav3">
     <property name="geometry">
      <rect>
-      <x>470</x>
-      <y>260</y>
+      <x>310</x>
+      <y>150</y>
       <width>16</width>
       <height>16</height>
      </rect>
@@ -660,8 +558,8 @@ border-radius: 4px;
    <widget class="QToolButton" name="fav4">
     <property name="geometry">
      <rect>
-      <x>500</x>
-      <y>260</y>
+      <x>340</x>
+      <y>150</y>
       <width>16</width>
       <height>16</height>
      </rect>
@@ -695,8 +593,8 @@ border-radius: 4px;
    <widget class="QToolButton" name="fav5">
     <property name="geometry">
      <rect>
-      <x>530</x>
-      <y>260</y>
+      <x>370</x>
+      <y>150</y>
       <width>16</width>
       <height>16</height>
      </rect>
@@ -722,6 +620,50 @@ border-radius: 4px;
     <property name="icon">
      <iconset theme="rating-unrated">
       <normaloff>.</normaloff>.</iconset>
+    </property>
+    <property name="autoRaise">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QToolButton" name="resultsPLaylist">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>80</y>
+      <width>31</width>
+      <height>33</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Add results to Playlist</string>
+    </property>
+    <property name="text">
+     <string>...</string>
+    </property>
+    <property name="icon">
+     <iconset theme="insert-page-break"/>
+    </property>
+    <property name="autoRaise">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QToolButton" name="saveResults">
+    <property name="geometry">
+     <rect>
+      <x>440</x>
+      <y>80</y>
+      <width>31</width>
+      <height>33</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Save results to Playlist...</string>
+    </property>
+    <property name="text">
+     <string>...</string>
+    </property>
+    <property name="icon">
+     <iconset theme="source-playlist"/>
     </property>
     <property name="autoRaise">
      <bool>true</bool>

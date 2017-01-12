@@ -53,12 +53,13 @@ void CollectionDB::openCollection(QString path)
 
 
 
-void CollectionDB::prepareCollectionDB(QString path)
+void CollectionDB::prepareCollectionDB()
 {
 
 
     QSqlQuery query;
     query.exec("CREATE TABLE tracks(title text, artist text, album text, location text, stars integer, babe integer);");
+    //query.exec("CREATE TABLE tracks(title text, album text, artist text, location text, stars integer, babe integer);");
 
 
 }
@@ -68,7 +69,6 @@ QSqlQuery CollectionDB::getQuery(QString queryTxt)
     QSqlQuery query(queryTxt);
     return query;
 }
-
 bool CollectionDB::checkQuery(QString queryTxt)
 {
     QSqlQuery query(queryTxt);
@@ -83,7 +83,7 @@ bool CollectionDB::checkQuery(QString queryTxt)
           return true;
        }else
        {
-           qDebug()<<"the query failed!";
+           qDebug()<<"didn't ind the query!";
            return false;
        }
 
@@ -140,7 +140,51 @@ emit progress(i+1);
      qDebug()<<"finished wrrting to database";
 
 emit DBactionFinished(true);
+
 }
+
+
+void CollectionDB::addSong(QList<Track> song, int babe)
+{
+    //bool success = false;
+
+
+        QSqlQuery query;
+
+
+     qDebug()<<"started wrrting to database...";
+      for(int i = 0; i < song.size(); i++)
+      {
+
+         // you should check if args are ok first...
+
+         query.prepare("INSERT INTO tracks (title, artist, album, location, stars, babe)" "VALUES (:title, :artist, :album, :location, :stars, :babe ) ");
+         query.bindValue(":title", QString::fromStdString(song[i].getTitle()));
+         query.bindValue(":artist", QString::fromStdString(song[i].getArtist()));
+         query.bindValue(":album", QString::fromStdString(song[i].getAlbum()));
+         query.bindValue(":location", QString::fromStdString(song[i].getLocation()));
+         query.bindValue(":stars", 0);
+         query.bindValue(":babe", babe);
+
+         if(query.exec())
+         {
+             //success = true;
+             qDebug()<< "writting to db: "<<QString::fromStdString(song[i].getTitle());
+
+         }
+         else
+         {
+              qDebug() << "addPerson error:  "
+                       << query.lastError();
+         }
+
+
+      }
+
+     qDebug()<<"single song added to database";
+
+}
+
 
 void CollectionDB::setTrackList(QList <Track> trackList)
 {

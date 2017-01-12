@@ -26,9 +26,10 @@ public:
     bool checkQuery(QString queryTxt);
     bool insertInto(QString tableName, QString column, QString location, int value);
     void setTrackList(QList <Track>);
-    void prepareCollectionDB(QString path);
-    bool check_existance(QString tableName, QString searchId, QString search);
+    void prepareCollectionDB();
 
+    bool check_existance(QString tableName, QString searchId, QString search);
+    void addSong(QList<Track> song, int babe);
 private:
 
     QSqlDatabase m_db;

@@ -18,18 +18,10 @@ settings::settings(QWidget *parent) :
     ui->setupUi(this);
     connect(this, SIGNAL(collectionPathChanged(QString)),
                          this, SLOT(populateDB(QString)));
-
-    thread = new QThread(parent);
-        // Do not set a parent. The object cannot be moved if it has a parent.
-    collection_db.openCollection("../player/collection.db");
-        collection_db.moveToThread(thread);
-
-        connect(thread, SIGNAL(finished()), &collection_db, SLOT(deleteLater()));
-        // connect(thread, SIGNAL(finished()), &collection_db, SLOT(closeConnection()));
-        connect(&collection_db, SIGNAL(DBactionFinished(bool)),this, SLOT(finishedAddingTracks(bool)));
-
-            connect(thread, SIGNAL(started()), &collection_db, SLOT(addTrack()));
-            connect(&collection_db, SIGNAL(progress(int)), ui->progressBar, SLOT(setValue(int)));
+thread = new QThread(parent);
+collection_db.moveToThread(thread);
+          connect(thread, SIGNAL(finished()), &collection_db, SLOT(deleteLater()));
+             connect(thread, SIGNAL(started()), &collection_db, SLOT(addTrack()));
 ui->progressBar->hide();
 
 }
@@ -191,11 +183,28 @@ bool settings::checkCollection()
        //collection_db.setCollectionDB(collection_db_path);
        qDebug()<<"Ahora obtener la informacion de ella y populate tableView";
        //populateTableView();
+       collection_db.openCollection("../player/collection.db");
 
        return true;
     }else
     {
-        collection_db.prepareCollectionDB(collection_db_path);
+
+
+            // Do not set a parent. The object cannot be moved if it has a parent.
+        collection_db.openCollection("../player/collection.db");
+
+
+  collection_db.prepareCollectionDB();
+
+            // connect(thread, SIGNAL(finished()), &collection_db, SLOT(closeConnection()));
+
+            connect(&collection_db, SIGNAL(DBactionFinished(bool)),this, SLOT(finishedAddingTracks(bool)));
+
+
+                connect(&collection_db, SIGNAL(progress(int)), ui->progressBar, SLOT(setValue(int)));
+
+
+
         qDebug()<<"Database doesn't exists. Going to create the database and tables";
         return false;
     }
@@ -203,16 +212,26 @@ bool settings::checkCollection()
 
 void settings::populateDB(QString path)
 {
+
+
     qDebug() << "Function Name: " << Q_FUNC_INFO << "new path for database action: "<< path;
 
     QStringList urlCollection;
 //QDir dir = new QDir(url);
-    QDirIterator it(path, QStringList() << "*.mp4" << "*.mp3" << "*.wav" <<"*.flac" <<"*.ogg", QDir::Files, QDirIterator::Subdirectories);
-    while (it.hasNext())
-    {
-        urlCollection<<it.next();
 
-        //qDebug() << it.next();
+    if(QFileInfo(path).isDir())
+
+    {
+        QDirIterator it(path, QStringList() << "*.mp4" << "*.mp3" << "*.wav" <<"*.flac" <<"*.ogg", QDir::Files, QDirIterator::Subdirectories);
+        while (it.hasNext())
+        {
+            urlCollection<<it.next();
+
+            //qDebug() << it.next();
+        }
+    }else if(QFileInfo(path).isFile())
+    {
+        urlCollection<<path;
     }
 
     collection.add(urlCollection);
@@ -239,7 +258,10 @@ void settings::finishedAddingTracks(bool state)
     {
         qDebug()<<"good to hear it g¿finished yay!";
         ui->progressBar->hide();
+        //collection_db.closeConnection();
+
         emit collectionDBFinishedAdding(true);
+
     }
 }
 

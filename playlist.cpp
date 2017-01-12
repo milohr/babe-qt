@@ -33,7 +33,11 @@ bool Playlist::isMusic(QString file)
 
         mimeType = mimeDatabase.mimeTypeForFile(QFileInfo(file));
         // mp4 mpg4
-            if(mimeType.inherits("audio/mp4"))
+
+
+
+
+            if(mimeType.inherits("video/mp4"))
                 return true;
 
             // mpeg mpg mpe
@@ -48,7 +52,7 @@ bool Playlist::isMusic(QString file)
             else if(mimeType.inherits("audio/wav"))
                 return true;
 
-            else if(mimeType.inherits("audio/flacc"))
+            else if(mimeType.inherits("audio/flac"))
                 return true;
 
 
@@ -96,7 +100,7 @@ void Playlist::add(QStringList files)
             tracks.push_back(track);
         }else
         {
-            qDebug()<<"file not valid";
+            qDebug()<<"file not valid: "<<files[i];
         }
 
     }

@@ -35,7 +35,7 @@ public:
 private slots:
 
     void on_toolButton_clicked();
-void populateDB(QString path);
+
     void on_toolButton_2_clicked();
 
     void on_toolbarIconSize_activated(const QString &arg1);
@@ -44,6 +44,7 @@ void on_pushButton_clicked();
 
 public slots:
 
+void populateDB(QString path);
 
 private:
     Ui::settings *ui;

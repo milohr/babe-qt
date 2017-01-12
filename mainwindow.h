@@ -11,9 +11,8 @@
 #include <QStackedWidget>
 #include <QToolBar>
 #include "settings.h"
-#include "babes.h"
 #include "collectionDB.h"
-
+#include <babetable.h>
 
 namespace Ui {
 class MainWindow;
@@ -27,21 +26,17 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     void setStyle();
-    void updateList();
-    void populateTableView();
+    void updateList();    
     void populateMainList();
-    enum columns
-    {
-        TITLE,ARTIST,ALBUM,LOCATION
-    };
+
 
 protected:
     virtual void enterEvent(QEvent *event);
     virtual void leaveEvent(QEvent *event);
-    virtual void	dragEnterEvent(QDragEnterEvent *event);
-    virtual void	dragLeaveEvent(QDragLeaveEvent *event);
-    virtual void	dragMoveEvent(QDragMoveEvent *event);
-    virtual void	dropEvent(QDropEvent *event);
+    virtual void dragEnterEvent(QDragEnterEvent *event);
+    virtual void dragLeaveEvent(QDragLeaveEvent *event);
+    virtual void dragMoveEvent(QDragMoveEvent *event);
+    virtual void dropEvent(QDropEvent *event);
 
 
 private slots:
@@ -55,27 +50,40 @@ private slots:
     void on_play_btn_clicked();
     void on_backward_btn_clicked();
     void on_foward_btn_clicked();
-    void tracksView();
+
+    /*the main views*/
+    void collectionView();
     void albumsView();
-    void babesView();
+    void favoritesView();
     void queueView();
     void playlistsView();
     void infoView();
     void settingsView();
-    void on_info_view_clicked(bool checked);
-    void on_tracks_view_clicked(bool checked);
-    void on_tableWidget_doubleClicked(const QModelIndex &index);
+
+    /*the view stacked actions*/
+
+
     void setToolbarIconSize(int iconSize);
     void collectionDBFinishedAdding(bool state);
+
     void on_fav_btn_clicked();
     void on_searchField_clicked();
-    void uninstallAppletClickedSlot();
-    void on_tableWidget_clicked(const QModelIndex &index);
-    void rateGroup(int id);
+
     void hideControls();
-    void setUpContextMenu();
+    void addToPlaylist(QStringList list);
+    void addToFavorites(QStringList list);
+
+
+    void on_search_returnPressed();
+
+    void on_search_textChanged(const QString &arg1);
+
+    void on_resultsPLaylist_clicked();
 
 private:
+
+    Ui::MainWindow *ui;
+
     void keepOnTop(bool state);
     void setUpViews();
     void loadTrack();
@@ -85,30 +93,30 @@ private:
     void shufflePlaylist();
     void expand();
     void go_mini();
-    void setRating(int rate);
-
-    Ui::MainWindow *ui;
 
     QStackedWidget *views;
     QToolBar *playback;
     QToolBar *utilsBar;
     QTimer *timer;
-    //CollectionDB collection_db;
-    int mini_mode;
-
-    bool hideSearch=true;
-
     QWidget *main_widget;
     QGridLayout * layout;
     QLabel *info;
     QWidget *controls;
-    settings *settings_widget;
-    babes *babes_widget;
-    Playlist playlist;
 
+    /*the views*/
+
+    settings *settings_widget;
+    BabeTable *collectionTable;
+    BabeTable *favoritesTable;
+    BabeTable *resultsTable;
+    /*the streaming */
+    Playlist playlist;
     QMediaPlayer *player = new QMediaPlayer();
     QTimer *updater = new QTimer(this);
     QString current_song_url;
+
+    int mini_mode=0;
+    bool hideSearch=true;
     int lCounter = 0;
     int  shuffle_state=0;
     bool repeat = false;

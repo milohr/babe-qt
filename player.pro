@@ -26,18 +26,22 @@ SOURCES += main.cpp\
         track.cpp \
     settings.cpp \
     info.cpp \
-    babes.cpp \
-    collectionDB.cpp
+    collectionDB.cpp \
+    about.cpp \
+    babetable.cpp
 
 HEADERS  += mainwindow.h \
             playlist.h \
             track.h \
     settings.h \
     info.h \
-    babes.h \
-    collectionDB.h
+    collectionDB.h \
+    about.h \
+    babetable.h
 
 FORMS    += mainwindow.ui \
     settings.ui \
     info.ui \
-    babes.ui
+    babes.ui \
+    about.ui \
+    babetable.ui
