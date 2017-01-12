@@ -16,7 +16,7 @@ public:
     void remove(int index);
 
     void save();
-
+    bool isMusic(QString file);
     QStringList getTracksNameList();
 
     std::vector<Track> tracks;

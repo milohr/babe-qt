@@ -73,6 +73,7 @@ private slots:
     void on_tableWidget_clicked(const QModelIndex &index);
     void rateGroup(int id);
     void hideControls();
+    void setUpContextMenu();
 
 private:
     void keepOnTop(bool state);
@@ -84,6 +85,7 @@ private:
     void shufflePlaylist();
     void expand();
     void go_mini();
+    void setRating(int rate);
 
     Ui::MainWindow *ui;
 

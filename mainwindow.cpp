@@ -91,6 +91,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->tableWidget->setContextMenuPolicy(Qt::ActionsContextMenu);
     auto uninstallAction = new QAction("testing it",contextMenu);
     ui->tableWidget->addAction(uninstallAction);
+    connect(ui->tableWidget,SIGNAL(pressed(QModelIndex)),this,SLOT(setUpContextMenu()));
     connect(uninstallAction, SIGNAL(triggered()), this, SLOT(uninstallAppletClickedSlot()));
 
     QButtonGroup *bg = new QButtonGroup(contextMenu);
@@ -260,8 +261,8 @@ gr->setLayout(ty);
     auto controls_layout = new QGridLayout();
 controls->setLayout(controls_layout);
 controls->setGeometry(0,150,200,50);
-controls->setStyleSheet("background-color: rgba(255, 255, 255, 200);");
-playback->setStyleSheet("background:transparent;");
+controls->setStyleSheet(" background-color: rgba(255, 255, 255, 200);");
+playback->setStyleSheet(" background:transparent;");
 //ui->seekBar->setStyleSheet("background:transparent; ");
     album_view->addWidget(album_art, 0,0,Qt::AlignTop);
 
@@ -302,6 +303,25 @@ MainWindow::~MainWindow()
 
 }
 
+ void MainWindow::setUpContextMenu()
+
+{
+
+     int row= ui->tableWidget->currentIndex().row(), rate;
+
+     QString url=ui->tableWidget->model()->data(ui->tableWidget->model()->index(row,LOCATION)).toString();
+     qDebug()<<"se llamó a menu contextual con url: "<<url;
+     QSqlQuery query= settings_widget->getCollectionDB().getQuery("SELECT * FROM tracks WHERE location = '"+url+"'");
+
+        while (query.next())
+        {
+            rate = query.value(4).toInt();
+        }
+
+        setRating(rate);
+
+
+}
  void MainWindow::leaveEvent(QEvent *event)
 {
     qDebug()<<"left the window";
@@ -343,11 +363,35 @@ MainWindow::~MainWindow()
  {
      QList<QUrl> urls;
      urls = event->mimeData()->urls();
-
+    QStringList list;
      for( auto url  : urls)
      {
-         qDebug()<<url.path();
+         //qDebug()<<url.path();
+
+         if(QFileInfo(url.path()).isDir())
+         {
+             //QDir dir = new QDir(url.path());
+                 QDirIterator it(url.path(), QStringList() << "*.mp4" << "*.mp3" << "*.wav" <<"*.flac" <<"*.ogg", QDir::Files, QDirIterator::Subdirectories);
+                 while (it.hasNext())
+                 {
+                     list<<it.next();
+
+                     //qDebug() << it.next();
+                 }
+
+         }else if(QFileInfo(url.path()).isFile())
+         {
+         list<<url.path();
+         }
+
+
      }
+
+     playlist.add(list);
+     updateList();
+     //populateTableView();
+     //ui->save->setChecked(false);
+     if(shuffle) shufflePlaylist();
  }
 
 
@@ -358,15 +402,65 @@ void MainWindow::rateGroup(int id)
     int row= ui->tableWidget->currentIndex().row();
 
     QString url=ui->tableWidget->model()->data(ui->tableWidget->model()->index(row,LOCATION)).toString();
+
+
     if(settings_widget->getCollectionDB().check_existance("tracks","location",url))
     {
-        settings_widget->getCollectionDB().insertInto("tracks","stars",url,id);
+        if(settings_widget->getCollectionDB().insertInto("tracks","stars",url,id))
+        {
+            setRating(id);
+        }
         qDebug()<<"rating the song";
     }else
     {
 
     }
 
+}
+
+void MainWindow::setRating(int rate)
+{
+    switch (rate)
+    {
+    case 0: ui->fav1->setIcon(QIcon::fromTheme("rating-unrated"));
+            ui->fav2->setIcon(QIcon::fromTheme("rating-unrated"));
+            ui->fav3->setIcon(QIcon::fromTheme("rating-unrated"));
+            ui->fav4->setIcon(QIcon::fromTheme("rating-unrated"));
+            ui->fav5->setIcon(QIcon::fromTheme("rating-unrated"));
+            break;
+        case 1: ui->fav1->setIcon(QIcon::fromTheme("rating"));
+                ui->fav2->setIcon(QIcon::fromTheme("rating-unrated"));
+                ui->fav3->setIcon(QIcon::fromTheme("rating-unrated"));
+                ui->fav4->setIcon(QIcon::fromTheme("rating-unrated"));
+                ui->fav5->setIcon(QIcon::fromTheme("rating-unrated"));
+                break;
+        case 2: ui->fav1->setIcon(QIcon::fromTheme("rating"));
+                ui->fav2->setIcon(QIcon::fromTheme("rating"));
+                ui->fav3->setIcon(QIcon::fromTheme("rating-unrated"));
+                ui->fav4->setIcon(QIcon::fromTheme("rating-unrated"));
+                ui->fav5->setIcon(QIcon::fromTheme("rating-unrated"));
+                break;
+        case 3: ui->fav1->setIcon(QIcon::fromTheme("rating"));
+                ui->fav2->setIcon(QIcon::fromTheme("rating"));
+                ui->fav3->setIcon(QIcon::fromTheme("rating"));
+                ui->fav4->setIcon(QIcon::fromTheme("rating-unrated"));
+                ui->fav5->setIcon(QIcon::fromTheme("rating-unrated"));
+
+                break;
+        case 4: ui->fav1->setIcon(QIcon::fromTheme("rating"));
+                ui->fav2->setIcon(QIcon::fromTheme("rating"));
+                ui->fav3->setIcon(QIcon::fromTheme("rating"));
+                ui->fav4->setIcon(QIcon::fromTheme("rating"));
+                 ui->fav5->setIcon(QIcon::fromTheme("rating-unrated"));
+                break;
+        case 5: ui->fav1->setIcon(QIcon::fromTheme("rating"));
+                ui->fav2->setIcon(QIcon::fromTheme("rating"));
+                ui->fav3->setIcon(QIcon::fromTheme("rating"));
+                ui->fav4->setIcon(QIcon::fromTheme("rating"));
+                ui->fav5->setIcon(QIcon::fromTheme("rating"));
+                break;
+
+    }
 }
 
 void MainWindow::uninstallAppletClickedSlot()

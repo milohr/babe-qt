@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>842</width>
-    <height>334</height>
+    <width>891</width>
+    <height>335</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -573,6 +573,9 @@ border-radius: 4px;
       <height>16</height>
      </size>
     </property>
+    <property name="toolTip">
+     <string>1</string>
+    </property>
     <property name="text">
      <string>...</string>
     </property>
@@ -604,6 +607,9 @@ border-radius: 4px;
       <width>16</width>
       <height>16</height>
      </size>
+    </property>
+    <property name="toolTip">
+     <string>2</string>
     </property>
     <property name="text">
      <string>...</string>
@@ -637,6 +643,9 @@ border-radius: 4px;
       <height>16</height>
      </size>
     </property>
+    <property name="toolTip">
+     <string>3</string>
+    </property>
     <property name="text">
      <string>...</string>
     </property>
@@ -669,6 +678,9 @@ border-radius: 4px;
       <height>16</height>
      </size>
     </property>
+    <property name="toolTip">
+     <string>4</string>
+    </property>
     <property name="text">
      <string>...</string>
     </property>
@@ -700,6 +712,9 @@ border-radius: 4px;
       <width>16</width>
       <height>16</height>
      </size>
+    </property>
+    <property name="toolTip">
+     <string>5</string>
     </property>
     <property name="text">
      <string>...</string>

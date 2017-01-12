@@ -9,6 +9,10 @@
 #include<taglib/fileref.h>
 #include<QString>
 #include"track.h"
+#include <QMimeDatabase>
+#include <QMimeType>
+#include <QFileInfo>
+
 Playlist::Playlist()
 {
     std::ifstream read("playlist");
@@ -19,6 +23,39 @@ Playlist::Playlist()
         track.setName(getNameFromLocation(loc));
         tracks.push_back(track);
     }
+}
+
+
+bool Playlist::isMusic(QString file)
+{
+    QMimeDatabase mimeDatabase;
+        QMimeType mimeType;
+
+        mimeType = mimeDatabase.mimeTypeForFile(QFileInfo(file));
+        // mp4 mpg4
+            if(mimeType.inherits("audio/mp4"))
+                return true;
+
+            // mpeg mpg mpe
+            else if(mimeType.inherits("audio/mpeg"))
+                return true;
+            else if(mimeType.inherits("audio/mp3"))
+                return true;
+
+            else if(mimeType.inherits("audio/ogg"))
+                return true;
+
+            else if(mimeType.inherits("audio/wav"))
+                return true;
+
+            else if(mimeType.inherits("audio/flacc"))
+                return true;
+
+
+
+
+            else
+                return false;
 }
 
 void Playlist::add(QStringList files)
@@ -32,29 +69,35 @@ void Playlist::add(QStringList files)
  p->connect(p, static_cast<void(QMediaObject::*)()>(&QMediaObject::metaDataChanged),
      [=](){ setMetaData(p->metaData(QMediaMetaData::Title).toString(), p->metaData(QMediaMetaData::AlbumArtist).toString(),p->metaData(QMediaMetaData::AlbumTitle).toString(),files[i]);});
 **/
-       TagLib::FileRef file(files[i].toUtf8());
+        if(isMusic(files[i]))
+        {
+            TagLib::FileRef file(files[i].toUtf8());
 
-        Track track;
+            Track track;
 
-         //qDebug()<<QString::fromStdWString(file.tag()->title().toWString());
-         QString title = QString::fromStdWString(file.tag()->title().toWString());
-         QString artist = QString::fromStdWString(file.tag()->artist().toWString());
-         QString album = QString::fromStdWString(file.tag()->album().toWString());
-//qDebug()<<title+artist+album;
+            //qDebug()<<QString::fromStdWString(file.tag()->title().toWString());
+            QString title = QString::fromStdWString(file.tag()->title().toWString());
+            QString artist = QString::fromStdWString(file.tag()->artist().toWString());
+            QString album = QString::fromStdWString(file.tag()->album().toWString());
+            //qDebug()<<title+artist+album;
 
-        title = title.size()>0 ? title : QString::fromStdString( getNameFromLocation(files[i].toStdString()));
-        artist = artist.size()>0 ? artist : "UNKWON";
-        album = album.size()>0 ? album : "UNKWON";
+            title = title.size()>0 ? title : QString::fromStdString( getNameFromLocation(files[i].toStdString()));
+            artist = artist.size()>0 ? artist : "UNKWON";
+            album = album.size()>0 ? album : "UNKWON";
 
-        track.setTitle(title.toStdString());
+            track.setTitle(title.toStdString());
 
-        track.setArtist(artist.toStdString());
-        track.setAlbum(album.toStdString());
-        track.setLocation(files[i].toStdString());
+            track.setArtist(artist.toStdString());
+            track.setAlbum(album.toStdString());
+            track.setLocation(files[i].toStdString());
 
-        track.setName(getNameFromLocation(files[i].toStdString()));
+            track.setName(getNameFromLocation(files[i].toStdString()));
 
-        tracks.push_back(track);
+            tracks.push_back(track);
+        }else
+        {
+            qDebug()<<"file not valid";
+        }
 
     }
 }
