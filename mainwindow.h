@@ -7,6 +7,7 @@
 #include "playlist.h"
 #include "QFileDialog"
 #include <QLabel>
+#include <QSlider>
 #include "QTimer"
 #include <QStackedWidget>
 #include <QToolBar>
@@ -28,6 +29,7 @@ public:
     void setStyle();
     void updateList();    
     void populateMainList();
+
 
 
 protected:
@@ -70,6 +72,7 @@ private slots:
     void on_searchField_clicked();
 
     void hideControls();
+    void showControls();
     void addToPlaylist(QStringList list);
     void addToFavorites(QStringList list);
 
@@ -79,6 +82,9 @@ private slots:
     void on_search_textChanged(const QString &arg1);
 
     void on_resultsPLaylist_clicked();
+    void setCoverArt(QString path);
+
+    void on_settings_view_clicked();
 
 private:
 
@@ -101,6 +107,7 @@ private:
     QWidget *main_widget;
     QGridLayout * layout;
     QLabel *info;
+    QLabel *album_art;
     QWidget *controls;
 
     /*the views*/
@@ -114,7 +121,7 @@ private:
     QMediaPlayer *player = new QMediaPlayer();
     QTimer *updater = new QTimer(this);
     QString current_song_url;
-
+    QSlider *seekBar;
     int mini_mode=0;
     bool hideSearch=true;
     int lCounter = 0;

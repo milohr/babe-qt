@@ -3,6 +3,7 @@
 #include <QMenu>
 #include <QWidgetAction>
 #include <QTableWidgetItem>
+#include <QEvent>
 
 BabeTable::BabeTable(QWidget *parent) :
     QWidget(parent),
@@ -65,6 +66,19 @@ BabeTable::~BabeTable()
 {
     delete ui;
 }
+
+void BabeTable::enterEvent(QEvent *event)
+{
+    qDebug()<<"entered the playlist";
+    emit enteredTable();
+}
+
+void BabeTable::leaveEvent(QEvent *event)
+{
+    qDebug()<<"left the playlist";
+    emit leftTable();
+}
+
 
 void BabeTable::passStyle(QString style)
 {

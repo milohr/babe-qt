@@ -4,7 +4,7 @@
 #include <QSqlRecord>
 #include <QDebug>
 #include <track.h>
-#include <typeinfo>
+
 
 CollectionDB::CollectionDB()
 {

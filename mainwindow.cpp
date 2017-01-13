@@ -47,14 +47,23 @@ MainWindow::MainWindow(QWidget *parent) :
     collectionTable->passCollectionConnection(&settings_widget->getCollectionDB());
     connect(collectionTable,SIGNAL(tableWidget_doubleClicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
     connect(collectionTable,SIGNAL(songRated(QStringList)),this,SLOT(addToFavorites(QStringList)));
+    connect(collectionTable,SIGNAL(enteredTable()),this,SLOT(hideControls()));
+    connect(collectionTable,SIGNAL(leftTable()),this,SLOT(showControls()));
 
     favoritesTable =new BabeTable();
     connect(favoritesTable,SIGNAL(tableWidget_doubleClicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
+    connect(favoritesTable,SIGNAL(enteredTable()),this,SLOT(hideControls()));
+    connect(favoritesTable,SIGNAL(enteredTable()),this,SLOT(hideControls()));
+    connect(favoritesTable,SIGNAL(leftTable()),this,SLOT(showControls()));
 
     resultsTable=new BabeTable();
-    resultsTable->passStyle("QHeaderView::section { background-color:#232323; color:white; }");
+    resultsTable->passStyle("QHeaderView::section { background-color:#e3f4d7; }");
     connect(resultsTable,SIGNAL(songRated(QStringList)),this,SLOT(addToFavorites(QStringList)));
     connect(resultsTable,SIGNAL(tableWidget_doubleClicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
+    connect(resultsTable,SIGNAL(enteredTable()),this,SLOT(hideControls()));
+    connect(resultsTable,SIGNAL(enteredTable()),this,SLOT(hideControls()));
+    connect(resultsTable,SIGNAL(leftTable()),this,SLOT(showControls()));
+
 
 
     if(settings_widget->checkCollection())
@@ -246,9 +255,8 @@ MainWindow::MainWindow(QWidget *parent) :
     /*album view*/
     auto *album_widget= new QWidget();
     auto *album_view = new QGridLayout();
-    auto *album_art = new QLabel();
-    album_art->setPixmap(QPixmap("../player/cover.jpg").scaled(200,200,Qt::KeepAspectRatio));
-
+    album_art = new QLabel();
+    this->setCoverArt("../player/cover.jpg");
     /* PLAYBACK CONTROL BOX*/
 
 
@@ -270,10 +278,18 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     controls = new QWidget(album_art);
+    seekBar = new QSlider(album_art);
+    seekBar->setMaximum(1000);
+    seekBar->setOrientation(Qt::Horizontal);
+    seekBar->setGeometry(0,193,200,7);
+    seekBar->setStyleSheet("\nQSlider\n{\nbackground:transparent;\n}\nQSlider::groove:horizontal {\nborder: 1px solid #bbb;\nbackground: white;\nheight: 5px;\nborder-radius: 4px;\n}\n\nQSlider::sub-page:horizontal {\nbackground: #f85b79;\n\nborder: 1px solid #777;\nheight: 5px;\nborder-radius: 4px;\n}\n\nQSlider::add-page:horizontal {\nbackground: #fff;\nborder: 1px solid #777;\nheight: 5px;\nborder-radius: 4px;\n}\n\nQSlider::handle:horizontal {\nbackground: #f85b79;\n\nwidth: 8px;\n\n}\n\nQSlider::handle:horizontal:hover {\nbackground: qlineargradient(x1:0, y1:0, x2:1, y2:1,\n    stop:0 #fff, stop:1 #ddd);\nborder: 1px solid #444;\nborder-radius: 4px;\n}\n\nQSlider::sub-page:horizontal:disabled {\nbackground: #bbb;\nborder-color: #999;\n}\n\nQSlider::add-page:horizontal:disabled {\nbackground: #eee;\nborder-color: #999;\n}\n\nQSlider::handle:horizontal:disabled {\nbackground: #eee;\nborder: 1px solid #aaa;\nborder-radius: 4px;\n}");
+    connect(seekBar,SIGNAL(sliderMoved(int)),this,SLOT(on_seekBar_sliderMoved(int)));
+
+
     auto controls_layout = new QGridLayout();
     controls->setLayout(controls_layout);
-    controls->setGeometry(0,150,200,50);
-    controls->setStyleSheet(" background-color: rgba(255, 255, 255, 200);");
+    controls->setGeometry(100-75,75,150,50);
+    controls->setStyleSheet(" QWidget{background-color: rgba(255, 255, 255, 230); border-radius:6px;} QWidget:hover{background-color:white;}");
 
 //ui->seekBar->setStyleSheet("background:transparent; ");
     album_view->addWidget(album_art, 0,0,Qt::AlignTop);
@@ -281,7 +297,7 @@ MainWindow::MainWindow(QWidget *parent) :
     album_view->setContentsMargins(0,0,0,0);
 
     controls_layout->addWidget(playback,0,0,Qt::AlignHCenter);
-    controls_layout->addWidget(ui->seekBar,1,0,Qt::AlignTop);
+    //controls_layout->addWidget(ui->seekBar,1,0,Qt::AlignTop);
 
 
 
@@ -289,6 +305,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //album_art->setStyleSheet("background-color:red; padding:0; margin:0;");
     album_art->setStyleSheet("padding:0; margin:0");
     playback->setStyleSheet(" background:transparent;");
+
 
     album_widget->setLayout(album_view);
     album_widget->setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Expanding  );
@@ -307,7 +324,7 @@ MainWindow::~MainWindow()
  void MainWindow::enterEvent(QEvent *event)
 {
     //qDebug()<<"entered the window";
-    controls->show();
+   showControls();
 
 }
 
@@ -315,7 +332,7 @@ MainWindow::~MainWindow()
  void MainWindow::leaveEvent(QEvent *event)
 {
     //qDebug()<<"left the window";
-    controls->hide();
+    hideControls();
     //timer = new QTimer(this);
       /*connect(timer, SIGNAL(timeout()), this, SLOT(hideControls()));
 
@@ -331,9 +348,16 @@ MainWindow::~MainWindow()
 
  void MainWindow::hideControls()
  {
-     /*qDebug()<<"ime is up";
+     qDebug()<<"ime is up";
      controls->hide();
-     timer->stop();*/
+    // timer->stop();*/
+ }
+
+ void MainWindow::showControls()
+ {
+     qDebug()<<"ime is up";
+     controls->show();
+    // timer->stop();*/
  }
   void	MainWindow::dragEnterEvent(QDragEnterEvent *event)
  {
@@ -383,7 +407,11 @@ MainWindow::~MainWindow()
      //ui->save->setChecked(false);
      if(shuffle) shufflePlaylist();
  }
+void MainWindow::setCoverArt(QString path)
+{
+    album_art->setPixmap(QPixmap(path).scaled(200,200,Qt::KeepAspectRatio));
 
+}
 
 void MainWindow::addToFavorites(QStringList list)
 {
@@ -481,6 +509,7 @@ void MainWindow::expand()
     ui->hide_sidebar_btn->setToolTip("Go Mini");
     mini_mode=0;
     ui->mainToolBar->actions().at(0)->setVisible(true);
+    ui->mainToolBar->actions().at(8)->setVisible(true);
 //keepOnTop(false);
 }
 
@@ -493,6 +522,7 @@ void MainWindow::go_mini()
     ui->searchField->setChecked(false);
     hideSearch=true;
     ui->mainToolBar->actions().at(0)->setVisible(false);
+    ui->mainToolBar->actions().at(8)->setVisible(false);
    // ui->searchField->setVisible(false);
     this->resize(minimumSizeHint());
     main_widget->resize(minimumSizeHint());
@@ -546,7 +576,7 @@ void MainWindow::on_hide_sidebar_btn_clicked()
         main_widget->resize(minimumSizeHint());
         this->resize(minimumSizeHint());
 
-        this->setFixedSize(205,205);
+        this->setFixedSize(210,205);
         ui->hide_sidebar_btn->setToolTip("Expand");
         mini_mode=2;
 
@@ -712,8 +742,8 @@ void MainWindow::on_seekBar_sliderMoved(int position)
 
 
 void MainWindow::update()
-{   if(!ui->seekBar->isSliderDown())
-        ui->seekBar->setValue((double)player->position()/player->duration() * 1000);
+{   if(!seekBar->isSliderDown())
+        seekBar->setValue((double)player->position()/player->duration() * 1000);
 
     if(player->state() == QMediaPlayer::StoppedState)
     {
@@ -937,7 +967,7 @@ void MainWindow::on_search_returnPressed()
 void MainWindow::on_search_textChanged(const QString &arg1)
 {
     QString search=arg1;
-    if(search.size()>2)
+    if(search.size()!=0)
     {
         views->setCurrentIndex(4);
         qDebug()<<search;
@@ -945,6 +975,10 @@ void MainWindow::on_search_textChanged(const QString &arg1)
         resultsTable->populateTableView("SELECT * FROM tracks WHERE title LIKE '%"+search+"%' OR artist LIKE '%"+search+"%' OR album LIKE '%"+search+"%'");
 
 
+    }else
+    {
+        views->setCurrentIndex(0);
+        ui->tracks_view->setChecked(true);
     }
 
 }
@@ -955,4 +989,9 @@ void MainWindow::on_resultsPLaylist_clicked()
 {
 
     addToPlaylist(resultsTable->getTableContent(3));
+}
+
+void MainWindow::on_settings_view_clicked()
+{
+    setCoverArt("../player/data/babe.png");
 }

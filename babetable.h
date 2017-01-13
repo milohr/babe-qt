@@ -37,6 +37,11 @@ public:
     void passStyle(QString style);
     QStringList getTableContent(int column);
 
+protected:
+    virtual void enterEvent(QEvent *event);
+    virtual void leaveEvent(QEvent *event);
+
+
 private slots:
 
     void on_tableWidget_doubleClicked(const QModelIndex &index);
@@ -53,6 +58,8 @@ private:
 signals:
     void tableWidget_doubleClicked(QStringList url);
     void songRated(QStringList list);
+    void enteredTable();
+    void leftTable();
 
 };
 

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>523</width>
+    <width>621</width>
     <height>335</height>
    </rect>
   </property>
@@ -228,65 +228,10 @@
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">
-QSlider
-{
-background:transparent;
-}
-QSlider::groove:horizontal {
-border: 1px solid #bbb;
-background: white;
-height: 5px;
-border-radius: 4px;
-}
-
-QSlider::sub-page:horizontal {
-background: #575757;
-
-border: 1px solid #777;
-height: 5px;
-border-radius: 4px;
-}
-
-QSlider::add-page:horizontal {
-background: #fff;
-border: 1px solid #777;
-height: 5px;
-border-radius: 4px;
-}
-
-QSlider::handle:horizontal {
-background: gray;
-
-width: 8px;
-
-}
-
-QSlider::handle:horizontal:hover {
-background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-    stop:0 #fff, stop:1 #ddd);
-border: 1px solid #444;
-border-radius: 4px;
-}
-
-QSlider::sub-page:horizontal:disabled {
-background: #bbb;
-border-color: #999;
-}
-
-QSlider::add-page:horizontal:disabled {
-background: #eee;
-border-color: #999;
-}
-
-QSlider::handle:horizontal:disabled {
-background: #eee;
-border: 1px solid #aaa;
-border-radius: 4px;
-}</string>
+     <string notr="true"/>
     </property>
     <property name="maximum">
-     <number>1000</number>
+     <number>1005</number>
     </property>
     <property name="orientation">
      <enum>Qt::Horizontal</enum>
