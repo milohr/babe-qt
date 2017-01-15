@@ -23,6 +23,7 @@ collection_db.moveToThread(thread);
           connect(thread, SIGNAL(finished()), &collection_db, SLOT(deleteLater()));
              connect(thread, SIGNAL(started()), &collection_db, SLOT(addTrack()));
 ui->progressBar->hide();
+about_ui = new About();
 
 }
 
@@ -222,7 +223,7 @@ void settings::populateDB(QString path)
     if(QFileInfo(path).isDir())
 
     {
-        QDirIterator it(path, QStringList() << "*.mp4" << "*.mp3" << "*.wav" <<"*.flac" <<"*.ogg", QDir::Files, QDirIterator::Subdirectories);
+        QDirIterator it(path, QStringList() << "*.mp4" << "*.mp3" << "*.wav" <<"*.flac" <<"*.ogg" <<"*.m4a", QDir::Files, QDirIterator::Subdirectories);
         while (it.hasNext())
         {
             urlCollection<<it.next();
@@ -269,7 +270,7 @@ void settings::finishedAddingTracks(bool state)
 
 void settings::on_pushButton_clicked()
 {
-   QMessageBox::about(this, "Babe Tiny Music Player","Version: 0.0 Alpha\nWritten and designed\nby: Camilo Higuita");
-
+   //QMessageBox::about(this, "Babe Tiny Music Player","Version: 0.0 Alpha\nWritten and designed\nby: Camilo Higuita");
+    about_ui->show();
 }
 

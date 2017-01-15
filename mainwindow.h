@@ -13,6 +13,7 @@
 #include <QToolBar>
 #include "settings.h"
 #include "collectionDB.h"
+#include <albumsview.h>
 #include <babetable.h>
 
 namespace Ui {
@@ -85,6 +86,7 @@ private slots:
     void setCoverArt(QString path);
 
     void on_settings_view_clicked();
+    void labelClicked();
 
 private:
 
@@ -116,6 +118,7 @@ private:
     BabeTable *collectionTable;
     BabeTable *favoritesTable;
     BabeTable *resultsTable;
+    AlbumsView* albumsTable;
     /*the streaming */
     Playlist playlist;
     QMediaPlayer *player = new QMediaPlayer();

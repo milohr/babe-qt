@@ -8,6 +8,7 @@
 #include<QDebug>
 #include <QThread>
 #include "playlist.h"
+#include <about.h>
 namespace Ui {
 class settings;
 }
@@ -54,6 +55,7 @@ private:
     CollectionDB collection_db;
 Playlist collection;
  QThread* thread;
+ About *about_ui;
 signals:
     void toolbarIconSizeChanged(int newSize);
     void collectionPathChanged(QString newPath);

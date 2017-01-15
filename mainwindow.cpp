@@ -30,6 +30,7 @@
 #include <QDropEvent>
 #include <QTimer>
 
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -58,18 +59,21 @@ MainWindow::MainWindow(QWidget *parent) :
 
     resultsTable=new BabeTable();
     resultsTable->passStyle("QHeaderView::section { background-color:#e3f4d7; }");
+    resultsTable->setVisibleColumn(BabeTable::STARS);
     connect(resultsTable,SIGNAL(songRated(QStringList)),this,SLOT(addToFavorites(QStringList)));
     connect(resultsTable,SIGNAL(tableWidget_doubleClicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
     connect(resultsTable,SIGNAL(enteredTable()),this,SLOT(hideControls()));
     connect(resultsTable,SIGNAL(enteredTable()),this,SLOT(hideControls()));
     connect(resultsTable,SIGNAL(leftTable()),this,SLOT(showControls()));
 
-
+    albumsTable = new AlbumsView();
+    connect(albumsTable,SIGNAL(songClicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
 
     if(settings_widget->checkCollection())
     {
         collectionTable->populateTableView("SELECT * FROM tracks");
         favoritesTable->populateTableView("SELECT * FROM tracks WHERE stars = \"4\" OR stars =  \"5\" OR babe =  \"1\"");
+        albumsTable->populateTableView(settings_widget->getCollectionDB().getQuery("SELECT * FROM tracks ORDER by album asc"));
         populateMainList();
     }
     favoritesTable->setVisibleColumn(BabeTable::STARS);
@@ -227,7 +231,7 @@ MainWindow::MainWindow(QWidget *parent) :
     views = new QStackedWidget;
     views->addWidget(collectionTable);
     auto* testing = new QLabel("albums view... todo");
-    views->addWidget(testing);
+    views->addWidget(albumsTable);
     views->addWidget(favoritesTable);
     views->addWidget(settings_widget);
     views->addWidget(resultsTable);
@@ -257,13 +261,14 @@ MainWindow::MainWindow(QWidget *parent) :
     auto *album_view = new QGridLayout();
     album_art = new QLabel();
     this->setCoverArt("../player/cover.jpg");
+    //connect(album_art,SIGNAL(clicked()),this,SLOT(labelClicked()));
     /* PLAYBACK CONTROL BOX*/
 
 
 
 
 
-
+ // ui->hide_sidebar_btn->setBackgroundRole(QPalette :: Dark);
     ui->hide_sidebar_btn->setToolTip("Go Mini");
     playback->addWidget(ui->hide_sidebar_btn);
 
@@ -320,6 +325,13 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
+
+
+void MainWindow::labelClicked()
+{
+    qDebug()<<"the label got clicked";
+}
+
 
  void MainWindow::enterEvent(QEvent *event)
 {
@@ -385,7 +397,7 @@ MainWindow::~MainWindow()
          if(QFileInfo(url.path()).isDir())
          {
              //QDir dir = new QDir(url.path());
-                 QDirIterator it(url.path(), QStringList() << "*.mp4" << "*.mp3" << "*.wav" <<"*.flac" <<"*.ogg", QDir::Files, QDirIterator::Subdirectories);
+                 QDirIterator it(url.path(), QStringList() << "*.mp4" << "*.mp3" << "*.wav" <<"*.flac" <<"*.ogg" << "*.m4a", QDir::Files, QDirIterator::Subdirectories);
                  while (it.hasNext())
                  {
                      list<<it.next();
@@ -642,7 +654,7 @@ void MainWindow::on_open_btn_clicked()
 
 
 
-      QStringList files = QFileDialog::getOpenFileNames(this, tr("Select Music Files"),"/home/Music", tr("Audio (*.mp3 *.wav *.mp4 *.flac *.ogg)"));
+      QStringList files = QFileDialog::getOpenFileNames(this, tr("Select Music Files"),"/home/Music", tr("Audio (*.mp3 *.wav *.mp4 *.flac *.ogg *.m4a)"));
     if(!files.empty())
     {
 

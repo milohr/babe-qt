@@ -5,50 +5,83 @@
 #include <QTableWidgetItem>
 #include <QEvent>
 
-BabeTable::BabeTable(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::BabeTable)
+BabeTable::BabeTable(QTableWidget *parent) :
+    QTableWidget(parent)
 {
 
    /* connection = new CollectionDB();
     connection->openCollection("../player/collection.db");*/
 
-    ui->setupUi(this);
-    ui->tableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
-    ui->tableWidget->hideColumn(LOCATION);
-    ui->tableWidget->hideColumn(STARS);
-     ui->tableWidget->hideColumn(BABE);
-    ui->tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    //ui->tableWidget->horizontalHeader()->setHighlightSections(true);
-    auto contextMenu = new QMenu(ui->tableWidget);
-    ui->tableWidget->setContextMenuPolicy(Qt::ActionsContextMenu);
+connect(this,SIGNAL(doubleClicked(QModelIndex)),this,SLOT(on_tableWidget_doubleClicked(QModelIndex)));
+this->setColumnCount(5);
+this->setHorizontalHeaderLabels({"Tile","Artist","Album","Location","Stars","Babe","Art"});
+this->horizontalHeader()->setDefaultSectionSize(150);
+this->verticalHeader()->setVisible(false);
+this->setEditTriggers(QAbstractItemView::NoEditTriggers);
+   this->setSelectionBehavior(QAbstractItemView::SelectRows);
+this->setSelectionMode(QAbstractItemView::SingleSelection);
+this->setAlternatingRowColors(true);
+this->horizontalHeader()->setHighlightSections(false);
+this->horizontalHeader()->setStretchLastSection(true);
+//this->setGridStyle(Qt::PenStyle);
+this->setShowGrid(false);
+    this->hideColumn(LOCATION);
+   this->hideColumn(STARS);
+    this->hideColumn(BABE);
+
+    fav1= new QToolButton ();
+    fav2= new QToolButton ();
+    fav3= new QToolButton ();
+    fav4= new QToolButton ();
+    fav5= new QToolButton ();
+    fav1->setAutoRaise(true);
+    fav1->setMaximumSize(16,16);
+    fav2->setAutoRaise(true);
+    fav2->setMaximumSize(16,16);
+    fav3->setAutoRaise(true);
+    fav3->setMaximumSize(16,16);
+    fav4->setAutoRaise(true);
+    fav4->setMaximumSize(16,16);
+    fav5->setAutoRaise(true);
+    fav5->setMaximumSize(16,16);
+    fav1->setIcon(QIcon::fromTheme("rating-unrated"));
+    fav2->setIcon(QIcon::fromTheme("rating-unrated"));
+    fav3->setIcon(QIcon::fromTheme("rating-unrated"));
+    fav4->setIcon(QIcon::fromTheme("rating-unrated"));
+    fav5->setIcon(QIcon::fromTheme("rating-unrated"));
+
+    //this->horizontalHeaderItem(0);
+    //this->horizontalHeaderItem(0)->setResizeMode(1, QHeaderView::Interactive);
+    //this->horizontalHeader()->setHighlightSections(true);
+    auto contextMenu = new QMenu(this);
+    this->setContextMenuPolicy(Qt::ActionsContextMenu);
 
     auto babeIt = new QAction("Babe it \xe2\x99\xa1",contextMenu);
-    ui->tableWidget->addAction(babeIt);
+    this->addAction(babeIt);
 
     auto removeIt = new QAction("Remove",contextMenu);
-    ui->tableWidget->addAction(removeIt);
+    this->addAction(removeIt);
 
-    connect(ui->tableWidget,SIGNAL(pressed(QModelIndex)),this,SLOT(setUpContextMenu()));
+    connect(this,SIGNAL(clicked(QModelIndex)),this,SLOT(setUpContextMenu()));
 
     connect(babeIt, SIGNAL(triggered()), this, SLOT(uninstallAppletClickedSlot()));
     connect(removeIt, SIGNAL(triggered()), this, SLOT(uninstallAppletClickedSlot()));
 
     QButtonGroup *bg = new QButtonGroup(contextMenu);
-               bg->addButton(ui->fav1,1);
-               bg->addButton(ui->fav2,2);
-               bg->addButton(ui->fav3,3);
-               bg->addButton(ui->fav4,4);
-               bg->addButton(ui->fav5,5);
-//connect(ui->fav1,SIGNAL(enterEvent(QEvent)),this,hoverEvent());
+               bg->addButton(fav1,1);
+               bg->addButton(fav2,2);
+               bg->addButton(fav3,3);
+               bg->addButton(fav4,4);
+               bg->addButton(fav5,5);
+//connect(fav1,SIGNAL(enterEvent(QEvent)),this,hoverEvent());
                connect(bg, SIGNAL(buttonClicked(int)),this, SLOT(rateGroup(int)));
 auto gr = new QWidget();
 auto ty = new QHBoxLayout();
-ty->addWidget(ui->fav1);
-ty->addWidget(ui->fav2);
-ty->addWidget(ui->fav3);
-ty->addWidget(ui->fav4);
-ty->addWidget(ui->fav5);
+ty->addWidget(fav1);
+ty->addWidget(fav2);
+ty->addWidget(fav3);
+ty->addWidget(fav4);
+ty->addWidget(fav5);
 
 gr->setLayout(ty);
 
@@ -56,7 +89,7 @@ gr->setLayout(ty);
                QWidgetAction *chkBoxAction= new QWidgetAction(contextMenu);
                chkBoxAction->setDefaultWidget(gr);
 
-    ui->tableWidget->addAction(chkBoxAction);
+    this->addAction(chkBoxAction);
 
 
 
@@ -64,7 +97,7 @@ gr->setLayout(ty);
 
 BabeTable::~BabeTable()
 {
-    delete ui;
+    delete this;
 }
 
 void BabeTable::enterEvent(QEvent *event)
@@ -82,24 +115,24 @@ void BabeTable::leaveEvent(QEvent *event)
 
 void BabeTable::passStyle(QString style)
 {
-    ui->tableWidget->setStyleSheet(style);
+    this->setStyleSheet(style);
 }
 
 void BabeTable::addRow(QString title, QString artist, QString album,QString location, QString stars,QString babe)
 {
-    ui->tableWidget->insertRow(ui->tableWidget->rowCount());
+    this->insertRow(this->rowCount());
     qDebug()<<title<<artist<<album<<location<<stars<<babe;
-    ui->tableWidget->setItem(ui->tableWidget->rowCount()-1,TITLE, new QTableWidgetItem( title));
-    ui->tableWidget->setItem(ui->tableWidget->rowCount()-1,ARTIST,new QTableWidgetItem( artist));
-    ui->tableWidget->setItem(ui->tableWidget->rowCount()-1,ALBUM,new QTableWidgetItem( album));
-    ui->tableWidget->setItem(ui->tableWidget->rowCount()-1,LOCATION,new QTableWidgetItem( location));
-    ui->tableWidget->setItem(ui->tableWidget->rowCount()-1,STARS,new QTableWidgetItem( stars));
-    ui->tableWidget->setItem(ui->tableWidget->rowCount()-1,BABE,new QTableWidgetItem( babe));
+    this->setItem(this->rowCount()-1,TITLE, new QTableWidgetItem( title));
+    this->setItem(this->rowCount()-1,ARTIST,new QTableWidgetItem( artist));
+    this->setItem(this->rowCount()-1,ALBUM,new QTableWidgetItem( album));
+    this->setItem(this->rowCount()-1,LOCATION,new QTableWidgetItem( location));
+    this->setItem(this->rowCount()-1,STARS,new QTableWidgetItem( stars));
+    this->setItem(this->rowCount()-1,BABE,new QTableWidgetItem( babe));
 }
 
 void BabeTable::populateTableView(QString indication)
 {
-   //ui->tableWidget->clearContents();
+   //this->clearContents();
 
     QSqlQuery query= connection->getQuery(indication);
 
@@ -108,22 +141,22 @@ void BabeTable::populateTableView(QString indication)
        {
 
 
-           ui->tableWidget->insertRow(ui->tableWidget->rowCount());
+           this->insertRow(this->rowCount());
 
            auto *title= new QTableWidgetItem( query.value(0).toString());
            //title->setFlags(title->flags() & ~Qt::ItemIsEditable);
 
-           ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, TITLE, title);
+           this->setItem(this->rowCount()-1, TITLE, title);
 
            auto *artist= new QTableWidgetItem( query.value(1).toString());
-           ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, ARTIST, artist);
+           this->setItem(this->rowCount()-1, ARTIST, artist);
 
            //qDebug()<<query.value(2).toString();
            auto *album= new QTableWidgetItem( query.value(2).toString());
-           ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, ALBUM, album);
+           this->setItem(this->rowCount()-1, ALBUM, album);
 
            auto *location= new QTableWidgetItem( query.value(3).toString());
-           ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, LOCATION, location);
+           this->setItem(this->rowCount()-1, LOCATION, location);
 
           QString rating;
           switch(query.value((4)).toInt())
@@ -137,7 +170,7 @@ void BabeTable::populateTableView(QString indication)
           }
 
            auto *stars= new QTableWidgetItem( rating);
-           ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, STARS, stars);
+           this->setItem(this->rowCount()-1, STARS, stars);
 
            QString bb;
            switch(query.value((5)).toInt())
@@ -150,27 +183,27 @@ void BabeTable::populateTableView(QString indication)
 
 
            auto *babe= new QTableWidgetItem( bb);
-           ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, BABE, babe);
+           this->setItem(this->rowCount()-1, BABE, babe);
 
        }
-
-  //ui->tableWidget->sortByColumn(1,Qt::AscendingOrder);
+//
+  //this->sortByColumn(1,Qt::AscendingOrder);
     /*for (Track track : collection.getTracks() )
     {
-     ui->tableWidget->insertRow(ui->tableWidget->rowCount());
+     this->insertRow(this->rowCount());
      auto *title= new QTableWidgetItem( QString::fromStdString(track.getTitle()));
      //title->setFlags(title->flags() & ~Qt::ItemIsEditable);
 
-     ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, TITLE, title);
+     this->setItem(this->rowCount()-1, TITLE, title);
 
      auto *artist= new QTableWidgetItem( QString::fromStdString(track.getArtist()));
-     ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, ARTIST, artist);
+     this->setItem(this->rowCount()-1, ARTIST, artist);
 
      auto *album= new QTableWidgetItem( QString::fromStdString(track.getAlbum()));
-     ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, ALBUM, album);
+     this->setItem(this->rowCount()-1, ALBUM, album);
 
      auto *location= new QTableWidgetItem( QString::fromStdString(track.getLocation()));
-     ui->tableWidget->setItem(ui->tableWidget->rowCount()-1, LOCATION, location);
+     this->setItem(this->rowCount()-1, LOCATION, location);
 
     }*/
 }
@@ -180,42 +213,42 @@ void BabeTable::setRating(int rate)
 {
     switch (rate)
     {
-    case 0: ui->fav1->setIcon(QIcon::fromTheme("rating-unrated"));
-            ui->fav2->setIcon(QIcon::fromTheme("rating-unrated"));
-            ui->fav3->setIcon(QIcon::fromTheme("rating-unrated"));
-            ui->fav4->setIcon(QIcon::fromTheme("rating-unrated"));
-            ui->fav5->setIcon(QIcon::fromTheme("rating-unrated"));
+    case 0: fav1->setIcon(QIcon::fromTheme("rating-unrated"));
+            fav2->setIcon(QIcon::fromTheme("rating-unrated"));
+            fav3->setIcon(QIcon::fromTheme("rating-unrated"));
+            fav4->setIcon(QIcon::fromTheme("rating-unrated"));
+            fav5->setIcon(QIcon::fromTheme("rating-unrated"));
             break;
-        case 1: ui->fav1->setIcon(QIcon::fromTheme("rating"));
-                ui->fav2->setIcon(QIcon::fromTheme("rating-unrated"));
-                ui->fav3->setIcon(QIcon::fromTheme("rating-unrated"));
-                ui->fav4->setIcon(QIcon::fromTheme("rating-unrated"));
-                ui->fav5->setIcon(QIcon::fromTheme("rating-unrated"));
+        case 1: fav1->setIcon(QIcon::fromTheme("rating"));
+                fav2->setIcon(QIcon::fromTheme("rating-unrated"));
+                fav3->setIcon(QIcon::fromTheme("rating-unrated"));
+                fav4->setIcon(QIcon::fromTheme("rating-unrated"));
+                fav5->setIcon(QIcon::fromTheme("rating-unrated"));
                 break;
-        case 2: ui->fav1->setIcon(QIcon::fromTheme("rating"));
-                ui->fav2->setIcon(QIcon::fromTheme("rating"));
-                ui->fav3->setIcon(QIcon::fromTheme("rating-unrated"));
-                ui->fav4->setIcon(QIcon::fromTheme("rating-unrated"));
-                ui->fav5->setIcon(QIcon::fromTheme("rating-unrated"));
+        case 2: fav1->setIcon(QIcon::fromTheme("rating"));
+                fav2->setIcon(QIcon::fromTheme("rating"));
+                fav3->setIcon(QIcon::fromTheme("rating-unrated"));
+                fav4->setIcon(QIcon::fromTheme("rating-unrated"));
+                fav5->setIcon(QIcon::fromTheme("rating-unrated"));
                 break;
-        case 3: ui->fav1->setIcon(QIcon::fromTheme("rating"));
-                ui->fav2->setIcon(QIcon::fromTheme("rating"));
-                ui->fav3->setIcon(QIcon::fromTheme("rating"));
-                ui->fav4->setIcon(QIcon::fromTheme("rating-unrated"));
-                ui->fav5->setIcon(QIcon::fromTheme("rating-unrated"));
+        case 3: fav1->setIcon(QIcon::fromTheme("rating"));
+                fav2->setIcon(QIcon::fromTheme("rating"));
+                fav3->setIcon(QIcon::fromTheme("rating"));
+                fav4->setIcon(QIcon::fromTheme("rating-unrated"));
+                fav5->setIcon(QIcon::fromTheme("rating-unrated"));
 
                 break;
-        case 4: ui->fav1->setIcon(QIcon::fromTheme("rating"));
-                ui->fav2->setIcon(QIcon::fromTheme("rating"));
-                ui->fav3->setIcon(QIcon::fromTheme("rating"));
-                ui->fav4->setIcon(QIcon::fromTheme("rating"));
-                 ui->fav5->setIcon(QIcon::fromTheme("rating-unrated"));
+        case 4: fav1->setIcon(QIcon::fromTheme("rating"));
+                fav2->setIcon(QIcon::fromTheme("rating"));
+                fav3->setIcon(QIcon::fromTheme("rating"));
+                fav4->setIcon(QIcon::fromTheme("rating"));
+                 fav5->setIcon(QIcon::fromTheme("rating-unrated"));
                 break;
-        case 5: ui->fav1->setIcon(QIcon::fromTheme("rating"));
-                ui->fav2->setIcon(QIcon::fromTheme("rating"));
-                ui->fav3->setIcon(QIcon::fromTheme("rating"));
-                ui->fav4->setIcon(QIcon::fromTheme("rating"));
-                ui->fav5->setIcon(QIcon::fromTheme("rating"));
+        case 5: fav1->setIcon(QIcon::fromTheme("rating"));
+                fav2->setIcon(QIcon::fromTheme("rating"));
+                fav3->setIcon(QIcon::fromTheme("rating"));
+                fav4->setIcon(QIcon::fromTheme("rating"));
+                fav5->setIcon(QIcon::fromTheme("rating"));
                 break;
 
     }
@@ -225,11 +258,11 @@ void BabeTable::setTableOrder(int column, int order)
 {
     if (order==DESCENDING)
     {
-        ui->tableWidget->sortByColumn(column,Qt::DescendingOrder);
+        this->sortByColumn(column,Qt::DescendingOrder);
     }
     else if (order==ASCENDING)
     {
-         ui->tableWidget->sortByColumn(column,Qt::AscendingOrder);
+         this->sortByColumn(column,Qt::AscendingOrder);
     }
 }
 
@@ -237,15 +270,15 @@ void BabeTable::setVisibleColumn(int column)
 {
     if(column==3)
     {
-        ui->tableWidget->showColumn(LOCATION);
+        this->showColumn(LOCATION);
     }
     else if (column==4)
     {
-       ui->tableWidget->showColumn(STARS);
+       this->showColumn(STARS);
     }
     else if(column==5)
     {
-        ui->tableWidget->showColumn(BABE);
+        this->showColumn(BABE);
     }
 
 }
@@ -254,9 +287,9 @@ void BabeTable::setUpContextMenu()
 
 {
 
-    int row= ui->tableWidget->currentIndex().row(), rate;
+    int row= this->currentIndex().row(), rate;
 
-    QString url=ui->tableWidget->model()->data(ui->tableWidget->model()->index(row,LOCATION)).toString();
+    QString url=this->model()->data(this->model()->index(row,LOCATION)).toString();
     //
     QSqlQuery query= connection->getQuery("SELECT * FROM tracks WHERE location = \""+url+"\"");
 
@@ -275,8 +308,8 @@ void BabeTable::setUpContextMenu()
 void BabeTable::rateGroup(int id)
 {
     qDebug()<<"rated with: "<<id;
-     int row= ui->tableWidget->currentIndex().row();
-    QString location=ui->tableWidget->model()->data(ui->tableWidget->model()->index(row,LOCATION)).toString();
+     int row= this->currentIndex().row();
+    QString location=this->model()->data(this->model()->index(row,LOCATION)).toString();
 
 
     QSqlQuery query =connection->getQuery("SELECT * FROM tracks WHERE location = \""+location+"\"");
@@ -294,7 +327,7 @@ void BabeTable::rateGroup(int id)
             setRating(id);
 
 
-            //ui->tableWidget->model()->data(ui->tableWidget->model()->index(row,1)).
+            //this->model()->data(this->model()->index(row,1)).
 
         }
         qDebug()<<"rating the song of rowffff: "<< row;
@@ -304,17 +337,17 @@ void BabeTable::rateGroup(int id)
         {
          stars+="\xe2\x98\x86 ";
         }
-        ui->tableWidget->item(row,STARS)->setText(stars);
+        this->item(row,STARS)->setText(stars);
 
 
 
         if(id>3 && rate<4  )
         {
-            QString title =ui->tableWidget->model()->data(ui->tableWidget->model()->index(row,TITLE)).toString();
-            QString artist =ui->tableWidget->model()->data(ui->tableWidget->model()->index(row,ARTIST)).toString();
-            QString album =ui->tableWidget->model()->data(ui->tableWidget->model()->index(row,ALBUM)).toString();
-            QString star =ui->tableWidget->model()->data(ui->tableWidget->model()->index(row,STARS)).toString();
-            QString babe =ui->tableWidget->model()->data(ui->tableWidget->model()->index(row,BABE)).toString();
+            QString title =this->model()->data(this->model()->index(row,TITLE)).toString();
+            QString artist =this->model()->data(this->model()->index(row,ARTIST)).toString();
+            QString album =this->model()->data(this->model()->index(row,ALBUM)).toString();
+            QString star =this->model()->data(this->model()->index(row,STARS)).toString();
+            QString babe =this->model()->data(this->model()->index(row,BABE)).toString();
 
             qDebug()<<"rated and trying to add to favs";
             emit songRated({title,artist,album,location,star,babe});
@@ -322,7 +355,7 @@ void BabeTable::rateGroup(int id)
         {
             qDebug()<<"rated and trying to add to favs failed";
         }
-        //ui->tableWidget->update();
+        //this->update();
     }else
     {
 
@@ -332,17 +365,17 @@ void BabeTable::rateGroup(int id)
 
 void BabeTable::on_tableWidget_doubleClicked(const QModelIndex &index)
 {
-    //QMessageBox::information(NULL,"QTableView Item Double Clicked",index.sibling(ui->tableWidget->currentIndex().row(),LOCATION).data().toString());
+    //QMessageBox::information(NULL,"QTableView Item Double Clicked",index.sibling(this->currentIndex().row(),LOCATION).data().toString());
 
    /*
-   player->setMedia(QUrl::fromLocalFile(index.sibling(ui->tableWidget->currentIndex().row(),LOCATION).data().toString()));
+   player->setMedia(QUrl::fromLocalFile(index.sibling(this->currentIndex().row(),LOCATION).data().toString()));
    player->play();
    updater->start();
-   this->setWindowTitle(index.sibling(ui->tableWidget->currentIndex().row(),TITLE).data().toString() +" \xe2\x99\xa1 " +index.sibling(ui->tableWidget->currentIndex().row(),ARTIST).data().toString());
+   this->setWindowTitle(index.sibling(this->currentIndex().row(),TITLE).data().toString() +" \xe2\x99\xa1 " +index.sibling(this->currentIndex().row(),ARTIST).data().toString());
    */
-    qDebug()<<"huuuuuuuuuuuu" << index.sibling(ui->tableWidget->currentIndex().row(),LOCATION).data().toString();
+    qDebug()<<"huuuuuuuuuuuu" << index.sibling(this->currentIndex().row(),LOCATION).data().toString();
     QStringList files;
-    files << index.sibling(ui->tableWidget->currentIndex().row(),LOCATION).data().toString();
+    files << index.sibling(this->currentIndex().row(),LOCATION).data().toString();
     emit tableWidget_doubleClicked(files);
 
    /* playlist.add(files);
@@ -356,15 +389,15 @@ void BabeTable::on_tableWidget_doubleClicked(const QModelIndex &index)
 void BabeTable::uninstallAppletClickedSlot()
 {
     qDebug()<<"right clicked!";
-    int row= ui->tableWidget->currentIndex().row();
-    qDebug()<<ui->tableWidget->model()->data(ui->tableWidget->model()->index(row,LOCATION)).toString();
+    int row= this->currentIndex().row();
+    qDebug()<<this->model()->data(this->model()->index(row,LOCATION)).toString();
 
 }
 
 void BabeTable::flushTable()
 {
-    ui->tableWidget->clearContents();
-   ui->tableWidget->setRowCount(0);
+    this->clearContents();
+   this->setRowCount(0);
 
 }
 
@@ -376,9 +409,9 @@ void BabeTable::passCollectionConnection(CollectionDB *con)
 QStringList BabeTable::getTableContent(int column)
 {
     QStringList result;
-    for(int i = 0; i<ui->tableWidget->rowCount();i++)
+    for(int i = 0; i<this->rowCount();i++)
     {
-        result<< ui->tableWidget->model()->data(ui->tableWidget->model()->index(i,column)).toString();
+        result<< this->model()->data(this->model()->index(i,column)).toString();
 
     }
 

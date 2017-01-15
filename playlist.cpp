@@ -37,23 +37,25 @@ bool Playlist::isMusic(QString file)
 
 
 
-            if(mimeType.inherits("video/mp4"))
-                return true;
+            if(mimeType.inherits("audio/mp4")) return true;
 
             // mpeg mpg mpe
-            else if(mimeType.inherits("audio/mpeg"))
-                return true;
-            else if(mimeType.inherits("audio/mp3"))
-                return true;
+            else if(mimeType.inherits("audio/mpeg")) return true;
+            else if(mimeType.inherits("video/mp4")) return true;
+            else if(mimeType.inherits("audio/MPEG-4")) return true;
+            else if(mimeType.inherits("video/mpeg")) return true;
+            else if(mimeType.inherits("audio/m4a")) return true;
 
-            else if(mimeType.inherits("audio/ogg"))
-                return true;
+            else if(mimeType.inherits("audio/mp3")) return false;
 
-            else if(mimeType.inherits("audio/wav"))
-                return true;
+            else if(mimeType.inherits("audio/ogg")) return true;
 
-            else if(mimeType.inherits("audio/flac"))
-                return true;
+
+            else if(mimeType.inherits("audio/wav")) return true;
+
+
+            else if(mimeType.inherits("audio/flac")) return true;
+
 
 
 
@@ -139,6 +141,17 @@ QStringList Playlist::getTracksNameList()
     for(int i = 0; i < tracks.size(); i++)
     {
         QString qstr = QString::fromStdString(tracks[i].getTitle()+"\nby "+tracks[i].getArtist());
+        list.push_back(qstr);
+    }
+    return list;
+}
+
+QStringList Playlist::getTracksNameListSimple()
+{
+    QStringList list;
+    for(int i = 0; i < tracks.size(); i++)
+    {
+        QString qstr = QString::fromStdString(tracks[i].getTitle());
         list.push_back(qstr);
     }
     return list;

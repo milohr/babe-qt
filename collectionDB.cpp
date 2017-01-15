@@ -58,7 +58,7 @@ void CollectionDB::prepareCollectionDB()
 
 
     QSqlQuery query;
-    query.exec("CREATE TABLE tracks(title text, artist text, album text, location text, stars integer, babe integer);");
+    query.exec("CREATE TABLE tracks(title text, artist text, album text, location text unique, stars integer, babe integer, art text);");
     //query.exec("CREATE TABLE tracks(title text, album text, artist text, location text, stars integer, babe integer);");
 
 

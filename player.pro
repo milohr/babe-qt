@@ -28,7 +28,10 @@ SOURCES += main.cpp\
     info.cpp \
     collectionDB.cpp \
     about.cpp \
-    babetable.cpp
+    babetable.cpp \
+    album.cpp \
+    albumsview.cpp \
+    scrolltext.cpp
 
 HEADERS  += mainwindow.h \
             playlist.h \
@@ -37,11 +40,13 @@ HEADERS  += mainwindow.h \
     info.h \
     collectionDB.h \
     about.h \
-    babetable.h
+    babetable.h \
+    album.h \
+    albumsview.h \
+    scrolltext.h
 
 FORMS    += mainwindow.ui \
     settings.ui \
     info.ui \
-    babes.ui \
-    about.ui \
-    babetable.ui
+    babetable.ui \
+    albumsview.ui

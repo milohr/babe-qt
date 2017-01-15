@@ -4,17 +4,19 @@
 #include <QWidget>
 #include <QStringList>
 #include <collectionDB.h>
+#include <QTableWidget>
+#include <QToolButton>
 
 namespace Ui {
 class BabeTable;
 }
 
-class BabeTable : public QWidget
+class BabeTable : public QTableWidget
 {
     Q_OBJECT
 
 public:
-    explicit BabeTable(QWidget *parent = 0);
+    explicit BabeTable(QTableWidget *parent = 0);
     ~BabeTable();
 
     enum columns
@@ -52,8 +54,13 @@ private slots:
 
 
 private:
-    Ui::BabeTable *ui;
+
     CollectionDB *connection;
+    QToolButton *fav1;
+    QToolButton *fav2;
+    QToolButton *fav3;
+    QToolButton *fav4;
+    QToolButton *fav5;
 
 signals:
     void tableWidget_doubleClicked(QStringList url);

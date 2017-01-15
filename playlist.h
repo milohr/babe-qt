@@ -18,6 +18,7 @@ public:
     void save();
     bool isMusic(QString file);
     QStringList getTracksNameList();
+    QStringList getTracksNameListSimple();
 
     std::vector<Track> tracks;
 
