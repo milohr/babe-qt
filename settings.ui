@@ -74,8 +74,35 @@
           </property>
          </spacer>
         </item>
-        <item row="6" column="1" colspan="4">
-         <spacer name="verticalSpacer_3">
+        <item row="1" column="0" rowspan="11">
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="3" column="3">
+         <widget class="QToolButton" name="remove">
+          <property name="text">
+           <string>...</string>
+          </property>
+          <property name="icon">
+           <iconset theme="entry-delete">
+            <normaloff>.</normaloff>.</iconset>
+          </property>
+          <property name="autoRaise">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="1">
+         <spacer name="verticalSpacer_4">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
@@ -86,6 +113,16 @@
            </size>
           </property>
          </spacer>
+        </item>
+        <item row="2" column="1" colspan="4">
+         <widget class="QListWidget" name="collectionPath"/>
+        </item>
+        <item row="4" column="1" colspan="4">
+         <widget class="QProgressBar" name="progressBar">
+          <property name="value">
+           <number>0</number>
+          </property>
+         </widget>
         </item>
         <item row="8" column="1">
          <widget class="QLabel" name="label_4">
@@ -150,32 +187,6 @@
           </item>
          </widget>
         </item>
-        <item row="1" column="1" colspan="4">
-         <spacer name="verticalSpacer">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="1" column="6" rowspan="11">
-         <spacer name="horizontalSpacer_2">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
         <item row="9" column="2" colspan="2">
          <widget class="QComboBox" name="comboBox">
           <item>
@@ -200,26 +211,28 @@
           </item>
          </widget>
         </item>
-        <item row="4" column="1" colspan="4">
-         <widget class="QProgressBar" name="progressBar">
-          <property name="value">
-           <number>0</number>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="3">
-         <widget class="QToolButton" name="remove">
+        <item row="3" column="1">
+         <widget class="QLabel" name="label">
           <property name="text">
-           <string>...</string>
-          </property>
-          <property name="icon">
-           <iconset theme="entry-delete">
-            <normaloff>.</normaloff>.</iconset>
+           <string>Collection Folder:</string>
           </property>
          </widget>
         </item>
-        <item row="5" column="1">
-         <spacer name="verticalSpacer_4">
+        <item row="1" column="6" rowspan="11">
+         <spacer name="horizontalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="1" column="1" colspan="4">
+         <spacer name="verticalSpacer">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
@@ -231,25 +244,15 @@
           </property>
          </spacer>
         </item>
-        <item row="3" column="1">
-         <widget class="QLabel" name="label">
-          <property name="text">
-           <string>Collection Folder:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1" colspan="4">
-         <widget class="QListWidget" name="collectionPath"/>
-        </item>
-        <item row="1" column="0" rowspan="11">
-         <spacer name="horizontalSpacer">
+        <item row="6" column="1" colspan="4">
+         <spacer name="verticalSpacer_3">
           <property name="orientation">
-           <enum>Qt::Horizontal</enum>
+           <enum>Qt::Vertical</enum>
           </property>
           <property name="sizeHint" stdset="0">
            <size>
-            <width>40</width>
-            <height>20</height>
+            <width>20</width>
+            <height>40</height>
            </size>
           </property>
          </spacer>
@@ -262,6 +265,19 @@
           <property name="icon">
            <iconset theme="list-add">
             <normaloff>.</normaloff>.</iconset>
+          </property>
+          <property name="autoRaise">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="11" column="2">
+         <widget class="QPushButton" name="pushButton_2">
+          <property name="text">
+           <string>About Qt</string>
+          </property>
+          <property name="flat">
+           <bool>true</bool>
           </property>
          </widget>
         </item>

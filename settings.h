@@ -47,6 +47,8 @@ private slots:
     void handleFileChanged(QString file);
     void handleDirectoryChanged(QString dir);
 
+    void on_pushButton_2_clicked();
+
 public slots:
 
 void populateDB(QString path);

@@ -10,6 +10,7 @@
 #include <QThread>
 #include<collectionDB.h>
 #include<QMessageBox>
+#include <QFrame>
 #include <QFileSystemWatcher>
 
 settings::settings(QWidget *parent) :
@@ -17,6 +18,7 @@ settings::settings(QWidget *parent) :
     ui(new Ui::settings)
 {
     ui->setupUi(this);
+    //QFrame frame = new QFrame();
 
     //collectionDBPath=QDir().absolutePath()+collectionDBPath;
     qDebug()<<"Getting collectionDB info from: "<<collectionDBPath;
@@ -312,3 +314,8 @@ void settings::on_pushButton_clicked()
     about_ui->show();
 }
 
+
+void settings::on_pushButton_2_clicked()
+{
+    QMessageBox::aboutQt(this,"Babe Qt...");
+}

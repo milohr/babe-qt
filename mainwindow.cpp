@@ -41,7 +41,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setWindowTitle(" Babe ... \xe2\x99\xa1  \xe2\x99\xa1 \xe2\x99\xa1 ");
     this->setAcceptDrops(true);
     this->setWindowIcon(QIcon(":Data/data/babe_48.svg"));
-    this->setWindowIconText("babey...");
+    this->setWindowIconText("Babe...");
 //this->setWindowFlags(Qt::Widget | Qt::FramelessWindowHint);
     /*THE VIEWS*/
 
@@ -738,7 +738,7 @@ void MainWindow::on_open_btn_clicked()
 
 
 
-      QStringList files = QFileDialog::getOpenFileNames(this, tr("Select Music Files"),"/home/Music", tr("Audio (*.mp3 *.wav *.mp4 *.flac *.ogg *.m4a)"));
+      QStringList files = QFileDialog::getOpenFileNames(this, tr("Select Music Files"),QDir().homePath()+"/Music/", tr("Audio (*.mp3 *.wav *.mp4 *.flac *.ogg *.m4a)"));
     if(!files.empty())
     {
 
@@ -1068,8 +1068,11 @@ void MainWindow::addToCollectionDB(QStringList url, QString babe)
       for(auto ui: song.getTracks()) qDebug()<< QString::fromStdString(ui.getTitle());
 
  settings_widget->getCollectionDB().addSong(song.getTracks(),babe.toInt());
-  addToCollection({QString::fromStdString(song.tracks[getIndex()].getTitle()),QString::fromStdString(song.tracks[getIndex()].getArtist()),QString::fromStdString(song.tracks[getIndex()].getAlbum()),QString::fromStdString(song.tracks[getIndex()].getLocation()),"\xe2\x99\xa1",babe});
-
+ // addToCollection({QString::fromStdString(song.tracks[getIndex()].getTitle()),QString::fromStdString(song.tracks[getIndex()].getArtist()),QString::fromStdString(song.tracks[getIndex()].getAlbum()),QString::fromStdString(song.tracks[getIndex()].getLocation()),"\xe2\x99\xa1",babe});
+ collectionTable->flushTable();
+ collectionTable->populateTableView("SELECT * FROM tracks");
+ albumsTable->flushGrid();
+ albumsTable->populateTableView(settings_widget->getCollectionDB().getQuery("SELECT * FROM tracks ORDER by album asc"));
 }
 //iterates through the paths of the modify folders tp search for new music and then refreshes the collection view
 void MainWindow::addToCollectionDB_t(QStringList url)
