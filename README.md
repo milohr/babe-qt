@@ -1,0 +1,23 @@
+# Babe
+## Tiny Qt Babe Music Player
+
+Babe is a tiny Qt music player to add you favorite songs as well to handle your whole music collection
+(previous unfinished gtk3 version still in my repository) 
+
+<h3> To run: </h3>
+qmake && make && ./player
+
+
+* Planned Features :
+  ... youtube-dl streamming 
+  ... krunner integration
+
+* Expected Features :
+  -simple music collection manager
+  -artist and lyrics info
+
+
+![alt tag](https://github.com/milohr/babe-qt/blob/master/screenshots/playlist_mode.png?raw=true) 
+![alt tag](https://github.com/milohr/babe-qt/blob/master/screenshots/mini_mode.png?raw=true)
+![alt tag](https://github.com/milohr/babe-qt/blob/master/screenshots/full_collection_view.png?raw=true)
+![alt tag](https://github.com/milohr/babe-qt/blob/master/screenshots/albums_view.png?raw=true) 
