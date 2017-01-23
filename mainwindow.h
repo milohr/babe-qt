@@ -16,6 +16,7 @@
 #include <albumsview.h>
 #include <babetable.h>
 #include<QListWidgetItem>
+#include <album.h>
 
 namespace Ui {
 class MainWindow;
@@ -119,7 +120,7 @@ private:
     QWidget *main_widget;
     QGridLayout * layout;
     QLabel *info;
-    QLabel *album_art;
+    Album *album_art;
     QWidget *controls;
     QFrame *album_art_frame;
 

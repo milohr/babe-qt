@@ -30,7 +30,9 @@
 #include <QDropEvent>
 #include <QTimer>
 #include <scrolltext.h>
-
+#include <QBitmap>
+#include <QPainter>
+#include <album.h>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -118,20 +120,9 @@ MainWindow::MainWindow(QWidget *parent) :
     addMusicImg->setPixmap(QPixmap(":Data/data/add.png").scaled(120,120,Qt::KeepAspectRatio));
     addMusicImg->setGeometry(45,40,120,120);
     connect(ui->listWidget->model() ,SIGNAL(rowsInserted(QModelIndex,int,int)),this,SLOT(on_rowInserted(QModelIndex,int,int)));
-addMusicImg->hide();
-    ui->listWidget->setCurrentRow(0);
+    addMusicImg->hide();
 
-    if(ui->listWidget->count() != 0)
-    {
 
-        loadTrack();
-        player->pause();
-        updater->start();
-
-    }else
-    {
-    addMusicImg->show();
-    }
 
     //playback->setMovable(false);
 
@@ -290,16 +281,30 @@ addMusicImg->hide();
 
     /*album view*/
     auto *album_widget= new QWidget();
+  //  album_widget->setStyleSheet("background-color:red;");
+
     auto *album_view = new QGridLayout();
     album_art_frame=new QFrame();
     album_art_frame->setFrameShadow(QFrame::Raised);
     album_art_frame->setFrameShape(QFrame::StyledPanel);
+    //album_art_frame->setStyleSheet("background-color:transparent;");
     //album_art_frame->setFixedSize(210,210);
     //album_art->setGeometry(0,0,100,100);
 
-    album_art = new QLabel(album_art_frame);
+    album_art = new Album(":Data/data/cover.jpg",200,2,true,album_art_frame);
+    connect(album_art,SIGNAL(albumCoverLeft()),this,SLOT(hideControls()));
+    connect(album_art,SIGNAL(albumCoverEnter()),this,SLOT(showControls()));
+
+    album_art->titleVisible(false);
+    album_art->setTitleGeometry(0,165,200,30);
+    album_art->setMinimumSize(200,200);
+
+   /* album_art->border_radius=2;
+    album_art->size=200;
+    album_art->image.load(":Data/data/cover.jpg");
+    //album_art->sizeHint(QSize( 200, 200));*/
     //album_art->setStyleSheet("border:1px solid #333");
-    this->setCoverArt(":/Data/data/cover.jpg");
+    //this->setCoverArt(":/Data/data/cover.jpg");
    // qDebug()<< QDir::current()<<"/cover.jpg";
     //connect(album_art,SIGNAL(clicked()),this,SLOT(labelClicked()));
     /* PLAYBACK CONTROL BOX*/
@@ -361,7 +366,23 @@ addMusicImg->hide();
     layout->addWidget(utilsBar, 1,0 );
     layout->addWidget(album_art_frame,0,1,0,1, Qt::AlignRight);
     //this->setStyle();
-    go_mini();
+
+    ui->listWidget->setCurrentRow(0);
+    if(ui->listWidget->count() != 0)
+    {
+
+        loadTrack();
+        player->pause();
+        updater->start();
+        go_mini();
+
+
+    }else
+    {
+        addMusicImg->show();
+        ui->tracks_view->setChecked(true);
+    }
+
 }
 
 
@@ -470,9 +491,13 @@ void MainWindow::labelClicked()
  }
 void MainWindow::setCoverArt(QString path)
 {
-    album_art->setPixmap(QPixmap(path).scaled(200,200,Qt::KeepAspectRatio));
+
 
 }
+
+
+
+
 
 void MainWindow::addToFavorites(QStringList list)
 {
@@ -657,8 +682,13 @@ void MainWindow::on_hide_sidebar_btn_clicked()
         this->resize(minimumSizeHint());
 
         this->setFixedSize(200,200);
-
-        album_art->setStyleSheet("QLabel{border: 1px solid #777;}");
+//album_art->border_radius=5;
+        album_art->borderColor=true;
+         album_art->titleVisible(true);
+       // album_art->setStyleSheet("QLabel{background-color:transparent;}");
+       // album_art_frame->setStyleSheet("QFrame{border: 1px solid red;border-radius:5px;}");
+       // this->setStyleSheet("QMainWindow{background-color:transparent;");
+        //album_widget.
         layout->setContentsMargins(0,0,0,0);
 
         this->setWindowFlags(Qt::Tool | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
@@ -677,8 +707,10 @@ void MainWindow::on_hide_sidebar_btn_clicked()
       //  this->adjustSize();
         ui->hide_sidebar_btn->setToolTip("Full View");
         //layout->setContentsMargins(6,0,6,0);
-
-        album_art->setStyleSheet("QLabel{border: none}");
+        album_art->titleVisible(false);
+       // album_art->border_radius=2;
+album_art->borderColor=false;
+        //album_art->setStyleSheet("QLabel{border: none}");
         ui->hide_sidebar_btn->setIcon(QIcon(":Data/data/full_mode.svg"));
 
 
@@ -818,6 +850,9 @@ void MainWindow::loadTrack()
      player->setMedia(QUrl::fromLocalFile(current_song_url));
      auto qstr = QString::fromStdString(playlist.tracks[getIndex()].getTitle()+" \xe2\x99\xa1 "+playlist.tracks[getIndex()].getArtist());
      this->setWindowTitle(qstr);
+     album_art->setArtist(QString::fromStdString(playlist.tracks[getIndex()].getArtist()));
+     album_art->setAlbum(QString::fromStdString(playlist.tracks[getIndex()].getAlbum()));
+     album_art->setTitle();
 
      //here check if the song to play is already babe'd and if so change the icon
       if(settings_widget->getCollectionDB().checkQuery("SELECT * FROM tracks WHERE location = \""+current_song_url+"\" AND babe = \"1\""))

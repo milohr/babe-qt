@@ -3,27 +3,43 @@
 #include <QLabel>
 #include <QString>
 #include <scrolltext.h>
+#include <QPixmap>
 
 class Album : public QLabel
 {
     Q_OBJECT
 public:
-    explicit Album(QLabel *parent = 0);
-   // explicit Album(QLabel *parent = 0, QString artist, QString album);
+
+    explicit Album(QString imagePath,int widgetSize, int widgetRadius=0, bool isDraggable=false, QWidget *parent = 0);
 
     void setCoverArt(QString path);
+    void setArtist(QString artist);
+    void setAlbum(QString album);
+    void setTitle();
+    void titleVisible(bool state);
+    void setTitleGeometry(int x, int y, int w, int h);
+
+    int border_radius;
+    int size;
+    bool borderColor=false;
+
     QString getTitle();
     QString getArtist();
     QString getAlbum();
-    void setArtist(QString artist);
-    void setAlbum(QString album);
-    void setTitle(QString artist, QString album);
+    QPixmap image;
+    QPixmap getPixmap();
 
 private:
+
+    bool draggable;
+
     QString artist="";
     QString album="";
     ScrollText *title;
     QWidget *widget;
+    QPoint oldPos;
+
+
 signals:
     void albumCoverClicked(QStringList info);
     void albumCoverEnter();
@@ -37,7 +53,9 @@ protected:
     virtual void mouseReleaseEvent ( QMouseEvent * evt);
     virtual void enterEvent(QEvent *event);
     virtual void leaveEvent(QEvent *event);
-    virtual void QContextMenuEvent();
+
+    virtual void paintEvent(QPaintEvent *e);
+    // virtual void  mouseMoveEvent(QMouseEvent *evt);
 };
 
 #endif // ALBUM_H

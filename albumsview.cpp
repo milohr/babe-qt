@@ -27,6 +27,7 @@ AlbumsView::AlbumsView(QWidget *parent) :
         grid->setFrameShadow(QFrame::Plain);
         grid->setFrameShape(QFrame::NoFrame);
         grid->setStyleSheet("QListWidget {background:#2E2F30; border:1px solid black; border-radius: 2px; }");
+
         //grid->setMovement(QListView::Static);
         //grid->setMaximumWidth(128);
        // grid->setFlow(QListView::LeftToRight);
@@ -85,8 +86,9 @@ AlbumsView::AlbumsView(QWidget *parent) :
    albumBox_frame->setFrameShape(QFrame::StyledPanel);
    albumBox_frame->setLayout(albumBox);
    layout->addWidget(albumBox_frame,1,0,Qt::AlignBottom);
-    cover= new Album();
-    cover->setStyleSheet("border:none;");
+    cover= new Album(":Data/data/cover.jpg",120,2);
+
+
     //cover->setSizeHint( QSize( 120, 120) );
 
     //connect(cover, SIGNAL(albumCoverEnter()),this,SLOT(albumHover()));
@@ -140,11 +142,11 @@ void AlbumsView::populateTableView(QSqlQuery query)
 
        if(!albums.contains(query.value(1).toString()+" "+query.value(2).toString()))
        {
-           auto album= new Album();
-
+           auto album= new Album(":Data/data/cover.svg",120);
            album->setArtist(query.value(1).toString());
            album->setAlbum(query.value(2).toString());
-           album->setTitle(query.value(1).toString(),query.value(2).toString());
+           album->setTitle();
+          // album->setTitle(query.value(1).toString(),query.value(2).toString());
            //album->setToolTip(query.value(2).toString());
            connect(album, SIGNAL(albumCoverClicked(QStringList)),this,SLOT(getAlbumInfo(QStringList)));
 //album->setStyleSheet(":hover {background:#3daee9; }");
@@ -188,8 +190,11 @@ void AlbumsView::getAlbumInfo(QStringList info)
 
     //while(query.next())  tracks<<query.value(3).toString();
 
+    cover->setArtist(info.at(0));
+    cover->setAlbum(info.at(1));
+    cover->setTitle();
 
-cover->setTitle(info.at(0),info.at(1));
+
         //playlist->add(tracks);
         albumTable->flushTable();
       albumTable->populateTableView("SELECT * FROM tracks WHERE artist = \""+info.at(0)+"\" and album = \""+info.at(1)+"\"");

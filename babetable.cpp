@@ -356,6 +356,7 @@ row=this->indexAt(pos).row();
 
        setRating(rate);
        if(babe)  this->actions().at(0)->setText("Un-Babe it");
+       else this->actions().at(0)->setText("Babe it");
 
 
 
