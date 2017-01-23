@@ -37,6 +37,8 @@ private:
     CollectionDB *connection;
     Playlist *playlist;
     BabeTable *albumTable;
+    QToolButton *closeBtn;
+
 
     int albumSize=120;
 
@@ -48,6 +50,7 @@ private slots:
     void albumHover();
     void albumsSize(int value);
     void orderChanged(QString order);
+    void hideAlbumFrame();
 signals:
     void songClicked(QStringList url);
     void songRated(QStringList url);

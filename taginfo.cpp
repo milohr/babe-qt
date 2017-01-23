@@ -33,3 +33,5 @@ QString TagInfo::getGenre()
     return QString::fromStdWString(file.tag()->genre().toWString());
 
 }
+
+

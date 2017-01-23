@@ -104,7 +104,11 @@ AlbumsView::AlbumsView(QWidget *parent) :
    layout->addWidget(albumBox_frame,1,0,Qt::AlignBottom);
     cover= new Album(":Data/data/cover.jpg",120,2);
 
-
+    closeBtn = new QToolButton(cover);
+    closeBtn->setGeometry(2,2,16,16);
+    closeBtn->setIcon(QIcon::fromTheme("tab-close"));
+    closeBtn->setAutoRaise(false);
+    connect(closeBtn,SIGNAL(clicked()),SLOT(hideAlbumFrame()));
     //cover->setSizeHint( QSize( 120, 120) );
 
     //connect(cover, SIGNAL(albumCoverEnter()),this,SLOT(albumHover()));
@@ -128,6 +132,11 @@ albumBox_frame->hide();
 AlbumsView::~AlbumsView()
 {
 
+}
+
+void AlbumsView::hideAlbumFrame()
+{
+    albumBox_frame->hide();
 }
 
 void AlbumsView::albumsSize(int value)

@@ -69,7 +69,7 @@ void Playlist::add(QStringList files)
 **/
         if(isMusic(files[i]))
         {
-           // TagLib::FileRef file(files[i].toUtf8());
+
 
             TagInfo info(files[i]);
 
@@ -79,21 +79,26 @@ void Playlist::add(QStringList files)
             QString title =info.getTitle();
             QString artist = info.getArtist();
             QString album = info.getAlbum();
-            //qDebug()<<title+artist+album;
+           QString artwork = ""; //here needs to get the artwork;
+            int track_n =info.getTrack();
+            QString genre = info.getGenre();
 
-            title = title.size()>0 ? title : QString::fromStdString( getNameFromLocation(files[i].toStdString()));
-            artist = artist.size()>0 ? artist : "UNKWON";
-            album = album.size()>0 ? album : "UNKWON";
 
-            track.setTitle(title.toStdString());
+                title = title.size()>0 ? title : QString::fromStdString( getNameFromLocation(files[i].toStdString()));
+                artist = artist.size()>0 ? artist : "UNKWON";
+                album = album.size()>0 ? album : "UNKWON";
 
-            track.setArtist(artist.toStdString());
-            track.setAlbum(album.toStdString());
-            track.setLocation(files[i].toStdString());
+                track.setTitle(title.toStdString());
 
-            track.setName(getNameFromLocation(files[i].toStdString()));
+                track.setArtist(artist.toStdString());
+                track.setAlbum(album.toStdString());
+                track.setLocation(files[i].toStdString());
+                track.setGenre(genre.toStdString());
+                track.setTrack(track_n);
+                track.setArtwork(artwork.toStdString());
+                track.setName(getNameFromLocation(files[i].toStdString()));
 
-            tracks.push_back(track);
+                tracks.push_back(track);
         }else
         {
             qDebug()<<"file not valid: "<<files[i];
@@ -123,6 +128,10 @@ void Playlist::addClean(QStringList files)
         QString title =info.getTitle();
         QString artist = info.getArtist();
         QString album = info.getAlbum();
+        QString artwork = ""; //here needs to get the artwork;
+        int track_n =info.getTrack();
+        QString genre = info.getGenre();
+
 
             title = title.size()>0 ? title : QString::fromStdString( getNameFromLocation(files[i].toStdString()));
             artist = artist.size()>0 ? artist : "UNKWON";
@@ -133,7 +142,9 @@ void Playlist::addClean(QStringList files)
             track.setArtist(artist.toStdString());
             track.setAlbum(album.toStdString());
             track.setLocation(files[i].toStdString());
-
+            track.setGenre(genre.toStdString());
+            track.setTrack(track_n);
+            track.setArtwork(artwork.toStdString());
             track.setName(getNameFromLocation(files[i].toStdString()));
 
             tracks.push_back(track);
