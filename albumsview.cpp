@@ -10,7 +10,7 @@
 #include <scrolltext.h>
 #include <QListWidgetItem>
 #include "mainwindow.h"
-
+#include <QToolTip>
 AlbumsView::AlbumsView(QWidget *parent) :
     QWidget(parent)
 {
@@ -24,9 +24,11 @@ AlbumsView::AlbumsView(QWidget *parent) :
          grid->setViewMode(QListWidget::IconMode);
         grid->setResizeMode(QListWidget::Adjust);
       //  grid->setUniformItemSizes(true);
-        grid->setFrameShadow(QFrame::Plain);
-        grid->setFrameShape(QFrame::NoFrame);
-        grid->setStyleSheet("QListWidget {background:#2E2F30; border:1px solid black; border-radius: 2px; }");
+        //grid->setFrameShadow(QFrame::);
+        grid->setFrameShape(QFrame::StyledPanel);
+        //grid->setStyleSheet("QListWidget {background:#2E2F30; border:1px solid black; border-radius: 2px; }");
+
+        grid->setStyleSheet("QListWidget {background:transparent; padding-top:15px; padding-left:15px; }");
 
         //grid->setMovement(QListView::Static);
         //grid->setMaximumWidth(128);
@@ -36,8 +38,22 @@ AlbumsView::AlbumsView(QWidget *parent) :
     //grid->setWrapping(false);
 //grid->setSpacing(20);
          //grid->setIconSize(QSize(120,120));
-         //grid->setGridSize(QSize(130,130));
+         grid->setGridSize(QSize(130,130));
         //grid->setAlignment(Qt::AlignLeading);
+       slider = new QSlider();
+       connect(slider,SIGNAL(sliderMoved(int)),this,SLOT(albumsSize(int)));
+       slider->setMaximumWidth(100);
+       slider->setMaximum(200);
+       slider->setMinimum(80);
+       slider->setValue(120);
+       slider->setOrientation(Qt::Orientation::Horizontal);
+
+       order = new QComboBox();
+       connect(order, SIGNAL(currentIndexChanged(QString)),this,SLOT(orderChanged(QString)));
+       order->addItem("Artist");
+       order->addItem("Album");
+       order->addItem("Date");
+       //order->setFrame(false);
 
        auto scroll= new QScrollArea();
        scroll->setWidgetResizable(true);
@@ -114,6 +130,21 @@ AlbumsView::~AlbumsView()
 
 }
 
+void AlbumsView::albumsSize(int value)
+{
+    albumSize=value;
+    //slider->setToo
+    slider->setToolTip(QString::number(value));
+    QToolTip::showText( slider->mapToGlobal( QPoint( 0, 0 ) ), QString::number(value) );
+    for(auto album : albumsList)
+    {
+        album->setSize(albumSize);
+        album->setTitleGeometry(0,albumSize-30,albumSize,30);
+        grid->setGridSize(QSize(albumSize+10,albumSize+10));
+
+    }
+}
+
 void AlbumsView::albumHover()
 {
     //cover->setCoverArt("../player/data/cover_hover.svg");
@@ -124,6 +155,10 @@ void  AlbumsView::flushGrid()
     grid->clear();
   // grid->setRowCount(0);
 
+}
+void AlbumsView::orderChanged(QString order)
+{
+    emit albumOrderChanged(order);
 }
 
 void AlbumsView::populateTableView(QSqlQuery query)
@@ -142,7 +177,9 @@ void AlbumsView::populateTableView(QSqlQuery query)
 
        if(!albums.contains(query.value(1).toString()+" "+query.value(2).toString()))
        {
-           auto album= new Album(":Data/data/cover.svg",120);
+           Album *album= new Album(":Data/data/cover.png",albumSize,6);
+           albumsList.push_back(album);
+           album->borderColor=true;
            album->setArtist(query.value(1).toString());
            album->setAlbum(query.value(2).toString());
            album->setTitle();
@@ -151,9 +188,9 @@ void AlbumsView::populateTableView(QSqlQuery query)
            connect(album, SIGNAL(albumCoverClicked(QStringList)),this,SLOT(getAlbumInfo(QStringList)));
 //album->setStyleSheet(":hover {background:#3daee9; }");
            auto item =new QListWidgetItem();
-           item->setSizeHint( QSize( 121, 121) );
+           item->setSizeHint( QSize( 120, 120) );
 
-          // item->setTextAlignment(Qt::AlignCenter);
+          item->setTextAlignment(Qt::AlignCenter);
            grid->addItem(item);
 
           grid->setItemWidget(item,album);

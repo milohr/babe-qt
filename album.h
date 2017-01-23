@@ -18,6 +18,7 @@ public:
     void setTitle();
     void titleVisible(bool state);
     void setTitleGeometry(int x, int y, int w, int h);
+    void setSize(int value);
 
     int border_radius;
     int size;

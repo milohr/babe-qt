@@ -98,6 +98,10 @@ private slots:
     void orderTables();
 
    void on_rowInserted(QModelIndex model ,int x,int y);
+   void showAlbumViewUtils();
+   void hideAlbumViewUtils();
+   void AlbumsViewOrder(QString order);
+
 
 private:
 
@@ -139,6 +143,7 @@ private:
     QSlider *seekBar;
     QLabel *addMusicImg;
     int mini_mode=0;
+    int prevIndex;
     bool hideSearch=true;
     int lCounter = 0;
     int  shuffle_state=0;

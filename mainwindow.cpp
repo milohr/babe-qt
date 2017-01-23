@@ -80,6 +80,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(albumsTable,SIGNAL(songClicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
     connect(albumsTable,SIGNAL(songRated(QStringList)),this,SLOT(addToFavorites(QStringList)));
     connect(albumsTable,SIGNAL(songBabeIt(QStringList)),this,SLOT(addToPlaylist(QStringList)));
+    connect(albumsTable,SIGNAL(albumOrderChanged(QString)),this,SLOT(AlbumsViewOrder(QString)));
+
 
 
 
@@ -237,9 +239,18 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->search->setClearButtonEnabled(true);
     utilsBar->setMovable(false);
     utilsBar->setContentsMargins(0,0,0,0);
-    utilsBar->addWidget(ui->search);
+    utilsBar->addWidget(ui->search);   
     utilsBar->addWidget(ui->resultsPLaylist);
     utilsBar->addWidget(ui->saveResults);
+     utilsBar->addSeparator();
+    //utilsBar->addWidget(albumsTable->order);
+     utilsBar->addWidget(albumsTable->order);
+     utilsBar->addWidget(albumsTable->slider);
+
+     utilsBar->actions().at(1)->setVisible(false);
+     utilsBar->actions().at(2)->setVisible(false);
+     hideAlbumViewUtils();
+
     ui->resultsPLaylist->setEnabled(false);
     ui->saveResults->setEnabled(false);
 
@@ -292,8 +303,8 @@ MainWindow::MainWindow(QWidget *parent) :
     //album_art->setGeometry(0,0,100,100);
 
     album_art = new Album(":Data/data/cover.jpg",200,2,true,album_art_frame);
-    connect(album_art,SIGNAL(albumCoverLeft()),this,SLOT(hideControls()));
-    connect(album_art,SIGNAL(albumCoverEnter()),this,SLOT(showControls()));
+    //connect(album_art,SIGNAL(albumCoverLeft()),this,SLOT(hideControls()));
+   // connect(album_art,SIGNAL(albumCoverEnter()),this,SLOT(showControls()));
 
     album_art->titleVisible(false);
     album_art->setTitleGeometry(0,165,200,30);
@@ -400,12 +411,20 @@ void MainWindow::labelClicked()
     qDebug()<<"the label got clicked";
 }
 
+void MainWindow::AlbumsViewOrder(QString order)
+{
+    albumsTable->flushGrid();
+    albumsTable->populateTableView(settings_widget->getCollectionDB().getQuery("SELECT * FROM tracks ORDER by "+order.toLower()+" asc"));
 
+}
  void MainWindow::enterEvent(QEvent *event)
 {
     //qDebug()<<"entered the window";
+     Q_UNUSED(event);
    showControls();
-   if (mini_mode==2) this->setWindowState(Qt::WindowActive);
+   //if (mini_mode==2) this->setWindowState(Qt::WindowActive);
+
+
 
 }
 
@@ -492,7 +511,7 @@ void MainWindow::labelClicked()
 void MainWindow::setCoverArt(QString path)
 {
 
-
+album_art->setCoverArt(path);
 }
 
 
@@ -534,6 +553,8 @@ void MainWindow::collectionView()
     views->setCurrentIndex(0);
     if(mini_mode!=0) expand();
 
+   hideAlbumViewUtils();
+    prevIndex=views->currentIndex();
 }
 
 void MainWindow::albumsView()
@@ -541,16 +562,22 @@ void MainWindow::albumsView()
     views->setCurrentIndex(1);
     //if(hideSearch)utilsBar->show();
     if(mini_mode!=0) expand();
+    showAlbumViewUtils();
+    prevIndex=views->currentIndex();
 }
 void MainWindow::playlistsView()
 {
     views->setCurrentIndex(3);
     if(mini_mode!=0) expand();
+     hideAlbumViewUtils();
+    prevIndex=views->currentIndex();
 }
 void MainWindow::queueView()
 {
     views->setCurrentIndex(1);
     if(mini_mode!=0) expand();
+     hideAlbumViewUtils();
+    prevIndex=views->currentIndex();
 }
 void MainWindow::infoView()
 {
@@ -558,12 +585,16 @@ void MainWindow::infoView()
     views->setCurrentIndex(0);
 
     if(mini_mode!=0) expand();
+    hideAlbumViewUtils();
+    prevIndex=views->currentIndex();
     //if(!hideSearch)utilsBar->hide();
 }
 void MainWindow::favoritesView()
 {
     views->setCurrentIndex(2);
     if(mini_mode!=0) expand();
+     hideAlbumViewUtils();
+    prevIndex=views->currentIndex();
 
    /* QString url= QFileDialog::getExistingDirectory();
 
@@ -588,6 +619,9 @@ void MainWindow::settingsView()
     views->setCurrentIndex(3);
     if(mini_mode!=0) expand();
     //if(!hideSearch) utilsBar->hide();
+     hideAlbumViewUtils();
+    prevIndex=views->currentIndex();
+
 }
 
 void MainWindow::expand()
@@ -712,7 +746,6 @@ void MainWindow::on_hide_sidebar_btn_clicked()
 album_art->borderColor=false;
         //album_art->setStyleSheet("QLabel{border: none}");
         ui->hide_sidebar_btn->setIcon(QIcon(":Data/data/full_mode.svg"));
-
 
         this->setWindowFlags(Qt::Widget | Qt::WindowTitleHint | Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint);
         this->show();
@@ -1134,14 +1167,20 @@ void MainWindow::on_searchField_clicked()
 
     if(hideSearch)
     {
-        utilsBar->hide();
+        //utilsBar->hide();
+        utilsBar->actions().at(0)->setVisible(false);
+      //  utilsBar->actions().at(1)->setVisible(false);
+       // utilsBar->actions().at(2)->setVisible(false);
+
         ui->searchField->setChecked(false);
         hideSearch=false;
 
     }else
     {
-
-        utilsBar->show();
+        utilsBar->actions().at(0)->setVisible(true);
+        //utilsBar->actions().at(1)->setVisible(true);
+       // utilsBar->actions().at(2)->setVisible(true);
+       // utilsBar->show();
         ui->searchField->setChecked(true);
         hideSearch=true;
 
@@ -1171,6 +1210,7 @@ void MainWindow::on_search_returnPressed()
 {
 
     if(ui->search->text().size()!=0) views->setCurrentIndex(4);
+    else views->setCurrentIndex(prevIndex);
 
 
 }
@@ -1178,26 +1218,49 @@ void MainWindow::on_search_returnPressed()
 void MainWindow::on_search_textChanged(const QString &arg1)
 {
     QString search=arg1;
+    //int oldIndex = views->currentIndex();
+    //qDebug()<<oldIndex;
+     hideAlbumViewUtils();
+
+
     if(search.size()!=0)
     {
         views->setCurrentIndex(4);
         qDebug()<<search;
         resultsTable->flushTable();
         resultsTable->populateTableView("SELECT * FROM tracks WHERE title LIKE '%"+search+"%' OR artist LIKE '%"+search+"%' OR album LIKE '%"+search+"%'");
+        utilsBar->actions().at(1)->setVisible(true);
+        utilsBar->actions().at(2)->setVisible(true);
         ui->resultsPLaylist->setEnabled(true);
         ui->saveResults->setEnabled(true);
 
     }else
     {
-        views->setCurrentIndex(0);
-        ui->tracks_view->setChecked(true);
+
+        views->setCurrentIndex(prevIndex);
+        if(views->currentIndex()==1) showAlbumViewUtils();
+        resultsTable->flushTable();
+        //ui->tracks_view->setChecked(true);
+        utilsBar->actions().at(1)->setVisible(false);
+        utilsBar->actions().at(2)->setVisible(false);
         ui->resultsPLaylist->setEnabled(false);
         ui->saveResults->setEnabled(false);
     }
 
 }
 
+void MainWindow::showAlbumViewUtils()
+{
+    utilsBar->actions().at(4)->setVisible(true);
+    utilsBar->actions().at(5)->setVisible(true);
+}
 
+void MainWindow::hideAlbumViewUtils()
+{
+
+    utilsBar->actions().at(4)->setVisible(false);
+    utilsBar->actions().at(5)->setVisible(false);
+}
 
 void MainWindow::on_resultsPLaylist_clicked()
 {
@@ -1207,7 +1270,7 @@ void MainWindow::on_resultsPLaylist_clicked()
 
 void MainWindow::on_settings_view_clicked()
 {
-    setCoverArt(":Data/data/babe.png");
+    setCoverArt(":Data/data/cover.png");
 }
 
 

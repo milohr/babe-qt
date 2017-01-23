@@ -46,7 +46,7 @@ this->addAction(removeIt);
 
 
 title = new ScrollText();
-title->setMaxSize(size);
+//title->setMaxSize(size);
 //title->hide();
     auto *left_spacer = new QWidget();
     left_spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -60,7 +60,9 @@ layout->addWidget(right_spacer);
 widget->setMinimumWidth(size);
 this->setStyleSheet("border:none");
     widget->setGeometry(0,90,size,30);
-    widget->setStyleSheet("background-color: rgba(0,0,0,150)");
+    //widget->setStyleSheet("background-color: rgba(0,0,0,150)");
+     widget->setStyleSheet( QString("background-color: rgba(0,0,0,150); border: 1px solid #333; border-top-left-radius:0; border-top-right-radius:0; border-bottom-right-radius:%1px; border-bottom-left-radius:%2px;").arg( QString::number(border_radius),QString::number(border_radius)));
+
     title->setStyleSheet("background:transparent; color:white; border:none;");
     right_spacer->setStyleSheet("background:transparent;  border:none;");
     left_spacer->setStyleSheet("background:transparent;  border:none;");
@@ -73,8 +75,11 @@ this->setStyleSheet("border:none");
 void Album::paintEvent(QPaintEvent *e)
 {
     Q_UNUSED(e)
-
-
+this->setFixedSize(size,size);
+title->setMaxSize(size);
+//title->setMaximumWidth(size);
+//title->setFixedWidth(size);
+//widget->setMaximumWidth(size);
 
     QBrush brush(image.scaled(size,size,Qt::KeepAspectRatio));
    // brush.setStyle(Qt::no);
@@ -97,7 +102,7 @@ void Album::setCoverArt(QString path)
 {
     //this->setPixmap(QPixmap(path).scaled(120,120,Qt::KeepAspectRatio));
     image.load(path);
-    image.scaled(size,size,Qt::KeepAspectRatio,Qt::SmoothTransformation);
+   // image.scaled(size,size,Qt::KeepAspectRatio,Qt::SmoothTransformation);
 
 }
 
@@ -131,6 +136,15 @@ void Album::setTitle()
     title->setText(album+" - "+artist);
    // scrollText->setText(album+" - "+artist);
     //this->setToolTip(album+" - "+artist);
+}
+
+
+void Album::setSize(int value)
+{
+    this->size=value;
+    widget->setGeometry(0,90,size,30);
+
+
 }
 
 void Album::setTitleGeometry(int x, int y, int w, int h)

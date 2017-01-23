@@ -8,7 +8,7 @@ About::About(QWidget *parent) :
     ui->setupUi(this);
     this->setFixedSize(400,300);
     ui->icon->setPixmap(QPixmap(":Data/data/banner.png"));
-    ui->about->setText("Babe...\nTiny Qt Music Player\nVerion: 0.0 Alpha\nBabe is developed and designed\nby Camilo Higuita \nand it is a free and open source app, so feel free\nto fork it, submit code or redistribute it");
+    ui->about->appendPlainText("Babe...\nTiny Qt Music Player\nVerion: 0.0 Alpha\nBabe is developed and designed by Camilo Higuita \nThis is a free and open source app, so feel free to fork it, submit code or redistribute it");
     //connect(ui->about,SIGNAL(clicked()),this,SLOT(labelClicked()));
 
 
@@ -19,10 +19,7 @@ About::~About()
     delete ui;
 }
 
-void About::on_about_linkActivated(const QString &link)
-{
-    qDebug()<<"the label got clicked";
-}
+
 
 void About::labelClicked()
 {

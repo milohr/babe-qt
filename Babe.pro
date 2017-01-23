@@ -47,7 +47,8 @@ SOURCES += main.cpp\
     album.cpp \
     albumsview.cpp \
     scrolltext.cpp \
-    playlistsview.cpp
+    playlistsview.cpp \
+    taginfo.cpp
 
 HEADERS  += mainwindow.h \
             playlist.h \
@@ -60,7 +61,8 @@ HEADERS  += mainwindow.h \
     album.h \
     albumsview.h \
     scrolltext.h \
-    playlistsview.h
+    playlistsview.h \
+    taginfo.h
 
 FORMS    += mainwindow.ui \
     settings.ui \

@@ -33,6 +33,7 @@ void  ScrollText::leaveEvent(QEvent *event)
 }
 void ScrollText::setMaxSize(int size)
 {
+   this->setMaximumWidth(size);
     maxSize=size;
 }
 

@@ -144,8 +144,8 @@ void settings::collectionWatcher()
 
 {
     QSqlQuery query=collection_db.getQuery("SELECT * FROM tracks");
-QStringList files;
-QStringList dirs;
+    QStringList files;
+    QStringList dirs;
       while (query.next())
       {
          if (!dirs.contains(QFileInfo (query.value(3).toString()).dir().path())) dirs << QFileInfo (query.value(3).toString()).dir().path();
