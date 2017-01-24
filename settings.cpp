@@ -148,10 +148,10 @@ void settings::collectionWatcher()
     QStringList dirs;
       while (query.next())
       {
-         if (!dirs.contains(QFileInfo (query.value(3).toString()).dir().path())) dirs << QFileInfo (query.value(3).toString()).dir().path();
+         if (!dirs.contains(QFileInfo (query.value(CollectionDB::LOCATION).toString()).dir().path())) dirs << QFileInfo (query.value(CollectionDB::LOCATION).toString()).dir().path();
 
 
-          files<<query.value(3).toString();
+          files<<query.value(CollectionDB::LOCATION).toString();
 
       }
 

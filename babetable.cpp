@@ -19,8 +19,8 @@ BabeTable::BabeTable(QTableWidget *parent) :
     connection->openCollection("../player/collection.db");*/
 
 connect(this,SIGNAL(doubleClicked(QModelIndex)),this,SLOT(on_tableWidget_doubleClicked(QModelIndex)));
-this->setColumnCount(5);
-this->setHorizontalHeaderLabels({"Tile","Artist","Album","Location","Stars","Babe","Art"});
+this->setColumnCount(9);
+this->setHorizontalHeaderLabels({"Track","Tile","Artist","Album","Genre","Location","Stars","Babe","Art","Played"});
 this->horizontalHeader()->setDefaultSectionSize(150);
 this->verticalHeader()->setVisible(false);
 this->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -32,9 +32,16 @@ this->horizontalHeader()->setHighlightSections(false);
 this->horizontalHeader()->setStretchLastSection(true);
 //this->setGridStyle(Qt::PenStyle);
 this->setShowGrid(false);
+
+this->setColumnWidth(TRACK,20);
+this->setColumnWidth(STARS,80);
     this->hideColumn(LOCATION);
    this->hideColumn(STARS);
     this->hideColumn(BABE);
+ this->hideColumn(GENRE);
+this->hideColumn(TRACK);
+this->hideColumn(PLAYED);
+this->hideColumn(ART);
 
     fav1= new QToolButton ();
     fav2= new QToolButton ();
@@ -165,34 +172,41 @@ QStringList missingFiles;
        while (query.next())
        {
 
-            if( !QFileInfo(query.value(3).toString()).exists())
+            if( !QFileInfo(query.value(LOCATION).toString()).exists())
             {
-               qDebug ()<<"That file doesn't exists anymore: "<<query.value(3).toString();
-               missingFiles<<query.value(3).toString();
+               qDebug ()<<"That file doesn't exists anymore: "<<query.value(LOCATION).toString();
+               missingFiles<<query.value(LOCATION).toString();
                missingDialog=true;
             }else
             {
            this->insertRow(this->rowCount());
 
-           auto *title= new QTableWidgetItem( query.value(0).toString());
-           //title->setFlags(title->flags() & ~Qt::ItemIsEditable);
+           auto *track= new QTableWidgetItem( query.value(TRACK).toString());
+           this->setItem(this->rowCount()-1, TRACK, track);
 
+           auto *title= new QTableWidgetItem( query.value(TITLE).toString());
+           //title->setFlags(title->flags() & ~Qt::ItemIsEditable);
            this->setItem(this->rowCount()-1, TITLE, title);
 
-           auto *artist= new QTableWidgetItem( query.value(1).toString());
+           auto *artist= new QTableWidgetItem( query.value(ARTIST).toString());
            this->setItem(this->rowCount()-1, ARTIST, artist);
 
            //qDebug()<<query.value(2).toString();
-           auto *album= new QTableWidgetItem( query.value(2).toString());
+           auto *album= new QTableWidgetItem( query.value(ALBUM).toString());
            this->setItem(this->rowCount()-1, ALBUM, album);
 
-           auto *location= new QTableWidgetItem( query.value(3).toString());
+           auto *genre= new QTableWidgetItem( query.value(GENRE).toString());
+           this->setItem(this->rowCount()-1, GENRE, genre);
+
+           auto *location= new QTableWidgetItem( query.value(LOCATION).toString());
            this->setItem(this->rowCount()-1, LOCATION, location);
 
+
+
           QString rating;
-          switch(query.value((4)).toInt())
+          switch(query.value((STARS)).toInt())
           {
-              case 0: rating="\xe2\x99\xa1 "; break;
+              case 0: rating=" "; break;
               case 1: rating="\xe2\x98\x86 "; break;
               case 2: rating="\xe2\x98\x86 \xe2\x98\x86 "; break;
               case 3: rating="\xe2\x98\x86 \xe2\x98\x86 \xe2\x98\x86 "; break;
@@ -204,9 +218,9 @@ QStringList missingFiles;
            this->setItem(this->rowCount()-1, STARS, stars);
 
            QString bb;
-           switch(query.value((5)).toInt())
+           switch(query.value((BABE)).toInt())
            {
-               case 0: bb=" - "; break;
+               case 0: bb=" "; break;
                case 1: bb="\xe2\x99\xa1 "; break;
 
            }
@@ -215,6 +229,14 @@ QStringList missingFiles;
 
            auto *babe= new QTableWidgetItem( bb);
            this->setItem(this->rowCount()-1, BABE, babe);
+
+           auto *art= new QTableWidgetItem( query.value(ART).toString());
+           this->setItem(this->rowCount()-1, ART, art);
+
+           auto *played= new QTableWidgetItem( query.value(PLAYED).toString());
+           this->setItem(this->rowCount()-1, PLAYED, played);
+
+
             }
 
        }
@@ -275,7 +297,7 @@ void BabeTable::setRating(int rate)
         case 2: fav1->setIcon(QIcon::fromTheme("rating"));
                 fav2->setIcon(QIcon::fromTheme("rating"));
                 fav3->setIcon(QIcon::fromTheme("rating-unrated"));
-                fav4->setIcon(QIcon::fromTheme("rating-unrated"));
+               fav4->setIcon(QIcon::fromTheme("rating-unrated"));
                 fav5->setIcon(QIcon::fromTheme("rating-unrated"));
                 break;
         case 3: fav1->setIcon(QIcon::fromTheme("rating"));
@@ -315,15 +337,15 @@ void BabeTable::setTableOrder(int column, int order)
 
 void BabeTable::setVisibleColumn(int column)
 {
-    if(column==3)
+    if(column==LOCATION)
     {
         this->showColumn(LOCATION);
     }
-    else if (column==4)
+    else if (column==STARS)
     {
        this->showColumn(STARS);
     }
-    else if(column==5)
+    else if(column==BABE)
     {
         this->showColumn(BABE);
     }
@@ -390,7 +412,7 @@ void BabeTable::rateGroup(int id)
 
     int rate;
 
-    while(query.next()) rate = query.value(4).toInt();
+    while(query.next()) rate = query.value(STARS).toInt();
 
 
 

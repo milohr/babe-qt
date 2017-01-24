@@ -2,6 +2,10 @@
 #define PLAYLISTSVIEW_H
 
 #include <QWidget>
+#include <babetable.h>
+#include <QListWidget>
+#include <QToolButton>
+#include <QGridLayout>
 
 namespace Ui {
 class PlaylistsView;
@@ -14,9 +18,21 @@ class PlaylistsView : public QWidget
 public:
     explicit PlaylistsView(QWidget *parent = 0);
     ~PlaylistsView();
+    QToolButton *addToPlaylist;
+    BabeTable *table;
+    QListWidget *list;
+   // QToolButton *removeBtn;
 
 private:
-    Ui::PlaylistsView *ui;
+
+    QToolButton *addBtn;
+    QToolButton *removeBtn;
+    QGridLayout *layout;
+    QWidget *btnContainer;
+    QFrame *frame;
+
+
+
 };
 
 #endif // PLAYLISTSVIEW_H

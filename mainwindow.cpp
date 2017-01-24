@@ -69,6 +69,7 @@ MainWindow::MainWindow(QWidget *parent) :
     resultsTable=new BabeTable();
     resultsTable->passStyle("QHeaderView::section { background-color:#e3f4d7; }");
     resultsTable->setVisibleColumn(BabeTable::STARS);
+    resultsTable->setVisibleColumn(BabeTable::GENRE);
     connect(resultsTable,SIGNAL(songRated(QStringList)),this,SLOT(addToFavorites(QStringList)));
     connect(resultsTable,SIGNAL(tableWidget_doubleClicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
     connect(resultsTable,SIGNAL(enteredTable()),this,SLOT(hideControls()));
@@ -82,6 +83,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(albumsTable,SIGNAL(songBabeIt(QStringList)),this,SLOT(addToPlaylist(QStringList)));
     connect(albumsTable,SIGNAL(albumOrderChanged(QString)),this,SLOT(AlbumsViewOrder(QString)));
 
+
+    playlistTable = new PlaylistsView();
 
 
 
@@ -268,6 +271,7 @@ MainWindow::MainWindow(QWidget *parent) :
     views->addWidget(albumsTable);
     views->addWidget(favoritesTable);
     views->addWidget(settings_widget);
+    views->addWidget(playlistTable);
     views->addWidget(resultsTable);
 
 
@@ -541,6 +545,8 @@ void MainWindow::setToolbarIconSize(int iconSize)
    // this->update();
 }
 
+
+
 void MainWindow::setUpViews()
 {
 
@@ -567,7 +573,7 @@ void MainWindow::albumsView()
 }
 void MainWindow::playlistsView()
 {
-    views->setCurrentIndex(3);
+    views->setCurrentIndex(4);
     if(mini_mode!=0) expand();
      hideAlbumViewUtils();
     prevIndex=views->currentIndex();
@@ -830,7 +836,7 @@ void MainWindow::populateMainList()
 
 
 
-        files << query.value(3).toString();
+        files << query.value(BabeTable::LOCATION).toString();
 
        }
 
@@ -1049,8 +1055,8 @@ void MainWindow::collectionDBFinishedAdding(bool state)
 
 void MainWindow::orderTables()
 {
-    favoritesTable->setTableOrder(4,BabeTable::DESCENDING);
-    collectionTable->setTableOrder(1,BabeTable::ASCENDING);
+    favoritesTable->setTableOrder(BabeTable::STARS,BabeTable::DESCENDING);
+    collectionTable->setTableOrder(BabeTable::ARTIST,BabeTable::ASCENDING);
     qDebug()<<"finished populating tables, now ordering them";
 }
 
@@ -1209,7 +1215,7 @@ void MainWindow::addToPlaylist(QStringList list)
 void MainWindow::on_search_returnPressed()
 {
 
-    if(ui->search->text().size()!=0) views->setCurrentIndex(4);
+    if(ui->search->text().size()!=0) views->setCurrentIndex(5);
     else views->setCurrentIndex(prevIndex);
 
 
@@ -1225,10 +1231,10 @@ void MainWindow::on_search_textChanged(const QString &arg1)
 
     if(search.size()!=0)
     {
-        views->setCurrentIndex(4);
+        views->setCurrentIndex(5);
         qDebug()<<search;
         resultsTable->flushTable();
-        resultsTable->populateTableView("SELECT * FROM tracks WHERE title LIKE '%"+search+"%' OR artist LIKE '%"+search+"%' OR album LIKE '%"+search+"%'");
+        resultsTable->populateTableView("SELECT * FROM tracks WHERE title LIKE '%"+search+"%' OR artist LIKE '%"+search+"%' OR album LIKE '%"+search+"%'OR genre LIKE '%"+search+"%'");
         utilsBar->actions().at(1)->setVisible(true);
         utilsBar->actions().at(2)->setVisible(true);
         ui->resultsPLaylist->setEnabled(true);

@@ -23,7 +23,7 @@ public:
 
     enum columns
     {
-        TITLE,ARTIST,ALBUM,LOCATION,STARS,BABE
+        TRACK,TITLE,ARTIST,ALBUM,GENRE,LOCATION,STARS,BABE,ART,PLAYED
     };
     enum order
     {

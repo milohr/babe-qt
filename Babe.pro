@@ -67,8 +67,7 @@ HEADERS  += mainwindow.h \
 FORMS    += mainwindow.ui \
     settings.ui \
     info.ui \
-    about.ui \
-    playlistsview.ui
+    about.ui
 
 RESOURCES += \
     data.qrc

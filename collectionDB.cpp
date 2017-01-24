@@ -59,7 +59,9 @@ void CollectionDB::prepareCollectionDB()
 
 
     QSqlQuery query;
-    query.exec("CREATE TABLE tracks(title text, artist text, album text, location text unique, stars integer, babe integer, art text);");
+    query.exec("CREATE TABLE tracks(track integer, title text, artist text, album text, genre text, location text unique, stars integer, babe integer, art text, played integer);");
+
+    query.exec("CREATE TABLE playlists(title text);");
     //query.exec("CREATE TABLE tracks(title text, album text, artist text, location text, stars integer, babe integer);");
 
 
@@ -132,13 +134,18 @@ void CollectionDB::addTrack()
 
          // you should check if args are ok first...
 
-         query.prepare("INSERT INTO tracks (title, artist, album, location, stars, babe)" "VALUES (:title, :artist, :album, :location, :stars, :babe ) ");
+         query.prepare("INSERT INTO tracks (track, title, artist, album, genre, location, stars, babe, art, played)" "VALUES (:track, :title, :artist, :album, :genre, :location, :stars, :babe, :art, :played) ");
+         query.bindValue(":track", trackList[i].getTrack());
          query.bindValue(":title", QString::fromStdString(trackList[i].getTitle()));
          query.bindValue(":artist", QString::fromStdString(trackList[i].getArtist()));
          query.bindValue(":album", QString::fromStdString(trackList[i].getAlbum()));
+         query.bindValue(":genre", QString::fromStdString(trackList[i].getGenre()));
          query.bindValue(":location", QString::fromStdString(trackList[i].getLocation()));
          query.bindValue(":stars", 0);
          query.bindValue(":babe", 0);
+         query.bindValue(":art", QString::fromStdString(trackList[i].getArtwork()));
+         query.bindValue(":played", 0);
+
 
          if(query.exec())
          {
@@ -149,7 +156,8 @@ emit progress(i+1);
          else
          {
               qDebug() << "addPerson error:  "
-                       << query.lastError();
+                       << query.lastError()
+                        <<QString::fromStdString(trackList[i].getArtwork())<<QString::fromStdString(trackList[i].getTitle());
          }
 
 
@@ -176,13 +184,17 @@ void CollectionDB::addSong(QList<Track> song, int babe)
 
          // you should check if args are ok first...
 
-         query.prepare("INSERT INTO tracks (title, artist, album, location, stars, babe)" "VALUES (:title, :artist, :album, :location, :stars, :babe ) ");
+          query.prepare("INSERT INTO tracks (track, title, artist, album, genre, location, stars, babe,art,played)" "VALUES (:track :title, :artist, :album,:genre, :location, :stars, :babe, :art, :played ) ");
+         query.bindValue(":track", QString::number(song[i].getTrack()));
          query.bindValue(":title", QString::fromStdString(song[i].getTitle()));
          query.bindValue(":artist", QString::fromStdString(song[i].getArtist()));
          query.bindValue(":album", QString::fromStdString(song[i].getAlbum()));
+         query.bindValue(":genre", QString::fromStdString(song[i].getGenre()));
          query.bindValue(":location", QString::fromStdString(song[i].getLocation()));
          query.bindValue(":stars", 0);
          query.bindValue(":babe", babe);
+         query.bindValue(":art", QString::fromStdString(song[i].getArtwork()));
+          query.bindValue(":played", 0);
 
          if(query.exec())
          {

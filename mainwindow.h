@@ -17,6 +17,7 @@
 #include <babetable.h>
 #include<QListWidgetItem>
 #include <album.h>
+#include <playlistsview.h>
 
 namespace Ui {
 class MainWindow;
@@ -32,6 +33,11 @@ public:
     void setStyle();
     void updateList();    
     void populateMainList();
+
+    enum views
+    {
+        COLLECTION,ALBUMS,FAVORITES,PLAYLISTS,QUEUE,INFO,SETTINGS
+    };
 
 
 
@@ -135,6 +141,8 @@ private:
     BabeTable *favoritesTable;
     BabeTable *resultsTable;
     AlbumsView* albumsTable;
+    PlaylistsView *playlistTable;
+
     /*the streaming */
     Playlist playlist;
     QMediaPlayer *player = new QMediaPlayer();

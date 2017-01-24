@@ -31,6 +31,12 @@ public:
     bool removeQuery(QString queryTxt);
     bool check_existance(QString tableName, QString searchId, QString search);
     void addSong(QList<Track> song, int babe);
+
+    enum colums
+    {
+        TRACK,TITLE,ARTIST,ALBUM,GENRE,LOCATION,STARS,BABE,ART,PLAYED
+    };
+
 private:
 
     QSqlDatabase m_db;
