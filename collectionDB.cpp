@@ -5,6 +5,7 @@
 #include <QDebug>
 #include <track.h>
 #include <QSqlDriver>
+#include <taginfo.h>
 
 
 CollectionDB::CollectionDB()
@@ -119,7 +120,7 @@ bool CollectionDB::checkQuery(QString queryTxt)
 
 }
 
-void CollectionDB::addTrack()
+void CollectionDB::addTrack(QStringList paths)
 {
     //bool success = false;
 
@@ -127,37 +128,38 @@ void CollectionDB::addTrack()
         QSqlQuery query;
 
         query.exec("PRAGMA synchronous=OFF");
-
+int i=0;
      qDebug()<<"started wrrting to database...";
-      for(int i = 0; i < trackList.size(); i++)
+      for(auto file:paths)
       {
+           TagInfo info(file);
 
          // you should check if args are ok first...
 
          query.prepare("INSERT INTO tracks (track, title, artist, album, genre, location, stars, babe, art, played)" "VALUES (:track, :title, :artist, :album, :genre, :location, :stars, :babe, :art, :played) ");
-         query.bindValue(":track", trackList[i].getTrack());
-         query.bindValue(":title", QString::fromStdString(trackList[i].getTitle()));
-         query.bindValue(":artist", QString::fromStdString(trackList[i].getArtist()));
-         query.bindValue(":album", QString::fromStdString(trackList[i].getAlbum()));
-         query.bindValue(":genre", QString::fromStdString(trackList[i].getGenre()));
-         query.bindValue(":location", QString::fromStdString(trackList[i].getLocation()));
+         query.bindValue(":track", info.getTrack());
+         query.bindValue(":title", info.getTitle());
+         query.bindValue(":artist", info.getArtist());
+         query.bindValue(":album", info.getAlbum());
+         query.bindValue(":genre", info.getGenre());
+         query.bindValue(":location", file);
          query.bindValue(":stars", 0);
          query.bindValue(":babe", 0);
-         query.bindValue(":art", QString::fromStdString(trackList[i].getArtwork()));
+         query.bindValue(":art", "");//here need to fecth the artwork
          query.bindValue(":played", 0);
 
 
          if(query.exec())
          {
              //success = true;
-             qDebug()<< "writting to db: "<<QString::fromStdString(trackList[i].getTitle());
-emit progress(i+1);
+             qDebug()<< "writting to db: "<<info.getTitle();
+             emit progress((i++)+1);
          }
          else
          {
               qDebug() << "addPerson error:  "
                        << query.lastError()
-                        <<QString::fromStdString(trackList[i].getArtwork())<<QString::fromStdString(trackList[i].getTitle());
+                        <<info.getTitle();
          }
 
 
@@ -170,7 +172,7 @@ emit DBactionFinished(true);
 }
 
 
-void CollectionDB::addSong(QList<Track> song, int babe)
+void CollectionDB::addSong(QStringList paths, int babe=0)
 {
     //bool success = false;
 
@@ -179,28 +181,28 @@ void CollectionDB::addSong(QList<Track> song, int babe)
 
 
      qDebug()<<"started wrrting to database...";
-      for(int i = 0; i < song.size(); i++)
-      {
+     for(auto file:paths)
+     {
+          TagInfo info(file);
 
-         // you should check if args are ok first...
+        // you should check if args are ok first...
 
-          query.prepare("INSERT INTO tracks (track, title, artist, album, genre, location, stars, babe,art,played)" "VALUES (:track :title, :artist, :album,:genre, :location, :stars, :babe, :art, :played ) ");
-         query.bindValue(":track", QString::number(song[i].getTrack()));
-         query.bindValue(":title", QString::fromStdString(song[i].getTitle()));
-         query.bindValue(":artist", QString::fromStdString(song[i].getArtist()));
-         query.bindValue(":album", QString::fromStdString(song[i].getAlbum()));
-         query.bindValue(":genre", QString::fromStdString(song[i].getGenre()));
-         query.bindValue(":location", QString::fromStdString(song[i].getLocation()));
-         query.bindValue(":stars", 0);
-         query.bindValue(":babe", babe);
-         query.bindValue(":art", QString::fromStdString(song[i].getArtwork()));
-          query.bindValue(":played", 0);
+        query.prepare("INSERT INTO tracks (track, title, artist, album, genre, location, stars, babe, art, played)" "VALUES (:track, :title, :artist, :album, :genre, :location, :stars, :babe, :art, :played) ");
+        query.bindValue(":track", info.getTrack());
+        query.bindValue(":title", info.getTitle());
+        query.bindValue(":artist", info.getArtist());
+        query.bindValue(":album", info.getAlbum());
+        query.bindValue(":genre", info.getGenre());
+        query.bindValue(":location", file);
+        query.bindValue(":stars", 0);
+        query.bindValue(":babe", babe);
+        query.bindValue(":art", "");//here need to fecth the artwork
+        query.bindValue(":played", 0);
 
          if(query.exec())
          {
              //success = true;
-             qDebug()<< "writting to db: "<<QString::fromStdString(song[i].getTitle());
-
+             qDebug()<< "writting to db: "<<info.getTitle();
          }
          else
          {

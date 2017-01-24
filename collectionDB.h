@@ -30,7 +30,7 @@ public:
     void prepareCollectionDB();
     bool removeQuery(QString queryTxt);
     bool check_existance(QString tableName, QString searchId, QString search);
-    void addSong(QList<Track> song, int babe);
+    void addSong(QStringList paths, int babe);
 
     enum colums
     {
@@ -43,7 +43,7 @@ private:
     QList <Track> trackList;
 
 public slots:
-    void addTrack();
+    void addTrack(QStringList paths);
     void closeConnection();
 
 signals:

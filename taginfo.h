@@ -18,6 +18,7 @@ public:
 
 private:
     TagLib::FileRef file;
+    QString path;
 };
 
 #endif // TAGINFO_H

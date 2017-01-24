@@ -1,4 +1,6 @@
 #include "playlistsview.h"
+#include "colortag.h"
+
 
 PlaylistsView::PlaylistsView(QWidget *parent) :
     QWidget(parent)
@@ -11,6 +13,20 @@ PlaylistsView::PlaylistsView(QWidget *parent) :
    list->setFixedWidth(150);
    list->setAlternatingRowColors(true);
    list->setFrameShape(QFrame::NoFrame);
+
+
+   auto item =new QListWidgetItem();
+
+   list->addItem(item);
+   auto color = new ColorTag();
+   color->setStyleSheet("background-color: blue;");
+   list->setItemWidget(item,color);
+
+
+   list->addItem("Favorites");
+
+   list->addItem("Most Played");
+   //list->addItem("Favorites");
    table->setFrameShape(QFrame::StyledPanel);
    //table->setSizePolicy(QSizePolicy::Expanding);
 

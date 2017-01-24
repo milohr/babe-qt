@@ -1137,11 +1137,11 @@ void MainWindow::on_fav_btn_clicked()
  }
 void MainWindow::addToCollectionDB(QStringList url, QString babe)
 {
-    Playlist song;
+   /* Playlist song;
       song.add(url);
-      for(auto ui: song.getTracks()) qDebug()<< QString::fromStdString(ui.getTitle());
+      for(auto ui: song.getTracks()) qDebug()<< QString::fromStdString(ui.getTitle());*/
 
- settings_widget->getCollectionDB().addSong(song.getTracks(),babe.toInt());
+ settings_widget->getCollectionDB().addSong(url,babe.toInt());
  // addToCollection({QString::fromStdString(song.tracks[getIndex()].getTitle()),QString::fromStdString(song.tracks[getIndex()].getArtist()),QString::fromStdString(song.tracks[getIndex()].getAlbum()),QString::fromStdString(song.tracks[getIndex()].getLocation()),"\xe2\x99\xa1",babe});
  collectionTable->flushTable();
  collectionTable->populateTableView("SELECT * FROM tracks");
@@ -1151,10 +1151,10 @@ void MainWindow::addToCollectionDB(QStringList url, QString babe)
 //iterates through the paths of the modify folders tp search for new music and then refreshes the collection view
 void MainWindow::addToCollectionDB_t(QStringList url)
 {
-    Playlist song;
-      song.add(url);
+   /* Playlist song;
+      song.add(url);*/
      // for(auto ui: song.getTracks()) qDebug()<< QString::fromStdString(ui.getLocation());
-settings_widget->getCollectionDB().addSong(song.getTracks(),0);
+settings_widget->getCollectionDB().addSong(url,0);
  //settings_widget->getCollectionDB().addTrack();
 
 /*for(auto track :song.getTracks() )

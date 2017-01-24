@@ -267,14 +267,14 @@ void settings::populateDB(QString path)
         qDebug ()<< path;
     }
 
-    Playlist *collection= new Playlist();
+   /* Playlist *collection= new Playlist();
     collection->addClean(urlCollection);
     //updateList();
-   collection_db.setTrackList(collection->getTracks());
+   collection_db.setTrackList(collection->getTracks());*/
    ui->progressBar->setValue(0);
     ui->progressBar->setMaximum(urlCollection.size());
     ui->progressBar->show();
-  collection_db.addTrack();
+  collection_db.addTrack(urlCollection);
    // thread->start();
 
 
