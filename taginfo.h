@@ -5,6 +5,7 @@
 #include<taglib/fileref.h>
 #include <QString>
 
+
 class TagInfo
 {
 public:
@@ -14,6 +15,7 @@ public:
     QString getArtist();
     int getTrack();
     QString getGenre();
+    QString fileName();
 
 
 private:

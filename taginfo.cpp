@@ -2,6 +2,8 @@
 #include<taglib/taglib.h>
 #include<taglib/tag.h>
 #include<taglib/fileref.h>
+#include "utils.h"
+
 
 TagInfo::TagInfo(QString file)
 {
@@ -16,7 +18,7 @@ QString TagInfo::getAlbum()
 
 QString TagInfo::getTitle()
 {
-    return QString::fromStdWString(file.tag()->title().toWString()).size()>0 ? QString::fromStdWString(file.tag()->title().toWString()) : "UNKWON";
+    return QString::fromStdWString(file.tag()->title().toWString()).size()>0 ? QString::fromStdWString(file.tag()->title().toWString()) :fileName() ;
 
 }
 
@@ -33,6 +35,11 @@ int TagInfo::getTrack()
 QString TagInfo::getGenre()
 {
     return QString::fromStdWString(file.tag()->genre().toWString()).size()>0 ? QString::fromStdWString(file.tag()->genre().toWString()) : "UNKWON";
+}
+
+QString TagInfo::fileName()
+{
+    return QString::fromStdString( getNameFromLocation(path.toStdString()));
 }
 
 

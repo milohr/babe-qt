@@ -15,12 +15,12 @@ PlaylistsView::PlaylistsView(QWidget *parent) :
    list->setFrameShape(QFrame::NoFrame);
 
 
-   auto item =new QListWidgetItem();
+   //auto item =new QListWidgetItem();
 
-   list->addItem(item);
-   auto color = new ColorTag();
-   color->setStyleSheet("background-color: blue;");
-   list->setItemWidget(item,color);
+   //list->addItem(item);
+   //auto color = new ColorTag();
+   //color->setStyleSheet("background-color: blue;");
+   //list->setItemWidget(list->item(1),color);
 
 
    list->addItem("Favorites");

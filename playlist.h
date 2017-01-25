@@ -4,7 +4,7 @@
 #include "QStringList"
 #include "vector"
 #include "track.h"
-#include <QtMultimedia/QMediaPlayer>
+//#include <QtMultimedia/QMediaPlayer>
 
 class Playlist
 {
@@ -25,11 +25,10 @@ void addClean(QStringList files);
      QList<Track> getTracks();
 
 private:
-    QMediaPlayer *p;
+    //QMediaPlayer *p;
     void setMetaData(QString,QString,QString,QString);
 
-signals:
-    //void mediaStatusChanged();
+
 };
 
 #endif // PLAYLIST_H

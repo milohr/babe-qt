@@ -1271,7 +1271,7 @@ void MainWindow::hideAlbumViewUtils()
 void MainWindow::on_resultsPLaylist_clicked()
 {
 
-    addToPlaylist(resultsTable->getTableContent(3));
+    addToPlaylist(resultsTable->getTableContent(BabeTable::LOCATION));
 }
 
 void MainWindow::on_settings_view_clicked()

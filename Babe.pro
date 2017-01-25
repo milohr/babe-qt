@@ -48,8 +48,8 @@ SOURCES += main.cpp\
     albumsview.cpp \
     scrolltext.cpp \
     playlistsview.cpp \
-    taginfo.cpp \
-    colortag.cpp
+    colortag.cpp \
+    taginfo.cpp
 
 HEADERS  += mainwindow.h \
             playlist.h \

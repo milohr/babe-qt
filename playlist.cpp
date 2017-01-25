@@ -1,8 +1,7 @@
 #include "playlist.h"
 #include <fstream>
-#include "utils.h"
-#include <QtMultimedia/QMediaMetaData>
-#include <QtMultimedia/QMediaPlayer>
+//include "utils.h"
+
 #include <QDebug>
 
 #include<QString>
@@ -84,7 +83,7 @@ void Playlist::add(QStringList files)
             QString genre = info.getGenre();
 
 
-                title = title.size()>0 ? title : QString::fromStdString( getNameFromLocation(files[i].toStdString()));
+                title = title.size()>0 ? title : info.fileName();
                 artist = artist.size()>0 ? artist : "UNKWON";
                 album = album.size()>0 ? album : "UNKWON";
 
@@ -96,7 +95,7 @@ void Playlist::add(QStringList files)
                 track.setGenre(genre.toStdString());
                 track.setTrack(track_n);
                 track.setArtwork(artwork.toStdString());
-                track.setName(getNameFromLocation(files[i].toStdString()));
+                track.setName(info.fileName().toStdString());
 
                 tracks.push_back(track);
         }else
@@ -133,7 +132,7 @@ void Playlist::addClean(QStringList files)
         QString genre = info.getGenre();
 
 
-            title = title.size()>0 ? title : QString::fromStdString( getNameFromLocation(files[i].toStdString()));
+            title = title.size()>0 ? title : info.fileName();
             artist = artist.size()>0 ? artist : "UNKWON";
             album = album.size()>0 ? album : "UNKWON";
 
@@ -145,7 +144,7 @@ void Playlist::addClean(QStringList files)
             track.setGenre(genre.toStdString());
             track.setTrack(track_n);
             track.setArtwork(artwork.toStdString());
-            track.setName(getNameFromLocation(files[i].toStdString()));
+            track.setName(info.fileName().toStdString());
 
             tracks.push_back(track);
 }

@@ -173,6 +173,8 @@ void AlbumsView::albumHover()
 void  AlbumsView::flushGrid()
 {
     grid->clear();
+    albumsList.clear();
+
   // grid->setRowCount(0);
 
 }
@@ -187,10 +189,9 @@ void AlbumsView::populateTableView(QSqlQuery query)
    // QString albumBefore = "", artistBefore = "";
     QStringList albums;
    // QMap<QString, QString> example;
-slider->setValue(albumSize);
+//slider->setValue(albumSize);
     //albums<<"!";
 //int row=0, column=0;
-albumsList.clear();
     while (query.next())
     {
 
