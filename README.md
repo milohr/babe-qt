@@ -12,6 +12,7 @@ qmake && make && ./Babe
 
 * Planned Features :
   ... youtube-dl streamming 
+  ... babe chrome-chromium extension for youtube-dl supported sites
   ... krunner integration
 
 * Expected Features :
