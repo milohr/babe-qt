@@ -29,7 +29,7 @@ settings::settings(QWidget *parent) :
 
 
 
-    if (!collectionDBPath_dir.exists()) settingsPath_dir.mkpath(".");
+    if (!collectionDBPath_dir.exists()) collectionDBPath_dir.mkpath(".");
     if (!settingsPath_dir.exists()) settingsPath_dir.mkpath(".");
 
     connect(this, SIGNAL(collectionPathChanged(QString)), this, SLOT(populateDB(QString)));
@@ -230,11 +230,13 @@ bool settings::checkCollection()
        //qDebug()<<"Ahora obtener la informacion de ella y populate tableView";
        //populateTableView();
        collection_db.openCollection(collectionDBPath+collectionDBName);
+
         collectionWatcher();
        return true;
     }else
     {
         qDebug()<<"The CollectionDB doesn't exists. Going to create the database and tables";
+        qDebug()<<"opening collection with path: "<< collectionDBPath+collectionDBName;
         collection_db.openCollection(collectionDBPath+collectionDBName);
         collection_db.prepareCollectionDB();
 
