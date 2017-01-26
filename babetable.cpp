@@ -19,8 +19,8 @@ BabeTable::BabeTable(QTableWidget *parent) :
     connection->openCollection("../player/collection.db");*/
 
 connect(this,SIGNAL(doubleClicked(QModelIndex)),this,SLOT(on_tableWidget_doubleClicked(QModelIndex)));
-this->setColumnCount(9);
-this->setHorizontalHeaderLabels({"Track","Tile","Artist","Album","Genre","Location","Stars","Babe","Art","Played"});
+this->setColumnCount(10);
+this->setHorizontalHeaderLabels({"Track","Tile","Artist","Album","Genre","Location","Stars","Babe","Art","Played", "Playlist"});
 this->horizontalHeader()->setDefaultSectionSize(150);
 this->verticalHeader()->setVisible(false);
 this->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -89,7 +89,14 @@ this->hideColumn(ART);
     this->addAction(removeIt);
 
     auto playlistIt = new QAction("Add to Playlist...",contextMenu);
+
     this->addAction(playlistIt);
+    QAction* addEntry = contextMenu->addAction("Add to...");
+    this->addAction(addEntry);
+    QMenu* procmenu = new QMenu("...");
+    addEntry->setMenu(procmenu);
+
+    procmenu->addAction("hello rold");
 
     connect(this,SIGNAL(rightClicked(QPoint)),this,SLOT(setUpContextMenu(QPoint)));
 

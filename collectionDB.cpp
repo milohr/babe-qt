@@ -60,7 +60,7 @@ void CollectionDB::prepareCollectionDB()
 
 
     QSqlQuery query;
-    query.exec("CREATE TABLE tracks(track integer, title text, artist text, album text, genre text, location text unique, stars integer, babe integer, art text, played integer);");
+    query.exec("CREATE TABLE tracks(track integer, title text, artist text, album text, genre text, location text unique, stars integer, babe integer, art text, played integer, playlist text);");
 
     query.exec("CREATE TABLE playlists(title text);");
     //query.exec("CREATE TABLE tracks(title text, album text, artist text, location text, stars integer, babe integer);");
@@ -286,4 +286,40 @@ bool CollectionDB::insertInto(QString tableName, QString column, QString locatio
 
 }
 
+void CollectionDB::insertPlaylist(QString name)
+{
 
+
+
+   QSqlQuery query;
+   query.prepare("INSERT INTO playlists (title)" "VALUES (:title) ");
+
+   query.bindValue(":title", name);
+
+   if(query.exec())
+   {
+       //qDebug()<<"insertInto<<"<<"UPDATE playlists SET title = "+ name ;
+
+
+   }else
+   {
+
+   }
+
+}
+
+QStringList CollectionDB::getPlaylists()
+{
+
+
+
+   QSqlQuery query;
+   QStringList files;
+   query.prepare("SELECT * FROM playlists");
+
+   if (query.exec())   while (query.next()) files << query.value(0).toString();
+
+   return files;
+
+
+}

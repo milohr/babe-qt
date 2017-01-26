@@ -14,7 +14,8 @@ PlaylistsView::PlaylistsView(QWidget *parent) :
    list->setAlternatingRowColors(true);
    list->setFrameShape(QFrame::NoFrame);
 
-
+connect(list, SIGNAL(doubleClicked(QModelIndex)), list, SLOT(edit(QModelIndex)));
+connect(list,SIGNAL(itemChanged(QListWidgetItem*)),this,SLOT(playlistName(QListWidgetItem*)));
    //auto item =new QListWidgetItem();
 
    //list->addItem(item);
@@ -86,6 +87,36 @@ PlaylistsView::PlaylistsView(QWidget *parent) :
    //container->setContentsMargins(0,0,0,0);
 this->setLayout(layout);
 
+}
+
+void PlaylistsView::createPlaylist()
+{
+
+    auto  *item = new QListWidgetItem("new playlist");
+    item->setFlags (item->flags () | Qt::ItemIsEditable);
+    list->addItem(item);
+
+    emit list->doubleClicked(list->model()->index(list->count()-1,0));
+
+   // item->setFlags (item->flags () & Qt::ItemIsEditable);
+
+}
+
+void PlaylistsView::playlistName(QListWidgetItem* item)
+{
+    qDebug()<<"new playlist name: "<<item->text();
+    emit playlistCreated(item->text());
+}
+
+void PlaylistsView::on_removeBtn_clicked()
+{
+
+}
+
+void PlaylistsView::setPlaylists(QStringList playlists)
+{
+    list->addItems(playlists);
+    for (auto o: playlists) qDebug( )<<o;
 }
 
 PlaylistsView::~PlaylistsView()

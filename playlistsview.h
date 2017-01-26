@@ -21,6 +21,7 @@ public:
     QToolButton *addToPlaylist;
     BabeTable *table;
     QListWidget *list;
+    void setPlaylists(QStringList playlists);
    // QToolButton *removeBtn;
 
 private:
@@ -31,7 +32,14 @@ private:
     QWidget *btnContainer;
     QFrame *frame;
 
+public slots:
 
+    void createPlaylist();
+    void playlistName(QListWidgetItem *item);
+    void on_removeBtn_clicked();
+
+signals:
+    void playlistCreated(QString name);
 
 };
 

@@ -34,7 +34,7 @@ public:
 
     enum colums
     {
-        TRACK,TITLE,ARTIST,ALBUM,GENRE,LOCATION,STARS,BABE,ART,PLAYED
+        TRACK,TITLE,ARTIST,ALBUM,GENRE,LOCATION,STARS,BABE,ART,PLAYED,PLAYLIST
     };
 
 private:
@@ -45,6 +45,9 @@ private:
 public slots:
     void addTrack(QStringList paths);
     void closeConnection();
+    void insertPlaylist(QString name);
+    QStringList getPlaylists();
+
 
 signals:
     void progress(int);

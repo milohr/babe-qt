@@ -85,8 +85,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     playlistTable = new PlaylistsView();
-
-
+    connect(playlistTable,SIGNAL(playlistCreated(QString)),&settings_widget->getCollectionDB(),SLOT(insertPlaylist(QString)));
 
     playback = new QToolBar();
     utilsBar = new QToolBar();
@@ -104,6 +103,8 @@ MainWindow::MainWindow(QWidget *parent) :
         collectionTable->populateTableView("SELECT * FROM tracks");
         favoritesTable->populateTableView("SELECT * FROM tracks WHERE stars = \"4\" OR stars =  \"5\" OR babe =  \"1\"");
         albumsTable->populateTableView(settings_widget->getCollectionDB().getQuery("SELECT * FROM tracks ORDER by album asc"));
+        playlistTable->setPlaylists((settings_widget->getCollectionDB().getPlaylists()));
+
         populateMainList();
 
     }
