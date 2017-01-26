@@ -95,18 +95,17 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(settings_widget, SIGNAL(toolbarIconSizeChanged(int)), this, SLOT(setToolbarIconSize(int)));
     connect(settings_widget, SIGNAL(collectionDBFinishedAdding(bool)), this, SLOT(collectionDBFinishedAdding(bool)));
     connect(settings_widget, SIGNAL(dirChanged(QString)),this, SLOT(scanNewDir(QString)));
+    connect(settings_widget, SIGNAL(collectionPathRemoved(QString)),&settings_widget->getCollectionDB(), SLOT(removePath(QString)));
+    connect(settings_widget, SIGNAL(refreshTables()),this, SLOT(refreshTables()));
 
 
     if(settings_widget->checkCollection())
     {
         //collectionWatcher();
-        collectionTable->populateTableView("SELECT * FROM tracks");
-        favoritesTable->populateTableView("SELECT * FROM tracks WHERE stars = \"4\" OR stars =  \"5\" OR babe =  \"1\"");
-        albumsTable->populateTableView(settings_widget->getCollectionDB().getQuery("SELECT * FROM tracks ORDER by album asc"));
-        playlistTable->setPlaylists((settings_widget->getCollectionDB().getPlaylists()));
+       refreshTables();
+       playlistTable->setPlaylists((settings_widget->getCollectionDB().getPlaylists()));
 
-        populateMainList();
-
+       populateMainList();
     }
     favoritesTable->setVisibleColumn(BabeTable::STARS);
    //
@@ -410,6 +409,17 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::refreshTables()
+{
+
+    collectionTable->flushTable();
+    collectionTable->populateTableView("SELECT * FROM tracks");
+    favoritesTable->flushTable();
+    favoritesTable->populateTableView("SELECT * FROM tracks WHERE stars = \"4\" OR stars =  \"5\" OR babe =  \"1\"");
+    albumsTable->flushGrid();
+    albumsTable->populateTableView(settings_widget->getCollectionDB().getQuery("SELECT * FROM tracks ORDER by album asc"));
+
+}
 
 void MainWindow::labelClicked()
 {

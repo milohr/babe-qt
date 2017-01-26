@@ -40,6 +40,8 @@ settings::settings(QWidget *parent) :
     //collection_db.moveToThread(thread);
     //connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
     //  connect(thread, SIGNAL(started()), &collection_db, SLOT(addTrack()));
+    ui->remove->setEnabled(false);
+
     ui->progressBar->hide();
     about_ui = new About();
 
@@ -52,6 +54,29 @@ settings::~settings()
     collection_db.closeConnection();
 }
 
+
+void settings::on_collectionPath_clicked(const QModelIndex &index)
+{
+    ui->remove->setEnabled(true);
+
+   pathToRemove=index.data().toString();
+
+
+}
+
+void settings::on_remove_clicked()
+{
+
+    qDebug()<<pathToRemove;
+if(pathToRemove.size()!=0)
+{
+
+    emit collectionPathRemoved(pathToRemove);
+    emit refreshTables();
+
+}
+
+}
 CollectionDB& settings::getCollectionDB()
 {
     return collection_db;
@@ -321,3 +346,6 @@ void settings::on_pushButton_2_clicked()
 {
     QMessageBox::aboutQt(this,"Babe Qt...");
 }
+
+
+

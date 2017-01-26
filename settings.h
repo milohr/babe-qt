@@ -49,6 +49,10 @@ private slots:
 
     void on_pushButton_2_clicked();
 
+    void on_collectionPath_clicked(const QModelIndex &index);
+
+    void on_remove_clicked();
+
 public slots:
 
 void populateDB(QString path);
@@ -62,6 +66,7 @@ private:
     int iconSize = 16;
     QStringList collectionPaths={};
     CollectionDB collection_db;
+    QString pathToRemove;
    // QFileSystemWatcher watcher;
 
  QThread* thread;
@@ -72,6 +77,8 @@ signals:
     void collectionDBFinishedAdding(bool state);
     void fileChanged(QString url);
     void dirChanged(QString url);
+    void collectionPathRemoved(QString url);
+    void refreshTables();
 
 
 

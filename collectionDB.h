@@ -47,6 +47,7 @@ public slots:
     void closeConnection();
     void insertPlaylist(QString name);
     QStringList getPlaylists();
+    void removePath(QString path);
 
 
 signals:

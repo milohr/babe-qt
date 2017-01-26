@@ -53,7 +53,25 @@ void CollectionDB::openCollection(QString path)
    }
 }
 
+void CollectionDB::removePath(QString path)
+{
+    QSqlQuery query;
+    qDebug()<<"trying to delete all from :"<< path;
+       query.prepare("DELETE FROM tracks WHERE location LIKE '%"+path+"%'");
 
+       bool success = query.exec();
+
+       if(!success)
+       {
+           qDebug() << "removePerson error: "
+                    << query.lastError();
+
+       }else
+       {
+
+       }
+
+}
 
 void CollectionDB::prepareCollectionDB()
 {

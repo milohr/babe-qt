@@ -107,6 +107,7 @@ private slots:
    void showAlbumViewUtils();
    void hideAlbumViewUtils();
    void AlbumsViewOrder(QString order);
+   void refreshTables();
 
 
 private:
