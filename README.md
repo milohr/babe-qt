@@ -38,7 +38,7 @@ qmake && make && ./Babe
 ![alt tag](https://github.com/milohr/babe-qt/blob/master/screenshots/playlists_view.png?raw=true) 
 
 <h3> Settings View </h3>
-![alt tag](https://github.com/milohr/babe-qt/blob/master/screenshots/setttings_view.png?raw=true) 
+![alt tag](https://github.com/milohr/babe-qt/blob/master/screenshots/settings_view.png?raw=true) 
 
 <h3> About View </h3>
 ![alt tag](https://github.com/milohr/babe-qt/blob/master/screenshots/about_view.png?raw=true) 
