@@ -271,6 +271,9 @@
       <height>16777215</height>
      </size>
     </property>
+    <property name="autoFillBackground">
+     <bool>false</bool>
+    </property>
     <property name="styleSheet">
      <string notr="true"/>
     </property>
@@ -409,7 +412,8 @@
      <string>...</string>
     </property>
     <property name="icon">
-     <iconset theme="filename-space-amarok"/>
+     <iconset theme="filename-space-amarok">
+      <normaloff>.</normaloff>.</iconset>
     </property>
     <property name="checkable">
      <bool>true</bool>
@@ -591,6 +595,14 @@
     </property>
    </widget>
    <widget class="QFrame" name="searchFrame">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>0</y>
+      <width>171</width>
+      <height>28</height>
+     </rect>
+    </property>
     <property name="frameShape">
      <enum>QFrame::NoFrame</enum>
     </property>
@@ -753,7 +765,8 @@
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset theme="filename-title-amarok"/>
+        <iconset theme="filename-title-amarok">
+         <normaloff>.</normaloff>.</iconset>
        </property>
        <property name="autoRaise">
         <bool>true</bool>
@@ -766,7 +779,8 @@
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset theme="amarok_playlist_refresh"/>
+        <iconset theme="amarok_playlist_refresh">
+         <normaloff>.</normaloff>.</iconset>
        </property>
        <property name="autoRaise">
         <bool>true</bool>

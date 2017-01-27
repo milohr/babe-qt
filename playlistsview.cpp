@@ -12,7 +12,7 @@ PlaylistsView::PlaylistsView(QWidget *parent) :
     table = new BabeTable();
     table->showColumn(BabeTable::PLAYED);
     list = new QListWidget();
-    list->setFixedWidth(150);
+    list->setFixedWidth(120);
     list->setAlternatingRowColors(true);
     list->setFrameShape(QFrame::NoFrame);
 
@@ -37,6 +37,7 @@ PlaylistsView::PlaylistsView(QWidget *parent) :
     mostPlayed->setIcon(QIcon::fromTheme("favorite-genres-amarok"));
     mostPlayed->setText("Most Played");
     list->addItem(mostPlayed);
+    list->setStyleSheet("background-color:transparent;");
 
 
    //list->addItem("Favorites");
@@ -65,7 +66,7 @@ PlaylistsView::PlaylistsView(QWidget *parent) :
     line->setMaximumWidth(1);
 
    btnContainer = new QWidget();
-   btnContainer->setFixedWidth(150);
+   btnContainer->setFixedWidth(120);
    //btnContainer->setGeometry(0,150,150,30);
    auto *left_spacer = new QWidget();
    left_spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
