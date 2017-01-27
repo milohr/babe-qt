@@ -1,7 +1,10 @@
 # Babe
 ## Tiny Qt Babe Music Player
 
-Babe is a tiny Qt music player to add you favorite songs as well to handle your whole music collection
+#### Babe is a tiny Qt music player to play you favorite songs
+
+Babe will also handle your whole music collection, letting you create playlists and search trough out your music collection
+
 (previous unfinished gtk3 version still in my repository) 
 
 you need to have taglib installed in order to compile this app
