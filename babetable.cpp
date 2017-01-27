@@ -10,7 +10,7 @@
 #include <QMouseEvent>
 #include <QFileInfo>
 #include <QMessageBox>
-
+#include <settings.h>
 BabeTable::BabeTable(QTableWidget *parent) :
     QTableWidget(parent)
 {
@@ -35,6 +35,7 @@ this->horizontalHeader()->setStretchLastSection(true);
 this->setShowGrid(false);
 
 this->setColumnWidth(TRACK,20);
+this->setColumnWidth(PLAYED,10);
 this->setColumnWidth(STARS,80);
     this->hideColumn(LOCATION);
    this->hideColumn(STARS);
@@ -91,10 +92,11 @@ this->hideColumn(ART);
 
     QAction* addEntry = contextMenu->addAction("Add to...");
     this->addAction(addEntry);
-    QMenu* procmenu = new QMenu("...");
-    addEntry->setMenu(procmenu);
+    playlistsMenu = new QMenu("...");
+    addEntry->setMenu(playlistsMenu);
+    //passPlaylists();
+    //playlistsMenu->addAction("hello rold");
 
-    procmenu->addAction("hello rold");
 
     connect(this,SIGNAL(rightClicked(QPoint)),this,SLOT(setUpContextMenu(QPoint)));
 
@@ -132,6 +134,14 @@ gr->setLayout(ty);
 BabeTable::~BabeTable()
 {
     delete this;
+}
+
+
+void BabeTable::passPlaylists()
+{
+
+
+
 }
 
 void BabeTable::enterEvent(QEvent *event)
@@ -362,6 +372,7 @@ void BabeTable::setUpContextMenu(QPoint pos)
 {
 qDebug()<<"setUpContextMenu";
 
+ for(auto playlist : connection->getPlaylists()) playlistsMenu->addAction(playlist);
 
  int rate;
 bool babe= false;

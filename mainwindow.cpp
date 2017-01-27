@@ -91,6 +91,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     playlistTable = new PlaylistsView();
     connect(playlistTable,SIGNAL(playlistCreated(QString)),&settings_widget->getCollectionDB(),SLOT(insertPlaylist(QString)));
+    connect(playlistTable,SIGNAL(songClicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
 
     playback = new QToolBar();
     utilsBar = new QToolBar();
@@ -108,9 +109,11 @@ MainWindow::MainWindow(QWidget *parent) :
     {
         //collectionWatcher();
        refreshTables();
-       playlistTable->setPlaylists((settings_widget->getCollectionDB().getPlaylists()));
+       QStringList list =settings_widget->getCollectionDB().getPlaylists();
+       playlistTable->setPlaylists(list);
 
        populateMainList();
+       emit collectionChecked();
     }
     favoritesTable->setVisibleColumn(BabeTable::STARS);
    //
@@ -257,12 +260,14 @@ MainWindow::MainWindow(QWidget *parent) :
    // albumsTable->utilsFrame->setFrameShape(QFrame::StyledPanel);
     utilsBar->addWidget(playlistTable->btnContainer);
      utilsBar->addWidget(ui->searchFrame);
-    utilsBar->addWidget(ui->collectionUtils);
+
      utilsBar->addWidget(albumsTable->utilsFrame);
+     utilsBar->addWidget(ui->collectionUtils);
 
 
      //utilsBar->actions().at(SEARCH_UB)->setVisible(false);
     // utilsBar->actions().at(2)->setVisible(false);
+     utilsBar->actions().at(PLAYLISTS_UB)->setVisible(false); ui->frame_3->hide();
      hideAlbumViewUtils();
 
     ui->resultsPLaylist->setEnabled(false);
@@ -442,7 +447,7 @@ void MainWindow::addToPlayed(QString url)
                qDebug()<<"Song totally played"<<url;
 
 
-               QSqlQuery query = settings_widget->getCollectionDB().getQuery("SELECT * FROM tracks WHERE location = '"+url+"'");
+               QSqlQuery query = settings_widget->getCollectionDB().getQuery("SELECT * FROM tracks WHERE location = \""+url+"\"");
 
                int played;
                while (query.next()) played = query.value(BabeTable::PLAYED).toInt();

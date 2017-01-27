@@ -40,6 +40,7 @@ public:
     void flushTable();
     void passStyle(QString style);
     QStringList getTableContent(int column);
+    void passPlaylists();
 
 protected:
     virtual void enterEvent(QEvent *event);
@@ -67,6 +68,7 @@ private:
     QToolButton *fav5;
     int row;
     QMenu *contextMenu;
+    QMenu* playlistsMenu;
 
 signals:
     void tableWidget_doubleClicked(QStringList url);

@@ -40,7 +40,7 @@ public:
     };
     enum utilsBar
     {
-        PLAYLISTS_UB,SEARCH_UB,COLLECTION_UB,ALBUMS_UB, FAVORITES_UB,QUEUE_UB,INFO_UB,
+        PLAYLISTS_UB,SEARCH_UB,ALBUMS_UB,COLLECTION_UB, FAVORITES_UB,QUEUE_UB,INFO_UB,
     };
 
 
@@ -54,7 +54,7 @@ protected:
 
 public slots:
 
-
+ void addToPlaylist(QStringList list);
 
 private slots:
 
@@ -78,7 +78,7 @@ private slots:
     void settingsView();
 
     /*the view stacked actions*/
-    void addToPlaylist(QStringList list);
+
     void addToFavorites(QStringList list);
     void addToCollection(QStringList list);
     void addToCollectionDB(QStringList url, QString babe);
@@ -171,6 +171,7 @@ private:
 
 signals:
     void finishedPlayingSong(QString url);
+    void collectionChecked();
 
 
 };
