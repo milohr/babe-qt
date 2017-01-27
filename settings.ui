@@ -212,6 +212,19 @@
         </property>
        </spacer>
       </item>
+      <item row="0" column="1" colspan="2">
+       <spacer name="verticalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
       <item row="4" column="2">
        <widget class="QComboBox" name="comboBox">
         <item>
@@ -236,19 +249,6 @@
         </item>
        </widget>
       </item>
-      <item row="5" column="1" colspan="2">
-       <spacer name="verticalSpacer_2">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>40</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
       <item row="6" column="1" colspan="2">
        <widget class="QPushButton" name="pushButton">
         <property name="sizePolicy">
@@ -269,8 +269,8 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="1" colspan="2">
-       <spacer name="verticalSpacer_3">
+      <item row="5" column="1" colspan="2">
+       <spacer name="verticalSpacer_2">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
         </property>

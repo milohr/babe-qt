@@ -34,6 +34,7 @@ private:
     QListWidget *grid;
     QList<Album*> albumsList;
     QFrame *albumBox_frame;
+    QFrame *line_h;
     Album *cover;
     CollectionDB *connection;
     Playlist *playlist;

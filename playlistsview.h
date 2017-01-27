@@ -23,6 +23,7 @@ public:
     QListWidget *list;
     void setPlaylists(QStringList playlists);
     QFrame *line_v;
+    QWidget *btnContainer;
    // QToolButton *removeBtn;
 
 private:
@@ -30,7 +31,7 @@ private:
     QToolButton *addBtn;
     QToolButton *removeBtn;
     QGridLayout *layout;
-    QWidget *btnContainer;
+
     QFrame *frame;
 
 public slots:
@@ -38,6 +39,7 @@ public slots:
     void createPlaylist();
     void playlistName(QListWidgetItem *item);
     void on_removeBtn_clicked();
+    void populatePlaylist(QModelIndex index);
 
 signals:
     void playlistCreated(QString name);

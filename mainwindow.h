@@ -40,7 +40,7 @@ public:
     };
     enum utilsBar
     {
-        SEARCH_UB,COLLECTION_UB,ALBUMS_UB, FAVORITES_UB,PLAYLISTS_UB,QUEUE_UB,INFO_UB,
+        PLAYLISTS_UB,SEARCH_UB,COLLECTION_UB,ALBUMS_UB, FAVORITES_UB,QUEUE_UB,INFO_UB,
     };
 
 
@@ -111,6 +111,7 @@ private slots:
    void hideAlbumViewUtils();
    void AlbumsViewOrder(QString order);
    void refreshTables();
+   void addToPlayed(QString url);
 
 
 private:
@@ -167,6 +168,10 @@ private:
     vector<unsigned short int> shuffledPlaylist;
     bool shuffle = false;
    // void collectionWatcher();
+
+signals:
+    void finishedPlayingSong(QString url);
+
 
 };
 

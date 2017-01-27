@@ -44,6 +44,8 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setAcceptDrops(true);
     this->setWindowIcon(QIcon(":Data/data/babe_48.svg"));
     this->setWindowIconText("Babe...");
+
+    connect(this, SIGNAL(finishedPlayingSong(QString)),this,SLOT(addToPlayed(QString)));
 //this->setWindowFlags(Qt::Widget | Qt::FramelessWindowHint);
     /*THE VIEWS*/
     frame = new QFrame();
@@ -249,11 +251,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
     utilsBar->setMovable(false);
     utilsBar->setContentsMargins(0,0,0,0);
-    utilsBar->addWidget(ui->searchFrame);
 
+    utilsBar->setStyleSheet("margin:0;");
     //utilsBar->addWidget(albumsTable->order);
    // albumsTable->utilsFrame->setFrameShape(QFrame::StyledPanel);
-utilsBar->addWidget(ui->collectionUtils);
+    utilsBar->addWidget(playlistTable->btnContainer);
+     utilsBar->addWidget(ui->searchFrame);
+    utilsBar->addWidget(ui->collectionUtils);
      utilsBar->addWidget(albumsTable->utilsFrame);
 
 
@@ -429,6 +433,31 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+
+void MainWindow::addToPlayed(QString url)
+{
+    if(settings_widget->getCollectionDB().checkQuery("SELECT * FROM tracks WHERE location = \""+url+"\""))
+           {
+               //ui->fav_btn->setIcon(QIcon::fromTheme("face-in-love"));
+               qDebug()<<"Song totally played"<<url;
+
+
+               QSqlQuery query = settings_widget->getCollectionDB().getQuery("SELECT * FROM tracks WHERE location = '"+url+"'");
+
+               int played;
+               while (query.next()) played = query.value(BabeTable::PLAYED).toInt();
+                qDebug()<<played;
+
+                if(settings_widget->getCollectionDB().insertInto("tracks","played",url,played+1))
+                {
+                    //ui->fav_btn->setIcon(QIcon(":Data/data/love-amarok.svg"));
+                     qDebug()<<played;
+
+                }
+
+           }
+}
+
 void MainWindow::refreshTables()
 {
 
@@ -592,6 +621,8 @@ void MainWindow::collectionView()
 
    hideAlbumViewUtils();
    utilsBar->actions().at(COLLECTION_UB)->setVisible(true);
+
+   utilsBar->actions().at(PLAYLISTS_UB)->setVisible(false); ui->frame_3->hide();
     prevIndex=views->currentIndex();
 }
 
@@ -601,7 +632,8 @@ void MainWindow::albumsView()
     //if(hideSearch)utilsBar->show(); line->show();
     if(mini_mode!=0) expand();
     showAlbumViewUtils();
-    utilsBar->actions().at(COLLECTION_UB)->setVisible(false);
+    utilsBar->actions().at(COLLECTION_UB)->setVisible(true);
+    utilsBar->actions().at(PLAYLISTS_UB)->setVisible(false); ui->frame_3->hide();
     prevIndex=views->currentIndex();
 }
 void MainWindow::playlistsView()
@@ -609,7 +641,8 @@ void MainWindow::playlistsView()
     views->setCurrentIndex(4);
     if(mini_mode!=0) expand();
      hideAlbumViewUtils();
-     utilsBar->actions().at(COLLECTION_UB)->setVisible(false);
+     utilsBar->actions().at(COLLECTION_UB)->setVisible(true);
+     utilsBar->actions().at(PLAYLISTS_UB)->setVisible(true); ui->frame_3->show();
 
     prevIndex=views->currentIndex();
 }
@@ -619,6 +652,7 @@ void MainWindow::queueView()
     if(mini_mode!=0) expand();
      hideAlbumViewUtils();
      utilsBar->actions().at(COLLECTION_UB)->setVisible(false);
+     utilsBar->actions().at(PLAYLISTS_UB)->setVisible(false); ui->frame_3->hide();
 
     prevIndex=views->currentIndex();
 }
@@ -630,6 +664,7 @@ void MainWindow::infoView()
     if(mini_mode!=0) expand();
     hideAlbumViewUtils();
     utilsBar->actions().at(COLLECTION_UB)->setVisible(false);
+    utilsBar->actions().at(PLAYLISTS_UB)->setVisible(false); ui->frame_3->hide();
 
     prevIndex=views->currentIndex();
     //if(!hideSearch)utilsBar->hide(); line->hide();
@@ -639,7 +674,8 @@ void MainWindow::favoritesView()
     views->setCurrentIndex(FAVORITES);
     if(mini_mode!=0) expand();
      hideAlbumViewUtils();
-     utilsBar->actions().at(COLLECTION_UB)->setVisible(false);
+     utilsBar->actions().at(COLLECTION_UB)->setVisible(true);
+     utilsBar->actions().at(PLAYLISTS_UB)->setVisible(false); ui->frame_3->hide();
 
     prevIndex=views->currentIndex();
 
@@ -668,6 +704,7 @@ void MainWindow::settingsView()
     //if(!hideSearch) utilsBar->hide(); line->hide();
      hideAlbumViewUtils();
      utilsBar->actions().at(COLLECTION_UB)->setVisible(false);
+     utilsBar->actions().at(PLAYLISTS_UB)->setVisible(false); ui->frame_3->hide();
 
     prevIndex=views->currentIndex();
 
@@ -971,13 +1008,23 @@ void MainWindow::on_seekBar_sliderMoved(int position)
 
 
 void MainWindow::update()
-{   if(!seekBar->isSliderDown())
+{
+
+    if(!seekBar->isSliderDown())
         seekBar->setValue((double)player->position()/player->duration() * 1000);
 
     if(player->state() == QMediaPlayer::StoppedState)
     {
+         QString prevSong = current_song_url;
+          qDebug()<<"finished playing song: "<<prevSong;
         next();
+
+
+       emit finishedPlayingSong(prevSong);
+
     }
+
+
 }
 
 void MainWindow::next()

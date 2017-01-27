@@ -1,7 +1,7 @@
 # Babe
 ## Tiny Qt Babe Music Player
 
-#### Babe is a tiny Qt music player to play you favorite songs
+#### Babe is a tiny Qt music player to keep you favorite songs at hand
 
 Babe will also handle your whole music collection, letting you create playlists and search trough out your music collection
 

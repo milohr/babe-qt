@@ -62,6 +62,9 @@ AlbumsView::AlbumsView(QWidget *parent) :
        order = new QComboBox();
         order->setFrame(false);
         order->setMaximumWidth(70);
+        order->setMaximumHeight(22);
+        order->setContentsMargins(0,0,0,0);
+
        connect(order, SIGNAL(currentIndexChanged(QString)),this,SLOT(orderChanged(QString)));
        order->addItem("Artist");
        order->addItem("Album");
@@ -132,7 +135,7 @@ AlbumsView::AlbumsView(QWidget *parent) :
    albumBox->setSpacing(0);
    albumBox_frame->setLayout(albumBox);
 
-   auto line_h = new QFrame();
+  line_h = new QFrame();
   line_h->setFrameShape(QFrame::HLine);
   line_h->setFrameShadow(QFrame::Plain);
   line_h->setMaximumHeight(1);
@@ -156,6 +159,7 @@ AlbumsView::AlbumsView(QWidget *parent) :
    albumBox->addWidget(line,0,1,Qt::AlignLeft);
    albumBox->addWidget(albumTable,0,2);
 albumBox_frame->hide();
+line_h->hide();
    this->setLayout(layout);
    /* for(int i =0; i<5; i++)
     {
@@ -178,6 +182,7 @@ AlbumsView::~AlbumsView()
 void AlbumsView::hideAlbumFrame()
 {
     albumBox_frame->hide();
+    line_h->hide();
 }
 
 void AlbumsView::albumsSize(int value)
@@ -230,7 +235,7 @@ void AlbumsView::populateTableView(QSqlQuery query)
        if(!albums.contains(query.value(BabeTable::ARTIST).toString()+" "+query.value(BabeTable::ALBUM).toString()))
        {
 
-           Album *album= new Album(":Data/data/cover.png",albumSize,6);
+           Album *album= new Album(":Data/data/cover.svg",albumSize,6);
 
            albumsList.push_back(album);
            album->borderColor=true;
@@ -275,6 +280,7 @@ void AlbumsView::passConnection(CollectionDB *con)
 void AlbumsView::getAlbumInfo(QStringList info)
 {
     albumBox_frame->show();
+    line_h->show();
    // QSqlQuery query = connection->getQuery("SELECT * FROM tracks WHERE artist = \""+info.at(0)+"\" and album = \""+info.at(1)+"\"");
     //QStringList tracks;
     //playlist = new Playlist();

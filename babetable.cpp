@@ -79,19 +79,16 @@ this->hideColumn(ART);
     auto queueIt = new QAction("Queue",contextMenu);
     this->addAction(queueIt);
 
-    auto editIt = new QAction("Edit",contextMenu);
-    this->addAction(editIt);
-
-
     auto infoIt = new QAction("Info + ",contextMenu);
     this->addAction(infoIt);
+
+    auto editIt = new QAction("Edit",contextMenu);
+    this->addAction(editIt);
 
     auto removeIt = new QAction("Remove",contextMenu);
     this->addAction(removeIt);
 
-    auto playlistIt = new QAction("Add to Playlist...",contextMenu);
 
-    this->addAction(playlistIt);
     QAction* addEntry = contextMenu->addAction("Add to...");
     this->addAction(addEntry);
     QMenu* procmenu = new QMenu("...");
