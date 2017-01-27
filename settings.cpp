@@ -12,6 +12,7 @@
 #include<QMessageBox>
 #include <QFrame>
 #include <QFileSystemWatcher>
+#include <QGridLayout>
 
 settings::settings(QWidget *parent) :
     QWidget(parent),
@@ -40,6 +41,7 @@ settings::settings(QWidget *parent) :
     //collection_db.moveToThread(thread);
     //connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
     //  connect(thread, SIGNAL(started()), &collection_db, SLOT(addTrack()));
+
     ui->remove->setEnabled(false);
 
     ui->progressBar->hide();
@@ -342,10 +344,7 @@ void settings::on_pushButton_clicked()
 }
 
 
-void settings::on_pushButton_2_clicked()
-{
-    QMessageBox::aboutQt(this,"Babe Qt...");
-}
+
 
 
 

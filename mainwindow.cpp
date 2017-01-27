@@ -46,6 +46,9 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setWindowIconText("Babe...");
 //this->setWindowFlags(Qt::Widget | Qt::FramelessWindowHint);
     /*THE VIEWS*/
+    frame = new QFrame();
+    frame->setFrameShape(QFrame::StyledPanel);
+    frame->setFrameShadow(QFrame::Raised);
 
     settings_widget = new settings(); //this needs to go fist
 
@@ -169,8 +172,8 @@ MainWindow::MainWindow(QWidget *parent) :
     right_spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     ui->tracks_view->setToolTip("Search...");
-    ui->mainToolBar->addWidget(ui->searchField);
-    ui->searchField->setChecked(true);
+    ui->mainToolBar->addWidget(ui->utilsBar);
+    ui->utilsBar->setChecked(true);
 
     ui->mainToolBar->addWidget(left_spacer);
 
@@ -239,19 +242,23 @@ MainWindow::MainWindow(QWidget *parent) :
     clearSearch->setIcon(QIcon::fromTheme("clearSearch"));
     clearSearch->setAutoRaise(false);
     clearSearch->setGeometry(50, ui->search->sizeHint().height()/2,16,16);*/
+
+
+
     ui->search->setClearButtonEnabled(true);
+
     utilsBar->setMovable(false);
     utilsBar->setContentsMargins(0,0,0,0);
-    utilsBar->addWidget(ui->search);   
-    utilsBar->addWidget(ui->resultsPLaylist);
-    utilsBar->addWidget(ui->saveResults);
-     utilsBar->addSeparator();
-    //utilsBar->addWidget(albumsTable->order);
-     utilsBar->addWidget(albumsTable->order);
-     utilsBar->addWidget(albumsTable->slider);
+    utilsBar->addWidget(ui->searchFrame);
 
-     utilsBar->actions().at(1)->setVisible(false);
-     utilsBar->actions().at(2)->setVisible(false);
+    //utilsBar->addWidget(albumsTable->order);
+   // albumsTable->utilsFrame->setFrameShape(QFrame::StyledPanel);
+utilsBar->addWidget(ui->collectionUtils);
+     utilsBar->addWidget(albumsTable->utilsFrame);
+
+
+     //utilsBar->actions().at(SEARCH_UB)->setVisible(false);
+    // utilsBar->actions().at(2)->setVisible(false);
      hideAlbumViewUtils();
 
     ui->resultsPLaylist->setEnabled(false);
@@ -266,6 +273,7 @@ MainWindow::MainWindow(QWidget *parent) :
     /*COMPOSE THE VIEWS*/
 
     views = new QStackedWidget;
+    views->setFrameShape(QFrame::NoFrame);
     views->addWidget(collectionTable);
     //auto* testing = new QLabel("albums view... todo");
     views->addWidget(albumsTable);
@@ -285,7 +293,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     /*MAIN WINDOW*/
-
+    frame_layout = new QVBoxLayout();
+    frame_layout->setContentsMargins(0,0,0,0);
     layout = new QGridLayout();
     layout->setContentsMargins(6,0,6,0);
     main_widget= new QWidget();
@@ -360,6 +369,7 @@ MainWindow::MainWindow(QWidget *parent) :
     album_view->addWidget(album_art, 0,0,Qt::AlignTop);
     album_view->addWidget(ui->listWidget,1,0);
     album_view->setContentsMargins(0,0,0,0);
+    album_view->setSpacing(0);
 
     controls_layout->addWidget(playback,0,0,Qt::AlignHCenter);
     //controls_layout->addWidget(ui->seekBar,1,0,Qt::AlignTop);
@@ -376,10 +386,20 @@ MainWindow::MainWindow(QWidget *parent) :
     album_art_frame->setLayout(album_view);
     album_widget->setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Expanding  );
 
+     line = new QFrame();
+    line->setFrameShape(QFrame::HLine);
+    line->setFrameShadow(QFrame::Plain);
+    line->setMaximumHeight(1);
+    frame_layout->setSpacing(0);
+    frame_layout->addWidget(views);
+    frame_layout->addWidget(line);
+    frame_layout->addWidget(utilsBar);
 
-    layout->addWidget(views, 0,0 );
-    layout->addWidget(utilsBar, 1,0 );
-    layout->addWidget(album_art_frame,0,1,0,1, Qt::AlignRight);
+    frame->setLayout(frame_layout);
+
+
+    layout->addWidget(frame, 0,0 );
+    layout->addWidget(album_art_frame,0,1, Qt::AlignRight);
     //this->setStyle();
 
     ui->listWidget->setCurrentRow(0);
@@ -567,19 +587,21 @@ void MainWindow::setUpViews()
 void MainWindow::collectionView()
 {
     qDebug()<< "All songs view";
-    views->setCurrentIndex(0);
+    views->setCurrentIndex(COLLECTION);
     if(mini_mode!=0) expand();
 
    hideAlbumViewUtils();
+   utilsBar->actions().at(COLLECTION_UB)->setVisible(true);
     prevIndex=views->currentIndex();
 }
 
 void MainWindow::albumsView()
 {
-    views->setCurrentIndex(1);
-    //if(hideSearch)utilsBar->show();
+    views->setCurrentIndex(ALBUMS);
+    //if(hideSearch)utilsBar->show(); line->show();
     if(mini_mode!=0) expand();
     showAlbumViewUtils();
+    utilsBar->actions().at(COLLECTION_UB)->setVisible(false);
     prevIndex=views->currentIndex();
 }
 void MainWindow::playlistsView()
@@ -587,6 +609,8 @@ void MainWindow::playlistsView()
     views->setCurrentIndex(4);
     if(mini_mode!=0) expand();
      hideAlbumViewUtils();
+     utilsBar->actions().at(COLLECTION_UB)->setVisible(false);
+
     prevIndex=views->currentIndex();
 }
 void MainWindow::queueView()
@@ -594,6 +618,8 @@ void MainWindow::queueView()
     views->setCurrentIndex(1);
     if(mini_mode!=0) expand();
      hideAlbumViewUtils();
+     utilsBar->actions().at(COLLECTION_UB)->setVisible(false);
+
     prevIndex=views->currentIndex();
 }
 void MainWindow::infoView()
@@ -603,14 +629,18 @@ void MainWindow::infoView()
 
     if(mini_mode!=0) expand();
     hideAlbumViewUtils();
+    utilsBar->actions().at(COLLECTION_UB)->setVisible(false);
+
     prevIndex=views->currentIndex();
-    //if(!hideSearch)utilsBar->hide();
+    //if(!hideSearch)utilsBar->hide(); line->hide();
 }
 void MainWindow::favoritesView()
 {
-    views->setCurrentIndex(2);
+    views->setCurrentIndex(FAVORITES);
     if(mini_mode!=0) expand();
      hideAlbumViewUtils();
+     utilsBar->actions().at(COLLECTION_UB)->setVisible(false);
+
     prevIndex=views->currentIndex();
 
    /* QString url= QFileDialog::getExistingDirectory();
@@ -635,17 +665,19 @@ void MainWindow::settingsView()
 {
     views->setCurrentIndex(3);
     if(mini_mode!=0) expand();
-    //if(!hideSearch) utilsBar->hide();
+    //if(!hideSearch) utilsBar->hide(); line->hide();
      hideAlbumViewUtils();
+     utilsBar->actions().at(COLLECTION_UB)->setVisible(false);
+
     prevIndex=views->currentIndex();
 
 }
 
 void MainWindow::expand()
 {
-    views->show();
-    utilsBar->show();
-    ui->searchField->setChecked(true);
+    views->show(); frame->show();
+    utilsBar->show(); line->show();
+    ui->utilsBar->setChecked(true);
     hideSearch=false;
     album_art_frame->setFrameShadow(QFrame::Raised);
     album_art_frame->setFrameShape(QFrame::StyledPanel);
@@ -669,16 +701,18 @@ void MainWindow::go_mini()
 {
     //this->setMaximumSize (0, 0);
 
-    views->hide();
-    utilsBar->hide();
-    ui->searchField->setChecked(false);
+    views->hide(); frame->hide();
+
+    //playlistTable->line_v->hide();
+    utilsBar->hide(); line->hide();
+    ui->utilsBar->setChecked(false);
     hideSearch=true;
     ui->mainToolBar->actions().at(0)->setVisible(false);
     ui->mainToolBar->actions().at(8)->setVisible(false);
     album_art_frame->setFrameShadow(QFrame::Plain);
     album_art_frame->setFrameShape(QFrame::NoFrame);
     layout->setContentsMargins(0,0,0,0);
-   // ui->searchField->setVisible(false);
+   // ui->utilsBar->setVisible(false);
     this->resize(minimumSizeHint());
     main_widget->resize(minimumSizeHint());
     this->setFixedSize(minimumSizeHint());
@@ -1179,26 +1213,26 @@ albumsTable->populateTableView(settings_widget->getCollectionDB().getQuery("SELE
 
 }
 
-void MainWindow::on_searchField_clicked()
+void MainWindow::on_utilsBar_clicked()
 {
 
     if(hideSearch)
     {
-        //utilsBar->hide();
-        utilsBar->actions().at(0)->setVisible(false);
+        //utilsBar->hide(); line->hide();
+        utilsBar->hide(); line->hide();
       //  utilsBar->actions().at(1)->setVisible(false);
        // utilsBar->actions().at(2)->setVisible(false);
 
-        ui->searchField->setChecked(false);
+        ui->utilsBar->setChecked(false);
         hideSearch=false;
 
     }else
     {
-        utilsBar->actions().at(0)->setVisible(true);
+         utilsBar->show(); line->show();
         //utilsBar->actions().at(1)->setVisible(true);
        // utilsBar->actions().at(2)->setVisible(true);
-       // utilsBar->show();
-        ui->searchField->setChecked(true);
+       // utilsBar->show(); line->show();
+        ui->utilsBar->setChecked(true);
         hideSearch=true;
 
     }
@@ -1206,8 +1240,8 @@ void MainWindow::on_searchField_clicked()
     if(mini_mode!=0)
     {
         expand();
-        utilsBar->show();
-        ui->searchField->setChecked(true);
+        utilsBar->show(); line->show();
+        ui->utilsBar->setChecked(true);
         hideSearch=true;
     }
 }
@@ -1246,8 +1280,8 @@ void MainWindow::on_search_textChanged(const QString &arg1)
         qDebug()<<search;
         resultsTable->flushTable();
         resultsTable->populateTableView("SELECT * FROM tracks WHERE title LIKE '%"+search+"%' OR artist LIKE '%"+search+"%' OR album LIKE '%"+search+"%'OR genre LIKE '%"+search+"%'");
-        utilsBar->actions().at(1)->setVisible(true);
-        utilsBar->actions().at(2)->setVisible(true);
+        //utilsBar->actions().at(1)->setVisible(true);
+        //utilsBar->actions().at(2)->setVisible(true);
         ui->resultsPLaylist->setEnabled(true);
         ui->saveResults->setEnabled(true);
 
@@ -1258,8 +1292,8 @@ void MainWindow::on_search_textChanged(const QString &arg1)
         if(views->currentIndex()==1) showAlbumViewUtils();
         resultsTable->flushTable();
         //ui->tracks_view->setChecked(true);
-        utilsBar->actions().at(1)->setVisible(false);
-        utilsBar->actions().at(2)->setVisible(false);
+       // utilsBar->actions().at(1)->setVisible(false);
+       // utilsBar->actions().at(2)->setVisible(false);
         ui->resultsPLaylist->setEnabled(false);
         ui->saveResults->setEnabled(false);
     }
@@ -1268,15 +1302,15 @@ void MainWindow::on_search_textChanged(const QString &arg1)
 
 void MainWindow::showAlbumViewUtils()
 {
-    utilsBar->actions().at(4)->setVisible(true);
-    utilsBar->actions().at(5)->setVisible(true);
+    utilsBar->actions().at(ALBUMS_UB)->setVisible(true);
+    //utilsBar->actions().at(5)->setVisible(true);
 }
 
 void MainWindow::hideAlbumViewUtils()
 {
 
-    utilsBar->actions().at(4)->setVisible(false);
-    utilsBar->actions().at(5)->setVisible(false);
+    utilsBar->actions().at(ALBUMS_UB)->setVisible(false);
+    //utilsBar->actions().at(5)->setVisible(false);
 }
 
 void MainWindow::on_resultsPLaylist_clicked()

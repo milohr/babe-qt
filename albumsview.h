@@ -27,6 +27,7 @@ public:
     void flushGrid();
     QSlider *slider;
     QComboBox *order;
+    QFrame *utilsFrame;
 
 private:
 

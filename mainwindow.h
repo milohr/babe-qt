@@ -38,7 +38,10 @@ public:
     {
         COLLECTION,ALBUMS,FAVORITES,PLAYLISTS,QUEUE,INFO,SETTINGS
     };
-
+    enum utilsBar
+    {
+        SEARCH_UB,COLLECTION_UB,ALBUMS_UB, FAVORITES_UB,PLAYLISTS_UB,QUEUE_UB,INFO_UB,
+    };
 
 
 protected:
@@ -87,7 +90,7 @@ private slots:
     void collectionDBFinishedAdding(bool state);
 
     void on_fav_btn_clicked();
-    void on_searchField_clicked();
+    void on_utilsBar_clicked();
 
     void hideControls();
     void showControls();
@@ -123,7 +126,9 @@ private:
     void shufflePlaylist();
     void expand();
     void go_mini();
-
+    QFrame *frame;
+    QFrame *line;
+    QVBoxLayout *frame_layout;
     QStackedWidget *views;
     QToolBar *playback;
     QToolBar *utilsBar;

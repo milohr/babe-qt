@@ -25,7 +25,7 @@ AlbumsView::AlbumsView(QWidget *parent) :
         grid->setResizeMode(QListWidget::Adjust);
       //  grid->setUniformItemSizes(true);
         //grid->setFrameShadow(QFrame::);
-        grid->setFrameShape(QFrame::StyledPanel);
+        grid->setFrameShape(QFrame::NoFrame);
         //grid->setStyleSheet("QListWidget {background:#2E2F30; border:1px solid black; border-radius: 2px; }");
 
         grid->setStyleSheet("QListWidget {background:transparent; padding-top:15px; padding-left:15px; }");
@@ -38,9 +38,17 @@ AlbumsView::AlbumsView(QWidget *parent) :
     //grid->setWrapping(false);
 //grid->setSpacing(20);
          //grid->setIconSize(QSize(120,120));
-         grid->setGridSize(QSize(130,130));
+         grid->setGridSize(QSize(albumSize+10,albumSize+10));
         //grid->setAlignment(Qt::AlignLeading);
-       slider = new QSlider();
+
+         utilsFrame = new QFrame();
+        // utilsFrame->setFrameShape(QFrame::StyledPanel);
+         utilsFrame->setFrameShadow(QFrame::Plain);
+         utilsFrame->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Minimum);
+
+
+
+         slider = new QSlider();
        connect(slider,SIGNAL(sliderMoved(int)),this,SLOT(albumsSize(int)));
        slider->setMaximumWidth(100);
        slider->setMaximum(200);
@@ -48,13 +56,27 @@ AlbumsView::AlbumsView(QWidget *parent) :
        slider->setValue(albumSize);
        slider->setOrientation(Qt::Orientation::Horizontal);
 
+
+
+
        order = new QComboBox();
+        order->setFrame(false);
+        order->setMaximumWidth(70);
        connect(order, SIGNAL(currentIndexChanged(QString)),this,SLOT(orderChanged(QString)));
        order->addItem("Artist");
        order->addItem("Album");
        order->addItem("Genre");
        order->setCurrentIndex(1);
        //order->setFrame(false);
+
+
+        auto utilsLayout = new QHBoxLayout();
+        utilsLayout->setContentsMargins(0,0,0,0);
+        utilsLayout->setSpacing(0);
+        utilsLayout->addWidget(order);
+        utilsLayout->addWidget(slider);
+        utilsFrame->setLayout(utilsLayout);
+
 
        auto scroll= new QScrollArea();
        scroll->setWidgetResizable(true);
@@ -92,6 +114,7 @@ AlbumsView::AlbumsView(QWidget *parent) :
    auto layout = new QGridLayout;
    layout->setMargin(0);
    layout->addWidget(grid,0,0);
+   layout->setSpacing(0);
 
    //scroll->setMaximumSize(120*4,120*4);
  scroll->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding  );
@@ -104,11 +127,18 @@ AlbumsView::AlbumsView(QWidget *parent) :
    albumBox_frame->setAutoFillBackground( true );*/
     albumBox->setContentsMargins(0,0,0,0);
    // ui->listWidget->setSpacing(0);
-   albumBox_frame->setFrameShadow(QFrame::Raised);
-   albumBox_frame->setFrameShape(QFrame::StyledPanel);
+  // albumBox_frame->setFrameShadow(QFrame::Raised);
+   albumBox_frame->setFrameShape(QFrame::NoFrame);
    albumBox->setSpacing(0);
    albumBox_frame->setLayout(albumBox);
-   layout->addWidget(albumBox_frame,1,0,Qt::AlignBottom);
+
+   auto line_h = new QFrame();
+  line_h->setFrameShape(QFrame::HLine);
+  line_h->setFrameShadow(QFrame::Plain);
+  line_h->setMaximumHeight(1);
+
+   layout->addWidget(line_h,1,0,Qt::AlignBottom);
+   layout->addWidget(albumBox_frame,2,0,Qt::AlignBottom);
     cover= new Album(":Data/data/cover.jpg",120,2);
 
     closeBtn = new QToolButton(cover);

@@ -47,8 +47,6 @@ private slots:
     void handleFileChanged(QString file);
     void handleDirectoryChanged(QString dir);
 
-    void on_pushButton_2_clicked();
-
     void on_collectionPath_clicked(const QModelIndex &index);
 
     void on_remove_clicked();

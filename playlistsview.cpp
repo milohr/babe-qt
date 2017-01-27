@@ -7,6 +7,7 @@ PlaylistsView::PlaylistsView(QWidget *parent) :
 {
    layout = new QGridLayout();
    layout->setContentsMargins(0,0,0,0);
+   layout->setSpacing(0);
 
    table = new BabeTable();
    list = new QListWidget();
@@ -24,16 +25,18 @@ connect(list,SIGNAL(itemChanged(QListWidgetItem*)),this,SLOT(playlistName(QListW
    //list->setItemWidget(list->item(1),color);
 
 
-   list->addItem("Favorites");
 
-   list->addItem("Most Played");
+    auto mostPlayed = new QListWidgetItem();
+    mostPlayed->setIcon(QIcon::fromTheme("favorite-genres-amarok"));
+    mostPlayed->setText("Most Played");
+  list->addItem(mostPlayed);
    //list->addItem("Favorites");
-   table->setFrameShape(QFrame::StyledPanel);
+   table->setFrameShape(QFrame::NoFrame);
    //table->setSizePolicy(QSizePolicy::Expanding);
 
    frame = new QFrame();
    frame->setFrameShadow(QFrame::Raised);
-   frame->setFrameShape(QFrame::StyledPanel);
+   frame->setFrameShape(QFrame::NoFrame);
 
    addBtn = new QToolButton();
    removeBtn = new QToolButton();
@@ -52,15 +55,21 @@ connect(list,SIGNAL(itemChanged(QListWidgetItem*)),this,SLOT(playlistName(QListW
    auto *left_spacer = new QWidget();
    left_spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
    auto btnLayout = new QHBoxLayout();
-   btnLayout->addWidget(left_spacer);
-   btnLayout->addWidget(removeBtn);
+    btnContainer->setLayout(btnLayout);
    btnLayout->addWidget(addBtn);
-   btnContainer->setLayout(btnLayout);
+    btnLayout->addWidget(left_spacer);
+btnLayout->addWidget(removeBtn);
+
+
 
    auto line = new QFrame();
-
-       line->setFrameShape(QFrame::HLine);
-       line->setFrameShadow(QFrame::Sunken);
+   line->setFrameShape(QFrame::HLine);
+   line->setFrameShadow(QFrame::Plain);
+    line->setMaximumHeight(1);
+    line_v = new QFrame();
+   line_v->setFrameShape(QFrame::VLine);
+   line_v->setFrameShadow(QFrame::Plain);
+   line_v->setMaximumWidth(1);
        //line->setMaximumHeight(2);
     // btnContainer->setFixedHeight(32);
 
@@ -77,7 +86,8 @@ connect(list,SIGNAL(itemChanged(QListWidgetItem*)),this,SLOT(playlistName(QListW
 
 
    layout->addWidget(frame,0,0,Qt::AlignLeft);
-   layout->addWidget(table,0,1);
+   layout->addWidget(line_v,0,1,Qt::AlignLeft);
+   layout->addWidget(table,0,2);
 
 
 

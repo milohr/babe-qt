@@ -19,6 +19,7 @@ BabeTable::BabeTable(QTableWidget *parent) :
     connection->openCollection("../player/collection.db");*/
 
 connect(this,SIGNAL(doubleClicked(QModelIndex)),this,SLOT(on_tableWidget_doubleClicked(QModelIndex)));
+this->setFrameShape(QFrame::NoFrame);
 this->setColumnCount(10);
 this->setHorizontalHeaderLabels({"Track","Tile","Artist","Album","Genre","Location","Stars","Babe","Art","Played", "Playlist"});
 this->horizontalHeader()->setDefaultSectionSize(150);
