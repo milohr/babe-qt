@@ -26,7 +26,7 @@ qmake && make && ./Babe
 ![alt tag](https://github.com/milohr/babe-qt/blob/master/screenshots/mini_mode.png?raw=true)
 
 <h3> Collection View </h3>
-![alt tag](https://github.com/milohr/babe-qt/blob/master/screenshots/full_collection_view.png?raw=true)
+![alt tag](https://github.com/milohr/babe-qt/blob/master/screenshots/collection_view.png?raw=true)
 
 <h3> Albums View </h3>
 ![alt tag](https://github.com/milohr/babe-qt/blob/master/screenshots/albums_view.png?raw=true) 
