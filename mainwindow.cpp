@@ -271,7 +271,7 @@ MainWindow::MainWindow(QWidget *parent) :
      utilsBar->actions().at(PLAYLISTS_UB)->setVisible(false); ui->frame_3->hide();
      hideAlbumViewUtils();
 
-    ui->resultsPLaylist->setEnabled(false);
+
     ui->saveResults->setEnabled(false);
 
 
@@ -755,7 +755,7 @@ void MainWindow::expand()
     album_art_frame->setFrameShape(QFrame::StyledPanel);
     layout->setContentsMargins(6,0,6,0);
     this->setMaximumSize(QWIDGETSIZE_MAX,QWIDGETSIZE_MAX);
-    this->setMinimumSize(750,450);
+    this->setMinimumSize(750,500);
     //qDebug()<<this->minimumWidth()<<this->minimumHeight();
 
     this->adjustSize();
@@ -1390,8 +1390,10 @@ void MainWindow::on_search_textChanged(const QString &arg1)
         resultsTable->populateTableView("SELECT * FROM tracks WHERE title LIKE '%"+search+"%' OR artist LIKE '%"+search+"%' OR album LIKE '%"+search+"%'OR genre LIKE '%"+search+"%'");
         //utilsBar->actions().at(1)->setVisible(true);
         //utilsBar->actions().at(2)->setVisible(true);
-        ui->resultsPLaylist->setEnabled(true);
+
         ui->saveResults->setEnabled(true);
+
+        ui->refreshAll->setEnabled(false);
        // prevIndex= views->currentIndex();
 
     }else
@@ -1403,8 +1405,10 @@ void MainWindow::on_search_textChanged(const QString &arg1)
         //ui->tracks_view->setChecked(true);
        // utilsBar->actions().at(1)->setVisible(false);
        // utilsBar->actions().at(2)->setVisible(false);
-        ui->resultsPLaylist->setEnabled(false);
+
         ui->saveResults->setEnabled(false);
+
+        ui->refreshAll->setEnabled(true);
     }
 
 }
@@ -1422,11 +1426,7 @@ void MainWindow::hideAlbumViewUtils()
     //utilsBar->actions().at(5)->setVisible(false);
 }
 
-void MainWindow::on_resultsPLaylist_clicked()
-{
 
-    addToPlaylist(resultsTable->getTableContent(BabeTable::LOCATION));
-}
 
 void MainWindow::on_settings_view_clicked()
 {
@@ -1451,4 +1451,25 @@ void MainWindow::on_refreshBtn_clicked()
 void MainWindow::on_tracks_view_2_clicked()
 {
     expand();
+}
+
+void MainWindow::on_refreshAll_clicked()
+{
+    refreshTables();
+}
+
+void MainWindow::on_addAll_clicked()
+{
+    switch(views->currentIndex())
+    {
+        case COLLECTION: addToPlaylist(collectionTable->getTableContent(BabeTable::LOCATION)); break;
+        case ALBUMS: addToPlaylist(collectionTable->getTableContent(BabeTable::LOCATION)); break;
+        case FAVORITES: addToPlaylist(favoritesTable->getTableContent(BabeTable::LOCATION)); break;
+        case PLAYLISTS: addToPlaylist(playlistTable->table->getTableContent(BabeTable::LOCATION)); break;
+        case QUEUE: addToPlaylist(collectionTable->getTableContent(BabeTable::LOCATION)); break;
+         case INFO: addToPlaylist(collectionTable->getTableContent(BabeTable::LOCATION)); break;
+    case SETTINGS:  addToPlaylist(collectionTable->getTableContent(BabeTable::LOCATION)); break;
+    case RESULTS: addToPlaylist(resultsTable->getTableContent(BabeTable::LOCATION)); break;
+
+    }
 }

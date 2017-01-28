@@ -7,13 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>750</width>
-    <height>450</height>
+    <height>500</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>400</width>
-    <height>450</height>
+    <height>500</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -660,26 +660,9 @@
       </widget>
      </item>
      <item>
-      <widget class="QToolButton" name="resultsPLaylist">
-       <property name="toolTip">
-        <string>Add results to Playlist</string>
-       </property>
-       <property name="text">
-        <string>...</string>
-       </property>
-       <property name="icon">
-        <iconset theme="insert-page-break">
-         <normaloff>.</normaloff>.</iconset>
-       </property>
-       <property name="autoRaise">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
       <widget class="QToolButton" name="saveResults">
        <property name="toolTip">
-        <string>Save results to Playlist...</string>
+        <string>Save results...</string>
        </property>
        <property name="text">
         <string>...</string>
@@ -744,12 +727,14 @@
      </property>
      <item>
       <widget class="QToolButton" name="addAll">
+       <property name="toolTip">
+        <string>Add all...</string>
+       </property>
        <property name="text">
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset theme="filename-title-amarok">
-         <normaloff>.</normaloff>.</iconset>
+        <iconset theme="insert-page-break"/>
        </property>
        <property name="autoRaise">
         <bool>true</bool>
@@ -758,6 +743,9 @@
      </item>
      <item>
       <widget class="QToolButton" name="refreshAll">
+       <property name="toolTip">
+        <string>Refresh</string>
+       </property>
        <property name="text">
         <string>...</string>
        </property>
@@ -820,6 +808,9 @@
      </property>
      <item row="0" column="2">
       <widget class="QToolButton" name="tracks_view_2">
+       <property name="toolTip">
+        <string>Back</string>
+       </property>
        <property name="text">
         <string>...</string>
        </property>
@@ -856,6 +847,9 @@
        <property name="toolTip">
         <string>Clear..</string>
        </property>
+       <property name="toolTipDuration">
+        <number>-1</number>
+       </property>
        <property name="text">
         <string>...</string>
        </property>
@@ -882,6 +876,9 @@
      </item>
      <item row="0" column="4">
       <widget class="QToolButton" name="open_btn">
+       <property name="toolTip">
+        <string>Open...</string>
+       </property>
        <property name="text">
         <string>...</string>
        </property>

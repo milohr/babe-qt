@@ -99,7 +99,7 @@ private slots:
 
     void on_search_textChanged(const QString &arg1);
 
-    void on_resultsPLaylist_clicked();
+    //void on_resultsPLaylist_clicked();
     void setCoverArt(QString path);
 
     void on_settings_view_clicked();
@@ -117,6 +117,10 @@ private slots:
    void on_refreshBtn_clicked();
 
    void on_tracks_view_2_clicked();
+
+   void on_refreshAll_clicked();
+
+   void on_addAll_clicked();
 
 private:
 
