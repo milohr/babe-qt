@@ -539,6 +539,48 @@ void MainWindow::AlbumsViewOrder(QString order)
     albumsTable->populateTableView(settings_widget->getCollectionDB().getQuery("SELECT * FROM tracks ORDER by "+order.toLower()+" asc"));
 
 }
+
+
+void MainWindow::keyPressEvent(QKeyEvent *event)
+{
+    switch (event->key()) {
+    case Qt::Key_Return :
+    {
+        lCounter = getIndex();
+        if(lCounter != -1)
+        {
+            //ui->play->setChecked(false);
+             ui->play_btn->setIcon(QIcon(":Data/data/media-playback-pause.svg"));
+            ui->search->clear();
+
+           loadTrack();
+           player->play();
+        }
+        break;
+    }
+    case Qt::Key_Up :
+    {
+        int ind = getIndex() - 1;if(ind < 0)ind = ui->listWidget->count() - 1;
+        ui->listWidget->setCurrentRow(ind);
+        break;
+    }
+    case Qt::Key_Down :
+    {
+        int ind = getIndex() + 1;if(ind >= ui->listWidget->count())ind = 0;
+        ui->listWidget->setCurrentRow(ind);
+        break;
+    }
+    default :
+    {
+                        ui->search->setFocusPolicy(Qt::StrongFocus);
+                 ui->search->setFocus();
+        qDebug()<<"trying to focus the serachbar";
+
+        break;
+    }
+    }
+}
+
  void MainWindow::enterEvent(QEvent *event)
 {
     //qDebug()<<"entered the window";

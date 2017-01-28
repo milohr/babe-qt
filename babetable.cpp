@@ -413,6 +413,10 @@ void BabeTable::setVisibleColumn(int column)
 
 }
 
+
+
+
+
 void BabeTable::setUpContextMenu(QPoint pos)
 
 {
@@ -445,7 +449,54 @@ row=this->indexAt(pos).row();
 
 
 }
+void BabeTable::keyPressEvent(QKeyEvent *event)
+{
+    switch (event->key()) {
+    case Qt::Key_Return :
+    {
+        QStringList files;
+        files << this->model()->data(this->model()->index(this->currentIndex().row(),LOCATION)).toString();
 
+        qDebug()<<this->model()->data(this->model()->index(this->currentIndex().row(),LOCATION)).toString();
+
+       emit tableWidget_doubleClicked(files);
+
+        break;
+    }
+    case Qt::Key_Up :
+    {
+        QModelIndex index = this->currentIndex();
+            int row = index.row() - 1;
+            int column = 1;
+            QModelIndex newIndex  = this->model()->index(row,column);
+            this->selectionModel()->select(newIndex, QItemSelectionModel::Select);
+            this->setCurrentIndex(newIndex);
+            this->setFocus();
+
+        qDebug()<<this->model()->data(this->model()->index(row,LOCATION)).toString();
+
+        break;
+    }
+    case Qt::Key_Down :
+    {
+        QModelIndex index = this->currentIndex();
+            int row = index.row() + 1;
+            int column = 1;
+            QModelIndex newIndex  = this->model()->index(row,column);
+            this->selectionModel()->select(newIndex, QItemSelectionModel::Select);
+            this->setCurrentIndex(newIndex);
+            this->setFocus();
+
+        qDebug()<<this->model()->data(this->model()->index(row,LOCATION)).toString();
+        break;
+    }
+    default :
+    {
+        QTableWidget::keyPressEvent(event);
+        break;
+    }
+    }
+}
 
 void BabeTable::mousePressEvent(QMouseEvent* evt)
 {

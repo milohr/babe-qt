@@ -47,6 +47,7 @@ protected:
     virtual void leaveEvent(QEvent *event);
   //  virtual void mouseReleaseEvent(QMouseEvent* evt);
     virtual void mousePressEvent(QMouseEvent* evt);
+    virtual void keyPressEvent(QKeyEvent *event);
 
 
 private slots:

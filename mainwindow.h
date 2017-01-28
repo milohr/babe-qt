@@ -52,6 +52,7 @@ protected:
     virtual void dragMoveEvent(QDragMoveEvent *event);
     virtual void dropEvent(QDropEvent *event);
     virtual void resizeEvent(QResizeEvent* event);
+    virtual void keyPressEvent(QKeyEvent *event);
 
 public slots:
 
