@@ -46,6 +46,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setWindowIconText("Babe...");
 
     connect(this, SIGNAL(finishedPlayingSong(QString)),this,SLOT(addToPlayed(QString)));
+
 //this->setWindowFlags(Qt::Widget | Qt::FramelessWindowHint);
     /*THE VIEWS*/
     frame = new QFrame();
@@ -72,9 +73,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(favoritesTable,SIGNAL( babeIt_clicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
 
     resultsTable=new BabeTable();
-    resultsTable->passStyle("QHeaderView::section { background-color:#e3f4d7; }");
+    //resultsTable->passStyle("QHeaderView::section { background-color:#474747; }");
     resultsTable->setVisibleColumn(BabeTable::STARS);
-    resultsTable->setVisibleColumn(BabeTable::GENRE);
+    resultsTable->showColumn(BabeTable::GENRE);
     connect(resultsTable,SIGNAL(songRated(QStringList)),this,SLOT(addToFavorites(QStringList)));
     connect(resultsTable,SIGNAL(tableWidget_doubleClicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
     connect(resultsTable,SIGNAL(enteredTable()),this,SLOT(hideControls()));
@@ -487,6 +488,13 @@ void MainWindow::addToPlayed(QString url)
                 }
 
            }
+}
+
+void MainWindow::resizeEvent(QResizeEvent* event)
+{
+   QMainWindow::resizeEvent(event);
+   qDebug()<<event->size().width()<<"x"<<event->size().height();
+  // if(mini_mode!=0 && event->size().width()==750 && event->size().height()==500) go_mini();
 }
 
 void MainWindow::refreshTables()
@@ -1377,6 +1385,24 @@ void MainWindow::on_search_returnPressed()
 void MainWindow::on_search_textChanged(const QString &arg1)
 {
     QString search=arg1;
+    QStringList keys = {"location:","artist:","album:","title:","genre:" };
+    QString key;
+
+
+        for(auto k : keys)
+        {
+
+            if(search.contains(k))
+            {
+
+                key=k;
+                qDebug()<<"search contains key: "<<key;
+                search.replace(k,"");
+            }
+        }
+
+
+      qDebug()<<"Searching for: "<<search;
     //int oldIndex = views->currentIndex();
     //qDebug()<<oldIndex;
      hideAlbumViewUtils();
@@ -1385,9 +1411,48 @@ void MainWindow::on_search_textChanged(const QString &arg1)
     if(search.size()!=0)
     {
         views->setCurrentIndex(RESULTS);
-        qDebug()<<search;
+
         resultsTable->flushTable();
-        resultsTable->populateTableView("SELECT * FROM tracks WHERE title LIKE '%"+search+"%' OR artist LIKE '%"+search+"%' OR album LIKE '%"+search+"%'OR genre LIKE '%"+search+"%'");
+
+
+            if(key=="location:")
+            {
+
+
+                resultsTable->populateTableView("SELECT * FROM tracks WHERE location LIKE \"%"+search+"%\"");
+                ui->search->setStyleSheet("background-color:#e3f4d7;");
+            }else if(key== "artist:")
+            {
+
+
+                resultsTable->populateTableView("SELECT * FROM tracks WHERE artist LIKE \"%"+search+"%\"");
+                ui->search->setStyleSheet("background-color:#e3f4d7;");
+            }else if(key== "album:")
+            {
+
+                resultsTable->populateTableView("SELECT * FROM tracks WHERE album LIKE \"%"+search+"%\"");
+                ui->search->setStyleSheet("background-color:#e3f4d7;");
+            }else if(key=="title:")
+            {
+
+
+                resultsTable->populateTableView("SELECT * FROM tracks WHERE title LIKE \"%"+search+"%\"");
+                ui->search->setStyleSheet("background-color:#e3f4d7;");
+            }else if(key==  "genre:")
+            {
+
+                resultsTable->populateTableView("SELECT * FROM tracks WHERE genre LIKE \"%"+search+"%\"");
+                ui->search->setStyleSheet("background-color:#e3f4d7;");
+            }else
+            {
+                 resultsTable->populateTableView("SELECT * FROM tracks WHERE title LIKE \"%"+search+"%\" OR artist LIKE \"%"+search+"%\" OR album LIKE \"%"+search+"%\"OR genre LIKE \"%"+search+"%\"");
+                     ui->search->setStyleSheet("background-color:white;");
+            }
+
+
+
+
+
         //utilsBar->actions().at(1)->setVisible(true);
         //utilsBar->actions().at(2)->setVisible(true);
 

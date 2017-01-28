@@ -23,6 +23,7 @@ this->setFrameShape(QFrame::NoFrame);
 this->setColumnCount(10);
 this->setHorizontalHeaderLabels({"Track","Tile","Artist","Album","Genre","Location","Stars","Babe","Art","Played", "Playlist"});
 this->horizontalHeader()->setDefaultSectionSize(150);
+
 this->verticalHeader()->setVisible(false);
 this->setEditTriggers(QAbstractItemView::NoEditTriggers);
    this->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -221,13 +222,15 @@ QStringList missingFiles;
           QString rating;
           switch(query.value((STARS)).toInt())
           {
-              case 0: rating="\xe2\x99\xa1 "; break;
+              case 0: rating=" "; break;
               case 1: rating="\xe2\x98\x86 "; break;
               case 2: rating="\xe2\x98\x86 \xe2\x98\x86 "; break;
               case 3: rating="\xe2\x98\x86 \xe2\x98\x86 \xe2\x98\x86 "; break;
               case 4: rating="\xe2\x98\x86 \xe2\x98\x86 \xe2\x98\x86 \xe2\x98\x86 "; break;
               case 5: rating="\xe2\x98\x86 \xe2\x98\x86 \xe2\x98\x86 \xe2\x98\x86 \xe2\x98\x86 "; break;
           }
+
+          if(query.value(BABE).toInt()==1) rating="\xe2\x99\xa1 ";
 
            auto *stars= new QTableWidgetItem( rating);
            this->setItem(this->rowCount()-1, STARS, stars);
