@@ -23,7 +23,7 @@ this->setFrameShape(QFrame::NoFrame);
 this->setColumnCount(10);
 this->setHorizontalHeaderLabels({"Track","Tile","Artist","Album","Genre","Location","Stars","Babe","Art","Played", "Playlist"});
 this->horizontalHeader()->setDefaultSectionSize(150);
-
+this->setMinimumSize(0,0);
 this->verticalHeader()->setVisible(false);
 this->setEditTriggers(QAbstractItemView::NoEditTriggers);
    this->setSelectionBehavior(QAbstractItemView::SelectRows);

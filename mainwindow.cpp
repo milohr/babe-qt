@@ -342,11 +342,13 @@ MainWindow::MainWindow(QWidget *parent) :
     album_art_frame=new QFrame();
     album_art_frame->setFrameShadow(QFrame::Raised);
     album_art_frame->setFrameShape(QFrame::StyledPanel);
+
     //album_art_frame->setStyleSheet("background-color:transparent;");
     //album_art_frame->setFixedSize(210,210);
     //album_art->setGeometry(0,0,100,100);
 
     album_art = new Album(":Data/data/cover.jpg",200,2,true,album_art_frame);
+    album_art->setFixedSize(200,200);
     //connect(album_art,SIGNAL(albumCoverLeft()),this,SLOT(hideControls()));
    // connect(album_art,SIGNAL(albumCoverEnter()),this,SLOT(showControls()));
 
@@ -355,7 +357,7 @@ MainWindow::MainWindow(QWidget *parent) :
     album_art->widget->setGeometry(0,0,200,30);
     album_art->widget->setStyleSheet( QString("background-color: rgba(0,0,0,150); border: none;"));
 
-    album_art->setMinimumSize(200,200);
+    //album_art->setFixedSize(200,200);
 
    /* album_art->border_radius=2;
     album_art->size=200;
@@ -397,7 +399,7 @@ MainWindow::MainWindow(QWidget *parent) :
     auto controls_layout = new QGridLayout();
     controls->setLayout(controls_layout);
     controls->setGeometry(100-75,75,150,50);
-    controls->setStyleSheet(" QWidget{background-color: rgba(255, 255, 255, 230); border-radius:6px;} QWidget:hover{background-color:white;}");
+    controls->setStyleSheet(" QWidget{background-color: rgba(255, 255, 255, 230); border-radius:6px;} QWidget:hover{background-color:white;} QToolTip{background-color:#545454; border: 1px solid #333; border-radius:2px;} ");
 
 
 
@@ -434,7 +436,7 @@ MainWindow::MainWindow(QWidget *parent) :
    album_widget->setStyleSheet("QWidget { padding:0; margin:0;  }");
     //album_art->setStyleSheet("background-color:red; padding:0; margin:0;");
    // album_art->setStyleSheet("border: 1px solid #333;");
-    playback->setStyleSheet(" background:transparent; border:none;");
+    playback->setStyleSheet(" QToolBar {background:transparent; border:none;}");
 
 
     //album_widget->setLayout(album_view);
@@ -513,7 +515,13 @@ void MainWindow::resizeEvent(QResizeEvent* event)
 {
    QMainWindow::resizeEvent(event);
    qDebug()<<event->size().width()<<"x"<<event->size().height();
-  // if(mini_mode!=0 && event->size().width()==750 && event->size().height()==500) go_mini();
+  if(mini_mode==0 && event->size().width()<400)
+  {
+      //this->setMaximumWidth(200);
+     // this->setFixedWidth(200);
+
+      go_mini();
+  }
 }
 
 void MainWindow::refreshTables()
@@ -824,7 +832,7 @@ void MainWindow::expand()
     album_art_frame->setFrameShape(QFrame::StyledPanel);
     layout->setContentsMargins(6,0,6,0);
     this->setMaximumSize(QWIDGETSIZE_MAX,QWIDGETSIZE_MAX);
-    this->setMinimumSize(750,500);
+    //this->setMinimumSize(750,500);
     //qDebug()<<this->minimumWidth()<<this->minimumHeight();
 
     this->adjustSize();
@@ -876,9 +884,10 @@ ui->tracks_view_2->setIcon(QIcon::fromTheme(icon));
     album_art_frame->setFrameShape(QFrame::NoFrame);
     layout->setContentsMargins(0,0,0,0);
    // ui->utilsBar->setVisible(false);
-    this->resize(minimumSizeHint());
-    main_widget->resize(minimumSizeHint());
-    this->setFixedSize(minimumSizeHint());
+    //this->setMinimumSize(200,400);
+
+    this->setFixedWidth(200);
+    this->adjustSize();
     ui->hide_sidebar_btn->setToolTip("Go Extra-Mini");
     ui->hide_sidebar_btn->setIcon(QIcon(":Data/data/mini_mode.svg"));
     mini_mode=1;
@@ -928,8 +937,6 @@ void MainWindow::on_hide_sidebar_btn_clicked()
        // ui->mainToolBar->hide();
        // ui->tableWidget->hide();
         //this->setMaximumSize(QWIDGETSIZE_MAX,QWIDGETSIZE_MAX);
-        main_widget->resize(minimumSizeHint());
-        this->resize(minimumSizeHint());
 
         this->setFixedSize(200,200);
 //album_art->border_radius=5;
@@ -949,14 +956,13 @@ void MainWindow::on_hide_sidebar_btn_clicked()
 
     }else if(mini_mode==2)
     {
+        this->setWindowFlags(Qt::Window| Qt::WindowTitleHint | Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint);
+        this->show();
         // ui->mainToolBar->show();
         ui->listWidget->show();
         ui->frame_4->show();
         ui->playlistUtils->show();
-        this->resize(minimumSizeHint());
-        main_widget->resize(minimumSizeHint());
-        this->setFixedSize(minimumSizeHint());
-      //  this->adjustSize();
+
         ui->hide_sidebar_btn->setToolTip("Full View");
         //layout->setContentsMargins(6,0,6,0);
         album_art->titleVisible(false);
@@ -965,8 +971,21 @@ album_art->borderColor=false;
         //album_art->setStyleSheet("QLabel{border: none}");
         ui->hide_sidebar_btn->setIcon(QIcon(":Data/data/full_mode.svg"));
 ui->mainToolBar->hide();
-        this->setWindowFlags(Qt::Window| Qt::WindowTitleHint | Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint);
-        this->show();
+
+
+//main_widget->resize(minimumSizeHint());
+
+//this->setMinimumSize(0,0);
+
+this->setMaximumSize(QWIDGETSIZE_MAX,QWIDGETSIZE_MAX);
+this->setMinimumHeight(460);
+this->setFixedWidth(200);
+this->adjustSize();
+
+
+//this->updateGeometry();
+//this->setfix(minimumSizeHint());
+//this->adjustSize();
         mini_mode=3;
     }else if (mini_mode==3)
     {
