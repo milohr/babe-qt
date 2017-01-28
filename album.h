@@ -23,7 +23,7 @@ public:
     int border_radius;
     int size;
     bool borderColor=false;
-
+    QWidget *widget;
     QString getTitle();
     QString getArtist();
     QString getAlbum();
@@ -37,7 +37,7 @@ private:
     QString artist="";
     QString album="";
     ScrollText *title;
-    QWidget *widget;
+
     QPoint oldPos;
 
 

@@ -77,7 +77,7 @@ void Album::paintEvent(QPaintEvent *e)
     Q_UNUSED(e)
 this->setFixedSize(size,size);
 title->setMaxSize(size);
-widget->setGeometry(0,size-30,size,30);
+//widget->setGeometry(0,size-30,size,30);
 widget->setMinimumWidth(size);
 //title->setMaximumWidth(size);
 //title->setFixedWidth(size);

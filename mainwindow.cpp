@@ -206,8 +206,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->mainToolBar->addWidget(right_spacer);
 
-    ui->open_btn->setToolTip("Open...");
-    ui->mainToolBar->addWidget(ui->open_btn);
+   /* ui->open_btn->setToolTip("Open...");
+    ui->mainToolBar->addWidget(ui->open_btn);*/
+
 
     this->addToolBar(Qt::BottomToolBarArea, ui->mainToolBar);
    // this->setCentralWidget(ui->listView);
@@ -283,12 +284,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
     views = new QStackedWidget;
     views->setFrameShape(QFrame::NoFrame);
-    views->addWidget(collectionTable);
-    //auto* testing = new QLabel("albums view... todo");
+    views->addWidget(collectionTable);   
     views->addWidget(albumsTable);
-    views->addWidget(favoritesTable);
-    views->addWidget(settings_widget);
+    views->addWidget(favoritesTable);    
     views->addWidget(playlistTable);
+    views->addWidget(new BabeTable());
+    views->addWidget(new BabeTable());
+    views->addWidget(settings_widget);
     views->addWidget(resultsTable);
 
 
@@ -329,7 +331,10 @@ MainWindow::MainWindow(QWidget *parent) :
    // connect(album_art,SIGNAL(albumCoverEnter()),this,SLOT(showControls()));
 
     album_art->titleVisible(false);
-    album_art->setTitleGeometry(0,165,200,30);
+    //album_art->setTitleGeometry(0,0,200,30);
+    album_art->widget->setGeometry(0,0,200,30);
+    album_art->widget->setStyleSheet( QString("background-color: rgba(0,0,0,150); border: 1px solid #333; border-top-left-radius:2; border-top-right-radius:2; border-bottom-right-radius:0; border-bottom-left-radius:0;"));
+
     album_art->setMinimumSize(200,200);
 
    /* album_art->border_radius=2;
@@ -374,9 +379,30 @@ MainWindow::MainWindow(QWidget *parent) :
     controls->setGeometry(100-75,75,150,50);
     controls->setStyleSheet(" QWidget{background-color: rgba(255, 255, 255, 230); border-radius:6px;} QWidget:hover{background-color:white;}");
 
+
+
+
 //ui->seekBar->setStyleSheet("background:transparent; ");
     album_view->addWidget(album_art, 0,0,Qt::AlignTop);
     album_view->addWidget(ui->listWidget,1,0);
+    album_view->addWidget(ui->frame_4,2,0);
+    album_view->addWidget(ui->playlistUtils,3,0);
+    ui->tracks_view_2->hide();
+
+
+    /*auto playlistUtilsFrame = new QFrame();
+    auto playlistUtilsFrameLayout = new QHBoxLayout();
+    auto playlistUtilsFrame_spacer = new QWidget();
+    left_spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    auto playlistUtilsFrame_spacer_line = new QFrame();
+   playlistUtilsFrame_spacer_line->setFrameShape(QFrame::HLine);
+   playlistUtilsFrame_spacer_line->setFrameShadow(QFrame::Plain);
+   playlistUtilsFrame_spacer_line->setMaximumHeight(1);*/
+
+
+    //
+
+
     album_view->setContentsMargins(0,0,0,0);
     album_view->setSpacing(0);
 
@@ -520,6 +546,7 @@ void MainWindow::AlbumsViewOrder(QString order)
  {
      //qDebug()<<"ime is up";
      controls->hide();
+      album_art->titleVisible(false);
     // timer->stop();*/
  }
 
@@ -527,6 +554,7 @@ void MainWindow::AlbumsViewOrder(QString order)
  {
      //qDebug()<<"ime is up";
      controls->show();
+      if (mini_mode==2)album_art->titleVisible(true);
     // timer->stop();*/
  }
   void	MainWindow::dragEnterEvent(QDragEnterEvent *event)
@@ -643,7 +671,7 @@ void MainWindow::albumsView()
 }
 void MainWindow::playlistsView()
 {
-    views->setCurrentIndex(4);
+    views->setCurrentIndex(PLAYLISTS);
     if(mini_mode!=0) expand();
      hideAlbumViewUtils();
      utilsBar->actions().at(COLLECTION_UB)->setVisible(true);
@@ -653,7 +681,7 @@ void MainWindow::playlistsView()
 }
 void MainWindow::queueView()
 {
-    views->setCurrentIndex(1);
+    views->setCurrentIndex(QUEUE);
     if(mini_mode!=0) expand();
      hideAlbumViewUtils();
      utilsBar->actions().at(COLLECTION_UB)->setVisible(false);
@@ -664,7 +692,7 @@ void MainWindow::queueView()
 void MainWindow::infoView()
 {
 
-    views->setCurrentIndex(0);
+    views->setCurrentIndex(INFO);
 
     if(mini_mode!=0) expand();
     hideAlbumViewUtils();
@@ -704,7 +732,7 @@ qDebug()<<url;
 }
 void MainWindow::settingsView()
 {
-    views->setCurrentIndex(3);
+    views->setCurrentIndex(SETTINGS);
     if(mini_mode!=0) expand();
     //if(!hideSearch) utilsBar->hide(); line->hide();
      hideAlbumViewUtils();
@@ -717,7 +745,9 @@ void MainWindow::settingsView()
 
 void MainWindow::expand()
 {
+    ui->tracks_view_2->hide();
     views->show(); frame->show();
+    ui->mainToolBar->show();
     utilsBar->show(); line->show();
     ui->utilsBar->setChecked(true);
     hideSearch=false;
@@ -742,9 +772,31 @@ void MainWindow::expand()
 void MainWindow::go_mini()
 {
     //this->setMaximumSize (0, 0);
+    ui->tracks_view_2->show();
+
+    QString icon;
+
+    switch(prevIndex)
+    {
+        case COLLECTION: icon="filename-filetype-amarok"; break;
+        case ALBUMS:  icon="media-album-track"; break;
+        case FAVORITES:  icon="draw-star"; break;
+        case PLAYLISTS:  icon="amarok_lyrics"; break;
+        case QUEUE:  icon="amarok_clock"; break;
+        case INFO: icon="internet-amarok"; break;
+        case SETTINGS:  icon="games-config-options"; break;
+        default:  icon="search";
+    }
+
+
+
+
+ui->tracks_view_2->setIcon(QIcon::fromTheme(icon));
+
+
 
     views->hide(); frame->hide();
-
+    ui->mainToolBar->hide();
     //playlistTable->line_v->hide();
     utilsBar->hide(); line->hide();
     ui->utilsBar->setChecked(false);
@@ -802,6 +854,8 @@ void MainWindow::on_hide_sidebar_btn_clicked()
 
         ui->listWidget->hide();
         ui->mainToolBar->hide();
+        ui->frame_4->hide();
+        ui->playlistUtils->hide();
        // ui->mainToolBar->hide();
        // ui->tableWidget->hide();
         //this->setMaximumSize(QWIDGETSIZE_MAX,QWIDGETSIZE_MAX);
@@ -811,7 +865,7 @@ void MainWindow::on_hide_sidebar_btn_clicked()
         this->setFixedSize(200,200);
 //album_art->border_radius=5;
         album_art->borderColor=true;
-         album_art->titleVisible(true);
+
        // album_art->setStyleSheet("QLabel{background-color:transparent;}");
        // album_art_frame->setStyleSheet("QFrame{border: 1px solid red;border-radius:5px;}");
        // this->setStyleSheet("QMainWindow{background-color:transparent;");
@@ -826,8 +880,10 @@ void MainWindow::on_hide_sidebar_btn_clicked()
 
     }else if(mini_mode==2)
     {
-         ui->mainToolBar->show();
+        // ui->mainToolBar->show();
         ui->listWidget->show();
+        ui->frame_4->show();
+        ui->playlistUtils->show();
         this->resize(minimumSizeHint());
         main_widget->resize(minimumSizeHint());
         this->setFixedSize(minimumSizeHint());
@@ -839,8 +895,8 @@ void MainWindow::on_hide_sidebar_btn_clicked()
 album_art->borderColor=false;
         //album_art->setStyleSheet("QLabel{border: none}");
         ui->hide_sidebar_btn->setIcon(QIcon(":Data/data/full_mode.svg"));
-
-        this->setWindowFlags(Qt::Widget | Qt::WindowTitleHint | Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint);
+ui->mainToolBar->hide();
+        this->setWindowFlags(Qt::Window| Qt::WindowTitleHint | Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint);
         this->show();
         mini_mode=3;
     }else if (mini_mode==3)
@@ -1312,7 +1368,7 @@ void MainWindow::addToPlaylist(QStringList list)
 void MainWindow::on_search_returnPressed()
 {
 
-    if(ui->search->text().size()!=0) views->setCurrentIndex(5);
+    if(ui->search->text().size()!=0) views->setCurrentIndex(RESULTS);
     else views->setCurrentIndex(prevIndex);
 
 
@@ -1328,7 +1384,7 @@ void MainWindow::on_search_textChanged(const QString &arg1)
 
     if(search.size()!=0)
     {
-        views->setCurrentIndex(5);
+        views->setCurrentIndex(RESULTS);
         qDebug()<<search;
         resultsTable->flushTable();
         resultsTable->populateTableView("SELECT * FROM tracks WHERE title LIKE '%"+search+"%' OR artist LIKE '%"+search+"%' OR album LIKE '%"+search+"%'OR genre LIKE '%"+search+"%'");
@@ -1336,6 +1392,7 @@ void MainWindow::on_search_textChanged(const QString &arg1)
         //utilsBar->actions().at(2)->setVisible(true);
         ui->resultsPLaylist->setEnabled(true);
         ui->saveResults->setEnabled(true);
+       // prevIndex= views->currentIndex();
 
     }else
     {
@@ -1382,4 +1439,16 @@ void MainWindow::on_rowInserted(QModelIndex model ,int x,int y)
 {
     qDebug()<<"indexes moved";
     addMusicImg->hide();
+}
+
+void MainWindow::on_refreshBtn_clicked()
+{
+   playlist.removeAll();
+   //QStringList
+   populateMainList();
+}
+
+void MainWindow::on_tracks_view_2_clicked()
+{
+    expand();
 }

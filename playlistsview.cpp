@@ -15,7 +15,7 @@ PlaylistsView::PlaylistsView(QWidget *parent) :
     list->setFixedWidth(120);
     list->setAlternatingRowColors(true);
     list->setFrameShape(QFrame::NoFrame);
-
+    //list->setStyleSheet("background: #575757; color:white;");
 
     connect(list, SIGNAL(doubleClicked(QModelIndex)), list, SLOT(edit(QModelIndex)));
     connect(list,SIGNAL(clicked(QModelIndex)),this,SLOT(populatePlaylist(QModelIndex)));
@@ -37,7 +37,7 @@ PlaylistsView::PlaylistsView(QWidget *parent) :
     mostPlayed->setIcon(QIcon::fromTheme("favorite-genres-amarok"));
     mostPlayed->setText("Most Played");
     list->addItem(mostPlayed);
-    list->setStyleSheet("background-color:transparent;");
+    //list->setStyleSheet("background-color:transparent;");
 
 
    //list->addItem("Favorites");

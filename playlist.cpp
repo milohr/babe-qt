@@ -170,6 +170,11 @@ void Playlist::remove(int index)
     tracks.erase(tracks.begin() + index);
 }
 
+void Playlist::removeAll()
+{
+    tracks.clear();
+}
+
 void Playlist::save()
 {
     std::ofstream write("playlist");

@@ -36,7 +36,7 @@ public:
 
     enum views
     {
-        COLLECTION,ALBUMS,FAVORITES,PLAYLISTS,QUEUE,INFO,SETTINGS
+        COLLECTION,ALBUMS,FAVORITES,PLAYLISTS,QUEUE,INFO,SETTINGS,RESULTS
     };
     enum utilsBar
     {
@@ -113,6 +113,10 @@ private slots:
    void refreshTables();
    void addToPlayed(QString url);
 
+
+   void on_refreshBtn_clicked();
+
+   void on_tracks_view_2_clicked();
 
 private:
 

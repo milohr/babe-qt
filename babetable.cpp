@@ -221,7 +221,7 @@ QStringList missingFiles;
           QString rating;
           switch(query.value((STARS)).toInt())
           {
-              case 0: rating=" "; break;
+              case 0: rating="\xe2\x99\xa1 "; break;
               case 1: rating="\xe2\x98\x86 "; break;
               case 2: rating="\xe2\x98\x86 \xe2\x98\x86 "; break;
               case 3: rating="\xe2\x98\x86 \xe2\x98\x86 \xe2\x98\x86 "; break;
