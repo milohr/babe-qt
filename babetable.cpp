@@ -36,7 +36,7 @@ this->horizontalHeader()->setStretchLastSection(true);
 this->setShowGrid(false);
 
 this->setColumnWidth(TRACK,20);
-this->setColumnWidth(PLAYED,10);
+this->setColumnWidth(PLAYED,20);
 this->setColumnWidth(STARS,80);
     this->hideColumn(LOCATION);
    this->hideColumn(STARS);
@@ -98,7 +98,7 @@ this->hideColumn(ART);
     //passPlaylists();
     //playlistsMenu->addAction("hello rold");
 
-
+    connect(playlistsMenu, SIGNAL(triggered(QAction*)), this, SLOT(addToPlaylist(QAction*)));
     connect(this,SIGNAL(rightClicked(QPoint)),this,SLOT(setUpContextMenu(QPoint)));
 
     connect(babeIt, SIGNAL(triggered()), this, SLOT(babeIt_action()));
@@ -131,6 +131,49 @@ gr->setLayout(ty);
 
 
 }
+
+
+ void BabeTable::addToPlaylist(QAction *action)
+ {
+
+        QString playlist=action->text().replace("&","");
+     QString location=this->model()->data(this->model()->index(row,LOCATION)).toString();
+
+
+     if (playlist.contains("Create new..."))
+     {
+        qDebug()<<"trying to create a new playlistsssss"<<playlist;
+
+         emit createPlaylist_clicked();
+     }else
+     {
+         if(connection->checkQuery("SELECT * FROM tracks WHERE location = \""+location+"\""))
+         {
+                    //ui->fav_btn->setIcon(QIcon::fromTheme("face-in-love"));
+             qDebug()<<"Song to add: "<<location<<" to: " <<playlist;
+
+
+             QSqlQuery query = connection->getQuery("SELECT * FROM tracks WHERE location = \""+location+"\"");
+
+             QString list;
+             while (query.next()) list = query.value(PLAYLIST).toString();
+             list+=" "+playlist;
+             //qDebug()<<played;
+
+             if(connection->insertInto("tracks","playlist",location,list))
+             {
+                         //ui->fav_btn->setIcon(QIcon(":Data/data/love-amarok.svg"));
+                 qDebug()<<list;
+
+             }
+
+         }
+     }
+
+
+
+
+ }
 
 BabeTable::~BabeTable()
 {
@@ -374,9 +417,9 @@ void BabeTable::setUpContextMenu(QPoint pos)
 
 {
 qDebug()<<"setUpContextMenu";
-
- for(auto playlist : connection->getPlaylists()) playlistsMenu->addAction(playlist);
-
+playlistsMenu->clear();
+ for(auto playlist : connection->getPlaylists()){  playlistsMenu->addAction(playlist);}
+//playlistsMenu->addAction("Create new...");
  int rate;
 bool babe= false;
 row=this->indexAt(pos).row();

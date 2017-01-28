@@ -10,7 +10,7 @@ PlaylistsView::PlaylistsView(QWidget *parent) :
     layout->setSpacing(0);
 
     table = new BabeTable();
-    table->showColumn(BabeTable::PLAYED);
+
     list = new QListWidget();
     list->setFixedWidth(120);
     list->setAlternatingRowColors(true);
@@ -23,7 +23,7 @@ PlaylistsView::PlaylistsView(QWidget *parent) :
 
 
     connect(table,SIGNAL(tableWidget_doubleClicked(QStringList)),this,SLOT(tableClicked(QStringList)));
-
+    //connect(table,SIGNAL(createPlaylist_clicked()),this,SLOT(createPlaylist()));
    //auto item =new QListWidgetItem();
 
    //list->addItem(item);
@@ -115,6 +115,11 @@ this->setLayout(layout);
 
 }
 
+void PlaylistsView::dummy()
+{
+    qDebug()<<"signal was recived";
+}
+
 void PlaylistsView::tableClicked(QStringList list)
 
 {
@@ -128,10 +133,13 @@ void PlaylistsView::populatePlaylist(QModelIndex index)
     if(playlist=="Most Played")
     {
         table->flushTable();
+        table->showColumn(BabeTable::PLAYED);
         table->populateTableView("SELECT * FROM tracks WHERE played > \"1\" ORDER  by played desc");
     }else
     {
         table->flushTable();
+        table->hideColumn(BabeTable::PLAYED);
+        table->populateTableView("SELECT * FROM tracks WHERE playlist LIKE \"%"+playlist+"%\"");
     }
 
 }

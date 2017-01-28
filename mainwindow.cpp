@@ -82,6 +82,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(resultsTable,SIGNAL(enteredTable()),this,SLOT(hideControls()));
     connect(resultsTable,SIGNAL(leftTable()),this,SLOT(showControls()));
     connect(resultsTable,SIGNAL( babeIt_clicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
+    //connect(resultsTable,SIGNAL(createPlaylist_clicked()),this,SLOT(playlistsView()));
 
     albumsTable = new AlbumsView();
     connect(albumsTable,SIGNAL(songClicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
@@ -93,6 +94,7 @@ MainWindow::MainWindow(QWidget *parent) :
     playlistTable = new PlaylistsView();
     connect(playlistTable,SIGNAL(playlistCreated(QString)),&settings_widget->getCollectionDB(),SLOT(insertPlaylist(QString)));
     connect(playlistTable,SIGNAL(songClicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
+    connect(playlistTable->table,SIGNAL(createPlaylist_clicked()),this,SLOT(playlistsView()));
 
     playback = new QToolBar();
     utilsBar = new QToolBar();
@@ -469,25 +471,25 @@ MainWindow::~MainWindow()
 void MainWindow::addToPlayed(QString url)
 {
     if(settings_widget->getCollectionDB().checkQuery("SELECT * FROM tracks WHERE location = \""+url+"\""))
-           {
+    {
                //ui->fav_btn->setIcon(QIcon::fromTheme("face-in-love"));
-               qDebug()<<"Song totally played"<<url;
+        qDebug()<<"Song totally played"<<url;
 
 
-               QSqlQuery query = settings_widget->getCollectionDB().getQuery("SELECT * FROM tracks WHERE location = \""+url+"\"");
+        QSqlQuery query = settings_widget->getCollectionDB().getQuery("SELECT * FROM tracks WHERE location = \""+url+"\"");
 
-               int played;
-               while (query.next()) played = query.value(BabeTable::PLAYED).toInt();
-                qDebug()<<played;
+        int played;
+        while (query.next()) played = query.value(BabeTable::PLAYED).toInt();
+        qDebug()<<played;
 
-                if(settings_widget->getCollectionDB().insertInto("tracks","played",url,played+1))
-                {
+        if(settings_widget->getCollectionDB().insertInto("tracks","played",url,played+1))
+        {
                     //ui->fav_btn->setIcon(QIcon(":Data/data/love-amarok.svg"));
-                     qDebug()<<played;
+            qDebug()<<played;
 
-                }
+        }
 
-           }
+    }
 }
 
 void MainWindow::resizeEvent(QResizeEvent* event)

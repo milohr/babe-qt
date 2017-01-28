@@ -54,7 +54,7 @@ private slots:
     void on_tableWidget_doubleClicked(const QModelIndex &index);
     void rateGroup(int id);
     void setUpContextMenu(QPoint pos);
-
+    void addToPlaylist(QAction* action);
     void babeIt_action();
 
 
@@ -78,6 +78,7 @@ signals:
     void finishedPopulating();
     void rightClicked(QPoint evt);
     void babeIt_clicked(QStringList list);
+    void createPlaylist_clicked();
 
 };
 

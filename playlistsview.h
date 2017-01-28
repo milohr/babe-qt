@@ -41,6 +41,7 @@ public slots:
     void on_removeBtn_clicked();
     void populatePlaylist(QModelIndex index);
     void tableClicked(QStringList list);
+    void dummy();
 
 signals:
     void playlistCreated(QString name);
