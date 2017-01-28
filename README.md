@@ -21,6 +21,10 @@ qmake && make && ./Babe
 * Expected Features :
   -simple music collection manager
   -artist and lyrics infogit 
+  
+* Features :
+    -search keys to filter the results: location: , artist: , album: , artist: , title: , genre:
+    -quickly add search results to playlist or save them to a specific playlist
 
 <h3> Playlist Mode </h3>
 ![alt tag](https://github.com/milohr/babe-qt/blob/master/screenshots/playlist_mode.png?raw=true) 

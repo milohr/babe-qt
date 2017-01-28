@@ -1,7 +1,7 @@
 # Babe
 ## Tiny Qt Babe Music Player
 
-#### Babe is a tiny Qt music player to play you favorite songs
+#### Babe is a tiny Qt music player to keep you favorite songs at hand
 
 Babe will also handle your whole music collection, letting you create playlists and search trough out your music collection
 
@@ -21,6 +21,10 @@ qmake && make && ./Babe
 * Expected Features :
   -simple music collection manager
   -artist and lyrics infogit 
+  
+* Features :
+    -search keys to filter the results: location: , artist: , album: , artist: , title: , genre:
+    -quickly add search results to playlist or save them to a specific playlist
 
 <h3> Playlist Mode </h3>
 ![alt tag](https://github.com/milohr/babe-qt/blob/master/screenshots/playlist_mode.png?raw=true) 
