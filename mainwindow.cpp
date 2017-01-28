@@ -1451,6 +1451,7 @@ void MainWindow::addToPlaylist(QStringList list)
         updateList();
 
         if(shuffle) shufflePlaylist();
+        ui->listWidget->scrollToBottom();
 }
 
 void MainWindow::on_search_returnPressed()
