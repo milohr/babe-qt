@@ -747,9 +747,9 @@
    <widget class="QFrame" name="playlistUtils">
     <property name="geometry">
      <rect>
-      <x>420</x>
-      <y>240</y>
-      <width>200</width>
+      <x>660</x>
+      <y>0</y>
+      <width>71</width>
       <height>31</height>
      </rect>
     </property>

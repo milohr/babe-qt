@@ -124,6 +124,8 @@ private slots:
 
    void on_addAll_clicked();
 
+   void on_saveResults_clicked();
+
 private:
 
     Ui::MainWindow *ui;

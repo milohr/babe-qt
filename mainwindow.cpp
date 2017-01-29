@@ -88,7 +88,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(favoritesTable,SIGNAL(enteredTable()),this,SLOT(hideControls()));
     connect(favoritesTable,SIGNAL(leftTable()),this,SLOT(showControls()));
     connect(favoritesTable,SIGNAL( babeIt_clicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
-
+     favoritesTable->setVisibleColumn(BabeTable::STARS);
     resultsTable=new BabeTable();
     //resultsTable->passStyle("QHeaderView::section { background-color:#474747; }");
     resultsTable->setVisibleColumn(BabeTable::STARS);
@@ -135,7 +135,11 @@ MainWindow::MainWindow(QWidget *parent) :
        populateMainList();
        emit collectionChecked();
     }
-    favoritesTable->setVisibleColumn(BabeTable::STARS);
+    else
+    {
+        //views->setCurrentIndex();
+    }
+
    //
     //babes_widget= new babes();
    //
@@ -304,9 +308,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     views = new QStackedWidget;
     views->setFrameShape(QFrame::NoFrame);
-    views->addWidget(collectionTable);   
+    views->addWidget(collectionTable);
     views->addWidget(albumsTable);
-    views->addWidget(favoritesTable);    
+    views->addWidget(favoritesTable);
     views->addWidget(playlistTable);
     views->addWidget(new BabeTable());
     views->addWidget(new BabeTable());
@@ -399,7 +403,7 @@ MainWindow::MainWindow(QWidget *parent) :
     auto controls_layout = new QGridLayout();
     controls->setLayout(controls_layout);
     controls->setGeometry(100-75,75,150,50);
-    controls->setStyleSheet(" QWidget{background-color: rgba(255, 255, 255, 230); border-radius:6px;} QWidget:hover{background-color:white;} QToolTip{background-color:#545454; border: 1px solid #333; border-radius:2px;} ");
+    controls->setStyleSheet(" QToolButton {background-color:transparent; }QWidget{background-color: rgba(255, 255, 255, 230); border-radius:6px;} QWidget:hover{background-color:white;} QToolTip{background-color:#545454; border: 1px solid #333; border-radius:2px;} ");
 
 
 
@@ -436,7 +440,7 @@ MainWindow::MainWindow(QWidget *parent) :
    album_widget->setStyleSheet("QWidget { padding:0; margin:0;  }");
     //album_art->setStyleSheet("background-color:red; padding:0; margin:0;");
    // album_art->setStyleSheet("border: 1px solid #333;");
-    playback->setStyleSheet(" QToolBar {background:transparent; border:none;}");
+    playback->setStyleSheet(" QToolButton {background-color:transparent; } QToolBar {background:transparent; border:none;}");
 
 
     //album_widget->setLayout(album_view);
@@ -515,7 +519,7 @@ void MainWindow::resizeEvent(QResizeEvent* event)
 {
    QMainWindow::resizeEvent(event);
    qDebug()<<event->size().width()<<"x"<<event->size().height();
-  if(mini_mode==0 && event->size().width()<400)
+  if(mini_mode==0 && event->size().width()<450)
   {
       //this->setMaximumWidth(200);
      // this->setFixedWidth(200);
@@ -849,6 +853,8 @@ void MainWindow::expand()
 void MainWindow::go_mini()
 {
     //this->setMaximumSize (0, 0);
+    /*this->setWindowFlags(Qt::Window | Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint);
+this->show();*/
     ui->tracks_view_2->show();
 
     QString icon;
@@ -956,7 +962,7 @@ void MainWindow::on_hide_sidebar_btn_clicked()
 
     }else if(mini_mode==2)
     {
-        this->setWindowFlags(Qt::Window| Qt::WindowTitleHint | Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint);
+        this->setWindowFlags(Qt::Window| Qt::WindowTitleHint | Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint);
         this->show();
         // ui->mainToolBar->show();
         ui->listWidget->show();
@@ -1608,6 +1614,22 @@ void MainWindow::on_refreshAll_clicked()
 }
 
 void MainWindow::on_addAll_clicked()
+{
+    switch(views->currentIndex())
+    {
+        case COLLECTION: addToPlaylist(collectionTable->getTableContent(BabeTable::LOCATION)); break;
+        case ALBUMS: addToPlaylist(collectionTable->getTableContent(BabeTable::LOCATION)); break;
+        case FAVORITES: addToPlaylist(favoritesTable->getTableContent(BabeTable::LOCATION)); break;
+        case PLAYLISTS: addToPlaylist(playlistTable->table->getTableContent(BabeTable::LOCATION)); break;
+        case QUEUE: addToPlaylist(collectionTable->getTableContent(BabeTable::LOCATION)); break;
+         case INFO: addToPlaylist(collectionTable->getTableContent(BabeTable::LOCATION)); break;
+    case SETTINGS:  addToPlaylist(collectionTable->getTableContent(BabeTable::LOCATION)); break;
+    case RESULTS: addToPlaylist(resultsTable->getTableContent(BabeTable::LOCATION)); break;
+
+    }
+}
+
+void MainWindow::on_saveResults_clicked()
 {
     switch(views->currentIndex())
     {
