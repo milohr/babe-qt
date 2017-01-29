@@ -124,9 +124,8 @@ private slots:
 
    void on_addAll_clicked();
    void saveResultsTo(QAction *action);
-
    void on_saveResults_clicked();
-   void saveResults_actions();
+
 
 private:
 

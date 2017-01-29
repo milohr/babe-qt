@@ -351,7 +351,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //album_art_frame->setFixedSize(210,210);
     //album_art->setGeometry(0,0,100,100);
 
-    album_art = new Album(":Data/data/cover.jpg",200,2,true,album_art_frame);
+    album_art = new Album(":Data/data/cover.jpg",200,0,true,album_art_frame);
     album_art->setFixedSize(200,200);
     //connect(album_art,SIGNAL(albumCoverLeft()),this,SLOT(hideControls()));
    // connect(album_art,SIGNAL(albumCoverEnter()),this,SLOT(showControls()));
@@ -392,11 +392,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     controls = new QWidget(album_art);
-    seekBar = new QSlider(album_art);
+    seekBar = new QSlider();
     seekBar->setMaximum(1000);
     seekBar->setOrientation(Qt::Horizontal);
-    seekBar->setGeometry(0,193,200,7);
-    seekBar->setStyleSheet("QSlider\n{\nbackground:transparent;\n}\nQSlider::groove:horizontal {\nborder: 1px solid #bbb;\nbackground: white;\nheight: 5px;\nborder-radius: 4px;\n}\n\nQSlider::sub-page:horizontal {\nbackground: #f85b79;\n\nborder: 1px solid #777;\nheight: 5px;\nborder-radius: 4px;\n}\n\nQSlider::add-page:horizontal {\nbackground: #fff;\nborder: 1px solid #777;\nheight: 5px;\nborder-radius: 4px;\n}\n\nQSlider::handle:horizontal {\nbackground: #f85b79;\n\nwidth: 8px;\n\n}\n\nQSlider::handle:horizontal:hover {\nbackground: qlineargradient(x1:0, y1:0, x2:1, y2:1,\n    stop:0 #fff, stop:1 #ddd);\nborder: 1px solid #444;\nborder-radius: 4px;\n}\n\nQSlider::sub-page:horizontal:disabled {\nbackground: #bbb;\nborder-color: #999;\n}\n\nQSlider::add-page:horizontal:disabled {\nbackground: #eee;\nborder-color: #999;\n}\n\nQSlider::handle:horizontal:disabled {\nbackground: #eee;\nborder: 1px solid #aaa;\nborder-radius: 4px;\n}");
+    seekBar->setContentsMargins(0,0,0,0);
+    seekBar->setFixedHeight(5);
+   // seekBar->setGeometry(0,195,200,5);
+    seekBar->setStyleSheet("QSlider\n{\nbackground:transparent;}\nQSlider::groove:horizontal {border: none; background: transparent; height: 5px; border-radius: 0; } QSlider::sub-page:horizontal {\nbackground: #f85b79;border: none; height: 5px;border-radius: 0;} QSlider::add-page:horizontal {\nbackground: transparent; border: none; height: 5px; border-radius: 0; } QSlider::handle:horizontal {background: #f85b79; width: 8px; } QSlider::handle:horizontal:hover {background: qlineargradient(x1:0, y1:0, x2:1, y2:1,stop:0 #fff, stop:1 #ddd);border: 1px solid #444;border-radius: 4px;}QSlider::sub-page:horizontal:disabled {background: #bbb;border-color: #999;}QSlider::add-page:horizontal:disabled {background: #eee;border-color: #999;}QSlider::handle:horizontal:disabled {background: #eee;border: 1px solid #aaa;border-radius: 4px;}");
     connect(seekBar,SIGNAL(sliderMoved(int)),this,SLOT(on_seekBar_sliderMoved(int)));
 
 
@@ -410,9 +412,16 @@ MainWindow::MainWindow(QWidget *parent) :
 
 //ui->seekBar->setStyleSheet("background:transparent; ");
     album_view->addWidget(album_art, 0,0,Qt::AlignTop);
-    album_view->addWidget(ui->listWidget,1,0);
-    album_view->addWidget(ui->frame_4,2,0);
-    album_view->addWidget(ui->playlistUtils,3,0);
+    album_view->addWidget(ui->frame_5,1,0);
+album_view->addWidget(seekBar,2,0);
+
+ album_view->addWidget(ui->frame_6,3,0);
+    album_view->addWidget(ui->listWidget,4,0);
+    album_view->addWidget(ui->frame_4,5,0);
+    album_view->addWidget(ui->playlistUtils,6,0);
+
+
+
     ui->tracks_view_2->hide();
 
 
@@ -464,7 +473,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //this->setStyle();
    // ui->saveResults->setContextMenuPolicy(Qt::ActionsContextMenu);
     saveResults_menu = new QMenu();
-    saveResults_actions();
+    //saveResults_actions();
     //collectionTable->setUpContextMenu();
     //connect(collectionTable,SIGNAL(refreshPlaylistsMenu(QStringList)),this,SLOT(saveResults_actions(QStringList)));
     ui->saveResults->setMenu(saveResults_menu);
@@ -648,7 +657,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
  {
      //qDebug()<<"ime is up";
      controls->show();
-      if (mini_mode==2)album_art->titleVisible(true);
+     // if (mini_mode==2)album_art->titleVisible(true);
     // timer->stop();*/
  }
   void	MainWindow::dragEnterEvent(QDragEnterEvent *event)
@@ -1653,12 +1662,7 @@ ui->saveResults->showMenu();
 
 }
 
-void MainWindow::saveResults_actions()
-{
 
-
-
-}
 
 void MainWindow::saveResultsTo(QAction *action)
 {
