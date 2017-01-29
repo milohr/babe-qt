@@ -462,7 +462,20 @@ MainWindow::MainWindow(QWidget *parent) :
     layout->addWidget(frame, 0,0 );
     layout->addWidget(album_art_frame,0,1, Qt::AlignRight);
     //this->setStyle();
+   // ui->saveResults->setContextMenuPolicy(Qt::ActionsContextMenu);
+    saveResults_menu = new QMenu();
+    saveResults_actions();
+    //collectionTable->setUpContextMenu();
+    //connect(collectionTable,SIGNAL(refreshPlaylistsMenu(QStringList)),this,SLOT(saveResults_actions(QStringList)));
+    ui->saveResults->setMenu(saveResults_menu);
+    ui->saveResults->setStyleSheet("QToolButton::menu-indicator { image: none; }");
+    connect(saveResults_menu, SIGNAL(triggered(QAction*)), this, SLOT(saveResultsTo(QAction*)));
 
+    // ui->saveResults->setPopupMode(QToolButton::InstantPopup);
+
+
+
+     //connect(ui->saveResults,SIGNAL(clicked()),ui->saveResults,SLOT(showMenu()));
     ui->listWidget->setCurrentRow(0);
     if(ui->listWidget->count() != 0)
     {
@@ -1631,16 +1644,35 @@ void MainWindow::on_addAll_clicked()
 
 void MainWindow::on_saveResults_clicked()
 {
+
+qDebug()<<"on_saveResults_clicked";
+saveResults_menu->clear();
+
+for(auto action: collectionTable->getPlaylistMenus()) saveResults_menu->addAction(action);
+ui->saveResults->showMenu();
+
+}
+
+void MainWindow::saveResults_actions()
+{
+
+
+
+}
+
+void MainWindow::saveResultsTo(QAction *action)
+{
+     QString playlist=action->text().replace("&","");
     switch(views->currentIndex())
     {
-        case COLLECTION: addToPlaylist(collectionTable->getTableContent(BabeTable::LOCATION)); break;
-        case ALBUMS: addToPlaylist(collectionTable->getTableContent(BabeTable::LOCATION)); break;
-        case FAVORITES: addToPlaylist(favoritesTable->getTableContent(BabeTable::LOCATION)); break;
-        case PLAYLISTS: addToPlaylist(playlistTable->table->getTableContent(BabeTable::LOCATION)); break;
-        case QUEUE: addToPlaylist(collectionTable->getTableContent(BabeTable::LOCATION)); break;
-         case INFO: addToPlaylist(collectionTable->getTableContent(BabeTable::LOCATION)); break;
-    case SETTINGS:  addToPlaylist(collectionTable->getTableContent(BabeTable::LOCATION)); break;
-    case RESULTS: addToPlaylist(resultsTable->getTableContent(BabeTable::LOCATION)); break;
+        case COLLECTION: collectionTable->populatePlaylist(collectionTable->getTableContent(BabeTable::LOCATION),playlist); break;
+        case ALBUMS: collectionTable->populatePlaylist(collectionTable->getTableContent(BabeTable::LOCATION),playlist); break;
+        case FAVORITES: favoritesTable->populatePlaylist(favoritesTable->getTableContent(BabeTable::LOCATION),playlist); break;
+        case PLAYLISTS: playlistTable->table->populatePlaylist(playlistTable->table->getTableContent(BabeTable::LOCATION),playlist); break;
+        case QUEUE: collectionTable->populatePlaylist(collectionTable->getTableContent(BabeTable::LOCATION),playlist); break;
+         case INFO: collectionTable->populatePlaylist(collectionTable->getTableContent(BabeTable::LOCATION),playlist); break;
+    case SETTINGS:  collectionTable->populatePlaylist(collectionTable->getTableContent(BabeTable::LOCATION),playlist); break;
+    case RESULTS: resultsTable->populatePlaylist(resultsTable->getTableContent(BabeTable::LOCATION),playlist); break;
 
     }
 }

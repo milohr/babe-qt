@@ -123,8 +123,10 @@ private slots:
    void on_refreshAll_clicked();
 
    void on_addAll_clicked();
+   void saveResultsTo(QAction *action);
 
    void on_saveResults_clicked();
+   void saveResults_actions();
 
 private:
 
@@ -179,6 +181,7 @@ private:
     bool playing = false;
     vector<unsigned short int> shuffledPlaylist;
     bool shuffle = false;
+    QMenu *saveResults_menu;
    // void collectionWatcher();
 
 signals:

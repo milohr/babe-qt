@@ -24,6 +24,7 @@ public:
     void setPlaylists(QStringList playlists);
     QFrame *line_v;
     QWidget *btnContainer;
+    QString currentPlaylist;
    // QToolButton *removeBtn;
 
 private:
@@ -46,6 +47,7 @@ public slots:
 signals:
     void playlistCreated(QString name);
     void songClicked(QStringList list);
+    void playlistClicked(QString playlist);
 
 };
 

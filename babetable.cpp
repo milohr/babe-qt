@@ -147,6 +147,15 @@ gr->setLayout(ty);
          emit createPlaylist_clicked();
      }else
      {
+         populatePlaylist({location},playlist);
+     }
+ }
+
+ void  BabeTable::populatePlaylist(QStringList urls,QString playlist)
+ {
+
+     for(auto location : urls)
+     {
          if(connection->checkQuery("SELECT * FROM tracks WHERE location = \""+location+"\""))
          {
                     //ui->fav_btn->setIcon(QIcon::fromTheme("face-in-love"));
@@ -168,12 +177,8 @@ gr->setLayout(ty);
              }
 
          }
-     }
-
-
-
-
- }
+    }
+}
 
 BabeTable::~BabeTable()
 {
@@ -422,6 +427,7 @@ void BabeTable::setUpContextMenu(QPoint pos)
 {
 qDebug()<<"setUpContextMenu";
 playlistsMenu->clear();
+
  for(auto playlist : connection->getPlaylists()){  playlistsMenu->addAction(playlist);}
 //playlistsMenu->addAction("Create new...");
  int rate;
@@ -449,6 +455,16 @@ row=this->indexAt(pos).row();
 
 
 }
+
+QStringList BabeTable::getPlaylistMenus()
+{
+
+    playlistsMenus.clear();
+    for(auto playlist : connection->getPlaylists()){  playlistsMenus<<playlist;}
+    return playlistsMenus;
+
+}
+
 void BabeTable::keyPressEvent(QKeyEvent *event)
 {
     switch (event->key()) {

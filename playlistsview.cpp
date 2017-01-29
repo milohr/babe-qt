@@ -129,8 +129,11 @@ void PlaylistsView::tableClicked(QStringList list)
 
 void PlaylistsView::populatePlaylist(QModelIndex index)
 {
-    QString playlist = index.data().toString();
-    if(playlist=="Most Played")
+
+
+    currentPlaylist = index.data().toString();
+    emit playlistClicked(currentPlaylist);
+    if(currentPlaylist=="Most Played")
     {
         table->flushTable();
         table->showColumn(BabeTable::PLAYED);
@@ -139,7 +142,7 @@ void PlaylistsView::populatePlaylist(QModelIndex index)
     {
         table->flushTable();
         table->hideColumn(BabeTable::PLAYED);
-        table->populateTableView("SELECT * FROM tracks WHERE playlist LIKE \"%"+playlist+"%\"");
+        table->populateTableView("SELECT * FROM tracks WHERE playlist LIKE \"%"+currentPlaylist+"%\"");
     }
 
 }

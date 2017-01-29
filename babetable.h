@@ -41,6 +41,9 @@ public:
     void passStyle(QString style);
     QStringList getTableContent(int column);
     void passPlaylists();
+    void  populatePlaylist(QStringList urls, QString playlist);
+      QMenu* playlistsMenu;
+      QStringList playlistsMenus;
 
 protected:
     virtual void enterEvent(QEvent *event);
@@ -58,6 +61,8 @@ private slots:
     void addToPlaylist(QAction* action);
     void babeIt_action();
 
+public slots:
+     QStringList getPlaylistMenus();
 
 private:
 
@@ -69,7 +74,7 @@ private:
     QToolButton *fav5;
     int row;
     QMenu *contextMenu;
-    QMenu* playlistsMenu;
+
 
 signals:
     void tableWidget_doubleClicked(QStringList url);
@@ -80,6 +85,7 @@ signals:
     void rightClicked(QPoint evt);
     void babeIt_clicked(QStringList list);
     void createPlaylist_clicked();
+    void refreshPlaylistsMenu(QStringList list);
 
 };
 
