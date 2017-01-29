@@ -153,7 +153,7 @@ void PlaylistsView::createPlaylist()
     auto  *item = new QListWidgetItem("new playlist");
     item->setFlags (item->flags () | Qt::ItemIsEditable);
     list->addItem(item);
-
+currentPlaylist="";
     emit list->doubleClicked(list->model()->index(list->count()-1,0));
 
    // item->setFlags (item->flags () & Qt::ItemIsEditable);
@@ -162,8 +162,10 @@ void PlaylistsView::createPlaylist()
 
 void PlaylistsView::playlistName(QListWidgetItem* item)
 {
-    qDebug()<<"new playlist name: "<<item->text();
-    emit playlistCreated(item->text());
+    qDebug()<<"old playlist name: "<<currentPlaylist<<"new playlist name: "<<item->text();
+  //  qDebug()<<"new playlist name: "<<item->text();
+    if (currentPlaylist=="") emit playlistCreated(item->text());
+    else if (item->text()!=currentPlaylist) emit modifyPlaylistName(item->text());
 }
 
 void PlaylistsView::on_removeBtn_clicked()
@@ -173,8 +175,16 @@ void PlaylistsView::on_removeBtn_clicked()
 
 void PlaylistsView::setPlaylists(QStringList playlists)
 {
-    list->addItems(playlists);
-    for (auto o: playlists) qDebug( )<<o;
+    //list->addItems(playlists);
+
+    for(auto playlist : playlists)
+    {
+        auto item = new QListWidgetItem(playlist);
+         item->setFlags (item->flags () | Qt::ItemIsEditable);
+         list->addItem(item);
+    }
+
+    //for (auto o: playlists) qDebug( )<<o;
 }
 
 PlaylistsView::~PlaylistsView()

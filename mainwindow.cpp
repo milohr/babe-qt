@@ -1520,6 +1520,8 @@ void MainWindow::on_search_textChanged(const QString &arg1)
     if(search.size()!=0)
     {
         views->setCurrentIndex(RESULTS);
+        if(prevIndex==PLAYLISTS) {utilsBar->actions().at(PLAYLISTS_UB)->setVisible(false); ui->frame_3->hide();}
+
 
         resultsTable->flushTable();
 
@@ -1577,7 +1579,9 @@ void MainWindow::on_search_textChanged(const QString &arg1)
     {
 
         views->setCurrentIndex(prevIndex);
-        if(views->currentIndex()==1) showAlbumViewUtils();
+        if(views->currentIndex()==ALBUMS) showAlbumViewUtils();
+         if(views->currentIndex()==PLAYLISTS) utilsBar->actions().at(PLAYLISTS_UB)->setVisible(true); ui->frame_3->show();
+
         resultsTable->flushTable();
         //ui->tracks_view->setChecked(true);
        // utilsBar->actions().at(1)->setVisible(false);
@@ -1640,7 +1644,7 @@ void MainWindow::on_addAll_clicked()
     switch(views->currentIndex())
     {
         case COLLECTION: addToPlaylist(collectionTable->getTableContent(BabeTable::LOCATION)); break;
-        case ALBUMS: addToPlaylist(collectionTable->getTableContent(BabeTable::LOCATION)); break;
+        case ALBUMS: addToPlaylist(albumsTable->albumTable->getTableContent(BabeTable::LOCATION)); break;
         case FAVORITES: addToPlaylist(favoritesTable->getTableContent(BabeTable::LOCATION)); break;
         case PLAYLISTS: addToPlaylist(playlistTable->table->getTableContent(BabeTable::LOCATION)); break;
         case QUEUE: addToPlaylist(collectionTable->getTableContent(BabeTable::LOCATION)); break;

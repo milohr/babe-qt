@@ -48,6 +48,7 @@ signals:
     void playlistCreated(QString name);
     void songClicked(QStringList list);
     void playlistClicked(QString playlist);
+    void modifyPlaylistName(QString newName);
 
 };
 

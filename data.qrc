@@ -23,5 +23,6 @@
         <file>data/babe_48.svg</file>
         <file>data/banner.png</file>
         <file>data/cover.png</file>
+        <file>data/add.svg</file>
     </qresource>
 </RCC>

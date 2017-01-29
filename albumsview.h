@@ -28,7 +28,7 @@ public:
     QSlider *slider;
     QComboBox *order;
     QFrame *utilsFrame;
-
+BabeTable *albumTable;
 private:
 
     QListWidget *grid;
@@ -38,7 +38,7 @@ private:
     Album *cover;
     CollectionDB *connection;
     Playlist *playlist;
-    BabeTable *albumTable;
+
     QToolButton *closeBtn;
 
 
