@@ -16,14 +16,12 @@ namespace Ui {
 class settings;
 }
 
-
-
-
 class settings : public QWidget
 {
     Q_OBJECT
 
 public:
+
     explicit settings(QWidget *parent = 0);
     ~settings();
     bool checkCollection();
@@ -32,12 +30,15 @@ public:
     QStringList getCollectionPath() {return collectionPaths;}
     void setSettings(QStringList setting);
     void readSettings();
+    void removeSettings(QStringList setting);
+    void refreshCollectionPaths();
     void collectionWatcher();
     void addToWatcher(QStringList paths);
     enum iconSizes
     {
         s16,s22,s24
     };
+
 private slots:
 
     void on_open_clicked();
@@ -46,14 +47,12 @@ private slots:
     void on_pushButton_clicked();
     void handleFileChanged(QString file);
     void handleDirectoryChanged(QString dir);
-
     void on_collectionPath_clicked(const QModelIndex &index);
-
     void on_remove_clicked();
 
 public slots:
 
-void populateDB(QString path);
+    void populateDB(QString path);
 
 private:
     Ui::settings *ui;
@@ -66,10 +65,11 @@ private:
     CollectionDB collection_db;
     QString pathToRemove;
    // QFileSystemWatcher watcher;
+    QThread* thread;
+    About *about_ui;
 
- QThread* thread;
- About *about_ui;
 signals:
+
     void toolbarIconSizeChanged(int newSize);
     void collectionPathChanged(QString newPath);
     void collectionDBFinishedAdding(bool state);
@@ -78,12 +78,6 @@ signals:
     void collectionPathRemoved(QString url);
     void refreshTables();
 
-
-
 };
-
-
-
-
 
 #endif // SETTINGS_H
