@@ -336,7 +336,7 @@ MainWindow::MainWindow(QWidget *parent) :
     album_art->titleVisible(false);
     //album_art->setTitleGeometry(0,0,200,30);
     album_art->widget->setGeometry(0,0,200,30);
-    album_art->widget->setStyleSheet( QString("background-color: rgba(0,0,0,150); border: 1px solid #333; border-top-left-radius:2; border-top-right-radius:2; border-bottom-right-radius:0; border-bottom-left-radius:0;"));
+    album_art->widget->setStyleSheet( QString("background-color: rgba(0,0,0,150); border: none;"));
 
     album_art->setMinimumSize(200,200);
 
@@ -1422,33 +1422,36 @@ void MainWindow::on_search_textChanged(const QString &arg1)
 
 
                 resultsTable->populateTableView("SELECT * FROM tracks WHERE location LIKE \"%"+search+"%\"");
-                ui->search->setStyleSheet("background-color:#e3f4d7;");
+              ui->search->setBackgroundRole(QPalette :: Dark);
             }else if(key== "artist:")
             {
 
 
                 resultsTable->populateTableView("SELECT * FROM tracks WHERE artist LIKE \"%"+search+"%\"");
-                ui->search->setStyleSheet("background-color:#e3f4d7;");
+               ui->search->setBackgroundRole(QPalette :: Dark);
             }else if(key== "album:")
             {
 
                 resultsTable->populateTableView("SELECT * FROM tracks WHERE album LIKE \"%"+search+"%\"");
-                ui->search->setStyleSheet("background-color:#e3f4d7;");
+              ui->search->setBackgroundRole(QPalette :: Dark);
+
             }else if(key=="title:")
             {
 
 
                 resultsTable->populateTableView("SELECT * FROM tracks WHERE title LIKE \"%"+search+"%\"");
-                ui->search->setStyleSheet("background-color:#e3f4d7;");
+                ui->search->setBackgroundRole(QPalette :: Dark);
             }else if(key==  "genre:")
             {
 
                 resultsTable->populateTableView("SELECT * FROM tracks WHERE genre LIKE \"%"+search+"%\"");
-                ui->search->setStyleSheet("background-color:#e3f4d7;");
+                //ui->search->setStyleSheet("background-color:#e3f4d7;");
+                ui->search->setBackgroundRole(QPalette :: Dark);
             }else
             {
                  resultsTable->populateTableView("SELECT * FROM tracks WHERE title LIKE \"%"+search+"%\" OR artist LIKE \"%"+search+"%\" OR album LIKE \"%"+search+"%\"OR genre LIKE \"%"+search+"%\"");
-                     ui->search->setStyleSheet("background-color:white;");
+                     //ui->search->setStyleSheet("background-color:transparent;");
+                    ui->search->setBackgroundRole(QPalette :: Light);
             }
 
 
