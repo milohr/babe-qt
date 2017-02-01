@@ -53,7 +53,8 @@ SOURCES += main.cpp\
     colortag.cpp \
     taginfo.cpp \
     artwork.cpp \
-    infoview.cpp
+    infoview.cpp \
+    lyrics.cpp
 
 HEADERS  += mainwindow.h \
             playlist.h \
@@ -69,7 +70,8 @@ HEADERS  += mainwindow.h \
     taginfo.h \
     colortag.h \
     artwork.h \
-    infoview.h
+    infoview.h \
+    lyrics.h
 
 FORMS    += mainwindow.ui \
     settings.ui \

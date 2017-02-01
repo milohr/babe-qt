@@ -27,7 +27,7 @@ private:
 
 private slots:
     void setArtistArt(QByteArray array);
-
+void setLyrics(QString lyrics);
      void setArtistInfo(QString info);
 };
 

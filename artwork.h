@@ -5,9 +5,7 @@
 #include <QImage>
 #include <QtCore>
 #include <QtNetwork>
-#include <curl/curl.h>
 #include <QUrl>
-#include <QHttpPart>
 #include <QWidget>
 #include <QObject>
 #include <QNetworkAccessManager>

@@ -8,6 +8,9 @@ InfoView::InfoView(QWidget *parent) :
 {
     ui->setupUi(this);
     artist= new Album(":Data/data/cover.png",120,100);
+ui->lyricsText->setLineWrapMode(QTextEdit::NoWrap);
+
+
     artist->titleVisible(false);
     artist->borderColor=true;
     auto artistContainer = new QWidget();
@@ -63,4 +66,11 @@ void InfoView::setArtistInfo(QString info)
 void InfoView::setArtistArt(QByteArray array)
 {
     artist->putPixmap(array);
+}
+
+void InfoView::setLyrics(QString lyrics)
+{
+    ui->lyricsText->setHtml(lyrics);
+     ui->lyricsLayout->setAlignment(Qt::AlignCenter);
+     ui->lyricsFrame->show();
 }

@@ -1,8 +1,5 @@
 #include "artwork.h"
-#include <QUrlQuery>
-#include <QToolButton>
 #include <QNetworkRequest>
-#include <QHttpPart>
 #include <QNetworkReply>
 #include <QApplication>
 #include <QNetworkAccessManager>
@@ -32,22 +29,9 @@ void ArtWork::setData(QString artist, QString album)
 
          if (!q_artist.isEmpty()) url.append("&artist=" + q_artist.toString());
          if (!q_album.isEmpty()) url.append("&album=" + q_album.toString());
-
-         startConnection();
-     }else if(artist.size()!=0)
-     {
-         url.append("?method=artist.getinfo");
-         url.append("&api_key=ba6f0bd3c887da9101c10a50cf2af133");
-
-         QUrl q_artist (artist);
-         q_artist.toEncoded(QUrl::FullyEncoded);
-
-         if (!q_artist.isEmpty()) url.append("&artist=" + q_artist.toString());
          type=ALBUM;
          startConnection();
-
      }
-
 }
 
 void ArtWork::setData(QString artist)

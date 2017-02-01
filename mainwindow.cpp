@@ -742,6 +742,14 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 
   }
 
+  void MainWindow::setLyrics(QString artist,QString title)
+  {
+
+      lyrics = new Lyrics();
+      connect(lyrics,SIGNAL(lyricsReady(QString)),infoTable,SLOT(setLyrics(QString)));
+      lyrics->setData(artist,title);
+  }
+
   void MainWindow::setCoverArt(QString artist, QString album)
   {
       qDebug()<<"Going to try and get the cover for: "<< album <<"by"<<artist;
@@ -749,12 +757,14 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
       //QPixmap img;
       coverArt = new ArtWork();
       artistHead = new ArtWork;
+
 connect(coverArt, SIGNAL(coverReady(QByteArray)), this, SLOT(putPixmap(QByteArray)));
 connect(artistHead, SIGNAL(headReady(QByteArray)), infoTable, SLOT(setArtistArt(QByteArray)));
 connect(artistHead, SIGNAL(bioReady(QString)), infoTable, SLOT(setArtistInfo(QString)));
 
      coverArt->setData(artist,album);
      artistHead->setData(artist);
+
 
 
       //artwork->cover(artist,album);
@@ -1215,17 +1225,17 @@ void MainWindow::loadTrack()
 {
     QString artist=QString::fromStdString(playlist.tracks[getIndex()].getArtist());
    QString album=QString::fromStdString(playlist.tracks[getIndex()].getAlbum());
-
+    QString title=QString::fromStdString(playlist.tracks[getIndex()].getTitle());
      current_song_url = QString::fromStdString(playlist.tracks[getIndex()].getLocation());
      player->setMedia(QUrl::fromLocalFile(current_song_url));
 player->play();
-     auto qstr = QString::fromStdString(playlist.tracks[getIndex()].getTitle())+" \xe2\x99\xa1 "+artist;
+     auto qstr = title+" \xe2\x99\xa1 "+artist;
      this->setWindowTitle(qstr);
 
      album_art->setArtist(artist);
      album_art->setAlbum(album);
      album_art->setTitle();
-
+    setLyrics(artist,title);
 
      //here check if the song to play is already babe'd and if so change the icon
       if(settings_widget->getCollectionDB().checkQuery("SELECT * FROM tracks WHERE location = \""+current_song_url+"\" AND babe = \"1\""))

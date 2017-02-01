@@ -20,6 +20,7 @@
 #include <playlistsview.h>
 #include <artwork.h>
 #include <infoview.h>
+#include <lyrics.h>
 
 
 namespace Ui {
@@ -129,13 +130,14 @@ private slots:
    void on_addAll_clicked();
    void saveResultsTo(QAction *action);
    void on_saveResults_clicked();
-
+void setLyrics(QString artist,QString title);
 
 private:
 
     Ui::MainWindow *ui;
     ArtWork *coverArt;
     ArtWork *artistHead;
+    Lyrics *lyrics;
     void keepOnTop(bool state);
     void setUpViews();
     void loadTrack();
