@@ -50,6 +50,7 @@
 #include <QBitmap>
 #include <QPainter>
 #include <album.h>
+#include "artwork.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -63,7 +64,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setWindowIconText("Babe...");
 
     connect(this, SIGNAL(finishedPlayingSong(QString)),this,SLOT(addToPlayed(QString)));
-
+    connect(this,SIGNAL(getCover(QString,QString)),this,SLOT(setCoverArt(QString,QString)));
 //this->setWindowFlags(Qt::Widget | Qt::FramelessWindowHint);
     /*THE VIEWS*/
     frame = new QFrame();
@@ -501,6 +502,9 @@ album_view->addWidget(seekBar,2,0);
         ui->tracks_view->setChecked(true);
     }
 
+
+
+
 }
 
 
@@ -556,7 +560,7 @@ void MainWindow::refreshTables()
     collectionTable->flushTable();
     collectionTable->populateTableView("SELECT * FROM tracks");
     favoritesTable->flushTable();
-    favoritesTable->populateTableView("SELECT * FROM tracks WHERE stars = \"4\" OR stars =  \"5\" OR babe =  \"1\"");
+    favoritesTable->populateTableView("SELECT * FROM tracks WHERE stars > \"0\" OR babe =  \"1\"");
     albumsTable->flushGrid();
     albumsTable->populateTableView(settings_widget->getCollectionDB().getQuery("SELECT * FROM tracks ORDER by album asc"));
 
@@ -588,7 +592,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
             ui->search->clear();
 
            loadTrack();
-           player->play();
+
         }
         break;
     }
@@ -707,15 +711,46 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
      //populateTableView();
      //ui->save->setChecked(false);
      if(shuffle) shufflePlaylist();
+
+
+
+
  }
-void MainWindow::setCoverArt(QString path)
-{
+  void MainWindow::dummy()
+  {
+      qDebug()<<"TTTTTTTTTTTTTTTTTS on DUMMYT";
 
-album_art->setCoverArt(path);
-}
+  }
+
+  void MainWindow::setCoverArt(QString artist, QString album)
+  {
+      qDebug()<<"Going to try and get the cover for: "<< album <<"by"<<artist;
+
+      //QPixmap img;
+      artwork = new ArtWork();
+connect(artwork, SIGNAL(coverReady(QByteArray)), this, SLOT(putPixmap(QByteArray)));
+     artwork->setData(artist,album);
+      //artwork->cover(artist,album);
+
+    //auto artwork = new ArtWork(artist,album);
+      //
 
 
 
+  //qDebug()<<"before conencting the fucking signal";
+    //connect(&artwork,SIGNAL(pixmapReady(QImage*)),this,SLOT(putPixmap(QImage*)));
+  //connect(&artwork,SIGNAL(prueba(QString*)),this,SLOT(prueba(QString*)));
+      //album_art->setPixmap(artwork->getPixmap());
+  }
+
+
+ void MainWindow::putPixmap(QByteArray array)
+ {
+
+
+     // img.loadFromData(a->getCover());
+    album_art->putPixmap(array);
+ }
 
 
 void MainWindow::addToFavorites(QStringList list)
@@ -1133,7 +1168,7 @@ void MainWindow::on_listWidget_doubleClicked(const QModelIndex &index)
     //ui->play_btn->setChecked(false);
     //ui->searchBar->clear();
     loadTrack();
-    player->play();
+
     updater->start();
     playing= true;
     ui->play_btn->setIcon(QIcon(":Data/data/media-playback-pause.svg"));
@@ -1144,13 +1179,19 @@ void MainWindow::on_listWidget_doubleClicked(const QModelIndex &index)
 
 void MainWindow::loadTrack()
 {
+    QString artist=QString::fromStdString(playlist.tracks[getIndex()].getArtist());
+   QString album=QString::fromStdString(playlist.tracks[getIndex()].getAlbum());
+
      current_song_url = QString::fromStdString(playlist.tracks[getIndex()].getLocation());
      player->setMedia(QUrl::fromLocalFile(current_song_url));
-     auto qstr = QString::fromStdString(playlist.tracks[getIndex()].getTitle()+" \xe2\x99\xa1 "+playlist.tracks[getIndex()].getArtist());
-     this->setWindowTitle(qstr);
-     album_art->setArtist(QString::fromStdString(playlist.tracks[getIndex()].getArtist()));
-     album_art->setAlbum(QString::fromStdString(playlist.tracks[getIndex()].getAlbum()));
+player->play();
+     //auto qstr = QString::fromStdString(playlist.tracks[getIndex()].getTitle()+" \xe2\x99\xa1 "+artist);
+     //this->setWindowTitle(qstr);
+
+     album_art->setArtist(artist);
+     album_art->setAlbum(album);
      album_art->setTitle();
+
 
      //here check if the song to play is already babe'd and if so change the icon
       if(settings_widget->getCollectionDB().checkQuery("SELECT * FROM tracks WHERE location = \""+current_song_url+"\" AND babe = \"1\""))
@@ -1163,6 +1204,7 @@ void MainWindow::loadTrack()
 
 
 
+    emit getCover(artist,album);
 
      qDebug()<<"Current song playing is: "<< current_song_url;
 }
@@ -1222,7 +1264,7 @@ void MainWindow::next()
     //ui->searchBar->clear();
 
     loadTrack();
-    player->play();
+
 
 }
 
@@ -1240,7 +1282,7 @@ void MainWindow::back()
      //ui->searchBar->clear();
 
      loadTrack();
-     player->play();
+
 }
 
 void MainWindow::shufflePlaylist()
@@ -1266,7 +1308,7 @@ void MainWindow::on_play_btn_clicked()
         }
        else
        {
-            player->play();
+
             updater->start();
             ui->play_btn->setIcon(QIcon(":Data/data/media-playback-pause.svg"));
        }
@@ -1611,7 +1653,7 @@ void MainWindow::hideAlbumViewUtils()
 
 void MainWindow::on_settings_view_clicked()
 {
-    setCoverArt(":Data/data/cover.png");
+    //setCoverArt(":Data/data/cover.png");
 }
 
 

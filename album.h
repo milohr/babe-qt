@@ -30,6 +30,7 @@ public:
     QPixmap image;
     QPixmap getPixmap();
 
+
 private:
 
     bool draggable;
@@ -47,6 +48,7 @@ signals:
      void albumCoverLeft();
 
 public slots:
+      void putPixmap(QByteArray pix);
 
 protected:
 

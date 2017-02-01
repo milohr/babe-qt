@@ -181,6 +181,7 @@ AlbumsView::~AlbumsView()
 
 void AlbumsView::hideAlbumFrame()
 {
+    albumTable->flushTable();
     albumBox_frame->hide();
     line_h->hide();
 }
@@ -207,8 +208,10 @@ void AlbumsView::albumHover()
 
 void  AlbumsView::flushGrid()
 {
+    albumTable->flushTable();
     grid->clear();
     albumsList.clear();
+
 
   // grid->setRowCount(0);
 

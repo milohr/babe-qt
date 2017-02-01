@@ -18,6 +18,7 @@
 #include<QListWidgetItem>
 #include <album.h>
 #include <playlistsview.h>
+#include <artwork.h>
 
 namespace Ui {
 class MainWindow;
@@ -57,7 +58,8 @@ protected:
 public slots:
 
  void addToPlaylist(QStringList list);
-
+void putPixmap(QByteArray array);
+void dummy();
 private slots:
 
     void on_hide_sidebar_btn_clicked();
@@ -102,7 +104,7 @@ private slots:
     void on_search_textChanged(const QString &arg1);
 
     //void on_resultsPLaylist_clicked();
-    void setCoverArt(QString path);
+    void setCoverArt(QString artist, QString album);
 
     void on_settings_view_clicked();
     void labelClicked();
@@ -130,7 +132,7 @@ private slots:
 private:
 
     Ui::MainWindow *ui;
-
+ArtWork *artwork;
     void keepOnTop(bool state);
     void setUpViews();
     void loadTrack();
@@ -186,6 +188,7 @@ private:
 signals:
     void finishedPlayingSong(QString url);
     void collectionChecked();
+    void getCover(QString artist, QString album);
 
 
 };

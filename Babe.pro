@@ -16,7 +16,10 @@ DEPENDPATH += $$PWD/3rdparty/taglib-1.9.1/taglib/Headers
 QT       += core gui
 QT       += multimedia
 QT       += sql
+QT       += network
+QT       += xml
 CONFIG   += c++14
+
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = Babe
@@ -49,7 +52,8 @@ SOURCES += main.cpp\
     scrolltext.cpp \
     playlistsview.cpp \
     colortag.cpp \
-    taginfo.cpp
+    taginfo.cpp \
+    artwork.cpp
 
 HEADERS  += mainwindow.h \
             playlist.h \
@@ -64,7 +68,8 @@ HEADERS  += mainwindow.h \
     scrolltext.h \
     playlistsview.h \
     taginfo.h \
-    colortag.h
+    colortag.h \
+    artwork.h
 
 FORMS    += mainwindow.ui \
     settings.ui \

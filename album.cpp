@@ -7,7 +7,7 @@
 #include <scrolltext.h>
 #include <QMenu>
 #include <QPainter>
-
+#include <QImage>
 
 Album::Album(QString imagePath, int widgetSize, int widgetRadius, bool isDraggable, QWidget *parent) : QLabel(parent)
 {
@@ -98,6 +98,11 @@ widget->setMinimumWidth(size);
 QPixmap Album::getPixmap()
 {
     return image;
+}
+
+void Album::putPixmap(QByteArray pix)
+{
+    this->image.loadFromData(pix);
 }
 
 void Album::setCoverArt(QString path)
