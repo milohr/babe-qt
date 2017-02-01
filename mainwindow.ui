@@ -180,57 +180,6 @@
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QToolButton" name="backward_btn">
-    <property name="geometry">
-     <rect>
-      <x>290</x>
-      <y>0</y>
-      <width>31</width>
-      <height>33</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>...</string>
-    </property>
-    <property name="icon">
-     <iconset resource="data.qrc">
-      <normaloff>:/Data/data/media-skip-backward.svg</normaloff>:/Data/data/media-skip-backward.svg</iconset>
-    </property>
-   </widget>
-   <widget class="QToolButton" name="foward_btn">
-    <property name="geometry">
-     <rect>
-      <x>370</x>
-      <y>0</y>
-      <width>31</width>
-      <height>33</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>...</string>
-    </property>
-    <property name="icon">
-     <iconset resource="data.qrc">
-      <normaloff>:/Data/data/media-skip-forward.svg</normaloff>:/Data/data/media-skip-forward.svg</iconset>
-    </property>
-   </widget>
-   <widget class="QToolButton" name="play_btn">
-    <property name="geometry">
-     <rect>
-      <x>330</x>
-      <y>0</y>
-      <width>31</width>
-      <height>33</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>...</string>
-    </property>
-    <property name="icon">
-     <iconset resource="data.qrc">
-      <normaloff>:/Data/data/media-playback-start.svg</normaloff>:/Data/data/media-playback-start.svg</iconset>
-    </property>
-   </widget>
    <widget class="QListWidget" name="listWidget">
     <property name="geometry">
      <rect>
@@ -264,6 +213,9 @@
     <property name="frameShadow">
      <enum>QFrame::Plain</enum>
     </property>
+    <property name="horizontalScrollBarPolicy">
+     <enum>Qt::ScrollBarAlwaysOff</enum>
+    </property>
     <property name="sizeAdjustPolicy">
      <enum>QAbstractScrollArea::AdjustIgnored</enum>
     </property>
@@ -284,57 +236,6 @@
     </property>
     <property name="sortingEnabled">
      <bool>false</bool>
-    </property>
-   </widget>
-   <widget class="QToolButton" name="hide_sidebar_btn">
-    <property name="geometry">
-     <rect>
-      <x>250</x>
-      <y>0</y>
-      <width>31</width>
-      <height>33</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>...</string>
-    </property>
-    <property name="icon">
-     <iconset resource="data.qrc">
-      <normaloff>:/Data/data/full_mode.svg</normaloff>:/Data/data/full_mode.svg</iconset>
-    </property>
-   </widget>
-   <widget class="QToolButton" name="fav_btn">
-    <property name="geometry">
-     <rect>
-      <x>290</x>
-      <y>40</y>
-      <width>31</width>
-      <height>33</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>...</string>
-    </property>
-    <property name="icon">
-     <iconset resource="data.qrc">
-      <normaloff>:/Data/data/love-amarok.svg</normaloff>:/Data/data/love-amarok.svg</iconset>
-    </property>
-   </widget>
-   <widget class="QToolButton" name="shuffle_btn">
-    <property name="geometry">
-     <rect>
-      <x>250</x>
-      <y>40</y>
-      <width>31</width>
-      <height>33</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>...</string>
-    </property>
-    <property name="icon">
-     <iconset resource="data.qrc">
-      <normaloff>:/Data/data/view-media-playlist.svg</normaloff>:/Data/data/view-media-playlist.svg</iconset>
     </property>
    </widget>
    <widget class="QToolButton" name="info_view">
@@ -682,7 +583,8 @@
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset theme="insert-page-break"/>
+        <iconset theme="insert-page-break">
+         <normaloff>.</normaloff>.</iconset>
        </property>
        <property name="autoRaise">
         <bool>true</bool>
@@ -819,7 +721,8 @@
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset theme="filename-bpm-amarok"/>
+        <iconset theme="filename-bpm-amarok">
+         <normaloff>.</normaloff>.</iconset>
        </property>
        <property name="autoRaise">
         <bool>true</bool>
@@ -923,6 +826,144 @@
     <property name="frameShadow">
      <enum>QFrame::Plain</enum>
     </property>
+   </widget>
+   <widget class="QGroupBox" name="controls">
+    <property name="geometry">
+     <rect>
+      <x>500</x>
+      <y>330</y>
+      <width>181</width>
+      <height>44</height>
+     </rect>
+    </property>
+    <property name="autoFillBackground">
+     <bool>false</bool>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+    <property name="flat">
+     <bool>false</bool>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_4">
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="QToolButton" name="hide_sidebar_btn">
+       <property name="maximumSize">
+        <size>
+         <width>16</width>
+         <height>16</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+       <property name="icon">
+        <iconset theme="object-columns"/>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="backward_btn">
+       <property name="maximumSize">
+        <size>
+         <width>16</width>
+         <height>16</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+       <property name="icon">
+        <iconset theme="media-skip-backward"/>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="fav_btn">
+       <property name="maximumSize">
+        <size>
+         <width>16</width>
+         <height>16</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+       <property name="icon">
+        <iconset theme="love-amarok"/>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="play_btn">
+       <property name="maximumSize">
+        <size>
+         <width>16</width>
+         <height>16</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+       <property name="icon">
+        <iconset theme="media-playback-start"/>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="foward_btn">
+       <property name="maximumSize">
+        <size>
+         <width>16</width>
+         <height>16</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+       <property name="icon">
+        <iconset theme="media-skip-forward"/>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="shuffle_btn">
+       <property name="maximumSize">
+        <size>
+         <width>16</width>
+         <height>16</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+       <property name="icon">
+        <iconset theme="view-media-playlist"/>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </widget>
   </widget>
   <widget class="QToolBar" name="mainToolBar">

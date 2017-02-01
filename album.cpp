@@ -58,7 +58,7 @@ layout->addWidget(left_spacer);
 layout->addWidget(title);
 layout->addWidget(right_spacer);
 widget->setMinimumWidth(size);
-this->setStyleSheet("border:none");
+//this->setStyleSheet("border:none");
     widget->setGeometry(0,size-30,size,30);
     //widget->setStyleSheet("background-color: rgba(0,0,0,150)");
      widget->setStyleSheet( QString("background-color: rgba(0,0,0,150); border: 1px solid #333; border-top-left-radius:0; border-top-right-radius:0; border-bottom-right-radius:%1px; border-bottom-left-radius:%2px;").arg( QString::number(border_radius),QString::number(border_radius)));

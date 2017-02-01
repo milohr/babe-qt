@@ -566,7 +566,7 @@ void BabeTable::rateGroup(int id)
 
 
 
-        if(id>3 && rate<4  )
+        if(id>0 && rate<5  )
         {
             QString title =this->model()->data(this->model()->index(row,TITLE)).toString();
             QString artist =this->model()->data(this->model()->index(row,ARTIST)).toString();

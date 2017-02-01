@@ -280,7 +280,7 @@ bool settings::checkCollection()
     QFileInfo check_db (collectionDBPath+collectionDBName);
     if (check_db.exists())
     {
-       qDebug()<<"The CollectionDB does not exists.";
+       qDebug()<<"The CollectionDB does exists.";
        //collection_db.setCollectionDB(collection_db_path);
        //qDebug()<<"Ahora obtener la informacion de ella y populate tableView";
        //populateTableView();

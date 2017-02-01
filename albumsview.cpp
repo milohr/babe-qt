@@ -103,9 +103,9 @@ AlbumsView::AlbumsView(QWidget *parent) :
 
       albumTable->setFrameShape(QFrame::NoFrame);
 
-       connect(albumTable,SIGNAL(tableWidget_doubleClicked(QStringList)),this,SLOT(albumTable_clicked(QStringList)));
-       connect(albumTable,SIGNAL( babeIt_clicked(QStringList)),this,SLOT(albumTable_babeIt(QStringList)));
-       connect(albumTable,SIGNAL(songRated(QStringList)),this,SLOT(albumTable_rated(QStringList)));
+     //  connect(albumTable,SIGNAL(tableWidget_doubleClicked(QStringList)),this,SLOT(albumTable_clicked(QStringList)));
+     //  connect(albumTable,SIGNAL( babeIt_clicked(QStringList)),this,SLOT(albumTable_babeIt(QStringList)));
+      // connect(albumTable,SIGNAL(songRated(QStringList)),this,SLOT(albumTable_rated(QStringList)));
 
 
    //auto albumsFrame = new QGridLayout();

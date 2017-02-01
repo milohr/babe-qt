@@ -43,7 +43,6 @@ SOURCES += main.cpp\
         playlist.cpp \
         track.cpp \
     settings.cpp \
-    info.cpp \
     collectionDB.cpp \
     about.cpp \
     babetable.cpp \
@@ -53,13 +52,13 @@ SOURCES += main.cpp\
     playlistsview.cpp \
     colortag.cpp \
     taginfo.cpp \
-    artwork.cpp
+    artwork.cpp \
+    infoview.cpp
 
 HEADERS  += mainwindow.h \
             playlist.h \
             track.h \
     settings.h \
-    info.h \
     collectionDB.h \
     about.h \
     babetable.h \
@@ -69,12 +68,13 @@ HEADERS  += mainwindow.h \
     playlistsview.h \
     taginfo.h \
     colortag.h \
-    artwork.h
+    artwork.h \
+    infoview.h
 
 FORMS    += mainwindow.ui \
     settings.ui \
-    info.ui \
-    about.ui
+    about.ui \
+    infoview.ui
 
 RESOURCES += \
     data.qrc

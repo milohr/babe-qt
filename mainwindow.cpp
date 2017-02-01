@@ -52,11 +52,13 @@
 #include <album.h>
 #include "artwork.h"
 
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     //setWindowFlags(Qt::WindowStaysOnTopHint);
+
     ui->setupUi(this);
     this->setWindowTitle(" Babe ... \xe2\x99\xa1  \xe2\x99\xa1 \xe2\x99\xa1 ");
     this->setAcceptDrops(true);
@@ -96,25 +98,35 @@ MainWindow::MainWindow(QWidget *parent) :
     resultsTable->showColumn(BabeTable::GENRE);
     connect(resultsTable,SIGNAL(songRated(QStringList)),this,SLOT(addToFavorites(QStringList)));
     connect(resultsTable,SIGNAL(tableWidget_doubleClicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
-    connect(resultsTable,SIGNAL(enteredTable()),this,SLOT(hideControls()));
+    //connect(resultsTable,SIGNAL(enteredTable()),this,SLOT(hideControls()));
     connect(resultsTable,SIGNAL(enteredTable()),this,SLOT(hideControls()));
     connect(resultsTable,SIGNAL(leftTable()),this,SLOT(showControls()));
     connect(resultsTable,SIGNAL( babeIt_clicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
     //connect(resultsTable,SIGNAL(createPlaylist_clicked()),this,SLOT(playlistsView()));
 
     albumsTable = new AlbumsView();
-    connect(albumsTable,SIGNAL(songClicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
-    connect(albumsTable,SIGNAL(songRated(QStringList)),this,SLOT(addToFavorites(QStringList)));
-    connect(albumsTable,SIGNAL(songBabeIt(QStringList)),this,SLOT(addToPlaylist(QStringList)));
+    //connect(albumsTable,SIGNAL(songClicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
+   // connect(albumsTable,SIGNAL(songRated(QStringList)),this,SLOT(addToFavorites(QStringList)));
+    //connect(albumsTable,SIGNAL(songBabeIt(QStringList)),this,SLOT(addToPlaylist(QStringList)));
     connect(albumsTable,SIGNAL(albumOrderChanged(QString)),this,SLOT(AlbumsViewOrder(QString)));
+    connect(albumsTable->albumTable,SIGNAL(tableWidget_doubleClicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
+    connect(albumsTable->albumTable,SIGNAL( babeIt_clicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
+    connect(albumsTable->albumTable,SIGNAL(songRated(QStringList)),this,SLOT(addToFavorites(QStringList)));
 
 
     playlistTable = new PlaylistsView();
     connect(playlistTable,SIGNAL(playlistCreated(QString)),&settings_widget->getCollectionDB(),SLOT(insertPlaylist(QString)));
-    connect(playlistTable,SIGNAL(songClicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
+    //connect(playlistTable,SIGNAL(songClicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
+    connect(playlistTable->table,SIGNAL(tableWidget_doubleClicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
+    connect(playlistTable->table,SIGNAL( babeIt_clicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
     connect(playlistTable->table,SIGNAL(createPlaylist_clicked()),this,SLOT(playlistsView()));
+    connect(playlistTable->table,SIGNAL(songRated(QStringList)),this,SLOT(addToFavorites(QStringList)));
 
-    playback = new QToolBar();
+
+    infoTable = new InfoView();
+
+
+    //playback = new QToolBar();
     utilsBar = new QToolBar();
 
     settings_widget->readSettings();
@@ -314,7 +326,7 @@ MainWindow::MainWindow(QWidget *parent) :
     views->addWidget(favoritesTable);
     views->addWidget(playlistTable);
     views->addWidget(new BabeTable());
-    views->addWidget(new BabeTable());
+    views->addWidget(infoTable);
     views->addWidget(settings_widget);
     views->addWidget(resultsTable);
 
@@ -354,8 +366,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     album_art = new Album(":Data/data/cover.jpg",200,0,true,album_art_frame);
     album_art->setFixedSize(200,200);
-    //connect(album_art,SIGNAL(albumCoverLeft()),this,SLOT(hideControls()));
-   // connect(album_art,SIGNAL(albumCoverEnter()),this,SLOT(showControls()));
+    //connect(album_art,SIGNAL(albumCoverLeft()),this,SLOT(hide ui->controls()));
+   // connect(album_art,SIGNAL(albumCoverEnter()),this,SLOT(show ui->controls()));
 
     album_art->titleVisible(false);
     //album_art->setTitleGeometry(0,0,200,30);
@@ -380,19 +392,21 @@ MainWindow::MainWindow(QWidget *parent) :
 
  // ui->hide_sidebar_btn->setBackgroundRole(QPalette :: Dark);
     ui->hide_sidebar_btn->setToolTip("Go Mini");
-    playback->addWidget(ui->hide_sidebar_btn);
+    //playback->addWidget(ui->hide_sidebar_btn);
 
-    playback->addWidget(ui->backward_btn);
-    playback->addWidget(ui->fav_btn);
-    playback->addWidget(ui->play_btn);
-    playback->addWidget(ui->foward_btn);
+   // playback->addWidget(ui->backward_btn);
+   // playback->addWidget(ui->fav_btn);
+    //playback->addWidget(ui->play_btn);
+//    playback->addWidget(ui->foward_btn);
 
     ui->shuffle_btn->setToolTip("Shuffle");
-    playback->addWidget(ui->shuffle_btn);
+  //  playback->addWidget(ui->shuffle_btn);
 
 
 
-    controls = new QWidget(album_art);
+    // ui->controls = new QWidget(album_art);
+    ui->controls->setParent(album_art);
+    //ui->controls->setBackgroundRole(QPalette::Dark);
     seekBar = new QSlider();
     seekBar->setMaximum(1000);
     seekBar->setOrientation(Qt::Horizontal);
@@ -403,10 +417,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(seekBar,SIGNAL(sliderMoved(int)),this,SLOT(on_seekBar_sliderMoved(int)));
 
 
-    auto controls_layout = new QGridLayout();
-    controls->setLayout(controls_layout);
-    controls->setGeometry(100-75,75,150,50);
-    controls->setStyleSheet(" QToolButton {background-color:transparent; }QWidget{background-color: rgba(255, 255, 255, 230); border-radius:6px;} QWidget:hover{background-color:white;} QToolTip{background-color:#545454; border: 1px solid #333; border-radius:2px;} ");
+    //auto  ui->controls_layout = new QGridLayout();
+   //  ui->controls->setLayout( ui->controls_layout);
+     ui->controls->setGeometry(100-75,75,150,50);
+    // ui->controls->setStyleSheet(" QToolButton {background-color:transparent; }QWidget{background-color: rgba(255, 255, 255, 230); border-radius:6px;} QWidget:hover{background-color:white;} QToolTip{background-color:#545454; border: 1px solid #333; border-radius:2px;} ");
 
 
 
@@ -442,15 +456,15 @@ album_view->addWidget(seekBar,2,0);
     album_view->setContentsMargins(0,0,0,0);
     album_view->setSpacing(0);
 
-    controls_layout->addWidget(playback,0,0,Qt::AlignHCenter);
-    //controls_layout->addWidget(ui->seekBar,1,0,Qt::AlignTop);
+    // ui->controls_layout->addWidget(playback,0,0,Qt::AlignHCenter);
+    // ui->controls_layout->addWidget(ui->seekBar,1,0,Qt::AlignTop);
 
 
 
    album_widget->setStyleSheet("QWidget { padding:0; margin:0;  }");
     //album_art->setStyleSheet("background-color:red; padding:0; margin:0;");
    // album_art->setStyleSheet("border: 1px solid #333;");
-    playback->setStyleSheet(" QToolButton {background-color:transparent; } QToolBar {background:transparent; border:none;}");
+    //playback->setStyleSheet(" QToolButton {background-color:transparent; } QToolBar {background:transparent; border:none;}");
 
 
     //album_widget->setLayout(album_view);
@@ -491,7 +505,7 @@ album_view->addWidget(seekBar,2,0);
     {
 
         loadTrack();
-        player->pause();
+        //player->pause();
         updater->start();
         go_mini();
 
@@ -545,12 +559,18 @@ void MainWindow::resizeEvent(QResizeEvent* event)
 {
    QMainWindow::resizeEvent(event);
    qDebug()<<event->size().width()<<"x"<<event->size().height();
-  if(mini_mode==0 && event->size().width()<450)
+  if(mini_mode==0 && event->size().width()==this->minimumSize().width())
   {
       //this->setMaximumWidth(200);
      // this->setFixedWidth(200);
-
+      int oldHeight = this->size().height();
+ this->resize(200,oldHeight);
       go_mini();
+  }else if(mini_mode!=0 && event->size().width()!=200)
+  {
+      int oldHeight = this->size().height();
+      this->resize(700,oldHeight);
+      expand();
   }
 }
 
@@ -588,7 +608,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
         if(lCounter != -1)
         {
             //ui->play->setChecked(false);
-             ui->play_btn->setIcon(QIcon(":Data/data/media-playback-pause.svg"));
+             ui->play_btn->setIcon(QIcon::fromTheme("media-playback-pause"));
             ui->search->clear();
 
            loadTrack();
@@ -623,7 +643,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 {
     //qDebug()<<"entered the window";
      Q_UNUSED(event);
-   showControls();
+     showControls();
    //if (mini_mode==2) this->setWindowState(Qt::WindowActive);
 
 
@@ -637,7 +657,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     hideControls();
 
     //timer = new QTimer(this);
-      /*connect(timer, SIGNAL(timeout()), this, SLOT(hideControls()));
+      /*connect(timer, SIGNAL(timeout()), this, SLOT(hide ui->controls()));
 
       connect(timer,SIGNAL(timeout()), this, [&timer, this]() {
           qDebug()<<"ime is up";
@@ -652,7 +672,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
  void MainWindow::hideControls()
  {
      //qDebug()<<"ime is up";
-     controls->hide();
+      ui->controls->hide();
       album_art->titleVisible(false);
     // timer->stop();*/
  }
@@ -660,7 +680,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
  void MainWindow::showControls()
  {
      //qDebug()<<"ime is up";
-     controls->show();
+      ui->controls->show();
      // if (mini_mode==2)album_art->titleVisible(true);
     // timer->stop();*/
  }
@@ -727,9 +747,16 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
       qDebug()<<"Going to try and get the cover for: "<< album <<"by"<<artist;
 
       //QPixmap img;
-      artwork = new ArtWork();
-connect(artwork, SIGNAL(coverReady(QByteArray)), this, SLOT(putPixmap(QByteArray)));
-     artwork->setData(artist,album);
+      coverArt = new ArtWork();
+      artistHead = new ArtWork;
+connect(coverArt, SIGNAL(coverReady(QByteArray)), this, SLOT(putPixmap(QByteArray)));
+connect(artistHead, SIGNAL(headReady(QByteArray)), infoTable, SLOT(setArtistArt(QByteArray)));
+connect(artistHead, SIGNAL(bioReady(QString)), infoTable, SLOT(setArtistInfo(QString)));
+
+     coverArt->setData(artist,album);
+     artistHead->setData(artist);
+
+
       //artwork->cover(artist,album);
 
     //auto artwork = new ArtWork(artist,album);
@@ -750,6 +777,10 @@ connect(artwork, SIGNAL(coverReady(QByteArray)), this, SLOT(putPixmap(QByteArray
 
      // img.loadFromData(a->getCover());
     album_art->putPixmap(array);
+     infoTable->setAlbumInfo(coverArt->info);
+
+     //delete artwork;
+
  }
 
 
@@ -769,10 +800,10 @@ void MainWindow::setToolbarIconSize(int iconSize)
 {
     qDebug()<< "Toolbar icons size changed";
     ui->mainToolBar->setIconSize(QSize(iconSize,iconSize));
-    playback->setIconSize(QSize(iconSize,iconSize));
+    //playback->setIconSize(QSize(iconSize,iconSize));
     utilsBar->setIconSize(QSize(iconSize,iconSize));
     ui->mainToolBar->update();
-    playback->update();
+    //playback->update();
    // this->update();
 }
 
@@ -834,7 +865,7 @@ void MainWindow::infoView()
 
     if(mini_mode!=0) expand();
     hideAlbumViewUtils();
-    utilsBar->actions().at(COLLECTION_UB)->setVisible(false);
+    utilsBar->actions().at(COLLECTION_UB)->setVisible(true);
     utilsBar->actions().at(PLAYLISTS_UB)->setVisible(false); ui->frame_3->hide();
 
     prevIndex=views->currentIndex();
@@ -874,7 +905,7 @@ void MainWindow::settingsView()
     if(mini_mode!=0) expand();
     //if(!hideSearch) utilsBar->hide(); line->hide();
      hideAlbumViewUtils();
-     utilsBar->actions().at(COLLECTION_UB)->setVisible(false);
+     utilsBar->actions().at(COLLECTION_UB)->setVisible(true);
      utilsBar->actions().at(PLAYLISTS_UB)->setVisible(false); ui->frame_3->hide();
 
     prevIndex=views->currentIndex();
@@ -896,10 +927,12 @@ void MainWindow::expand()
     //this->setMinimumSize(750,500);
     //qDebug()<<this->minimumWidth()<<this->minimumHeight();
 
-    this->adjustSize();
+    this->resize(700,500);
+    this->setMinimumSize(0,0);
+   // this->adjustSize();
     ui->hide_sidebar_btn->setToolTip("Go Mini");
 
-    ui->hide_sidebar_btn->setIcon(QIcon(":Data/data/full_mode.svg"));
+    ui->hide_sidebar_btn->setIcon(QIcon::fromTheme("object-columns"));
     ui->mainToolBar->actions().at(0)->setVisible(true);
     ui->mainToolBar->actions().at(8)->setVisible(true);
 
@@ -940,19 +973,19 @@ ui->tracks_view_2->setIcon(QIcon::fromTheme(icon));
     //playlistTable->line_v->hide();
     utilsBar->hide(); line->hide();
     ui->utilsBar->setChecked(false);
-    hideSearch=true;
-    ui->mainToolBar->actions().at(0)->setVisible(false);
-    ui->mainToolBar->actions().at(8)->setVisible(false);
+   // hideSearch=true;
+   // ui->mainToolBar->actions().at(0)->setVisible(false);
+   // ui->mainToolBar->actions().at(8)->setVisible(false);
     album_art_frame->setFrameShadow(QFrame::Plain);
     album_art_frame->setFrameShape(QFrame::NoFrame);
     layout->setContentsMargins(0,0,0,0);
    // ui->utilsBar->setVisible(false);
     //this->setMinimumSize(200,400);
-
-    this->setFixedWidth(200);
+    int oldHeigh = this->size().height();
+    this->resize(200,oldHeigh);
     this->adjustSize();
     ui->hide_sidebar_btn->setToolTip("Go Extra-Mini");
-    ui->hide_sidebar_btn->setIcon(QIcon(":Data/data/mini_mode.svg"));
+    ui->hide_sidebar_btn->setIcon(QIcon::fromTheme("show_table_column"));
     mini_mode=1;
 //keepOnTop(true);
 
@@ -1032,7 +1065,7 @@ void MainWindow::on_hide_sidebar_btn_clicked()
        // album_art->border_radius=2;
 album_art->borderColor=false;
         //album_art->setStyleSheet("QLabel{border: none}");
-        ui->hide_sidebar_btn->setIcon(QIcon(":Data/data/full_mode.svg"));
+        ui->hide_sidebar_btn->setIcon(QIcon::fromTheme("object-columns"));
 ui->mainToolBar->hide();
 
 
@@ -1041,9 +1074,10 @@ ui->mainToolBar->hide();
 //this->setMinimumSize(0,0);
 
 this->setMaximumSize(QWIDGETSIZE_MAX,QWIDGETSIZE_MAX);
-this->setMinimumHeight(460);
-this->setFixedWidth(200);
-this->adjustSize();
+this->resize(700,500);
+this->setMinimumSize(0,0);
+
+//this->adjustSize();
 
 
 //this->updateGeometry();
@@ -1068,7 +1102,7 @@ void MainWindow::on_shuffle_btn_clicked()
     {
         shuffle = true;
         shufflePlaylist();
-        ui->shuffle_btn->setIcon(QIcon(":Data/data/media-playlist-shuffle.svg"));
+        ui->shuffle_btn->setIcon(QIcon::fromTheme("media-playlist-shuffle"));
         ui->shuffle_btn->setToolTip("Repeat");
         shuffle_state=1;
 
@@ -1076,7 +1110,7 @@ void MainWindow::on_shuffle_btn_clicked()
     {
 
         repeat = true;
-        ui->shuffle_btn->setIcon(QIcon(":Data/data/media-playlist-repeat.svg"));
+        ui->shuffle_btn->setIcon(QIcon::fromTheme("media-playlist-repeat"));
         ui->shuffle_btn->setToolTip("Consecutive");
         shuffle_state=2;
 
@@ -1085,7 +1119,7 @@ void MainWindow::on_shuffle_btn_clicked()
     {
         repeat = false;
         shuffle = false;
-        ui->shuffle_btn->setIcon(QIcon(":Data/data/view-media-playlist.svg"));
+        ui->shuffle_btn->setIcon(QIcon::fromTheme("view-media-playlist"));
         ui->shuffle_btn->setToolTip("Shuffle");
         shuffle_state=0;
     }
@@ -1122,7 +1156,7 @@ void MainWindow::on_open_btn_clicked()
 
 void MainWindow::populateMainList()
 {
-    QSqlQuery query= settings_widget->getCollectionDB().getQuery("SELECT * FROM tracks WHERE babe = 1");
+    QSqlQuery query= settings_widget->getCollectionDB().getQuery("SELECT * FROM tracks WHERE babe = 1 ORDER by played desc");
 
     QStringList files;
        while (query.next())
@@ -1171,7 +1205,7 @@ void MainWindow::on_listWidget_doubleClicked(const QModelIndex &index)
 
     updater->start();
     playing= true;
-    ui->play_btn->setIcon(QIcon(":Data/data/media-playback-pause.svg"));
+    ui->play_btn->setIcon(QIcon::fromTheme("media-playback-pause"));
 
 }
 
@@ -1185,8 +1219,8 @@ void MainWindow::loadTrack()
      current_song_url = QString::fromStdString(playlist.tracks[getIndex()].getLocation());
      player->setMedia(QUrl::fromLocalFile(current_song_url));
 player->play();
-     //auto qstr = QString::fromStdString(playlist.tracks[getIndex()].getTitle()+" \xe2\x99\xa1 "+artist);
-     //this->setWindowTitle(qstr);
+     auto qstr = QString::fromStdString(playlist.tracks[getIndex()].getTitle())+" \xe2\x99\xa1 "+artist;
+     this->setWindowTitle(qstr);
 
      album_art->setArtist(artist);
      album_art->setAlbum(album);
@@ -1304,13 +1338,13 @@ void MainWindow::on_play_btn_clicked()
         if(player->state() == QMediaPlayer::PlayingState)
         {
             player->pause();
-            ui->play_btn->setIcon(QIcon(":Data/data/media-playback-start.svg"));
+            ui->play_btn->setIcon(QIcon::fromTheme("media-playback-start"));
         }
        else
        {
-
+            player->play();
             updater->start();
-            ui->play_btn->setIcon(QIcon(":Data/data/media-playback-pause.svg"));
+            ui->play_btn->setIcon(QIcon::fromTheme("media-playback-pause"));
        }
       }
 }
@@ -1327,7 +1361,7 @@ void MainWindow::on_backward_btn_clicked()
         {
 
             back();
-            ui->play_btn->setIcon(QIcon(":Data/data/media-playback-pause.svg"));
+            ui->play_btn->setIcon(QIcon::fromTheme("media-playback-pause"));
         }
      }
 }
@@ -1343,7 +1377,7 @@ void MainWindow::on_foward_btn_clicked()
         else
         {
             next();
-            ui->play_btn->setIcon(QIcon(":Data/data/media-playback-pause.svg"));
+            ui->play_btn->setIcon(QIcon::fromTheme("media-playback-pause"));
         }
      }
 }
@@ -1385,7 +1419,7 @@ void MainWindow::on_fav_btn_clicked()
         qDebug()<<"The song is already babed";
         if(settings_widget->getCollectionDB().insertInto("tracks","babe",current_song_url,0))
         {
-            ui->fav_btn->setIcon(QIcon(":Data/data/love-amarok.svg"));
+            ui->fav_btn->setIcon(QIcon::fromTheme("love-amarok"));
 
         }
 
@@ -1622,7 +1656,7 @@ void MainWindow::on_search_textChanged(const QString &arg1)
 
         views->setCurrentIndex(prevIndex);
         if(views->currentIndex()==ALBUMS) showAlbumViewUtils();
-         if(views->currentIndex()==PLAYLISTS) utilsBar->actions().at(PLAYLISTS_UB)->setVisible(true); ui->frame_3->show();
+         if(views->currentIndex()==PLAYLISTS) {utilsBar->actions().at(PLAYLISTS_UB)->setVisible(true); ui->frame_3->show();}
 
         resultsTable->flushTable();
         //ui->tracks_view->setChecked(true);

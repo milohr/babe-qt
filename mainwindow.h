@@ -19,6 +19,8 @@
 #include <album.h>
 #include <playlistsview.h>
 #include <artwork.h>
+#include <infoview.h>
+
 
 namespace Ui {
 class MainWindow;
@@ -132,7 +134,8 @@ private slots:
 private:
 
     Ui::MainWindow *ui;
-ArtWork *artwork;
+    ArtWork *coverArt;
+    ArtWork *artistHead;
     void keepOnTop(bool state);
     void setUpViews();
     void loadTrack();
@@ -164,6 +167,7 @@ ArtWork *artwork;
     BabeTable *resultsTable;
     AlbumsView* albumsTable;
     PlaylistsView *playlistTable;
+    InfoView *infoTable;
 
     /*the streaming */
     Playlist playlist;

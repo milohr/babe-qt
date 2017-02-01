@@ -17,12 +17,12 @@ PlaylistsView::PlaylistsView(QWidget *parent) :
     list->setFrameShape(QFrame::NoFrame);
     //list->setStyleSheet("background: #575757; color:white;");
 
-    connect(list, SIGNAL(doubleClicked(QModelIndex)), list, SLOT(edit(QModelIndex)));
+ connect(list, SIGNAL(doubleClicked(QModelIndex)), list, SLOT(edit(QModelIndex)));
     connect(list,SIGNAL(clicked(QModelIndex)),this,SLOT(populatePlaylist(QModelIndex)));
     connect(list,SIGNAL(itemChanged(QListWidgetItem*)),this,SLOT(playlistName(QListWidgetItem*)));
 
 
-    connect(table,SIGNAL(tableWidget_doubleClicked(QStringList)),this,SLOT(tableClicked(QStringList)));
+   // connect(table,SIGNAL(tableWidget_doubleClicked(QStringList)),this,SLOT(tableClicked(QStringList)));
     //connect(table,SIGNAL(createPlaylist_clicked()),this,SLOT(createPlaylist()));
    //auto item =new QListWidgetItem();
 
