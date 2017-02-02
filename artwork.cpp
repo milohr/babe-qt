@@ -33,6 +33,7 @@ void ArtWork::setDataCover(QString artist, QString album, QString path)
          if (!q_artist.isEmpty()) url.append("&artist=" + q_artist.toString());
          if (!q_album.isEmpty()) url.append("&album=" + q_album.toString());
          type=ALBUM;
+          qDebug()<<"on setDataCover:"<<artist<<album;
          startConnection();
      }
 }
@@ -151,6 +152,7 @@ void ArtWork::saveArt(QByteArray array)
     QImage img;
     img.loadFromData(array);
    QString name= album.size()>0? artist+"_"+album:artist;
+   name.replace("/","-");
    QString format="JPEG";
      if(img.save(path+name+".jpg", format.toLatin1(), 100))
      {

@@ -402,6 +402,8 @@ void settings::fetchArt()
         QString artist= query_Covers.value(1).toString();
         QString album= query_Covers.value(0).toString();
       //  QString art = cachePath+artist+"_"+album+".jpg";
+
+        qDebug()<<artist<<album;
         coverArt->setDataCover(artist,album,cachePath);
 
 
