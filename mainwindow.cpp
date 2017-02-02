@@ -366,7 +366,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //album_art_frame->setFixedSize(210,210);
     //album_art->setGeometry(0,0,100,100);
 
-    album_art = new Album(":Data/data/cover.jpg",200,0,true,album_art_frame);
+    album_art = new Album(":Data/data/cover.svg",200,0,true,album_art_frame);
     album_art->setFixedSize(200,200);
     //connect(album_art,SIGNAL(albumCoverLeft()),this,SLOT(hide ui->controls()));
    // connect(album_art,SIGNAL(albumCoverEnter()),this,SLOT(show ui->controls()));

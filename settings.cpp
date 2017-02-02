@@ -421,6 +421,8 @@ void settings::fetchArt()
 
         artistHead->setDataHead(artist,cachePath);
     }
+
+     //emit collectionDBFinishedAdding(true);
 }
 
 

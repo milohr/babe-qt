@@ -55,19 +55,26 @@ void CollectionDB::openCollection(QString path)
 
 void CollectionDB::removePath(QString path)
 {
-    QSqlQuery query;
-    qDebug()<<"trying to delete all from :"<< path;
-       query.prepare("DELETE FROM tracks WHERE location LIKE \"%"+path+"%\"");
 
-       bool success = query.exec();
+    qDebug()<<"trying to delete all from :"<< path;
+     QSqlQuery queryTracks;
+     queryTracks.prepare("DELETE FROM tracks  WHERE location LIKE \"%"+path+"%\"");
+      bool success = queryTracks.exec();
+
+      QSqlQuery queryAlbums;
+      queryAlbums.prepare("DELETE FROM albums  WHERE location LIKE \"%"+path+"%\"");
+       success = queryAlbums.exec();
+
+       QSqlQuery queryArtists;
+       queryArtists.prepare("DELETE FROM artists  WHERE location LIKE \"%"+path+"%\"");
+        success = queryArtists.exec();
+
+
+
 
        if(!success)
        {
-           qDebug() << "removePerson error: "
-                    << query.lastError();
-
-       }else
-       {
+           qDebug() << "removePerson error: ";
 
        }
 
@@ -77,9 +84,9 @@ void CollectionDB::prepareCollectionDB()
 {
     QSqlQuery query;
     query.exec("CREATE TABLE tracks(track integer, title text, artist text, album text, genre text, location text unique, stars integer, babe integer, art text, played integer, playlist text);");
-    query.exec("CREATE TABLE albums(title text, artist text, art text);");
+    query.exec("CREATE TABLE albums(title text, artist text, art text, location text);");
     query.exec("CREATE TABLE playlists(title text, art text);");
-    query.exec("CREATE TABLE artists(title text, art text);");
+    query.exec("CREATE TABLE artists(title text, art text, location text);");
 
     //query.exec("CREATE TABLE tracks(title text, album text, artist text, location text, stars integer, babe integer);");
 }
@@ -187,18 +194,20 @@ void CollectionDB::addTrack(QStringList paths, int babe)
             qDebug()<< "writting to db: "<<info.getTitle();
             if(!albums.contains(artist+" "+album))
             {
-                query.prepare("INSERT INTO albums (title, artist, art)" "VALUES (:title, :artist, :art)");
+                query.prepare("INSERT INTO albums (title, artist, art, location)" "VALUES (:title, :artist, :art, :location)");
                 query.bindValue(":title", album);
                 query.bindValue(":artist", artist);
                 query.bindValue(":art", "");
+                query.bindValue(":location", file);
                 if(query.exec()) albums<<artist+" "+album;
             }
 
              if(!artists.contains(artist))
              {
-                 query.prepare("INSERT INTO artists (title, art)" "VALUES (:title, :art)");
+                 query.prepare("INSERT INTO artists (title, art, location)" "VALUES (:title, :art, :location)");
                  query.bindValue(":title", artist);
                  query.bindValue(":art", "");
+                 query.bindValue(":location", file);
                  if(query.exec()) artists<<artist;
 
              }

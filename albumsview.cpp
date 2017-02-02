@@ -141,12 +141,12 @@ AlbumsView::AlbumsView(QWidget *parent) :
 
    layout->addWidget(line_h,1,0,Qt::AlignBottom);
    layout->addWidget(albumBox_frame,2,0,Qt::AlignBottom);
-    cover= new Album(":Data/data/cover.jpg",120,2);
+    cover= new Album(":Data/data/cover.svg",120,2);
 
     closeBtn = new QToolButton(cover);
     closeBtn->setGeometry(2,2,16,16);
     closeBtn->setIcon(QIcon::fromTheme("tab-close"));
-    closeBtn->setAutoRaise(false);
+    closeBtn->setAutoRaise(true);
     connect(closeBtn,SIGNAL(clicked()),SLOT(hideAlbumFrame()));
     //cover->setSizeHint( QSize( 120, 120) );
     auto line = new QFrame();
@@ -281,7 +281,7 @@ qDebug()<<info.at(0)<<info.at(1);
       QSqlQuery queryCover = connection->getQuery("SELECT * FROM albums WHERE title = \""+info.at(1)+"\" AND artist = \""+info.at(0)+"\"");
       while (queryCover.next())
       {
-         cover->image.load( queryCover.value(2).toString());
+         if(!queryCover.value(2).toString().isEmpty()) cover->image.load( queryCover.value(2).toString());
 
       }
 
