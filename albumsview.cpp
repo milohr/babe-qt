@@ -67,8 +67,7 @@ AlbumsView::AlbumsView(QWidget *parent) :
 
        connect(order, SIGNAL(currentIndexChanged(QString)),this,SLOT(orderChanged(QString)));
        order->addItem("Artist");
-       order->addItem("Album");
-       order->addItem("Genre");
+       order->addItem("Title");
        order->setCurrentIndex(1);
        //order->setFrame(false);
 
@@ -224,27 +223,18 @@ void AlbumsView::orderChanged(QString order)
 void AlbumsView::populateTableView(QSqlQuery query)
 {
     qDebug()<<"ON POPULATE ALBUM VIEW:";
-   // QString albumBefore = "", artistBefore = "";
-    QStringList albums;
-   // QMap<QString, QString> example;
-//slider->setValue(albumSize);
-    //albums<<"!";
-//int row=0, column=0;
+
     while (query.next())
     {
-
-
-
-       if(!albums.contains(query.value(BabeTable::ARTIST).toString()+" "+query.value(BabeTable::ALBUM).toString()))
-       {
-
            Album *album= new Album(":Data/data/cover.svg",albumSize,6);
 
            albumsList.push_back(album);
            album->borderColor=true;
-           album->setArtist(query.value(BabeTable::ARTIST).toString());
-           album->setAlbum(query.value(BabeTable::ALBUM).toString());
+           album->setArtist(query.value(ARTIST).toString());
+           album->setAlbum(query.value(TITLE).toString());
            album->setTitle();
+           if(!query.value(ART).toString().isEmpty())album->image.load(query.value(ART).toString());
+
           // album->setTitle(query.value(1).toString(),query.value(2).toString());
            //album->setToolTip(query.value(2).toString());
            connect(album, SIGNAL(albumCoverClicked(QStringList)),this,SLOT(getAlbumInfo(QStringList)));
@@ -257,19 +247,8 @@ void AlbumsView::populateTableView(QSqlQuery query)
 
           grid->setItemWidget(item,album);
 
-          albums<<query.value(BabeTable::ARTIST).toString()+" "+query.value(BabeTable::ALBUM).toString();
-          //column++;
-
-         // if(column==4) {row++; column=0;}
-       }
-
 
     }
-
-   /* for(auto out:albums)
-    {
-        qDebug()<<out;
-    }*/
 
 
 }
@@ -294,12 +273,17 @@ void AlbumsView::getAlbumInfo(QStringList info)
     cover->setAlbum(info.at(1));
     cover->setTitle();
 
-
+qDebug()<<info.at(0)<<info.at(1);
         //playlist->add(tracks);
         albumTable->flushTable();
 
       albumTable->populateTableView("SELECT * FROM tracks WHERE artist = \""+info.at(0)+"\" and album = \""+info.at(1)+"\" ORDER by track asc ");
+      QSqlQuery queryCover = connection->getQuery("SELECT * FROM albums WHERE title = \""+info.at(1)+"\" AND artist = \""+info.at(0)+"\"");
+      while (queryCover.next())
+      {
+         cover->image.load( queryCover.value(2).toString());
 
+      }
 
 }
 

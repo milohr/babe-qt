@@ -45,7 +45,7 @@ void Lyrics::startConnection()
         loop.exec();
 
 
-       qDebug()<<url;
+       //qDebug()<<url;
         delete reply;
 
 }
@@ -82,16 +82,16 @@ void Lyrics::xmlInfo(QNetworkReply *reply)
 
                           temp.replace("http://lyrics.wikia.com/","http://lyrics.wikia.com/index.php?title=");
                           temp.append("&action=edit");
-                           qDebug() << temp;
+                           //qDebug() << temp;
                            QRegExp url_regexp("<url>(.*)</url>");
                                    url_regexp.setMinimal(true);
                           QUrl url = QUrl::fromEncoded(temp.toLatin1());
                                   QString referer = url_regexp.cap(1);
-                                  qDebug("LyricsWindow: request url = %s", url.toEncoded().constData());
+                                //  qDebug("LyricsWindow: request url = %s", url.toEncoded().constData());
                                   QNetworkRequest request;
                                   request.setUrl(url);
                                   request.setRawHeader("Referer", referer.toLatin1());
-                                  qDebug("Receiving");
+                                  qDebug("Receiving lyrics");
 
 
                                   QNetworkAccessManager m_http;
@@ -105,7 +105,7 @@ void Lyrics::xmlInfo(QNetworkReply *reply)
                                   loop.exec();
 
 
-                                 qDebug()<<url;
+                                 //qDebug()<<url;
                                   delete reply;
         }
 
@@ -130,7 +130,7 @@ void Lyrics::getLyrics(QNetworkReply *reply)
         else
         {
             text += lyrics;
-            qDebug()<<text;
+           // qDebug()<<text;
         }
         reply->deleteLater();
 

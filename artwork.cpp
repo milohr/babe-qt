@@ -15,8 +15,11 @@ ArtWork::ArtWork(QObject *parent) : QObject(parent)
 
 
 
-void ArtWork::setData(QString artist, QString album)
+void ArtWork::setDataCover(QString artist, QString album, QString path)
 {
+    this->artist=artist;
+    this->album=album;
+    this->path=path;
 
      if(artist.size()!=0 && album.size()!=0)
      {
@@ -34,8 +37,10 @@ void ArtWork::setData(QString artist, QString album)
      }
 }
 
-void ArtWork::setData(QString artist)
+void ArtWork::setDataHead(QString artist, QString path)
 {
+    this->artist=artist;
+    this->path=path;
 
     if(artist.size()!=0)
      {
@@ -53,6 +58,48 @@ void ArtWork::setData(QString artist)
 
 }
 
+void ArtWork::setDataCoverInfo(QString artist, QString album)
+{
+    this->artist=artist;
+    this->album=album;
+
+
+     if(artist.size()!=0 && album.size()!=0)
+     {
+         url.append("?method=album.getinfo");
+         url.append("&api_key=ba6f0bd3c887da9101c10a50cf2af133");
+         QUrl q_artist (artist);
+         q_artist.toEncoded(QUrl::FullyEncoded);
+         QUrl q_album (album);
+         q_album.toEncoded(QUrl::FullyEncoded);
+
+         if (!q_artist.isEmpty()) url.append("&artist=" + q_artist.toString());
+         if (!q_album.isEmpty()) url.append("&album=" + q_album.toString());
+         type=ALBUM_INFO;
+         startConnection();
+     }
+}
+
+void ArtWork::setDataHeadInfo(QString artist)
+{
+    this->artist=artist;
+
+
+    if(artist.size()!=0)
+     {
+         url.append("?method=artist.getinfo");
+         url.append("&api_key=ba6f0bd3c887da9101c10a50cf2af133");
+
+         QUrl q_artist (artist);
+         q_artist.toEncoded(QUrl::FullyEncoded);
+
+         if (!q_artist.isEmpty()) url.append("&artist=" + q_artist.toString());
+         type=ARTIST_INFO;
+         startConnection();
+
+     }
+}
+
 void ArtWork::startConnection()
 {
 
@@ -68,7 +115,7 @@ void ArtWork::startConnection()
         loop.exec();
 
 
-       qDebug()<<url;
+      // qDebug()<<url;
         delete reply;
 
 }
@@ -98,6 +145,20 @@ void ArtWork::dummy()
     //emit prueba(&str);
     }
 }*/
+
+void ArtWork::saveArt(QByteArray array)
+{
+    QImage img;
+    img.loadFromData(array);
+   QString name= album.size()>0? artist+"_"+album:artist;
+   QString format="JPEG";
+     if(img.save(path+name+".jpg", format.toLatin1(), 100))
+     {
+          if(album.isEmpty())emit artSaved(path+name+".jpg",{artist});
+          else  emit artSaved(path+name+".jpg",{album,artist});
+     }
+
+}
 
 void ArtWork::xmlInfo(QNetworkReply *reply)
 {
@@ -143,23 +204,50 @@ void ArtWork::xmlInfo(QNetworkReply *reply)
                     }
                  }
 
-                const QDomNodeList list2 = doc.documentElement().namedItem("album").childNodes();
-
-                for (int i = 0; i < list2.count(); i++)
+                if (coverUrl.isEmpty())
                 {
-                    QDomNode n = list2.item(i);
-                    if(n.isElement())
-                    {
-                        if(n.nodeName()=="wiki")
-                        {
-                            qDebug()<<n.nodeName();
-                            info=n.childNodes().item(1).toElement().text();
-                            //qDebug()<<n.firstChildElement().toElement().text();
-                             // <<n.toElement().text();
-                        }
-
-                     }
+                    qDebug()<<"Could not find " <<
+                                " cover "
+                                "for \"" << album << "\".";
+                }else
+                {
+                   // qDebug()<<"the cover art url is"<< coverUrl;
+                    this->coverArray = selectCover(coverUrl);
+                    //selectInfo(info);
                 }
+
+
+
+           }else if(type==ALBUM_INFO)
+           {
+               const QDomNodeList list2 = doc.documentElement().namedItem("album").childNodes();
+
+               for (int i = 0; i < list2.count(); i++)
+               {
+                   QDomNode n = list2.item(i);
+                   if(n.isElement())
+                   {
+                       if(n.nodeName()=="wiki")
+                       {
+                           //qDebug()<<n.nodeName();
+                           info=n.childNodes().item(1).toElement().text();
+                           //qDebug()<<n.firstChildElement().toElement().text();
+                            // <<n.toElement().text();
+                       }
+
+                    }
+               }
+
+               if (info.isEmpty())
+               {
+                   qDebug()<<"Could not find " <<
+                               " info "
+                               "for \"" << album << "\".";
+               }
+
+                       emit infoReady(info);
+
+
            }else if(type==ARTIST)
            {
 
@@ -179,6 +267,22 @@ void ArtWork::xmlInfo(QNetworkReply *reply)
                        }
                }
 
+               if(artistHead.isEmpty())
+               {
+                      qDebug()<<"Could not find " <<
+                                  " head "
+                                  "for \"" << artist << "\".";
+               }else
+               {
+                  // qDebug()<<"the head art url is"<< artistHead;
+                  // if(!bio.isEmpty()) emit bioReady(bio);
+                    selectHead(artistHead);
+
+               }
+
+
+           }else if(type==ARTIST_INFO)
+           {
                const QDomNodeList list4 = doc.documentElement().namedItem("artist").childNodes();
 
                for (int i = 0; i < list4.count(); i++)
@@ -188,7 +292,7 @@ void ArtWork::xmlInfo(QNetworkReply *reply)
                    {
                        if(n.nodeName()=="bio")
                        {
-                           qDebug()<<n.nodeName();
+                           //qDebug()<<n.nodeName();
                            bio=n.childNodes().item(2).toElement().text();
                            //qDebug()<<n.firstChildElement().toElement().text();
                             // <<n.toElement().text();
@@ -196,40 +300,33 @@ void ArtWork::xmlInfo(QNetworkReply *reply)
 
                     }
                }
+
+               if(bio.isEmpty())
+               {
+                      qDebug()<<"Could not find " <<
+                                  " head info "
+                                  "for \"" << artist << "\".";
+               }
+                emit bioReady(bio);
+                    //selectHead(artistHead);
+
            }
 
         }
 
     // No cover URL?  This could be a problem.
     // Better let the user know what's going on.
-        if (coverUrl.isEmpty())
-        {
-            qDebug()<<"Could not find " <<
-                        " cover "
-                        "for \"" << album << "\".";
-        }else
-        {
-            qDebug()<<"the cover art url is"<< coverUrl;
-            this->coverArray = selectCover(coverUrl);
-            selectInfo(info);
-        }
 
 
-        if(artistHead.isEmpty())
-        {
-               qDebug()<<"Could not find " <<
-                           " head "
-                           "for \"" << artist << "\".";
-        }else
-        {
-            qDebug()<<"the head art url is"<< artistHead;
-            if(!bio.isEmpty()) emit bioReady(bio);
-          selectHead(artistHead);
 
-        }
 
     }
 }
+
+
+
+
+
 
 QByteArray ArtWork::selectCover(QString url)
 {
@@ -252,7 +349,7 @@ QByteArray ArtWork::selectCover(QString url)
 
 void ArtWork::selectHead(QString url)
 {
-    qDebug()<<"trying to get the cover";
+    qDebug()<<"trying to get the head";
     QNetworkAccessManager manager;
 
      QNetworkReply *reply  = manager.get(QNetworkRequest(QUrl(url)));

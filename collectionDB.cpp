@@ -75,15 +75,13 @@ void CollectionDB::removePath(QString path)
 
 void CollectionDB::prepareCollectionDB()
 {
-
-
     QSqlQuery query;
     query.exec("CREATE TABLE tracks(track integer, title text, artist text, album text, genre text, location text unique, stars integer, babe integer, art text, played integer, playlist text);");
+    query.exec("CREATE TABLE albums(title text, artist text, art text);");
+    query.exec("CREATE TABLE playlists(title text, art text);");
+    query.exec("CREATE TABLE artists(title text, art text);");
 
-    query.exec("CREATE TABLE playlists(title text);");
     //query.exec("CREATE TABLE tracks(title text, album text, artist text, location text, stars integer, babe integer);");
-
-
 }
 
 QSqlQuery CollectionDB::getQuery(QString queryTxt)
@@ -125,9 +123,6 @@ bool CollectionDB::checkQuery(QString queryTxt)
            qDebug()<<"didn't ind the query!";
            return false;
        }
-
-
-
     }else
     {
     qDebug()<<"the query failed!";
@@ -138,57 +133,127 @@ bool CollectionDB::checkQuery(QString queryTxt)
 
 }
 
-void CollectionDB::addTrack(QStringList paths)
+void CollectionDB::setCollectionLists()
+{
+     QSqlQuery query ("SELECT * FROM tracks");
+     while (query.next())
+     {
+         QString artist = query.value(ARTIST).toString();
+         QString album = query.value(ALBUM).toString();
+
+        if(!albums.contains(artist+" "+album)) albums<<artist+" "+album;
+        if(!artists.contains(artist)) artists<<artist;
+
+     }
+}
+
+void CollectionDB::addTrack(QStringList paths, int babe)
 {
     //bool success = false;
+    QSqlQuery query;
 
-
-        QSqlQuery query;
-
-        query.exec("PRAGMA synchronous=OFF");
-int i=0;
-     qDebug()<<"started wrrting to database...";
-      for(auto file:paths)
-      {
-           TagInfo info(file);
-
+    query.exec("PRAGMA synchronous=OFF");
+    int i=0;
+    qDebug()<<"started wrrting to database...";
+    for(auto file:paths)
+    {
+        TagInfo info(file);
+        int track;
+        QString  title, artist, album, genre;
          // you should check if args are ok first...
+        track=info.getTrack();
+        title=info.getTitle();
+        artist= info.getArtist();
+        album=info.getAlbum();
+        genre=info.getGenre();
 
-         query.prepare("INSERT INTO tracks (track, title, artist, album, genre, location, stars, babe, art, played)" "VALUES (:track, :title, :artist, :album, :genre, :location, :stars, :babe, :art, :played) ");
-         query.bindValue(":track", info.getTrack());
-         query.bindValue(":title", info.getTitle());
-         query.bindValue(":artist", info.getArtist());
-         query.bindValue(":album", info.getAlbum());
-         query.bindValue(":genre", info.getGenre());
-         query.bindValue(":location", file);
-         query.bindValue(":stars", 0);
-         query.bindValue(":babe", 0);
-         query.bindValue(":art", "");//here need to fecth the artwork
-         query.bindValue(":played", 0);
+
+        query.prepare("INSERT INTO tracks (track, title, artist, album, genre, location, stars, babe, art, played)" "VALUES (:track, :title, :artist, :album, :genre, :location, :stars, :babe, :art, :played) ");
+        query.bindValue(":track", track);
+        query.bindValue(":title", title);
+        query.bindValue(":artist", artist);
+        query.bindValue(":album", album);
+        query.bindValue(":genre", genre);
+        query.bindValue(":location", file);
+        query.bindValue(":stars", 0);
+        query.bindValue(":babe", babe);
+        query.bindValue(":art", "");//here need to fecth the artwork
+        query.bindValue(":played", 0);
 
 
          if(query.exec())
          {
              //success = true;
-             qDebug()<< "writting to db: "<<info.getTitle();
+            qDebug()<< "writting to db: "<<info.getTitle();
+            if(!albums.contains(artist+" "+album))
+            {
+                query.prepare("INSERT INTO albums (title, artist, art)" "VALUES (:title, :artist, :art)");
+                query.bindValue(":title", album);
+                query.bindValue(":artist", artist);
+                query.bindValue(":art", "");
+                if(query.exec()) albums<<artist+" "+album;
+            }
+
+             if(!artists.contains(artist))
+             {
+                 query.prepare("INSERT INTO artists (title, art)" "VALUES (:title, :art)");
+                 query.bindValue(":title", artist);
+                 query.bindValue(":art", "");
+                 if(query.exec()) artists<<artist;
+
+             }
+
              emit progress((i++)+1);
          }
          else
          {
-              qDebug() << "addPerson error:  "
+              qDebug() << "adding track error:  "
                        << query.lastError()
                         <<info.getTitle();
          }
-
-
       }
 
-     qDebug()<<"finished wrrting to database";
-
-emit DBactionFinished(true);
+    qDebug()<<"finished wrrting to database";
+    emit DBactionFinished(true);
 
 }
 
+void CollectionDB::insertCoverArt(QString path,QStringList info)
+{
+//UPDATE albums SET art = "lalaltest" WHERE title = "Starboy" AND artist = "The Weeknd"
+
+    if(info.size()==2)
+    {QSqlQuery query;
+    query.prepare("UPDATE albums SET art = (:art) WHERE title = (:title) AND artist = (:artist)" );
+    //query.prepare("SELECT * FROM "+tableName+" WHERE "+searchId+" = (:search)");
+    query.bindValue(":art", path);
+    query.bindValue(":title", info.at(0));
+    query.bindValue(":artist", info.at(1));
+    if(query.exec())
+    {
+        qDebug()<<"Artwork[cover] inerted into DB"<<info.at(0)<<info.at(1);
+        //qDebug()<<"insertInto<<"<<"UPDATE "+tableName+" SET "+column+" = "+ value + " WHERE location = "+location;
+     }
+    }
+
+}
+
+void CollectionDB::insertHeadArt(QString path, QStringList info)
+{
+     if(info.size()==1)
+     {
+         QSqlQuery query;
+    query.prepare("UPDATE artists SET art = (:art) WHERE title = (:title)" );
+    //query.prepare("SELECT * FROM "+tableName+" WHERE "+searchId+" = (:search)");
+    query.bindValue(":art", path);
+    query.bindValue(":title", info.at(0));
+    if(query.exec())
+    {
+        qDebug()<<"Artwork[head] inerted into DB"<<info.at(0);
+        //qDebug()<<"insertInto<<"<<"UPDATE "+tableName+" SET "+column+" = "+ value + " WHERE location = "+location;
+     }
+     }
+}
 
 void CollectionDB::addSong(QStringList paths, int babe=0)
 {

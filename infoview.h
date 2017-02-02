@@ -3,6 +3,8 @@
 
 #include <QWidget>
 #include <album.h>
+#include <QToolButton>
+
 namespace Ui {
 class InfoView;
 }
@@ -16,19 +18,25 @@ public:
     explicit InfoView(QWidget *parent = 0);
     ~InfoView();
 
-    void setAlbumArt(QByteArray array);
-void setAlbumInfo(QString info);
+    Album *album;
+    Album *artist;
+
+    QWidget *infoUtils;
 
 
 private:
     Ui::InfoView *ui;
-    Album *album;
-    Album *artist;
+
+    QToolButton *hideBtn;
+    bool hide= true;
 
 private slots:
+    void setAlbumArt(QByteArray array);
+    void setAlbumInfo(QString info);
     void setArtistArt(QByteArray array);
-void setLyrics(QString lyrics);
-     void setArtistInfo(QString info);
+    void setLyrics(QString lyrics);
+    void setArtistInfo(QString info);
+    void hideArtistInfo();
 };
 
 #endif // INFOVIEW_H

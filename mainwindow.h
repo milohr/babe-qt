@@ -44,7 +44,7 @@ public:
     };
     enum utilsBar
     {
-        PLAYLISTS_UB,SEARCH_UB,ALBUMS_UB,COLLECTION_UB, FAVORITES_UB,QUEUE_UB,INFO_UB,
+       INFO_UB,PLAYLISTS_UB,SEARCH_UB,ALBUMS_UB,COLLECTION_UB, FAVORITES_UB,QUEUE_UB
     };
 
 
@@ -131,7 +131,7 @@ private slots:
    void saveResultsTo(QAction *action);
    void on_saveResults_clicked();
 void setLyrics(QString artist,QString title);
-
+    void getTrackInfo(QString artist, QString album, QString title);
 private:
 
     Ui::MainWindow *ui;

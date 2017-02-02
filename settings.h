@@ -11,6 +11,8 @@
 #include <about.h>
 #include <QDir>
 #include <QFileSystemWatcher>
+#include <QLabel>
+#include <QMovie>
 
 namespace Ui {
 class settings;
@@ -34,10 +36,13 @@ public:
     void refreshCollectionPaths();
     void collectionWatcher();
     void addToWatcher(QStringList paths);
+    CollectionDB collection_db;
     enum iconSizes
     {
         s16,s22,s24
     };
+    //enum albums { ALBUM_TITLE, ARTIST, ART};
+   // enum artists { ARTIST_TITLE, ART};
 
 private slots:
 
@@ -53,16 +58,19 @@ private slots:
 public slots:
 
     void populateDB(QString path);
+    void fetchArt();
 
 private:
     Ui::settings *ui;
     const QString settingPath= QDir().homePath()+"/.config/babe/";
     const QString collectionDBPath=QDir().homePath()+"/.local/share/babe/";
+    const QString cachePath=QDir().homePath()+"/.cache/babe/";
     const QString collectionDBName = "collection.db";
     const QString settingsName = "settings.conf";
     int iconSize = 16;
     QStringList collectionPaths={};
-    CollectionDB collection_db;
+    QLabel *artFetcherNotice;
+    QMovie *movie;
     QString pathToRemove;
    // QFileSystemWatcher watcher;
     QThread* thread;

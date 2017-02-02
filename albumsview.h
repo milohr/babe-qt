@@ -28,7 +28,9 @@ public:
     QSlider *slider;
     QComboBox *order;
     QFrame *utilsFrame;
-BabeTable *albumTable;
+    BabeTable *albumTable;
+    enum ALBUMSVIEW_H{ TITLE, ARTIST, ART };
+
 private:
 
     QListWidget *grid;

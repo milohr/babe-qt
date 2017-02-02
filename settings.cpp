@@ -13,6 +13,7 @@
 #include <QFrame>
 #include <QFileSystemWatcher>
 #include <QGridLayout>
+#include <artwork.h>
 
 settings::settings(QWidget *parent) :
     QWidget(parent),
@@ -24,12 +25,15 @@ settings::settings(QWidget *parent) :
     //collectionDBPath=QDir().absolutePath()+collectionDBPath;
     qDebug()<<"Getting collectionDB info from: "<<collectionDBPath;
     qDebug()<<"Getting settings info from: "<<settingPath;
+    qDebug()<<"Getting artwork files from: "<<cachePath;
 
     QDir collectionDBPath_dir (collectionDBPath);
     QDir settingsPath_dir (settingPath);
+    QDir cachePath_dir (cachePath);
 
     if (!collectionDBPath_dir.exists()) collectionDBPath_dir.mkpath(".");
     if (!settingsPath_dir.exists()) settingsPath_dir.mkpath(".");
+    if (!cachePath_dir.exists()) cachePath_dir.mkpath(".");
 
     connect(this, SIGNAL(collectionPathChanged(QString)), this, SLOT(populateDB(QString)));
     connect(&collection_db, SIGNAL(DBactionFinished(bool)),this, SLOT(finishedAddingTracks(bool)));
@@ -43,6 +47,13 @@ settings::settings(QWidget *parent) :
     ui->remove->setEnabled(false);
     ui->progressBar->hide();
     about_ui = new About();
+
+
+    movie = new QMovie(":Data/data/ajax-loader.gif");
+    ui->label->setMovie(movie);
+    ui->label->hide();
+    ui->label2->hide();
+
 
 }
 
@@ -350,8 +361,19 @@ void settings::finishedAddingTracks(bool state)
 {
     if(state)
     {
-        qDebug()<<"good to hear it g¿finished yay!";
+        qDebug()<<"good to hear it g¿finished yay! now going to fetch artwork";
+
+
         ui->progressBar->hide();
+        ui->progressBar->setValue(0);
+
+        ui->label2->show();
+        movie->start();
+        fetchArt();
+        movie->stop();
+        ui->label->hide();
+        ui->label->hide();
+
         collectionWatcher();
         //collection_db.closeConnection();
     //thread->terminate();
@@ -361,6 +383,42 @@ void settings::finishedAddingTracks(bool state)
     }
 
     //qDebug()<<"good to hear it g¿finished yay!!!!!!";
+}
+
+
+void settings::fetchArt()
+{
+
+    ui->label->show();
+    QSqlQuery query_Covers=collection_db.getQuery("SELECT * FROM albums");
+    QSqlQuery query_Heads=collection_db.getQuery("SELECT * FROM artists");
+
+    while (query_Covers.next())
+    {
+        auto coverArt = new ArtWork();
+
+        connect(coverArt, SIGNAL(coverReady(QByteArray)), coverArt, SLOT(saveArt(QByteArray)));
+        connect(coverArt,SIGNAL(artSaved(QString,QStringList)),&collection_db,SLOT(insertCoverArt(QString,QStringList)));
+        QString artist= query_Covers.value(1).toString();
+        QString album= query_Covers.value(0).toString();
+      //  QString art = cachePath+artist+"_"+album+".jpg";
+        coverArt->setDataCover(artist,album,cachePath);
+
+
+    }
+
+    while (query_Heads.next())
+    {
+        auto artistHead = new ArtWork();
+
+        connect(artistHead, SIGNAL(headReady(QByteArray)), artistHead, SLOT(saveArt(QByteArray)));
+        connect(artistHead,SIGNAL(artSaved(QString,QStringList)),&collection_db,SLOT(insertHeadArt(QString,QStringList)));
+
+        QString artist= query_Heads.value(0).toString();
+       // QString art = cachePath+artist+".jpg";
+
+        artistHead->setDataHead(artist,cachePath);
+    }
 }
 
 

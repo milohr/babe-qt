@@ -17,11 +17,12 @@ PlaylistsView::PlaylistsView(QWidget *parent) :
     list->setFrameShape(QFrame::NoFrame);
     //list->setStyleSheet("background: #575757; color:white;");
 
- connect(list, SIGNAL(doubleClicked(QModelIndex)), list, SLOT(edit(QModelIndex)));
+    connect(list, SIGNAL(doubleClicked(QModelIndex)), list, SLOT(edit(QModelIndex)));
     connect(list,SIGNAL(clicked(QModelIndex)),this,SLOT(populatePlaylist(QModelIndex)));
     connect(list,SIGNAL(itemChanged(QListWidgetItem*)),this,SLOT(playlistName(QListWidgetItem*)));
 
 
+    setDefaultPlaylists();
    // connect(table,SIGNAL(tableWidget_doubleClicked(QStringList)),this,SLOT(tableClicked(QStringList)));
     //connect(table,SIGNAL(createPlaylist_clicked()),this,SLOT(createPlaylist()));
    //auto item =new QListWidgetItem();
@@ -30,13 +31,6 @@ PlaylistsView::PlaylistsView(QWidget *parent) :
    //auto color = new ColorTag();
    //color->setStyleSheet("background-color: blue;");
    //list->setItemWidget(list->item(1),color);
-
-
-
-    auto mostPlayed = new QListWidgetItem();
-    mostPlayed->setIcon(QIcon::fromTheme("favorite-genres-amarok"));
-    mostPlayed->setText("Most Played");
-    list->addItem(mostPlayed);
     //list->setStyleSheet("background-color:transparent;");
 
 
@@ -120,6 +114,24 @@ void PlaylistsView::dummy()
     qDebug()<<"signal was recived";
 }
 
+void PlaylistsView::setDefaultPlaylists()
+{
+    auto mostPlayed = new QListWidgetItem();
+    mostPlayed->setIcon(QIcon::fromTheme("favorite-genres-amarok"));
+    mostPlayed->setText("Most Played");
+    list->addItem(mostPlayed);
+
+    auto favorites = new QListWidgetItem();
+    favorites->setIcon(QIcon::fromTheme("draw-star"));
+    favorites->setText("Favorites");
+    list->addItem(favorites);
+
+    auto babes = new QListWidgetItem();
+    babes->setIcon(QIcon::fromTheme("love-amarok"));
+    babes->setText("Babes");
+    list->addItem(babes);
+}
+
 void PlaylistsView::tableClicked(QStringList list)
 
 {
@@ -129,18 +141,26 @@ void PlaylistsView::tableClicked(QStringList list)
 
 void PlaylistsView::populatePlaylist(QModelIndex index)
 {
-
-
     currentPlaylist = index.data().toString();
     emit playlistClicked(currentPlaylist);
+    table->flushTable();
     if(currentPlaylist=="Most Played")
-    {
-        table->flushTable();
+    {        
         table->showColumn(BabeTable::PLAYED);
         table->populateTableView("SELECT * FROM tracks WHERE played > \"1\" ORDER  by played desc");
-    }else
+    }else if(currentPlaylist=="Favorites")
     {
-        table->flushTable();
+        table->showColumn(BabeTable::STARS);
+        table->populateTableView("SELECT * FROM tracks WHERE stars > \"0\" ORDER  by stars desc");
+
+    }else if(currentPlaylist=="Babes")
+    {
+        //table->showColumn(BabeTable::PLAYED);
+        table->populateTableView("SELECT * FROM tracks WHERE babe = \"1\" ORDER  by played desc");
+    }
+    else
+    {
+
         table->hideColumn(BabeTable::PLAYED);
         table->populateTableView("SELECT * FROM tracks WHERE playlist LIKE \"%"+currentPlaylist+"%\"");
     }

@@ -43,13 +43,18 @@ private:
 
     QSqlDatabase m_db;
     QList <Track> trackList;
+    QStringList albums;
+    QStringList artists;
 
 public slots:
-    void addTrack(QStringList paths);
+    void addTrack(QStringList paths, int babe=0);
     void closeConnection();
     void insertPlaylist(QString name);
     QStringList getPlaylists();
     void removePath(QString path);
+    void setCollectionLists();
+    void insertCoverArt(QString path, QStringList info);
+    void insertHeadArt(QString path, QStringList info);
 
 
 signals:

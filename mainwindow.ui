@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>750</width>
-    <height>450</height>
+    <width>612</width>
+    <height>308</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -264,8 +264,8 @@
    <widget class="QToolButton" name="utilsBar">
     <property name="geometry">
      <rect>
-      <x>370</x>
-      <y>40</y>
+      <x>250</x>
+      <y>50</y>
       <width>31</width>
       <height>33</height>
      </rect>
@@ -462,8 +462,8 @@
    <widget class="QFrame" name="searchFrame">
     <property name="geometry">
      <rect>
-      <x>410</x>
-      <y>0</y>
+      <x>250</x>
+      <y>10</y>
       <width>171</width>
       <height>28</height>
      </rect>
@@ -546,8 +546,8 @@
    <widget class="QFrame" name="collectionUtils">
     <property name="geometry">
      <rect>
-      <x>580</x>
-      <y>0</y>
+      <x>430</x>
+      <y>10</y>
       <width>78</width>
       <height>31</height>
      </rect>
@@ -630,10 +630,10 @@
    <widget class="QFrame" name="playlistUtils">
     <property name="geometry">
      <rect>
-      <x>660</x>
-      <y>0</y>
-      <width>71</width>
-      <height>22</height>
+      <x>510</x>
+      <y>10</y>
+      <width>81</width>
+      <height>31</height>
      </rect>
     </property>
     <property name="sizePolicy">
@@ -696,8 +696,8 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="1">
-      <spacer name="horizontalSpacer">
+     <item row="0" column="3">
+      <spacer name="horizontalSpacer_4">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -709,28 +709,8 @@
        </property>
       </spacer>
      </item>
-     <item row="0" column="0">
-      <widget class="QToolButton" name="refreshBtn">
-       <property name="toolTip">
-        <string>Clear..</string>
-       </property>
-       <property name="toolTipDuration">
-        <number>-1</number>
-       </property>
-       <property name="text">
-        <string>...</string>
-       </property>
-       <property name="icon">
-        <iconset theme="filename-bpm-amarok">
-         <normaloff>.</normaloff>.</iconset>
-       </property>
-       <property name="autoRaise">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="3">
-      <spacer name="horizontalSpacer_4">
+     <item row="0" column="1">
+      <spacer name="horizontalSpacer">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -759,13 +739,33 @@
        </property>
       </widget>
      </item>
+     <item row="0" column="0">
+      <widget class="QToolButton" name="refreshBtn">
+       <property name="toolTip">
+        <string>Clear..</string>
+       </property>
+       <property name="toolTipDuration">
+        <number>-1</number>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+       <property name="icon">
+        <iconset theme="filename-bpm-amarok">
+         <normaloff>.</normaloff>.</iconset>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
     </layout>
    </widget>
    <widget class="QFrame" name="frame_4">
     <property name="geometry">
      <rect>
-      <x>450</x>
-      <y>160</y>
+      <x>250</x>
+      <y>190</y>
       <width>191</width>
       <height>1</height>
      </rect>
@@ -786,8 +786,8 @@
    <widget class="QFrame" name="frame_5">
     <property name="geometry">
      <rect>
-      <x>450</x>
-      <y>200</y>
+      <x>250</x>
+      <y>210</y>
       <width>191</width>
       <height>1</height>
      </rect>
@@ -808,8 +808,8 @@
    <widget class="QFrame" name="frame_6">
     <property name="geometry">
      <rect>
-      <x>460</x>
-      <y>280</y>
+      <x>250</x>
+      <y>230</y>
       <width>191</width>
       <height>1</height>
      </rect>
@@ -830,8 +830,8 @@
    <widget class="QGroupBox" name="controls">
     <property name="geometry">
      <rect>
-      <x>500</x>
-      <y>330</y>
+      <x>260</x>
+      <y>90</y>
       <width>181</width>
       <height>44</height>
      </rect>
@@ -849,6 +849,18 @@
      <property name="spacing">
       <number>0</number>
      </property>
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
      <item>
       <widget class="QToolButton" name="hide_sidebar_btn">
        <property name="maximumSize">
@@ -861,7 +873,8 @@
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset theme="object-columns"/>
+        <iconset theme="object-columns">
+         <normaloff>.</normaloff>.</iconset>
        </property>
        <property name="autoRaise">
         <bool>true</bool>
@@ -880,7 +893,8 @@
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset theme="media-skip-backward"/>
+        <iconset theme="media-skip-backward">
+         <normaloff>.</normaloff>.</iconset>
        </property>
        <property name="autoRaise">
         <bool>true</bool>
@@ -899,7 +913,8 @@
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset theme="love-amarok"/>
+        <iconset theme="love-amarok">
+         <normaloff>.</normaloff>.</iconset>
        </property>
        <property name="autoRaise">
         <bool>true</bool>
@@ -918,7 +933,8 @@
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset theme="media-playback-start"/>
+        <iconset theme="media-playback-start">
+         <normaloff>.</normaloff>.</iconset>
        </property>
        <property name="autoRaise">
         <bool>true</bool>
@@ -937,7 +953,8 @@
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset theme="media-skip-forward"/>
+        <iconset theme="media-skip-forward">
+         <normaloff>.</normaloff>.</iconset>
        </property>
        <property name="autoRaise">
         <bool>true</bool>
@@ -956,7 +973,8 @@
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset theme="view-media-playlist"/>
+        <iconset theme="view-media-playlist">
+         <normaloff>.</normaloff>.</iconset>
        </property>
        <property name="autoRaise">
         <bool>true</bool>
@@ -965,6 +983,28 @@
      </item>
     </layout>
    </widget>
+   <zorder>playlists_view</zorder>
+   <zorder>babes_view</zorder>
+   <zorder>queue_view</zorder>
+   <zorder>settings_view</zorder>
+   <zorder>albums_view</zorder>
+   <zorder>tracks_view</zorder>
+   <zorder>listWidget</zorder>
+   <zorder>info_view</zorder>
+   <zorder>utilsBar</zorder>
+   <zorder>fav1</zorder>
+   <zorder>fav2</zorder>
+   <zorder>fav3</zorder>
+   <zorder>fav4</zorder>
+   <zorder>fav5</zorder>
+   <zorder>searchFrame</zorder>
+   <zorder>collectionUtils</zorder>
+   <zorder>playlistUtils</zorder>
+   <zorder>frame_4</zorder>
+   <zorder>frame_5</zorder>
+   <zorder>frame_6</zorder>
+   <zorder>controls</zorder>
+   <zorder>refreshBtn</zorder>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <property name="styleSheet">

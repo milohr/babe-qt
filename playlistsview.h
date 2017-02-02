@@ -22,9 +22,11 @@ public:
     BabeTable *table;
     QListWidget *list;
     void setPlaylists(QStringList playlists);
+    void setDefaultPlaylists();
     QFrame *line_v;
     QWidget *btnContainer;
     QString currentPlaylist;
+
    // QToolButton *removeBtn;
 
 private:
