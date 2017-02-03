@@ -113,9 +113,11 @@ MainWindow::MainWindow(QWidget *parent) :
         connect(albumsTable->albumTable,SIGNAL(tableWidget_doubleClicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
         connect(albumsTable->albumTable,SIGNAL( babeIt_clicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
         //onnect(albumsTable->albumTable,SIGNAL(songRated(QStringList)),this,SLOT(addToFavorites(QStringList)));
-
+//albumsTable->albumTable->setVisibleColumn(BabeTable::ALBUM);
 
     artistsTable = new AlbumsView();
+    artistsTable->albumTable->showColumn(BabeTable::ALBUM);
+
     //artistsTable->albumSize=80;
     //connect(albumsTable,SIGNAL(songClicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
    // connect(albumsTable,SIGNAL(songRated(QStringList)),this,SLOT(addToFavorites(QStringList)));
@@ -1219,6 +1221,7 @@ void MainWindow::updateList()
 
 void MainWindow::on_listWidget_doubleClicked(const QModelIndex &index)
 {
+    Q_UNUSED(index);
     lCounter = getIndex();
 
     //ui->play_btn->setChecked(false);
@@ -1241,6 +1244,8 @@ void MainWindow::loadTrack()
     current_song_url = QString::fromStdString(playlist.tracks[getIndex()].getLocation());
     player->setMedia(QUrl::fromLocalFile(current_song_url));
     player->play();
+    ui->play_btn->setIcon(QIcon::fromTheme("media-playback-pause"));
+
     this->setWindowTitle(title+" \xe2\x99\xa1 "+artist);
 
     album_art->setArtist(artist);
@@ -1254,7 +1259,8 @@ void MainWindow::loadTrack()
         QSqlQuery queryCover = settings_widget->collection_db.getQuery("SELECT * FROM albums WHERE title = \""+album+"\" AND artist = \""+artist+"\"");
         while (queryCover.next())
         {
-            if(!queryCover.value(2).toString().isEmpty())album_art->image.load( queryCover.value(2).toString());
+            if(!queryCover.value(2).toString().isEmpty()&&queryCover.value(2).toString()!="NULL")
+                album_art->image.load( queryCover.value(2).toString());
 
         }
 

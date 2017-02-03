@@ -414,6 +414,9 @@ void BabeTable::setVisibleColumn(int column)
     else if(column==BABE)
     {
         this->showColumn(BABE);
+    }else if(column==ALBUM)
+    {
+        this->showColumn(ALBUM);
     }
 
 }

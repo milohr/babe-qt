@@ -392,8 +392,8 @@ void settings::fetchArt()
 {
 
     ui->label->show();
-    QSqlQuery query_Covers=collection_db.getQuery("SELECT * FROM albums WHERE art is null OR art = ''");
-    QSqlQuery query_Heads=collection_db.getQuery("SELECT * FROM artists WHERE art is null  OR art = ''");
+    QSqlQuery query_Covers=collection_db.getQuery("SELECT * FROM albums WHERE art = ''");
+    QSqlQuery query_Heads=collection_db.getQuery("SELECT * FROM artists WHERE art = ''");
 
     while (query_Covers.next())
     {

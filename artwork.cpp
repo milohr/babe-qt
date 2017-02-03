@@ -25,15 +25,15 @@ void ArtWork::setDataCover(QString artist, QString album, QString path)
      {
          url.append("?method=album.getinfo");
          url.append("&api_key=ba6f0bd3c887da9101c10a50cf2af133");
-         QUrl q_artist (artist);
+         QUrl q_artist (artist.replace("&","and"));
          q_artist.toEncoded(QUrl::FullyEncoded);
-         QUrl q_album (album);
+         QUrl q_album (album.replace("&","and"));
          q_album.toEncoded(QUrl::FullyEncoded);
 
          if (!q_artist.isEmpty()) url.append("&artist=" + q_artist.toString());
          if (!q_album.isEmpty()) url.append("&album=" + q_album.toString());
          type=ALBUM;
-          qDebug()<<"on setDataCover:"<<artist<<album;
+         // qDebug()<<"on setDataCover:"<<url;
          startConnection();
      }
 }
@@ -69,9 +69,9 @@ void ArtWork::setDataCoverInfo(QString artist, QString album)
      {
          url.append("?method=album.getinfo");
          url.append("&api_key=ba6f0bd3c887da9101c10a50cf2af133");
-         QUrl q_artist (artist);
+         QUrl q_artist (artist.replace("&","and"));
          q_artist.toEncoded(QUrl::FullyEncoded);
-         QUrl q_album (album);
+         QUrl q_album (album.replace("&","and"));
          q_album.toEncoded(QUrl::FullyEncoded);
 
          if (!q_artist.isEmpty()) url.append("&artist=" + q_artist.toString());
@@ -103,7 +103,6 @@ void ArtWork::setDataHeadInfo(QString artist)
 
 void ArtWork::startConnection()
 {
-
 
         QNetworkAccessManager manager;
 
@@ -153,11 +152,18 @@ void ArtWork::saveArt(QByteArray array)
     img.loadFromData(array);
    QString name= album.size()>0? artist+"_"+album:artist;
    name.replace("/","-");
+   name.replace("&","-");
    QString format="JPEG";
      if(img.save(path+name+".jpg", format.toLatin1(), 100))
      {
-          if(album.isEmpty())emit artSaved(path+name+".jpg",{artist});
+          if(album.isEmpty()) emit artSaved(path+name+".jpg",{artist});
           else  emit artSaved(path+name+".jpg",{album,artist});
+     }else
+     {
+         qDebug()<<"couldn't save artwork";
+
+         if(album.isEmpty()) emit artSaved("",{artist});
+         else  emit artSaved("",{album,artist});
      }
 
 }
@@ -211,12 +217,13 @@ void ArtWork::xmlInfo(QNetworkReply *reply)
                     qDebug()<<"Could not find " <<
                                 " cover "
                                 "for \"" << album << "\".";
-                }else
-                {
-                   // qDebug()<<"the cover art url is"<< coverUrl;
-                    this->coverArray = selectCover(coverUrl);
-                    //selectInfo(info);
                 }
+                qDebug()<<"the cover art url is"<< coverUrl;
+
+
+                this->coverArray = selectCover(coverUrl);
+                    //selectInfo(info);
+
 
 
 
@@ -322,6 +329,11 @@ void ArtWork::xmlInfo(QNetworkReply *reply)
 
 
 
+    }else
+    {
+        qDebug()<<"Error in parser :(";
+        if(type==ALBUM){ if(album.isEmpty()) emit artSaved("",{artist});
+            else  emit artSaved("",{album,artist});}
     }
 }
 
@@ -332,7 +344,7 @@ void ArtWork::xmlInfo(QNetworkReply *reply)
 
 QByteArray ArtWork::selectCover(QString url)
 {
-    qDebug()<<"trying to get the cover";
+    qDebug()<<"trying to get the cover"<<url;
     QNetworkAccessManager manager;
 
      QNetworkReply *reply  = manager.get(QNetworkRequest(QUrl(url)));

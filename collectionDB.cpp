@@ -231,18 +231,24 @@ void CollectionDB::insertCoverArt(QString path,QStringList info)
 {
 //UPDATE albums SET art = "lalaltest" WHERE title = "Starboy" AND artist = "The Weeknd"
 
+   // qDebug()<<"the path:"<<path<<"the list:"<<info.at(0)<<info.at(1);
     if(info.size()==2)
-    {QSqlQuery query;
+    {
+
+    QSqlQuery query;
     query.prepare("UPDATE albums SET art = (:art) WHERE title = (:title) AND artist = (:artist)" );
     //query.prepare("SELECT * FROM "+tableName+" WHERE "+searchId+" = (:search)");
-    query.bindValue(":art", path);
+    query.bindValue(":art",  path.isEmpty()?"NULL": path );
     query.bindValue(":title", info.at(0));
     query.bindValue(":artist", info.at(1));
     if(query.exec())
     {
-        qDebug()<<"Artwork[cover] inerted into DB"<<info.at(0)<<info.at(1);
+        qDebug()<<"Artwork[cover] inserted into DB"<<info.at(0)<<info.at(1);
         //qDebug()<<"insertInto<<"<<"UPDATE "+tableName+" SET "+column+" = "+ value + " WHERE location = "+location;
-     }
+     }else
+    {
+        qDebug()<<"COULDNT Artwork[cover] inerted into DB"<<info.at(0)<<info.at(1);
+    }
     }
 
 }
@@ -254,7 +260,7 @@ void CollectionDB::insertHeadArt(QString path, QStringList info)
          QSqlQuery query;
     query.prepare("UPDATE artists SET art = (:art) WHERE title = (:title)" );
     //query.prepare("SELECT * FROM "+tableName+" WHERE "+searchId+" = (:search)");
-    query.bindValue(":art", path);
+    query.bindValue(":art", path.isEmpty()?"NULL": path );
     query.bindValue(":title", info.at(0));
     if(query.exec())
     {
