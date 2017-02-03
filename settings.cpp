@@ -369,6 +369,8 @@ void settings::finishedAddingTracks(bool state)
 
         ui->label2->show();
         movie->start();
+
+
         fetchArt();
         movie->stop();
         ui->label->hide();
@@ -390,8 +392,8 @@ void settings::fetchArt()
 {
 
     ui->label->show();
-    QSqlQuery query_Covers=collection_db.getQuery("SELECT * FROM albums");
-    QSqlQuery query_Heads=collection_db.getQuery("SELECT * FROM artists");
+    QSqlQuery query_Covers=collection_db.getQuery("SELECT * FROM albums WHERE art is null OR art = ''");
+    QSqlQuery query_Heads=collection_db.getQuery("SELECT * FROM artists WHERE art is null  OR art = ''");
 
     while (query_Covers.next())
     {

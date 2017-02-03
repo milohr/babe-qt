@@ -78,25 +78,28 @@ MainWindow::MainWindow(QWidget *parent) :
     collectionTable = new BabeTable();
     collectionTable->passCollectionConnection(&settings_widget->getCollectionDB());
     connect(collectionTable,SIGNAL(tableWidget_doubleClicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
-    connect(collectionTable,SIGNAL(songRated(QStringList)),this,SLOT(addToFavorites(QStringList)));
+   // connect(collectionTable,SIGNAL(songRated(QStringList)),this,SLOT(addToFavorites(QStringList)));
     connect(collectionTable,SIGNAL(enteredTable()),this,SLOT(hideControls()));
     connect(collectionTable,SIGNAL(leftTable()),this,SLOT(showControls()));
     connect(collectionTable,SIGNAL(finishedPopulating()),this,SLOT(orderTables()));
     connect(collectionTable,SIGNAL( babeIt_clicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
 
 
-    favoritesTable =new BabeTable();
+    /*favoritesTable =new BabeTable();
     connect(favoritesTable,SIGNAL(tableWidget_doubleClicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
     connect(favoritesTable,SIGNAL(enteredTable()),this,SLOT(hideControls()));
     connect(favoritesTable,SIGNAL(enteredTable()),this,SLOT(hideControls()));
     connect(favoritesTable,SIGNAL(leftTable()),this,SLOT(showControls()));
     connect(favoritesTable,SIGNAL( babeIt_clicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
-     favoritesTable->setVisibleColumn(BabeTable::STARS);
+     favoritesTable->setVisibleColumn(BabeTable::STARS);*/
+
+
+
     resultsTable=new BabeTable();
     //resultsTable->passStyle("QHeaderView::section { background-color:#474747; }");
     resultsTable->setVisibleColumn(BabeTable::STARS);
     resultsTable->showColumn(BabeTable::GENRE);
-    connect(resultsTable,SIGNAL(songRated(QStringList)),this,SLOT(addToFavorites(QStringList)));
+    //connect(resultsTable,SIGNAL(songRated(QStringList)),this,SLOT(addToFavorites(QStringList)));
     connect(resultsTable,SIGNAL(tableWidget_doubleClicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
     //connect(resultsTable,SIGNAL(enteredTable()),this,SLOT(hideControls()));
     connect(resultsTable,SIGNAL(enteredTable()),this,SLOT(hideControls()));
@@ -105,13 +108,22 @@ MainWindow::MainWindow(QWidget *parent) :
     //connect(resultsTable,SIGNAL(createPlaylist_clicked()),this,SLOT(playlistsView()));
 
     albumsTable = new AlbumsView();
+
+    connect(albumsTable,SIGNAL(albumOrderChanged(QString)),this,SLOT(AlbumsViewOrder(QString)));
+        connect(albumsTable->albumTable,SIGNAL(tableWidget_doubleClicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
+        connect(albumsTable->albumTable,SIGNAL( babeIt_clicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
+        //onnect(albumsTable->albumTable,SIGNAL(songRated(QStringList)),this,SLOT(addToFavorites(QStringList)));
+
+
+    artistsTable = new AlbumsView();
+    //artistsTable->albumSize=80;
     //connect(albumsTable,SIGNAL(songClicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
    // connect(albumsTable,SIGNAL(songRated(QStringList)),this,SLOT(addToFavorites(QStringList)));
     //connect(albumsTable,SIGNAL(songBabeIt(QStringList)),this,SLOT(addToPlaylist(QStringList)));
-    connect(albumsTable,SIGNAL(albumOrderChanged(QString)),this,SLOT(AlbumsViewOrder(QString)));
-    connect(albumsTable->albumTable,SIGNAL(tableWidget_doubleClicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
-    connect(albumsTable->albumTable,SIGNAL( babeIt_clicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
-    connect(albumsTable->albumTable,SIGNAL(songRated(QStringList)),this,SLOT(addToFavorites(QStringList)));
+   // connect(artistsTable,SIGNAL(albumOrderChanged(QString)),this,SLOT(AlbumsViewOrder(QString)));
+    connect(artistsTable->albumTable,SIGNAL(tableWidget_doubleClicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
+    connect(artistsTable->albumTable,SIGNAL( babeIt_clicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
+   // connect(artistsTable->albumTable,SIGNAL(songRated(QStringList)),this,SLOT(addToFavorites(QStringList)));
 
 
     playlistTable = new PlaylistsView();
@@ -120,7 +132,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(playlistTable->table,SIGNAL(tableWidget_doubleClicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
     connect(playlistTable->table,SIGNAL( babeIt_clicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
     connect(playlistTable->table,SIGNAL(createPlaylist_clicked()),this,SLOT(playlistsView()));
-    connect(playlistTable->table,SIGNAL(songRated(QStringList)),this,SLOT(addToFavorites(QStringList)));
+   // connect(playlistTable->table,SIGNAL(songRated(QStringList)),this,SLOT(addToFavorites(QStringList)));
 
 
     infoTable = new InfoView();
@@ -228,8 +240,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->albums_view->setToolTip("Albums");
     ui->mainToolBar->addWidget(ui->albums_view);
 
-    ui->babes_view->setToolTip("Favorites");
-    ui->mainToolBar->addWidget(ui->babes_view);
+    ui->artists_view->setToolTip("Artists");
+    ui->mainToolBar->addWidget(ui->artists_view);
 
     ui->playlists_view->setToolTip("Playlists");
     ui->mainToolBar->addWidget(ui->playlists_view);
@@ -325,7 +337,7 @@ MainWindow::MainWindow(QWidget *parent) :
     views->setFrameShape(QFrame::NoFrame);
     views->addWidget(collectionTable);
     views->addWidget(albumsTable);
-    views->addWidget(favoritesTable);
+    views->addWidget(artistsTable);
     views->addWidget(playlistTable);
     views->addWidget(new BabeTable());
     views->addWidget(infoTable);
@@ -335,7 +347,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->tracks_view, SIGNAL(clicked()), this, SLOT(collectionView()));
     connect(ui->albums_view, SIGNAL(clicked()), this, SLOT(albumsView()));
-    connect(ui->babes_view, SIGNAL(clicked()), this, SLOT(favoritesView()));
+    connect(ui->artists_view, SIGNAL(clicked()), this, SLOT(favoritesView()));
     connect(ui->playlists_view, SIGNAL(clicked()), this, SLOT(playlistsView()));
     connect(ui->queue_view, SIGNAL(clicked()), this, SLOT(queueView()));
     connect(ui->info_view, SIGNAL(clicked()), this, SLOT(infoView()));
@@ -581,10 +593,13 @@ void MainWindow::refreshTables()
 
     collectionTable->flushTable();
     collectionTable->populateTableView("SELECT * FROM tracks");
-    favoritesTable->flushTable();
-    favoritesTable->populateTableView("SELECT * FROM tracks WHERE stars > \"0\" OR babe =  \"1\"");
+   // favoritesTable->flushTable();
+    //favoritesTable->populateTableView("SELECT * FROM tracks WHERE stars > \"0\" OR babe =  \"1\"");
     albumsTable->flushGrid();
     albumsTable->populateTableView(settings_widget->getCollectionDB().getQuery("SELECT * FROM albums ORDER by title asc"));
+
+    artistsTable->flushGrid();
+    artistsTable->populateTableViewHeads(settings_widget->getCollectionDB().getQuery("SELECT * FROM artists ORDER by title asc"));
 
 }
 
@@ -780,7 +795,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 
 void MainWindow::addToFavorites(QStringList list)
 {
-    favoritesTable->addRow(list.at(0),list.at(1),list.at(2),list.at(3),list.at(4),list.at(5));
+   // favoritesTable->addRow(list.at(0),list.at(1),list.at(2),list.at(3),list.at(4),list.at(5));
     qDebug()<<list.at(0)<<list.at(1)<<list.at(2)<<list.at(3)<<list.at(4)<<list.at(5);
 }
 
@@ -876,7 +891,7 @@ void MainWindow::infoView()
 }
 void MainWindow::favoritesView()
 {
-    views->setCurrentIndex(FAVORITES);
+    views->setCurrentIndex(ARTISTS);
     if(mini_mode!=0) expand();
      hideAlbumViewUtils();
      utilsBar->actions().at(COLLECTION_UB)->setVisible(true);
@@ -960,7 +975,7 @@ this->show();*/
     {
         case COLLECTION: icon="filename-filetype-amarok"; break;
         case ALBUMS:  icon="media-album-track"; break;
-        case FAVORITES:  icon="draw-star"; break;
+        case ARTISTS:  icon="draw-star"; break;
         case PLAYLISTS:  icon="amarok_lyrics"; break;
         case QUEUE:  icon="amarok_clock"; break;
         case INFO: icon="internet-amarok"; break;
@@ -1435,13 +1450,16 @@ void MainWindow::collectionDBFinishedAdding(bool state)
         albumsTable->flushGrid();
         albumsTable->populateTableView(settings_widget->getCollectionDB().getQuery("SELECT * FROM albums ORDER by title asc"));
 
+        artistsTable->flushGrid();
+        artistsTable->populateTableViewHeads(settings_widget->getCollectionDB().getQuery("SELECT * FROM artists ORDER by title asc"));
+
 
     }
 }
 
 void MainWindow::orderTables()
 {
-    favoritesTable->setTableOrder(BabeTable::STARS,BabeTable::DESCENDING);
+    //favoritesTable->setTableOrder(BabeTable::STARS,BabeTable::DESCENDING);
     collectionTable->setTableOrder(BabeTable::ARTIST,BabeTable::ASCENDING);
     qDebug()<<"finished populating tables, now ordering them";
 }
@@ -1490,7 +1508,7 @@ void MainWindow::on_fav_btn_clicked()
 
                       //to-do: create a list and a tracks object and send it the new song and then write that track list into the database
                   }
-                  addToFavorites({QString::fromStdString(playlist.tracks[getIndex()].getTitle()),QString::fromStdString(playlist.tracks[getIndex()].getArtist()),QString::fromStdString(playlist.tracks[getIndex()].getAlbum()),QString::fromStdString(playlist.tracks[getIndex()].getLocation()),"\xe2\x99\xa1","1"});
+                 // addToFavorites({QString::fromStdString(playlist.tracks[getIndex()].getTitle()),QString::fromStdString(playlist.tracks[getIndex()].getArtist()),QString::fromStdString(playlist.tracks[getIndex()].getAlbum()),QString::fromStdString(playlist.tracks[getIndex()].getLocation()),"\xe2\x99\xa1","1"});
 
     }
 
@@ -1517,20 +1535,20 @@ void MainWindow::on_fav_btn_clicked()
      addToCollectionDB_t(list);
 
  }
-void MainWindow::addToCollectionDB(QStringList url, QString babe)
-{
-   /* Playlist song;
-      song.add(url);
-      for(auto ui: song.getTracks()) qDebug()<< QString::fromStdString(ui.getTitle());*/
 
- settings_widget->getCollectionDB().addTrack(url,babe.toInt());
- // addToCollection({QString::fromStdString(song.tracks[getIndex()].getTitle()),QString::fromStdString(song.tracks[getIndex()].getArtist()),QString::fromStdString(song.tracks[getIndex()].getAlbum()),QString::fromStdString(song.tracks[getIndex()].getLocation()),"\xe2\x99\xa1",babe});
- collectionTable->flushTable();
- collectionTable->populateTableView("SELECT * FROM tracks");
- albumsTable->flushGrid();
- albumsTable->populateTableView(settings_widget->getCollectionDB().getQuery("SELECT * FROM albums ORDER by title asc"));
-}
+  void MainWindow::addToCollectionDB(QStringList url, QString babe)
+  {
+     /* Playlist song;
+        song.add(url);
+        for(auto ui: song.getTracks()) qDebug()<< QString::fromStdString(ui.getTitle());*/
 
+   settings_widget->getCollectionDB().addTrack(url,babe.toInt());
+   // addToCollection({QString::fromStdString(song.tracks[getIndex()].getTitle()),QString::fromStdString(song.tracks[getIndex()].getArtist()),QString::fromStdString(song.tracks[getIndex()].getAlbum()),QString::fromStdString(song.tracks[getIndex()].getLocation()),"\xe2\x99\xa1",babe});
+   collectionTable->flushTable();
+   collectionTable->populateTableView("SELECT * FROM tracks");
+   albumsTable->flushGrid();
+   albumsTable->populateTableView(settings_widget->getCollectionDB().getQuery("SELECT * FROM albums ORDER by title asc"));
+  }
 
 //iterates through the paths of the modify folders tp search for new music and then refreshes the collection view
 void MainWindow::addToCollectionDB_t(QStringList url)
@@ -1540,6 +1558,9 @@ void MainWindow::addToCollectionDB_t(QStringList url)
     collectionTable->populateTableView("SELECT * FROM tracks");
     albumsTable->flushGrid();
     albumsTable->populateTableView(settings_widget->getCollectionDB().getQuery("SELECT * FROM albums ORDER by title asc"));
+
+    artistsTable->flushGrid();
+    artistsTable->populateTableViewHeads(settings_widget->getCollectionDB().getQuery("SELECT * FROM artists ORDER by title asc"));
 
 }
 
@@ -1751,7 +1772,7 @@ void MainWindow::on_addAll_clicked()
     {
         case COLLECTION: addToPlaylist(collectionTable->getTableContent(BabeTable::LOCATION)); break;
         case ALBUMS: addToPlaylist(albumsTable->albumTable->getTableContent(BabeTable::LOCATION)); break;
-        case FAVORITES: addToPlaylist(favoritesTable->getTableContent(BabeTable::LOCATION)); break;
+       case ARTISTS: addToPlaylist(artistsTable->albumTable->getTableContent(BabeTable::LOCATION)); break;
         case PLAYLISTS: addToPlaylist(playlistTable->table->getTableContent(BabeTable::LOCATION)); break;
         case QUEUE: addToPlaylist(collectionTable->getTableContent(BabeTable::LOCATION)); break;
          case INFO: addToPlaylist(collectionTable->getTableContent(BabeTable::LOCATION)); break;
@@ -1781,7 +1802,7 @@ void MainWindow::saveResultsTo(QAction *action)
     {
         case COLLECTION: collectionTable->populatePlaylist(collectionTable->getTableContent(BabeTable::LOCATION),playlist); break;
         case ALBUMS: collectionTable->populatePlaylist(collectionTable->getTableContent(BabeTable::LOCATION),playlist); break;
-        case FAVORITES: favoritesTable->populatePlaylist(favoritesTable->getTableContent(BabeTable::LOCATION),playlist); break;
+        case ARTISTS: collectionTable->populatePlaylist(collectionTable->getTableContent(BabeTable::LOCATION),playlist); break;
         case PLAYLISTS: playlistTable->table->populatePlaylist(playlistTable->table->getTableContent(BabeTable::LOCATION),playlist); break;
         case QUEUE: collectionTable->populatePlaylist(collectionTable->getTableContent(BabeTable::LOCATION),playlist); break;
          case INFO: collectionTable->populatePlaylist(collectionTable->getTableContent(BabeTable::LOCATION),playlist); break;

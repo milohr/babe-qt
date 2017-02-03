@@ -23,7 +23,7 @@ AlbumsView::AlbumsView(QWidget *parent) :
          grid = new QListWidget();
          grid->setViewMode(QListWidget::IconMode);
         grid->setResizeMode(QListWidget::Adjust);
-      //  grid->setUniformItemSizes(true);
+       grid->setUniformItemSizes(true);
         //grid->setFrameShadow(QFrame::);
         grid->setFrameShape(QFrame::NoFrame);
         //grid->setStyleSheet("QListWidget {background:#2E2F30; border:1px solid black; border-radius: 2px; }");
@@ -38,7 +38,7 @@ AlbumsView::AlbumsView(QWidget *parent) :
     //grid->setWrapping(false);
 //grid->setSpacing(20);
          //grid->setIconSize(QSize(120,120));
-         grid->setGridSize(QSize(albumSize+10,albumSize+10));
+        grid->setGridSize(QSize(albumSize+10,albumSize+10));
         //grid->setAlignment(Qt::AlignLeading);
 
          utilsFrame = new QFrame();
@@ -76,7 +76,7 @@ AlbumsView::AlbumsView(QWidget *parent) :
         utilsLayout->setContentsMargins(0,0,0,0);
         utilsLayout->setSpacing(0);
         utilsLayout->addWidget(order);
-        utilsLayout->addWidget(slider);
+        //utilsLayout->addWidget(slider);
         utilsFrame->setLayout(utilsLayout);
 
 
@@ -195,7 +195,7 @@ void AlbumsView::albumsSize(int value)
     {
         album->setSize(albumSize);
         album->setTitleGeometry(0,albumSize-30,albumSize,30);
-        grid->setGridSize(QSize(albumSize+10,albumSize+10));
+        //grid->setGridSize(QSize(albumSize+10,albumSize+10));
 
     }
 }
@@ -253,11 +253,73 @@ void AlbumsView::populateTableView(QSqlQuery query)
 
 }
 
+void AlbumsView::populateTableViewHeads(QSqlQuery query)
+{
+    qDebug()<<"ON POPULATE ALBUM VIEW:";
+
+    while (query.next())
+    {
+           Album *album= new Album(":Data/data/cover.svg",albumSize,6);
+
+           albumsList.push_back(album);
+           album->borderColor=true;
+           album->setArtist(query.value(TITLE).toString());
+           album->setTitle();
+           //album->titleVisible(false);
+           if(!query.value(1).toString().isEmpty())album->image.load(query.value(1).toString());
+
+          // album->setTitle(query.value(1).toString(),query.value(2).toString());
+           //album->setToolTip(query.value(2).toString());
+           connect(album, SIGNAL(albumCoverClicked(QStringList)),this,SLOT(getArtistInfo(QStringList)));
+//album->setStyleSheet(":hover {background:#3daee9; }");
+           auto item =new QListWidgetItem();
+           item->setSizeHint( QSize( albumSize, albumSize) );
+
+          item->setTextAlignment(Qt::AlignCenter);
+           grid->addItem(item);
+
+          grid->setItemWidget(item,album);
+
+
+    }
+
+
+}
+
+
+
 void AlbumsView::passConnection(CollectionDB *con)
 {
     this->connection=con;
 }
 
+void AlbumsView::getArtistInfo(QStringList info)
+{
+    albumBox_frame->show();
+    line_h->show();
+   // QSqlQuery query = connection->getQuery("SELECT * FROM tracks WHERE artist = \""+info.at(0)+"\" and album = \""+info.at(1)+"\"");
+    //QStringList tracks;
+    //playlist = new Playlist();
+
+    //while(query.next())  tracks<<query.value(3).toString();
+
+    cover->setArtist(info.at(0));
+    cover->setAlbum(info.at(1));
+    cover->setTitle();
+
+qDebug()<<info.at(0)<<info.at(1);
+        //playlist->add(tracks);
+        albumTable->flushTable();
+
+      albumTable->populateTableView("SELECT * FROM tracks WHERE artist = \""+info.at(0)+"\" ORDER by album asc ");
+      QSqlQuery queryCover = connection->getQuery("SELECT * FROM artists WHERE title = \""+info.at(0)+"\"");
+      while (queryCover.next())
+      {
+         if(!queryCover.value(1).toString().isEmpty()) cover->image.load( queryCover.value(1).toString());
+
+      }
+
+}
 
 void AlbumsView::getAlbumInfo(QStringList info)
 {

@@ -23,12 +23,14 @@ public:
     explicit AlbumsView(QWidget *parent = 0);
     ~AlbumsView();
     void populateTableView(QSqlQuery query);
+    void populateTableViewHeads(QSqlQuery query);
     void passConnection(CollectionDB *con);
     void flushGrid();
     QSlider *slider;
     QComboBox *order;
     QFrame *utilsFrame;
     BabeTable *albumTable;
+    int albumSize=120;
     enum ALBUMSVIEW_H{ TITLE, ARTIST, ART };
 
 private:
@@ -44,10 +46,11 @@ private:
     QToolButton *closeBtn;
 
 
-    int albumSize=120;
+
 
 private slots:
     void getAlbumInfo(QStringList info);
+    void getArtistInfo(QStringList info);
     void albumTable_clicked(QStringList list);
     void albumTable_rated(QStringList list);
     void albumTable_babeIt(QStringList list);

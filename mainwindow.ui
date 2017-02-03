@@ -59,7 +59,7 @@
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QToolButton" name="babes_view">
+   <widget class="QToolButton" name="artists_view">
     <property name="geometry">
      <rect>
       <x>0</x>
@@ -72,8 +72,7 @@
      <string>...</string>
     </property>
     <property name="icon">
-     <iconset theme="draw-star">
-      <normaloff>.</normaloff>.</iconset>
+     <iconset theme="amarok_artist"/>
     </property>
     <property name="checkable">
      <bool>true</bool>
@@ -984,7 +983,7 @@
     </layout>
    </widget>
    <zorder>playlists_view</zorder>
-   <zorder>babes_view</zorder>
+   <zorder>artists_view</zorder>
    <zorder>queue_view</zorder>
    <zorder>settings_view</zorder>
    <zorder>albums_view</zorder>

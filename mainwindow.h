@@ -40,7 +40,7 @@ public:
 
     enum views
     {
-        COLLECTION,ALBUMS,FAVORITES,PLAYLISTS,QUEUE,INFO,SETTINGS,RESULTS
+        COLLECTION,ALBUMS,ARTISTS,PLAYLISTS,QUEUE,INFO,SETTINGS,RESULTS
     };
     enum utilsBar
     {
@@ -168,6 +168,7 @@ private:
     BabeTable *favoritesTable;
     BabeTable *resultsTable;
     AlbumsView* albumsTable;
+    AlbumsView* artistsTable;
     PlaylistsView *playlistTable;
     InfoView *infoTable;
 

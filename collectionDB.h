@@ -59,7 +59,7 @@ public slots:
 
 signals:
     void progress(int);
-    void DBactionFinished(bool);
+    void DBactionFinished(bool state);
 
 };
 
