@@ -344,7 +344,7 @@ void ArtWork::xmlInfo(QNetworkReply *reply)
 
 QByteArray ArtWork::selectCover(QString url)
 {
-    qDebug()<<"trying to get the cover"<<url;
+    //qDebug()<<"trying to get the cover"<<url;
     QNetworkAccessManager manager;
 
      QNetworkReply *reply  = manager.get(QNetworkRequest(QUrl(url)));
@@ -363,7 +363,7 @@ QByteArray ArtWork::selectCover(QString url)
 
 void ArtWork::selectHead(QString url)
 {
-    qDebug()<<"trying to get the head";
+   // qDebug()<<"trying to get the head";
     QNetworkAccessManager manager;
 
      QNetworkReply *reply  = manager.get(QNetworkRequest(QUrl(url)));

@@ -380,7 +380,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //album_art_frame->setFixedSize(210,210);
     //album_art->setGeometry(0,0,100,100);
 
-    album_art = new Album(":Data/data/cover.svg",200,0,true,album_art_frame);
+    album_art = new Album(":Data/data/babe.png",200,0,true,album_art_frame);
     album_art->setFixedSize(200,200);
     //connect(album_art,SIGNAL(albumCoverLeft()),this,SLOT(hide ui->controls()));
    // connect(album_art,SIGNAL(albumCoverEnter()),this,SLOT(show ui->controls()));
@@ -787,7 +787,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 
  void MainWindow::putPixmap(QByteArray array)
  {
-    album_art->putPixmap(array);
+     if(!array.isEmpty()) album_art->putPixmap(array);
      //infoTable->setAlbumInfo(coverArt->info);
 
      //delete artwork;
@@ -1451,14 +1451,7 @@ void MainWindow::collectionDBFinishedAdding(bool state)
     {
         qDebug()<<"now it i time to put the tracks in the table ;)";
         //settings_widget->getCollectionDB().closeConnection();
-        collectionTable->flushTable();
-        collectionTable->populateTableView( "SELECT * FROM tracks");
-        albumsTable->flushGrid();
-        albumsTable->populateTableView(settings_widget->getCollectionDB().getQuery("SELECT * FROM albums ORDER by title asc"));
-
-        artistsTable->flushGrid();
-        artistsTable->populateTableViewHeads(settings_widget->getCollectionDB().getQuery("SELECT * FROM artists ORDER by title asc"));
-
+       refreshTables();
 
     }
 }

@@ -370,7 +370,7 @@ void settings::finishedAddingTracks(bool state)
         ui->label2->show();
         movie->start();
 
-
+emit collectionDBFinishedAdding(true);
         fetchArt();
         movie->stop();
         ui->label->hide();
