@@ -56,6 +56,10 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
     ui->label->hide();
     ui->label2->hide();
     watcher = new QFileSystemWatcher();
+    connect(watcher, SIGNAL(fileChanged(QString)), this,
+            SLOT(handleFileChanged(QString)));
+    connect(watcher, SIGNAL(directoryChanged(QString)), this,
+            SLOT(handleDirectoryChanged(QString)));
 }
 
 settings::~settings() {
@@ -78,7 +82,7 @@ void settings::on_remove_clicked() {
 
         refreshCollectionPaths();
         refreshWatchFiles();
-
+        ui->remove->setEnabled(false);
         //emit collectionPathRemoved(pathToRemove);
         emit refreshTables();
     }
@@ -99,10 +103,10 @@ void settings::refreshWatchFiles()
 
     while (query.next()) {
 
-         if (!dirs.contains(QFileInfo(query.value(CollectionDB::LOCATION).toString()).dir().path()))
-         {
-        dirs << QFileInfo(query.value(CollectionDB::LOCATION).toString()).dir().path();
-         }
+        if (!dirs.contains(QFileInfo(query.value(CollectionDB::LOCATION).toString()).dir().path()))
+        {
+            dirs << QFileInfo(query.value(CollectionDB::LOCATION).toString()).dir().path();
+        }
         files << query.value(CollectionDB::LOCATION).toString();
     }
 
@@ -219,10 +223,7 @@ void settings::addToWatcher(QStringList paths) {
 
     // watcher->addPath(path);
     watcher->addPaths(paths);
-    connect(watcher, SIGNAL(fileChanged(QString)), this,
-            SLOT(handleFileChanged(QString)));
-    connect(watcher, SIGNAL(directoryChanged(QString)), this,
-            SLOT(handleDirectoryChanged(QString)));
+
     // connect(watcher,SIGNAL((QString)),this,SLOT(handleFileChanged(QString)));
 }
 
@@ -417,38 +418,38 @@ void settings::fetchArt() {
 
 
 
-     auto coverArt = new ArtWork();
-            connect(coverArt, SIGNAL(coverReady(QByteArray)), coverArt,
-                    SLOT(saveArt(QByteArray)));
-            connect(coverArt, SIGNAL(artSaved(QString, QStringList)), &collection_db,
-                    SLOT(insertCoverArt(QString, QStringList)));
+        auto coverArt = new ArtWork();
+        connect(coverArt, SIGNAL(coverReady(QByteArray)), coverArt,
+                SLOT(saveArt(QByteArray)));
+        connect(coverArt, SIGNAL(artSaved(QString, QStringList)), &collection_db,
+                SLOT(insertCoverArt(QString, QStringList)));
 
-            //  QString art = cachePath+artist+"_"+album+".jpg";
+        //  QString art = cachePath+artist+"_"+album+".jpg";
 
-            qDebug() << artist << album;
-            coverArt->setDataCover(artist, album, cachePath);
+        qDebug() << artist << album;
+        coverArt->setDataCover(artist, album, cachePath);
 
 
     }
 
     while (query_Heads.next()) {
 
-     //   QString artist = query_Heads.value(0).toString();
+        //   QString artist = query_Heads.value(0).toString();
 
 
 
-            auto artistHead = new ArtWork();
+        auto artistHead = new ArtWork();
 
-            connect(artistHead, SIGNAL(headReady(QByteArray)), artistHead,
-                    SLOT(saveArt(QByteArray)));
-            connect(artistHead, SIGNAL(artSaved(QString, QStringList)), &collection_db,
-                    SLOT(insertHeadArt(QString, QStringList)));
+        connect(artistHead, SIGNAL(headReady(QByteArray)), artistHead,
+                SLOT(saveArt(QByteArray)));
+        connect(artistHead, SIGNAL(artSaved(QString, QStringList)), &collection_db,
+                SLOT(insertHeadArt(QString, QStringList)));
 
-            QString artist = query_Heads.value(0).toString();
-            // QString art = cachePath+artist+".jpg";
+        QString artist = query_Heads.value(0).toString();
+        // QString art = cachePath+artist+".jpg";
 
-            artistHead->setDataHead(artist, cachePath);
-        }
+        artistHead->setDataHead(artist, cachePath);
+    }
 
 
     // emit collectionDBFinishedAdding(true);

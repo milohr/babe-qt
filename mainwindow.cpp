@@ -1413,7 +1413,7 @@ void MainWindow::on_utilsBar_clicked()
 
 void MainWindow::addToPlaylist(QStringList list)
 {
-    qDebug()<<"hayatuususu";
+    qDebug()<<"Adding lists to mainPlaylist";
 
     playlist.add(list);
     updateList();
