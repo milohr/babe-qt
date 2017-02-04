@@ -124,7 +124,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(settings_widget, SIGNAL(toolbarIconSizeChanged(int)), this, SLOT(setToolbarIconSize(int)));
     connect(settings_widget, SIGNAL(collectionDBFinishedAdding(bool)), this, SLOT(collectionDBFinishedAdding(bool)));
     connect(settings_widget, SIGNAL(dirChanged(QString)),this, SLOT(scanNewDir(QString)));
-    connect(settings_widget, SIGNAL(collectionPathRemoved(QString)),&settings_widget->getCollectionDB(), SLOT(removePath(QString)));
+    //connect(settings_widget, SIGNAL(collectionPathRemoved(QString)),&settings_widget->getCollectionDB(), SLOT(removePath(QString)));
     connect(settings_widget, SIGNAL(refreshTables()),this, SLOT(refreshTables()));
 
 
@@ -560,7 +560,7 @@ void	MainWindow::dropEvent(QDropEvent *event)
         }
     }
 
-   addToPlaylist(list);
+    addToPlaylist(list);
 
 }
 
@@ -970,7 +970,7 @@ void MainWindow::on_open_btn_clicked()
     QStringList files = QFileDialog::getOpenFileNames(this, tr("Select Music Files"),QDir().homePath()+"/Music/", tr("Audio (*.mp3 *.wav *.mp4 *.flac *.ogg *.m4a)"));
     if(!files.empty())
     {
-addToPlaylist(files);
+        addToPlaylist(files);
     }
 }
 
@@ -1047,6 +1047,15 @@ void MainWindow::loadTrack()
     album_art->setAlbum(album);
     album_art->setTitle();
 
+    //CHECK IF THE SONG IS BABED IT OR IT ISN'T
+    if(settings_widget->getCollectionDB().checkQuery("SELECT * FROM tracks WHERE location = \""+current_song_url+"\" AND babe = \"1\""))
+    {
+        ui->fav_btn->setIcon(QIcon(":Data/data/loved.svg"));
+    }else
+    {
+        ui->fav_btn->setIcon(QIcon(":Data/data/love-amarok"));
+    }
+
 
     //IF CURRENT SONG EXISTS IN THE COLLECTION THEN GET THE COVER FROM DB
     if(settings_widget->getCollectionDB().checkQuery("SELECT * FROM tracks WHERE location = \""+current_song_url+"\""))
@@ -1078,9 +1087,9 @@ void MainWindow::loadTrack()
 
         if (queryCover.exec())
         {
-            qDebug()<<"found the artwork in cache";
 
-           if (queryCover.next())
+
+            if (queryCover.next())
             {
                 if(queryCover.value(0).toString()==album&&queryCover.value(1).toString()==artist)
                 {
@@ -1103,16 +1112,7 @@ void MainWindow::loadTrack()
 
     }
 
-    //CHECK IF THE SONG IS BABED IT OR IT ISN'T
-    if(settings_widget->getCollectionDB().checkQuery("SELECT * FROM tracks WHERE location = \""+current_song_url+"\" AND babe = \"1\""))
-    {
-        ui->fav_btn->setIcon(QIcon(":Data/data/loved.svg"));
-    }else
-    {
-        ui->fav_btn->setIcon(QIcon(":Data/data/love-amarok"));
-    }
-
-    //AND WHETHER THE SONG EXISTS OR NOT GET THE TRACK INFO
+    //AND WHETHER THE SONG EXISTS OR  DO NOT GET THE TRACK INFO
     getTrackInfo(artist,album,title);
 
     qDebug()<<"Current song playing is: "<< current_song_url;
@@ -1558,7 +1558,7 @@ void MainWindow::on_settings_view_clicked()
 
 void MainWindow::on_rowInserted(QModelIndex model ,int x,int y)
 {
-    Q_UNUSED(model);
+    Q_UNUSED(model);Q_UNUSED(x);Q_UNUSED(y);
     qDebug()<<"indexes moved";
     addMusicImg->hide();
 }

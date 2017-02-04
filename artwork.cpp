@@ -191,7 +191,7 @@ void ArtWork::xmlInfo(QNetworkReply *reply) {
                       "for \""
                    << album << "\".";
         }
-        qDebug() << "the cover art url is" << coverUrl;
+       // qDebug() << "the cover art url is" << coverUrl;
 
         this->coverArray = selectCover(coverUrl);
         // selectInfo(info);

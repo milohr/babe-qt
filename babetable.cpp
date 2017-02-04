@@ -563,7 +563,7 @@ void BabeTable::on_tableWidget_doubleClicked(const QModelIndex &index) {
  +index.sibling(this->currentIndex().row(),ARTIST).data().toString());
  */
   qDebug()
-      << "huuuuuuuuuuuu"
+      << "BabeTable doubleClicked item<<"
       << index.sibling(this->currentIndex().row(), LOCATION).data().toString();
   QStringList files;
   files

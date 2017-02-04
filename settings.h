@@ -14,6 +14,8 @@
 #include <QLabel>
 #include <QMovie>
 #include <QStringList>
+#include <QFileSystemWatcher>
+
 
 namespace Ui {
 class settings;
@@ -56,6 +58,8 @@ private slots:
     void on_collectionPath_clicked(const QModelIndex &index);
     void on_remove_clicked();
 
+    void on_debugBtn_clicked();
+
 public slots:
 
     void populateDB(QString path);
@@ -79,6 +83,7 @@ private:
     About *about_ui;
     QStringList files;
     QStringList dirs;
+    QFileSystemWatcher *watcher;
 
 signals:
 
