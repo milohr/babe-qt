@@ -1346,18 +1346,22 @@ void MainWindow::on_fav_btn_clicked()
 void MainWindow::scanNewDir(QString url)
 {
     QStringList list;
-    QDirIterator it(url, QStringList() << "*.mp4" << "*.mp3" << "*.wav" <<"*.flac" <<"*.ogg" <<"*.m4a", QDir::Files, QDirIterator::Subdirectories);
-    while (it.hasNext())
-    {
-        QString song = it.next();
-        if(!settings_widget->getCollectionDB().check_existance("tracks","location",song))
+
+
+
+        QDirIterator it(url, QStringList() << "*.mp4" << "*.mp3" << "*.wav" <<"*.flac" <<"*.ogg" <<"*.m4a", QDir::Files, QDirIterator::Subdirectories);
+        while (it.hasNext())
         {
-            // qDebug()<<"New music files recently added: "<<it.next();
-            list<<song;
+            QString song = it.next();
+            if(!settings_widget->getCollectionDB().check_existance("tracks","location",song))
+            {
+                // qDebug()<<"New music files recently added: "<<it.next();
+                list<<song;
+            }
+            //qDebug() << it.next();
         }
-        //qDebug() << it.next();
-    }
-    addToCollectionDB_t(list);
+        addToCollectionDB_t(list);
+
 
 }
 

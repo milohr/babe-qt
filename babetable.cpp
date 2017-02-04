@@ -291,7 +291,10 @@ void BabeTable::populateTableView(QString indication) {
     for (auto file_r : missingFiles) {
       if (connection->removeQuery("DELETE FROM tracks WHERE location =  \"" +
                                   file_r + "\""))
+      {
         qDebug() << "deleted from db: " << file_r;
+        connection->removePath(file_r);
+      }
       else
         qDebug() << "couldn't delete file" << file_r;
     }

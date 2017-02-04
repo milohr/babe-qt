@@ -256,11 +256,13 @@ void settings::collectionWatcher()
 
 void settings::handleFileChanged(QString file) {
     qDebug() << "this file changed: " << file;
+    refreshWatchFiles();
     emit fileChanged(file);
 }
 
 void settings::handleDirectoryChanged(QString dir) {
     qDebug() << "this directory changed: " << dir;
+    refreshWatchFiles();
     emit dirChanged(dir);
 }
 
