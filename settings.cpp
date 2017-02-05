@@ -111,7 +111,7 @@ void settings::refreshWatchFiles()
         }
 
         if(QFileInfo(query.value(CollectionDB::LOCATION).toString()).exists())
-        files << query.value(CollectionDB::LOCATION).toString();
+            files << query.value(CollectionDB::LOCATION).toString();
     }
 
     for(auto path:files) qDebug() << "refreshed watcher -file:"<< path;
@@ -241,10 +241,12 @@ void settings::collectionWatcher()
         {
             QString dir =QFileInfo(query.value(CollectionDB::LOCATION).toString()).dir().path();
             dirs << dir;
-            dirs << QFileInfo(dir).dir().path();
+            if(!dirs.contains(QFileInfo(dir).dir().path()))
+                dirs << QFileInfo(dir).dir().path();
 
             newDirs<< dir;
-            newDirs<< QFileInfo(dir).dir().path();
+            if(!newDirs.contains(QFileInfo(dir).dir().path()))
+                newDirs<< QFileInfo(dir).dir().path();
 
 
             //qDebug() << "Adding to watcher -dir:"<< QFileInfo(query.value(CollectionDB::LOCATION).toString()).dir().path();
@@ -374,9 +376,9 @@ void settings::populateDB(QString path) {
     }
 
     /* Playlist *collection= new Playlist();
-  collection->addClean(urlCollection);
-  //updateList();
- collection_db.setTrackList(collection->getTracks());*/
+                  collection->addClean(urlCollection);
+                  //updateList();
+                 collection_db.setTrackList(collection->getTracks());*/
     ui->progressBar->setValue(0);
     ui->progressBar->setMaximum(urlCollection.size());
     ui->progressBar->show();
@@ -386,10 +388,10 @@ void settings::populateDB(QString path) {
     // collection_db.start();
 
     /*for(auto tr:urlCollection)
-  {
-      qDebug()<<tr;
-  }
-  //populateTableView();*/
+                  {
+                      qDebug()<<tr;
+                  }
+                  //populateTableView();*/
 }
 
 void settings::finishedAddingTracks(bool state) {
@@ -418,7 +420,7 @@ void settings::finishedAddingTracks(bool state) {
         emit collectionDBFinishedAdding(true);
     }else
     {
-         emit collectionDBFinishedAdding(true);
+        emit collectionDBFinishedAdding(true);
 
     }
 

@@ -151,7 +151,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     /*THE STREAMING / PLAYLIST*/
-    //connect(updater, SIGNAL(timeout()), this, SLOT(update()));
+    connect(updater, SIGNAL(timeout()), this, SLOT(update()));
    //connect(player, SIGNAL(stateChanged(QMediaPlayer::State)),this,SLOT(update()));
     player->setVolume(100);
     addMusicImg = new QLabel(ui->listWidget);
@@ -390,8 +390,8 @@ void MainWindow::putOnPlay(QString artist, QString album)
     if(!artist.isEmpty()||!album.isEmpty())
     {
         qDebug()<<"put on play<<"<<artist<<album;
-         updater->stop();
-        player->stop();
+        //updater->stop();
+       // player->stop();
 
         ui->listWidget->clear();
         playlist.removeAll();
@@ -411,15 +411,20 @@ void MainWindow::putOnPlay(QString artist, QString album)
                 list<<query.value(BabeTable::LOCATION).toString();
             }
             qDebug()<<"put on play<<3";
-            addToPlaylist(list);
-            ui->listWidget->setCurrentRow(0);
-            if(ui->listWidget->count() != 0)
+            if(!list.isEmpty())
             {
-                qDebug()<<"put on play<<3";
-                loadTrack();
-                //player->pause();
-               // updater->start();
-                qDebug()<<"put on play<<4";
+                addToPlaylist(list);
+
+                if(ui->listWidget->count() != 0)
+                {
+                    qDebug()<<"put on play<<3";
+                    ui->listWidget->setCurrentRow(0);
+                    lCounter=0;
+                    loadTrack();
+                    //player->pause();
+                    // updater->start();
+                    qDebug()<<"put on play<<4";
+                }
             }
         }
     }
@@ -1224,22 +1229,19 @@ void MainWindow::on_seekBar_sliderMoved(int position)
 
 void MainWindow::update()
 {
-
-    if(!seekBar->isSliderDown())
-        seekBar->setValue((double)player->position()/player->duration() * 1000);
-
-    if(player->state() == QMediaPlayer::StoppedState)
+    if(ui->listWidget->count()!=0)
     {
-        QString prevSong = current_song_url;
-        qDebug()<<"finished playing song: "<<prevSong;
-        next();
+        if(!seekBar->isSliderDown())
+            seekBar->setValue((double)player->position()/player->duration() * 1000);
 
-
-        emit finishedPlayingSong(prevSong);
-
+        if(player->state() == QMediaPlayer::StoppedState)
+        {
+            QString prevSong = current_song_url;
+            qDebug()<<"finished playing song: "<<prevSong;
+            next();
+            emit finishedPlayingSong(prevSong);
+        }
     }
-
-
 }
 
 void MainWindow::next()
@@ -1628,10 +1630,13 @@ void MainWindow::on_rowInserted(QModelIndex model ,int x,int y)
 
 void MainWindow::on_refreshBtn_clicked()
 {
+    //player->stop();
+
     playlist.removeAll();
 
     addToPlaylist({current_song_url});
-    //ui->listWidget->setCurrentRow(0);
+    ui->listWidget->setCurrentRow(0);
+    lCounter=0;
 
     //QStringList
     populateMainList();
