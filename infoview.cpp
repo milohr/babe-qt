@@ -6,6 +6,8 @@
 InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView) {
   ui->setupUi(this);
   artist = new Album(":Data/data/cover.png", 120, 100);
+  connect(artist,SIGNAL(playAlbum(QString , QString)),this,SLOT(playAlbum_clicked(QString, QString)));
+
   ui->lyricsText->setLineWrapMode(QTextEdit::NoWrap);
   ui->lyricsText->setStyleSheet(
       "QTextBrowser{background-color: #575757; color:white;}");
@@ -62,6 +64,13 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView) {
 
 InfoView::~InfoView() { delete ui; }
 
+
+void InfoView::playAlbum_clicked(QString artist, QString album)
+{
+    emit playAlbum(artist,album);
+
+}
+
 void InfoView::hideArtistInfo() {
   qDebug() << "hide artist info";
   if (hide) {
@@ -79,7 +88,7 @@ void InfoView::hideArtistInfo() {
 
 void InfoView::setAlbumInfo(QString info) {
 
-  qDebug() << info;
+  //qDebug() << info;
   if (info.isEmpty()) {
     ui->albumText->hide();
     ui->frame_4->hide();
@@ -92,7 +101,7 @@ void InfoView::setAlbumInfo(QString info) {
   }
 }
 
-void InfoView::setAlbumArt(QByteArray array) {}
+void InfoView::setAlbumArt(QByteArray array) {Q_UNUSED(array)}
 
 void InfoView::setArtistInfo(QString info) { ui->artistText->setHtml(info); }
 

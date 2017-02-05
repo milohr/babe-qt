@@ -54,6 +54,15 @@ Album::Album(QString imagePath, int widgetSize, int widgetRadius, bool isDraggab
     auto *right_spacer = new QWidget();
     right_spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
+    playBtn = new QToolButton(this);
+    playBtn->setIcon(QIcon(":Data/data/playBtn.svg"));
+    playBtn->setIconSize(QSize(48,48));
+    playBtn->setGeometry((size/2)-24,(size/2)-24,48,48);
+    playBtn->setStyleSheet("QToolButton{border-radius:24px;} QToolButton:hover{background:#333;} ");
+    playBtn->setAutoRaise(true);
+    QObject::connect(playBtn,SIGNAL(clicked()),this,SLOT(playBtn_clicked()));
+    playBtn->hide();
+
     layout->addWidget(left_spacer);
     layout->addWidget(title);
     layout->addWidget(right_spacer);
@@ -70,7 +79,10 @@ Album::Album(QString imagePath, int widgetSize, int widgetRadius, bool isDraggab
 
 }
 
-
+void Album::playBtn_clicked()
+{
+    emit playAlbum(artist,album);
+}
 
 void Album::paintEvent(QPaintEvent *e)
 {
@@ -196,6 +208,9 @@ void Album::enterEvent(QEvent *event)
     //  widget->setStyleSheet("background:rgba(180, 225, 230, 150)");
     //  this->setStyleSheet("border:1px solid #f85b79");
     // qDebug()<<"entered the album cover";
+    playBtn->show();
+    playBtn->setToolTip("Play all - "+artist+" "+album);
+
     emit albumCoverEnter();
 }
 
@@ -208,5 +223,6 @@ void Album::leaveEvent(QEvent *event)
     // widget->setStyleSheet("background-color: rgba(0,0,0,150);");
     // this->setStyleSheet("border:1px solid #333");
     //  qDebug()<<"left the album cover";
+    playBtn->hide();
     emit albumCoverLeft();
 }

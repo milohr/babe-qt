@@ -25,5 +25,6 @@
         <file>data/cover.png</file>
         <file>data/add.svg</file>
         <file>data/ajax-loader.gif</file>
+        <file>data/playBtn.svg</file>
     </qresource>
 </RCC>

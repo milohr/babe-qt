@@ -4,6 +4,8 @@
 #include <QString>
 #include <scrolltext.h>
 #include <QPixmap>
+#include <QToolButton>
+#include <QObject>
 
 class Album : public QLabel
 {
@@ -29,6 +31,7 @@ public:
     QString getAlbum();
     QPixmap image;
     QPixmap getPixmap();
+    QToolButton *playBtn;
 
 
 private:
@@ -46,9 +49,11 @@ signals:
     void albumCoverClicked(QStringList info);
     void albumCoverEnter();
      void albumCoverLeft();
+     void playAlbum(QString artist, QString album);
 
 public slots:
       void putPixmap(QByteArray pix);
+      void playBtn_clicked();
 
 protected:
 
@@ -58,6 +63,7 @@ protected:
     virtual void leaveEvent(QEvent *event);
 
     virtual void paintEvent(QPaintEvent *e);
+
     // virtual void  mouseMoveEvent(QMouseEvent *evt);
 };
 

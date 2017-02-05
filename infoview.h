@@ -37,6 +37,11 @@ private slots:
     void setLyrics(QString lyrics);
     void setArtistInfo(QString info);
     void hideArtistInfo();
+    void playAlbum_clicked(QString artist, QString album);
+
+signals:
+    void playAlbum(QString artist, QString album);
+
 };
 
 #endif // INFOVIEW_H

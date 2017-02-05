@@ -142,6 +142,8 @@ AlbumsView::AlbumsView(QWidget *parent) :
     layout->addWidget(line_h,1,0,Qt::AlignBottom);
     layout->addWidget(albumBox_frame,2,0,Qt::AlignBottom);
     cover= new Album(":Data/data/cover.svg",120,0);
+    connect(cover,SIGNAL(playAlbum(QString , QString)),this,SLOT(playAlbum_clicked(QString, QString)));
+
 
     closeBtn = new QToolButton(cover);
     closeBtn->setGeometry(2,2,16,16);
@@ -239,6 +241,8 @@ void AlbumsView::populateTableView(QSqlQuery query)
         // album->setTitle(query.value(1).toString(),query.value(2).toString());
         //album->setToolTip(query.value(2).toString());
         connect(album, SIGNAL(albumCoverClicked(QStringList)),this,SLOT(getAlbumInfo(QStringList)));
+        connect(album,SIGNAL(playAlbum(QString , QString)),this,SLOT(playAlbum_clicked(QString, QString)));
+
         //album->setStyleSheet(":hover {background:#3daee9; }");
         auto item =new QListWidgetItem();
         item->setSizeHint( QSize( albumSize, albumSize) );
@@ -271,6 +275,7 @@ void AlbumsView::populateTableViewHeads(QSqlQuery query)
         // album->setTitle(query.value(1).toString(),query.value(2).toString());
         //album->setToolTip(query.value(2).toString());
         connect(album, SIGNAL(albumCoverClicked(QStringList)),this,SLOT(getArtistInfo(QStringList)));
+        connect(album,SIGNAL(playAlbum(QString , QString)),this,SLOT(playAlbum_clicked(QString, QString)));
         //album->setStyleSheet(":hover {background:#3daee9; }");
         auto item =new QListWidgetItem();
         item->setSizeHint( QSize( albumSize, albumSize) );
@@ -287,6 +292,11 @@ void AlbumsView::populateTableViewHeads(QSqlQuery query)
 }
 
 
+void AlbumsView::playAlbum_clicked(QString artist, QString album)
+{
+
+    emit playAlbum(artist,album);
+}
 
 void AlbumsView::passConnection(CollectionDB *con)
 {

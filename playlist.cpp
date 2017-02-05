@@ -54,14 +54,6 @@ bool Playlist::isMusic(QString file) {
 void Playlist::add(QStringList files) {
 
   for (int i = 0; i < files.size(); i++) {
-
-    /** QMediaPlayer *p = new QMediaPlayer();
-    p->setMedia(QUrl::fromLocalFile(files[i]));
-p->connect(p,
-static_cast<void(QMediaObject::*)()>(&QMediaObject::metaDataChanged),
- [=](){ setMetaData(p->metaData(QMediaMetaData::Title).toString(),
-p->metaData(QMediaMetaData::AlbumArtist).toString(),p->metaData(QMediaMetaData::AlbumTitle).toString(),files[i]);});
-**/
     if (isMusic(files[i])) {
 
       TagInfo info(files[i]);
@@ -101,13 +93,6 @@ void Playlist::addClean(QStringList files) {
 
   for (int i = 0; i < files.size(); i++) {
 
-    /** QMediaPlayer *p = new QMediaPlayer();
-    p->setMedia(QUrl::fromLocalFile(files[i]));
-p->connect(p,
-static_cast<void(QMediaObject::*)()>(&QMediaObject::metaDataChanged),
- [=](){ setMetaData(p->metaData(QMediaMetaData::Title).toString(),
-p->metaData(QMediaMetaData::AlbumArtist).toString(),p->metaData(QMediaMetaData::AlbumTitle).toString(),files[i]);});
-**/
 
     TagInfo info(files[i]);
 

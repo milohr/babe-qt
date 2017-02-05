@@ -134,6 +134,8 @@ private slots:
     void setLyrics(QString artist,QString title);
     void getTrackInfo(QString artist, QString album, QString title);
     void removeSong(int index);
+    void putOnPlay(QString artist, QString album);
+    void loadCover(QString artist, QString album, QString title);
 private:
 
     Ui::MainWindow *ui;
