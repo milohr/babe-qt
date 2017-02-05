@@ -40,6 +40,7 @@ public:
     void collectionWatcher();
     void addToWatcher(QStringList paths);
     CollectionDB collection_db;
+    bool fileExists(QString url);
     enum iconSizes
     {
         s16,s22,s24

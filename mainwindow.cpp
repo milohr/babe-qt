@@ -376,6 +376,8 @@ MainWindow::~MainWindow()
 }
 
 
+
+
 void MainWindow::addToPlayed(QString url)
 {
     if(settings_widget->getCollectionDB().checkQuery("SELECT * FROM tracks WHERE location = \""+url+"\""))
@@ -1029,7 +1031,17 @@ void MainWindow::on_listWidget_doubleClicked(const QModelIndex &index)
 
 }
 
+void MainWindow::removeSong(int index)
+{
+    if(index != -1)
+    {
+       playlist.remove(index);
+       updateList();
+       ui->listWidget->setCurrentRow(index);
 
+       if(shuffle) shufflePlaylist();
+    }
+}
 
 void MainWindow::loadTrack()
 {
@@ -1037,85 +1049,98 @@ void MainWindow::loadTrack()
     QString album=QString::fromStdString(playlist.tracks[getIndex()].getAlbum());
     QString title=QString::fromStdString(playlist.tracks[getIndex()].getTitle());
     current_song_url = QString::fromStdString(playlist.tracks[getIndex()].getLocation());
-    player->setMedia(QUrl::fromLocalFile(current_song_url));
-    player->play();
-    ui->play_btn->setIcon(QIcon::fromTheme("media-playback-pause"));
 
-    this->setWindowTitle(title+" \xe2\x99\xa1 "+artist);
 
-    album_art->setArtist(artist);
-    album_art->setAlbum(album);
-    album_art->setTitle();
-
-    //CHECK IF THE SONG IS BABED IT OR IT ISN'T
-    if(settings_widget->getCollectionDB().checkQuery("SELECT * FROM tracks WHERE location = \""+current_song_url+"\" AND babe = \"1\""))
+    if(fileExists(current_song_url))
     {
-        ui->fav_btn->setIcon(QIcon(":Data/data/loved.svg"));
-    }else
-    {
-        ui->fav_btn->setIcon(QIcon(":Data/data/love-amarok"));
-    }
 
+        player->setMedia(QUrl::fromLocalFile(current_song_url));
+        player->play();
+        ui->play_btn->setIcon(QIcon::fromTheme("media-playback-pause"));
 
-    //IF CURRENT SONG EXISTS IN THE COLLECTION THEN GET THE COVER FROM DB
-    if(settings_widget->getCollectionDB().checkQuery("SELECT * FROM tracks WHERE location = \""+current_song_url+"\""))
-    {
-        QSqlQuery queryCover = settings_widget->collection_db.getQuery("SELECT * FROM albums WHERE title = \""+album+"\" AND artist = \""+artist+"\"");
-        while (queryCover.next())
+        this->setWindowTitle(title+" \xe2\x99\xa1 "+artist);
+
+        album_art->setArtist(artist);
+        album_art->setAlbum(album);
+        album_art->setTitle();
+
+        //CHECK IF THE SONG IS BABED IT OR IT ISN'T
+        if(settings_widget->getCollectionDB().checkQuery("SELECT * FROM tracks WHERE location = \""+current_song_url+"\" AND babe = \"1\""))
         {
-            if(!queryCover.value(2).toString().isEmpty()||queryCover.value(2).toString()!="NULL")
-                album_art->image.load( queryCover.value(2).toString());
-            else album_art->image.load(":Data/data/cover.svg");
-
-        }
-
-        QSqlQuery queryHead = settings_widget->collection_db.getQuery("SELECT * FROM artists WHERE title = \""+artist+"\"");
-        while (queryHead.next())
+            ui->fav_btn->setIcon(QIcon(":Data/data/loved.svg"));
+        }else
         {
-
-            if(!queryHead.value(1).toString().isEmpty()||queryCover.value(1).toString()!="NULL")
-                infoTable->artist->image.load( queryHead.value(1).toString());
-            else  infoTable->artist->image.load(":Data/data/cover.svg");
-
+            ui->fav_btn->setIcon(QIcon(":Data/data/love-amarok"));
         }
 
 
-    }else
-    {
-        qDebug()<<"Song path dirent exits in db so going to get artwork somehowelse <<"<<album<<artist;
-        QSqlQuery queryCover = settings_widget->collection_db.getQuery("SELECT * FROM albums WHERE title = \""+album+"\" AND artist = \""+artist+"\"");
-
-        if (queryCover.exec())
+        //IF CURRENT SONG EXISTS IN THE COLLECTION THEN GET THE COVER FROM DB
+        if(settings_widget->getCollectionDB().checkQuery("SELECT * FROM tracks WHERE location = \""+current_song_url+"\""))
         {
-
-
-            if (queryCover.next())
+            QSqlQuery queryCover = settings_widget->collection_db.getQuery("SELECT * FROM albums WHERE title = \""+album+"\" AND artist = \""+artist+"\"");
+            while (queryCover.next())
             {
-                if(queryCover.value(0).toString()==album&&queryCover.value(1).toString()==artist)
+                if(!queryCover.value(2).toString().isEmpty()||queryCover.value(2).toString()!="NULL")
                 {
-                    qDebug()<<"found the artwork in cache2";
-                    if(!queryCover.value(2).toString().isEmpty()||queryCover.value(2).toString()!="NULL")
-                    {
-                        qDebug()<<"found the artwork in cache3";
+
                         album_art->image.load( queryCover.value(2).toString());
-                        infoTable->artist->image.load( queryCover.value(2).toString());
+
+                }else album_art->image.load(":Data/data/cover.svg");
+
+            }
+
+            QSqlQuery queryHead = settings_widget->collection_db.getQuery("SELECT * FROM artists WHERE title = \""+artist+"\"");
+            while (queryHead.next())
+            {
+
+                if(!queryHead.value(1).toString().isEmpty()||queryCover.value(1).toString()!="NULL")
+                    infoTable->artist->image.load( queryHead.value(1).toString());
+                else  infoTable->artist->image.load(":Data/data/cover.svg");
+
+            }
+
+
+        }else
+        {
+            qDebug()<<"Song path dirent exits in db so going to get artwork somehowelse <<"<<album<<artist;
+            QSqlQuery queryCover = settings_widget->collection_db.getQuery("SELECT * FROM albums WHERE title = \""+album+"\" AND artist = \""+artist+"\"");
+
+            if (queryCover.exec())
+            {
+
+
+                if (queryCover.next())
+                {
+                    if(queryCover.value(0).toString()==album&&queryCover.value(1).toString()==artist)
+                    {
+                        qDebug()<<"found the artwork in cache2";
+                        if(!queryCover.value(2).toString().isEmpty()||queryCover.value(2).toString()!="NULL")
+                        {
+                            qDebug()<<"found the artwork in cache3";
+                            album_art->image.load( queryCover.value(2).toString());
+                            infoTable->artist->image.load( queryCover.value(2).toString());
+                        }
+                        else album_art->image.load(":Data/data/cover.svg");
+
+
                     }
-                    else album_art->image.load(":Data/data/cover.svg");
+
+                }else emit getCover(artist,album);
+            }
 
 
-                }
 
-            }else emit getCover(artist,album);
         }
 
+        //AND WHETHER THE SONG EXISTS OR  DO NOT GET THE TRACK INFO
+        getTrackInfo(artist,album,title);
 
-
+        qDebug()<<"Current song playing is: "<< current_song_url;
+    }else
+    {
+        removeSong(getIndex());
+        qDebug()<<"this song doesn't exists: "<< current_song_url;
     }
-
-    //AND WHETHER THE SONG EXISTS OR  DO NOT GET THE TRACK INFO
-    getTrackInfo(artist,album,title);
-
-    qDebug()<<"Current song playing is: "<< current_song_url;
 }
 
 
@@ -1343,24 +1368,33 @@ void MainWindow::on_fav_btn_clicked()
 
 
 }
+
+bool MainWindow::fileExists(QString url)
+{
+    QFileInfo path(url);
+    if (path.exists()) return true;
+    else return false;
+}
+
+
 void MainWindow::scanNewDir(QString url)
 {
     QStringList list;
 
-
-
-        QDirIterator it(url, QStringList() << "*.mp4" << "*.mp3" << "*.wav" <<"*.flac" <<"*.ogg" <<"*.m4a", QDir::Files, QDirIterator::Subdirectories);
-        while (it.hasNext())
+    QDirIterator it(url, QStringList() << "*.mp4" << "*.mp3" << "*.wav" <<"*.flac" <<"*.ogg" <<"*.m4a", QDir::Files, QDirIterator::Subdirectories);
+    while (it.hasNext())
+    {
+        QString song = it.next();
+        if(!settings_widget->getCollectionDB().check_existance("tracks","location",song))
         {
-            QString song = it.next();
-            if(!settings_widget->getCollectionDB().check_existance("tracks","location",song))
-            {
-                // qDebug()<<"New music files recently added: "<<it.next();
-                list<<song;
-            }
-            //qDebug() << it.next();
+            // qDebug()<<"New music files recently added: "<<it.next();
+            list<<song;
         }
-        addToCollectionDB_t(list);
+        //qDebug() << it.next();
+    }
+
+    if (!list.isEmpty())  addToCollectionDB_t(list);
+    else { refreshTables(); qDebug()<<"a folder probably got removed or changed";  }
 
 
 }

@@ -103,10 +103,14 @@ void settings::refreshWatchFiles()
 
     while (query.next()) {
 
-        if (!dirs.contains(QFileInfo(query.value(CollectionDB::LOCATION).toString()).dir().path()))
+        if (!dirs.contains(QFileInfo(query.value(CollectionDB::LOCATION).toString()).dir().path())&&QFileInfo(query.value(CollectionDB::LOCATION).toString()).exists())
         {
-            dirs << QFileInfo(query.value(CollectionDB::LOCATION).toString()).dir().path();
+            QString dir =QFileInfo(query.value(CollectionDB::LOCATION).toString()).dir().path();
+            dirs << dir;
+            dirs << QFileInfo(dir).dir().path();
         }
+
+        if(QFileInfo(query.value(CollectionDB::LOCATION).toString()).exists())
         files << query.value(CollectionDB::LOCATION).toString();
     }
 
@@ -114,7 +118,7 @@ void settings::refreshWatchFiles()
     for(auto path:dirs) qDebug() << "refreshed watcher -dir:"<< path;
     watcher->removePaths(watcher->directories());
     watcher->removePaths(watcher->files());
-    addToWatcher(files + dirs);
+    addToWatcher(dirs);
 
 }
 
@@ -222,7 +226,7 @@ void settings::addToWatcher(QStringList paths) {
     for(auto path:paths) qDebug() << "Adding to watcher -dir:"<< path;
 
     // watcher->addPath(path);
-    watcher->addPaths(paths);
+    if(!paths.isEmpty()) watcher->addPaths(paths);
 
     // connect(watcher,SIGNAL((QString)),this,SLOT(handleFileChanged(QString)));
 }
@@ -233,15 +237,20 @@ void settings::collectionWatcher()
     QSqlQuery query = collection_db.getQuery("SELECT * FROM tracks");
     QStringList newDirs, newFiles;
     while (query.next()) {
-        if (!dirs.contains(QFileInfo(query.value(CollectionDB::LOCATION).toString()).dir().path()))
+        if (!dirs.contains(QFileInfo(query.value(CollectionDB::LOCATION).toString()).dir().path())&&QFileInfo(query.value(CollectionDB::LOCATION).toString()).exists())
         {
-            newDirs<< QFileInfo(query.value(CollectionDB::LOCATION).toString()).dir().path();
+            QString dir =QFileInfo(query.value(CollectionDB::LOCATION).toString()).dir().path();
+            dirs << dir;
+            dirs << QFileInfo(dir).dir().path();
 
-            dirs << QFileInfo(query.value(CollectionDB::LOCATION).toString()).dir().path();
+            newDirs<< dir;
+            newDirs<< QFileInfo(dir).dir().path();
+
+
             //qDebug() << "Adding to watcher -dir:"<< QFileInfo(query.value(CollectionDB::LOCATION).toString()).dir().path();
         }
 
-        if (!files.contains(query.value(CollectionDB::LOCATION).toString()))
+        if (!files.contains(query.value(CollectionDB::LOCATION).toString()) && QFileInfo(query.value(CollectionDB::LOCATION).toString()).exists())
         {
             newFiles<<query.value(CollectionDB::LOCATION).toString();
             files << query.value(CollectionDB::LOCATION).toString();
@@ -250,8 +259,15 @@ void settings::collectionWatcher()
 
     }
 
-    addToWatcher(newFiles + newDirs);
+    addToWatcher(newDirs);
     // for(auto m: dirs) qDebug()<<m;
+}
+
+bool settings::fileExists(QString url)
+{
+    QFileInfo path(url);
+    if (path.exists()) return true;
+    else return false;
 }
 
 void settings::handleFileChanged(QString file) {
@@ -400,6 +416,10 @@ void settings::finishedAddingTracks(bool state) {
         // thread->terminate();
 
         emit collectionDBFinishedAdding(true);
+    }else
+    {
+         emit collectionDBFinishedAdding(true);
+
     }
 
     // qDebug()<<"good to hear it g¿finished yay!!!!!!";

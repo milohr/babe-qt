@@ -13,6 +13,7 @@
 #include <QSqlError>
 #include <QSqlRecord>
 #include <QSqlDriver>
+#include <QFileInfo>
 
 class CollectionDB : public QObject
 {

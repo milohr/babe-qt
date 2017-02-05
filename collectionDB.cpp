@@ -6,7 +6,8 @@
 #include <track.h>
 #include <QSqlDriver>
 #include <taginfo.h>
-
+#include <QFileInfo>
+#include <QDir>
 
 CollectionDB::CollectionDB()
 {
@@ -72,7 +73,7 @@ void CollectionDB::removePath(QString path)
     success = queryArtists.exec();
 
     setCollectionLists();
-
+    emit DBactionFinished(false);
 
     if(!success)
     {
@@ -150,11 +151,10 @@ void CollectionDB::setCollectionLists()
     {
         QString artist = query.value(ARTIST).toString();
         QString album = query.value(ALBUM).toString();
+        //QString file = query.value(LOCATION).toString();
 
         if(!albums.contains(artist+" "+album)) albums<<artist+" "+album;
         if(!artists.contains(artist)) artists<<artist;
-
-
     }
 }
 
@@ -202,7 +202,7 @@ void CollectionDB::addTrack(QStringList paths, int babe)
                 query.bindValue(":title", album);
                 query.bindValue(":artist", artist);
                 query.bindValue(":art", "");
-                query.bindValue(":location", file);
+                query.bindValue(":location", QFileInfo(file).dir().path());
                 if(query.exec()) albums<<artist+" "+album;
             }
 
@@ -211,7 +211,7 @@ void CollectionDB::addTrack(QStringList paths, int babe)
                 query.prepare("INSERT INTO artists (title, art, location)" "VALUES (:title, :art, :location)");
                 query.bindValue(":title", artist);
                 query.bindValue(":art", "");
-                query.bindValue(":location", file);
+                query.bindValue(":location", QFileInfo(file).dir().path());
                 if(query.exec()) artists<<artist;
             }
 

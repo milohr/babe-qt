@@ -21,6 +21,7 @@
 #include <artwork.h>
 #include <infoview.h>
 #include <lyrics.h>
+#include <QFileInfo>
 
 
 namespace Ui {
@@ -37,6 +38,8 @@ public:
     void setStyle();
     void updateList();
     void populateMainList();
+    bool fileExists(QString url);
+
 
     enum views
     {
@@ -130,6 +133,7 @@ private slots:
     void on_saveResults_clicked();
     void setLyrics(QString artist,QString title);
     void getTrackInfo(QString artist, QString album, QString title);
+    void removeSong(int index);
 private:
 
     Ui::MainWindow *ui;

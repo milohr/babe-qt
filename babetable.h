@@ -8,6 +8,7 @@
 #include <QToolButton>
 #include <QMouseEvent>
 #include <QMenu>
+#include <QFileInfo>
 
 namespace Ui {
 class BabeTable;
@@ -43,6 +44,7 @@ public:
     void passPlaylists();
     void  populatePlaylist(QStringList urls, QString playlist);
       QMenu* playlistsMenu;
+       QMenu* moodMenu;
       QStringList playlistsMenus;
 
 protected:
@@ -60,6 +62,7 @@ private slots:
     void setUpContextMenu(QPoint pos);
     void addToPlaylist(QAction* action);
     void babeIt_action();
+    void moodIt_action();
 
 public slots:
      QStringList getPlaylistMenus();
