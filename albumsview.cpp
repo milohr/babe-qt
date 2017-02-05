@@ -311,7 +311,7 @@ void AlbumsView::getArtistInfo(QStringList info)
     //playlist->add(tracks);
     albumTable->flushTable();
 
-    albumTable->populateTableView("SELECT * FROM tracks WHERE artist = \""+info.at(0)+"\" ORDER by album asc ");
+    albumTable->populateTableView("SELECT * FROM tracks WHERE artist = \""+info.at(0)+"\" ORDER by album asc, track asc ");
     QSqlQuery queryCover = connection->getQuery("SELECT * FROM artists WHERE title = \""+info.at(0)+"\"");
     while (queryCover.next())
     {

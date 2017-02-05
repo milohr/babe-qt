@@ -406,7 +406,7 @@ void MainWindow::resizeEvent(QResizeEvent* event)
 {
     QMainWindow::resizeEvent(event);
     qDebug()<<event->size().width()<<"x"<<event->size().height();
-    if(mini_mode==0 && event->size().width()==this->minimumSize().width())
+    if(mini_mode==0 && event->size().width()<=this->minimumSize().width())
     {
         //this->setMaximumWidth(200);
         // this->setFixedWidth(200);
@@ -793,12 +793,7 @@ this->show();*/
     default:  icon="search";
     }
 
-
-
-
     ui->tracks_view_2->setIcon(QIcon::fromTheme(icon));
-
-
 
     views->hide(); frame->hide();
     ui->mainToolBar->hide();
@@ -815,6 +810,7 @@ this->show();*/
     //this->setMinimumSize(200,400);
     int oldHeigh = this->size().height();
     this->resize(200,oldHeigh);
+    this->setFixedWidth(200);
     this->adjustSize();
     ui->hide_sidebar_btn->setToolTip("Go Extra-Mini");
     ui->hide_sidebar_btn->setIcon(QIcon::fromTheme("show_table_column"));
@@ -908,6 +904,7 @@ void MainWindow::on_hide_sidebar_btn_clicked()
         this->setMaximumSize(QWIDGETSIZE_MAX,QWIDGETSIZE_MAX);
         this->resize(700,500);
         this->setMinimumSize(0,0);
+        this->setFixedWidth(200);
 
         //this->adjustSize();
 
@@ -1035,11 +1032,11 @@ void MainWindow::removeSong(int index)
 {
     if(index != -1)
     {
-       playlist.remove(index);
-       updateList();
-       ui->listWidget->setCurrentRow(index);
+        playlist.remove(index);
+        updateList();
+        ui->listWidget->setCurrentRow(index);
 
-       if(shuffle) shufflePlaylist();
+        if(shuffle) shufflePlaylist();
     }
 }
 
@@ -1083,7 +1080,7 @@ void MainWindow::loadTrack()
                 if(!queryCover.value(2).toString().isEmpty()||queryCover.value(2).toString()!="NULL")
                 {
 
-                        album_art->image.load( queryCover.value(2).toString());
+                    album_art->image.load( queryCover.value(2).toString());
 
                 }else album_art->image.load(":Data/data/cover.svg");
 
@@ -1495,78 +1492,54 @@ void MainWindow::on_search_textChanged(const QString &arg1)
     hideAlbumViewUtils();
 
 
-    if(search.size()!=0)
+    if(!search.isEmpty())
     {
         views->setCurrentIndex(RESULTS);
         if(prevIndex==PLAYLISTS) {utilsBar->actions().at(PLAYLISTS_UB)->setVisible(false); ui->frame_3->hide();}
 
-
         resultsTable->flushTable();
-
 
         if(key=="location:")
         {
-
-
             resultsTable->populateTableView("SELECT * FROM tracks WHERE location LIKE \"%"+search+"%\"");
             ui->search->setBackgroundRole(QPalette :: Dark);
         }else if(key== "artist:")
         {
-
-
             resultsTable->populateTableView("SELECT * FROM tracks WHERE artist LIKE \"%"+search+"%\"");
             ui->search->setBackgroundRole(QPalette :: Dark);
         }else if(key== "album:")
         {
-
             resultsTable->populateTableView("SELECT * FROM tracks WHERE album LIKE \"%"+search+"%\"");
             ui->search->setBackgroundRole(QPalette :: Dark);
 
         }else if(key=="title:")
         {
-
-
             resultsTable->populateTableView("SELECT * FROM tracks WHERE title LIKE \"%"+search+"%\"");
             ui->search->setBackgroundRole(QPalette :: Dark);
         }else if(key==  "genre:")
         {
-
             resultsTable->populateTableView("SELECT * FROM tracks WHERE genre LIKE \"%"+search+"%\"");
             //ui->search->setStyleSheet("background-color:#e3f4d7;");
             ui->search->setBackgroundRole(QPalette :: Dark);
         }else
         {
+
             resultsTable->populateTableView("SELECT * FROM tracks WHERE title LIKE \"%"+search+"%\" OR artist LIKE \"%"+search+"%\" OR album LIKE \"%"+search+"%\"OR genre LIKE \"%"+search+"%\"");
             //ui->search->setStyleSheet("background-color:transparent;");
             ui->search->setBackgroundRole(QPalette :: Light);
         }
 
-
-
-
-
-        //utilsBar->actions().at(1)->setVisible(true);
-        //utilsBar->actions().at(2)->setVisible(true);
-
         ui->saveResults->setEnabled(true);
-
         ui->refreshAll->setEnabled(false);
         // prevIndex= views->currentIndex();
 
     }else
     {
-
         views->setCurrentIndex(prevIndex);
         if(views->currentIndex()==ALBUMS) showAlbumViewUtils();
         if(views->currentIndex()==PLAYLISTS) {utilsBar->actions().at(PLAYLISTS_UB)->setVisible(true); ui->frame_3->show();}
-
         resultsTable->flushTable();
-        //ui->tracks_view->setChecked(true);
-        // utilsBar->actions().at(1)->setVisible(false);
-        // utilsBar->actions().at(2)->setVisible(false);
-
         ui->saveResults->setEnabled(false);
-
         ui->refreshAll->setEnabled(true);
     }
 
