@@ -839,6 +839,14 @@
     <property name="autoFillBackground">
      <bool>false</bool>
     </property>
+    <property name="styleSheet">
+     <string notr="true">QGroupBox
+{
+background-color: rgba(0,0,0,150); 
+border-radius:0;
+border-top: 1px solid #333;
+}</string>
+    </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
     </property>
@@ -862,19 +870,32 @@
       <number>0</number>
      </property>
      <item>
+      <spacer name="horizontalSpacer_5">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
       <widget class="QToolButton" name="hide_sidebar_btn">
        <property name="maximumSize">
         <size>
-         <width>16</width>
-         <height>16</height>
+         <width>20</width>
+         <height>20</height>
         </size>
        </property>
        <property name="text">
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset theme="object-columns">
-         <normaloff>.</normaloff>.</iconset>
+        <iconset resource="data.qrc">
+         <normaloff>:/Data/data/full_mode.svg</normaloff>:/Data/data/full_mode.svg</iconset>
        </property>
        <property name="autoRaise">
         <bool>true</bool>
@@ -882,19 +903,32 @@
       </widget>
      </item>
      <item>
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
       <widget class="QToolButton" name="backward_btn">
        <property name="maximumSize">
         <size>
-         <width>16</width>
-         <height>16</height>
+         <width>20</width>
+         <height>20</height>
         </size>
        </property>
        <property name="text">
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset theme="media-skip-backward">
-         <normaloff>.</normaloff>.</iconset>
+        <iconset resource="data.qrc">
+         <normaloff>:/Data/data/media-skip-backward.svg</normaloff>:/Data/data/media-skip-backward.svg</iconset>
        </property>
        <property name="autoRaise">
         <bool>true</bool>
@@ -905,16 +939,16 @@
       <widget class="QToolButton" name="fav_btn">
        <property name="maximumSize">
         <size>
-         <width>16</width>
-         <height>16</height>
+         <width>20</width>
+         <height>20</height>
         </size>
        </property>
        <property name="text">
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset theme="love-amarok">
-         <normaloff>.</normaloff>.</iconset>
+        <iconset resource="data.qrc">
+         <normaloff>:/Data/data/love-amarok.svg</normaloff>:/Data/data/love-amarok.svg</iconset>
        </property>
        <property name="autoRaise">
         <bool>true</bool>
@@ -925,16 +959,16 @@
       <widget class="QToolButton" name="play_btn">
        <property name="maximumSize">
         <size>
-         <width>16</width>
-         <height>16</height>
+         <width>20</width>
+         <height>20</height>
         </size>
        </property>
        <property name="text">
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset theme="media-playback-start">
-         <normaloff>.</normaloff>.</iconset>
+        <iconset resource="data.qrc">
+         <normaloff>:/Data/data/media-playback-start.svg</normaloff>:/Data/data/media-playback-start.svg</iconset>
        </property>
        <property name="autoRaise">
         <bool>true</bool>
@@ -945,16 +979,16 @@
       <widget class="QToolButton" name="foward_btn">
        <property name="maximumSize">
         <size>
-         <width>16</width>
-         <height>16</height>
+         <width>20</width>
+         <height>20</height>
         </size>
        </property>
        <property name="text">
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset theme="media-skip-forward">
-         <normaloff>.</normaloff>.</iconset>
+        <iconset resource="data.qrc">
+         <normaloff>:/Data/data/media-skip-forward.svg</normaloff>:/Data/data/media-skip-forward.svg</iconset>
        </property>
        <property name="autoRaise">
         <bool>true</bool>
@@ -962,24 +996,50 @@
       </widget>
      </item>
      <item>
+      <spacer name="horizontalSpacer_3">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
       <widget class="QToolButton" name="shuffle_btn">
        <property name="maximumSize">
         <size>
-         <width>16</width>
-         <height>16</height>
+         <width>20</width>
+         <height>20</height>
         </size>
        </property>
        <property name="text">
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset theme="view-media-playlist">
-         <normaloff>.</normaloff>.</iconset>
+        <iconset resource="data.qrc">
+         <normaloff>:/Data/data/view-media-playlist.svg</normaloff>:/Data/data/view-media-playlist.svg</iconset>
        </property>
        <property name="autoRaise">
         <bool>true</bool>
        </property>
       </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_6">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
      </item>
     </layout>
    </widget>

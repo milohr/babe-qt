@@ -302,7 +302,8 @@ MainWindow::MainWindow(QWidget *parent) :
     //seekBar->setGeometry(0,195,200,5);
     seekBar->setStyleSheet("QSlider\n{\nbackground:transparent;}\nQSlider::groove:horizontal {border: none; background: transparent; height: 5px; border-radius: 0; } QSlider::sub-page:horizontal {\nbackground: #f85b79;border: none; height: 5px;border-radius: 0;} QSlider::add-page:horizontal {\nbackground: transparent; border: none; height: 5px; border-radius: 0; } QSlider::handle:horizontal {background: #f85b79; width: 8px; } QSlider::handle:horizontal:hover {background: qlineargradient(x1:0, y1:0, x2:1, y2:1,stop:0 #fff, stop:1 #ddd);border: 1px solid #444;border-radius: 4px;}QSlider::sub-page:horizontal:disabled {background: #bbb;border-color: #999;}QSlider::add-page:horizontal:disabled {background: #eee;border-color: #999;}QSlider::handle:horizontal:disabled {background: #eee;border: 1px solid #aaa;border-radius: 4px;}");
     connect(seekBar,SIGNAL(sliderMoved(int)),this,SLOT(on_seekBar_sliderMoved(int)));
-    ui->controls->setGeometry(100-75,75,150,50);
+   // ui->controls->setGeometry(100-75,75,150,50);
+    ui->controls->setGeometry(0,200-50,200,50);
     // ui->controls->setStyleSheet(" QToolButton {background-color:transparent; }QWidget{background-color: rgba(255, 255, 255, 230); border-radius:6px;} QWidget:hover{background-color:white;} QToolTip{background-color:#545454; border: 1px solid #333; border-radius:2px;} ");
 
 
@@ -310,11 +311,11 @@ MainWindow::MainWindow(QWidget *parent) :
     //MAIN PLAYLIST LAYOUT
     //ui->seekBar->setStyleSheet("background:transparent; ");
     album_view->addWidget(album_art, 0,0,Qt::AlignTop);
-    album_view->addWidget(ui->frame_6,1,0);
-    album_view->addWidget(ui->listWidget,2,0);
-    album_view->addWidget(ui->frame_5,3,0);
-    album_view->addWidget(seekBar,4,0);
-    album_view->addWidget(ui->frame_4,5,0);
+     album_view->addWidget(ui->frame_4,1,0);
+    album_view->addWidget(seekBar,2,0);
+    album_view->addWidget(ui->frame_6,3,0);
+    album_view->addWidget(ui->listWidget,4,0);
+    album_view->addWidget(ui->frame_5,5,0);
     album_view->addWidget(ui->playlistUtils,6,0);
 
     ui->tracks_view_2->hide();
@@ -453,7 +454,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
         if(lCounter != -1)
         {
             //ui->play->setChecked(false);
-            ui->play_btn->setIcon(QIcon::fromTheme("media-playback-pause"));
+            ui->play_btn->setIcon(QIcon(":Data/data/media-playback-pause.svg"));
             ui->search->clear();
             loadTrack();
         }
@@ -764,7 +765,7 @@ void MainWindow::expand()
     // this->adjustSize();
     ui->hide_sidebar_btn->setToolTip("Go Mini");
 
-    ui->hide_sidebar_btn->setIcon(QIcon::fromTheme("object-columns"));
+    ui->hide_sidebar_btn->setIcon(QIcon(":Data/data/mini_mode.svg"));
     ui->mainToolBar->actions().at(0)->setVisible(true);
     ui->mainToolBar->actions().at(8)->setVisible(true);
 
@@ -813,7 +814,7 @@ this->show();*/
     this->setFixedWidth(200);
     this->adjustSize();
     ui->hide_sidebar_btn->setToolTip("Go Extra-Mini");
-    ui->hide_sidebar_btn->setIcon(QIcon::fromTheme("show_table_column"));
+    ui->hide_sidebar_btn->setIcon(QIcon(":Data/data/mini_mode.svg"));
     mini_mode=1;
     //keepOnTop(true);
 
@@ -893,7 +894,7 @@ void MainWindow::on_hide_sidebar_btn_clicked()
         // album_art->border_radius=2;
         album_art->borderColor=false;
         //album_art->setStyleSheet("QLabel{border: none}");
-        ui->hide_sidebar_btn->setIcon(QIcon::fromTheme("object-columns"));
+        ui->hide_sidebar_btn->setIcon(QIcon(":Data/data/full_mode.svg"));
         ui->mainToolBar->hide();
 
 
@@ -931,7 +932,7 @@ void MainWindow::on_shuffle_btn_clicked()
     {
         shuffle = true;
         shufflePlaylist();
-        ui->shuffle_btn->setIcon(QIcon::fromTheme("media-playlist-shuffle"));
+        ui->shuffle_btn->setIcon(QIcon(":Data/data/media-playlist-shuffle.svg"));
         ui->shuffle_btn->setToolTip("Repeat");
         shuffle_state=1;
 
@@ -939,7 +940,7 @@ void MainWindow::on_shuffle_btn_clicked()
     {
 
         repeat = true;
-        ui->shuffle_btn->setIcon(QIcon::fromTheme("media-playlist-repeat"));
+        ui->shuffle_btn->setIcon(QIcon(":Data/data/media-playlist-repeat.svg"));
         ui->shuffle_btn->setToolTip("Consecutive");
         shuffle_state=2;
 
@@ -948,7 +949,7 @@ void MainWindow::on_shuffle_btn_clicked()
     {
         repeat = false;
         shuffle = false;
-        ui->shuffle_btn->setIcon(QIcon::fromTheme("view-media-playlist"));
+        ui->shuffle_btn->setIcon(QIcon(":Data/data/view-media-playlist.svg"));
         ui->shuffle_btn->setToolTip("Shuffle");
         shuffle_state=0;
     }
@@ -1024,7 +1025,7 @@ void MainWindow::on_listWidget_doubleClicked(const QModelIndex &index)
 
     updater->start();
     playing= true;
-    ui->play_btn->setIcon(QIcon::fromTheme("media-playback-pause"));
+    ui->play_btn->setIcon(QIcon(":Data/data/media-playback-pause.svg"));
 
 }
 
@@ -1053,7 +1054,7 @@ void MainWindow::loadTrack()
 
         player->setMedia(QUrl::fromLocalFile(current_song_url));
         player->play();
-        ui->play_btn->setIcon(QIcon::fromTheme("media-playback-pause"));
+        ui->play_btn->setIcon(QIcon(":Data/data/media-playback-pause.svg"));
 
         this->setWindowTitle(title+" \xe2\x99\xa1 "+artist);
 
@@ -1067,7 +1068,7 @@ void MainWindow::loadTrack()
             ui->fav_btn->setIcon(QIcon(":Data/data/loved.svg"));
         }else
         {
-            ui->fav_btn->setIcon(QIcon(":Data/data/love-amarok"));
+            ui->fav_btn->setIcon(QIcon(":Data/data/love-amarok.svg"));
         }
 
 
@@ -1248,13 +1249,13 @@ void MainWindow::on_play_btn_clicked()
         if(player->state() == QMediaPlayer::PlayingState)
         {
             player->pause();
-            ui->play_btn->setIcon(QIcon::fromTheme("media-playback-start"));
+            ui->play_btn->setIcon(QIcon(":Data/data/media-playback-start.svg"));
         }
         else
         {
             player->play();
             updater->start();
-            ui->play_btn->setIcon(QIcon::fromTheme("media-playback-pause"));
+            ui->play_btn->setIcon(QIcon(":Data/data/media-playback-pause.svg"));
         }
     }
 }
@@ -1271,7 +1272,7 @@ void MainWindow::on_backward_btn_clicked()
         {
 
             back();
-            ui->play_btn->setIcon(QIcon::fromTheme("media-playback-pause"));
+            ui->play_btn->setIcon(QIcon(":Data/data/media-playback-pause.svg"));
         }
     }
 }
@@ -1287,7 +1288,7 @@ void MainWindow::on_foward_btn_clicked()
         else
         {
             next();
-            ui->play_btn->setIcon(QIcon::fromTheme("media-playback-pause"));
+            ui->play_btn->setIcon(QIcon(":Data/data/media-playback-pause.svg"));
         }
     }
 }
@@ -1325,7 +1326,7 @@ void MainWindow::on_fav_btn_clicked()
         qDebug()<<"The song is already babed";
         if(settings_widget->getCollectionDB().insertInto("tracks","babe",current_song_url,0))
         {
-            ui->fav_btn->setIcon(QIcon::fromTheme("love-amarok"));
+            ui->fav_btn->setIcon(QIcon(":Data/data/love-amarok.svg"));
 
         }
 
