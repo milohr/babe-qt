@@ -17,6 +17,9 @@ Lyrics::Lyrics(QObject *parent) : QObject(parent)
 
 void Lyrics::setData(QString artist, QString song)
 {
+
+
+
     this->artist=artist;
     this->song = song;
     QUrl q_artist (artist);
@@ -145,8 +148,15 @@ void Lyrics::getLyrics(QNetworkReply *reply)
         // qDebug()<<"the lyrics are"<< lyric;
         text= "<p align='center'>"+text+"<p>";
 
+
         emit lyricsReady(text);
+         //disconnect(this, SIGNAL(lyricsReady(QString)), 0, 0);
 
 
     }
+}
+
+void Lyrics::clean()
+{
+    if(!artist.isEmpty()&&!song.isEmpty()) disconnect(this, SIGNAL(lyricsReady(QString)), 0, 0);
 }

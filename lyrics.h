@@ -19,7 +19,7 @@ QString song;
     void setData(QString artist,QString song);
     QNetworkAccessManager *m_http;
 
-
+void clean();
 signals:
     void lyricsReady(QString lyrics);
 

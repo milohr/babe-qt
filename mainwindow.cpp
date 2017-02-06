@@ -66,6 +66,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setWindowIcon(QIcon(":Data/data/babe_48.svg"));
     this->setWindowIconText("Babe...");
 
+
     connect(this, SIGNAL(finishedPlayingSong(QString)),this,SLOT(addToPlayed(QString)));
     connect(this,SIGNAL(getCover(QString,QString)),this,SLOT(setCoverArt(QString,QString)));
     connect(this,SIGNAL(collectionChecked()),this,SLOT(refreshTables()));
@@ -121,7 +122,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     infoTable = new InfoView();
     connect(infoTable,SIGNAL(playAlbum(QString, QString)),this,SLOT(putOnPlay(QString, QString)));
-
+    lyrics = new Lyrics();
+    connect(lyrics,SIGNAL(lyricsReady(QString)),infoTable,SLOT(setLyrics(QString)));
 
     //playback = new QToolBar();
     utilsBar = new QToolBar();
@@ -630,9 +632,12 @@ void MainWindow::dummy()
 
 void MainWindow::setLyrics(QString artist,QString title)
 {
-    lyrics = new Lyrics();
-    connect(lyrics,SIGNAL(lyricsReady(QString)),infoTable,SLOT(setLyrics(QString)));
-    lyrics->setData(artist,title);
+
+    if(!artist.isEmpty()&&!title.isEmpty())
+    {
+        //lyrics->clean();
+        lyrics->setData(artist,title);
+    }
 }
 
 
@@ -1112,7 +1117,7 @@ void MainWindow::loadTrack()
         player->setMedia(QUrl::fromLocalFile(current_song_url));
         player->play();
         ui->play_btn->setIcon(QIcon(":Data/data/media-playback-pause.svg"));
-
+qDebug()<<"Current song playing is: "<< current_song_url;
         this->setWindowTitle(title+" \xe2\x99\xa1 "+artist);
 
         album_art->setArtist(artist);
@@ -1130,9 +1135,11 @@ void MainWindow::loadTrack()
 
         //AND WHETHER THE SONG EXISTS OR  DO NOT GET THE TRACK INFO
         loadCover(artist,album,title);
-        //getTrackInfo(artist,album,title);
 
-        qDebug()<<"Current song playing is: "<< current_song_url;
+        //if(player->position()>player->duration()/4)
+           // getTrackInfo(artist,album,title);
+
+
     }else
     {
         removeSong(getIndex());
@@ -1234,6 +1241,7 @@ void MainWindow::getTrackInfo(QString artist, QString album,QString title)
     connect(artistInfo, SIGNAL(bioReady(QString)), infoTable, SLOT(setArtistInfo(QString)));
     coverInfo->setDataCoverInfo(artist,album);
     artistInfo->setDataHeadInfo(artist);
+
     setLyrics(artist,title);
 }
 
@@ -1690,6 +1698,7 @@ void MainWindow::on_refreshBtn_clicked()
 
     addToPlaylist({current_song_url});
     ui->listWidget->setCurrentRow(0);
+
     lCounter=0;
 
     //QStringList
