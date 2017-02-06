@@ -14,6 +14,8 @@
 #include <fstream>
 #include <iostream>
 #include <QFileDialog>
+#include "notify.h"
+
 
 settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
     ui->setupUi(this);
@@ -487,8 +489,9 @@ void settings::on_pushButton_clicked() {
 
 void settings::on_debugBtn_clicked()
 {
-    qDebug()<<"Current files being watched:";
+    /*qDebug()<<"Current files being watched:";
     for(auto file: watcher->files()) qDebug()<<file;
     qDebug()<<"Current dirs being watched:";
-    for(auto dir: watcher->directories()) qDebug()<<dir;
+    for(auto dir: watcher->directories()) qDebug()<<dir;*/
+
 }

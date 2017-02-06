@@ -51,6 +51,7 @@
 #include <QPainter>
 #include <album.h>
 #include "artwork.h"
+#include "notify.h"
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -319,9 +320,9 @@ MainWindow::MainWindow(QWidget *parent) :
     //MAIN PLAYLIST LAYOUT
     //ui->seekBar->setStyleSheet("background:transparent; ");
     album_view->addWidget(album_art, 0,0,Qt::AlignTop);
-    album_view->addWidget(ui->frame_4,1,0);
+    album_view->addWidget(ui->frame_6,1,0);
     album_view->addWidget(seekBar,2,0);
-    album_view->addWidget(ui->frame_6,3,0);
+    album_view->addWidget(ui->frame_4,3,0);
     album_view->addWidget(ui->listWidget,4,0);
     album_view->addWidget(ui->frame_5,5,0);
     album_view->addWidget(ui->playlistUtils,6,0);
@@ -1104,6 +1105,8 @@ void MainWindow::loadTrack()
         QString album=QString::fromStdString(playlist.tracks[getIndex()].getAlbum());
         QString title=QString::fromStdString(playlist.tracks[getIndex()].getTitle());
 
+
+
         player->setMedia(QUrl::fromLocalFile(current_song_url));
         player->play();
         ui->play_btn->setIcon(QIcon(":Data/data/media-playback-pause.svg"));
@@ -1137,6 +1140,9 @@ void MainWindow::loadTrack()
 
 void MainWindow::loadCover(QString artist, QString album, QString title)
 {
+
+    Q_UNUSED(title);
+
     //IF CURRENT SONG EXISTS IN THE COLLECTION THEN GET THE COVER FROM DB
     if(settings_widget->getCollectionDB().checkQuery("SELECT * FROM tracks WHERE location = \""+current_song_url+"\""))
     {
@@ -1146,7 +1152,12 @@ void MainWindow::loadCover(QString artist, QString album, QString title)
             if(!queryCover.value(2).toString().isEmpty()||queryCover.value(2).toString()!="NULL")
             {
 
+
                 album_art->image.load( queryCover.value(2).toString());
+                QPixmap pix;
+                pix.load(queryCover.value(2).toString());
+                auto *nof = new Notify();
+                nof->notify(title,artist+" \xe2\x99\xa1 "+album,pix);
 
             }else album_art->image.load(":Data/data/cover.svg");
 
@@ -1504,7 +1515,7 @@ void MainWindow::addToPlaylist(QStringList list)
 {
     qDebug()<<"Adding lists to mainPlaylist";
 
-    playlist.addClean(list);
+    playlist.add(list);
     updateList();
 
     if(shuffle) shufflePlaylist();

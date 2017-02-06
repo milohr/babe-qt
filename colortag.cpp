@@ -10,6 +10,7 @@ ColorTag::ColorTag(QWidget *parent) : QWidget(parent)
 
 void ColorTag::paintEvent(QPaintEvent *event)
 {
+    Q_UNUSED(event);
      QPainter painter(this);
     QPen pen;
     pen.setWidth(1);

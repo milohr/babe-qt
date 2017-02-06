@@ -7,12 +7,12 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   viewBox="0 0 48 48"
+   viewBox="0 0 47.999989 47.982456"
    version="1.1"
    id="svg6"
    sodipodi:docname="playBtn.svg"
-   width="48"
-   height="48"
+   width="47.999989"
+   height="47.982456"
    inkscape:version="0.92.0 r">
   <metadata
      id="metadata10">
@@ -44,8 +44,8 @@
      fit-margin-right="0"
      fit-margin-bottom="0"
      inkscape:zoom="3.7926636"
-     inkscape:cx="11.322034"
-     inkscape:cy="24"
+     inkscape:cx="-37.060854"
+     inkscape:cy="23.991228"
      inkscape:window-x="0"
      inkscape:window-y="28"
      inkscape:window-maximized="1"
@@ -59,11 +59,21 @@
         color:#4d4d4d;
       }
       </style>
+    <style
+       id="current-color-scheme-6"
+       type="text/css">
+      .ColorScheme-Text {
+        color:#4d4d4d;
+      }
+      .ColorScheme-Highlight {
+        color:#3daee9;
+      }
+      </style>
   </defs>
   <path
-     style="color:#4d4d4d;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:3"
-     d="M 24,0 C 10.704,0 0,10.704 0,24 0,37.296 10.704,48 24,48 37.296,48 48,37.296 48,24 48,10.704 37.296,0 24,0 Z m 0,3 C 35.634,3 45,12.366 45,24 45,35.634 35.634,45 24,45 12.366,45 3,35.634 3,24 3,12.366 12.366,3 24,3 Z m -6,12 v 18 l 12,-9 z"
+     id="path4485"
      class="ColorScheme-Text"
-     id="path4"
+     d="M 11.62659,0 C 6.63513,2.5675759 2.56757,6.6351336 0,11.626609 v 0.369005 L 2.76459,12.9152 C 5.02757,8.5671061 8.56708,5.0275978 12.91519,2.7646144 L 11.99561,0 Z M 36.00438,0 35.0848,2.7646144 C 39.43288,5.027617 42.97239,8.5671196 45.2354,12.9152 l 2.76459,-0.919586 V 11.626609 C 45.43242,6.6351435 41.36486,2.5675714 36.3734,0 Z M 23.99122,5.9978072 c -11.62974,0 -20.99232,9.3625908 -20.99232,20.9923238 0,11.629733 9.36258,20.992325 20.99232,20.992325 11.62972,0 20.99233,-9.362592 20.99233,-20.992325 0,-11.629733 -9.36261,-20.9923238 -20.99233,-20.9923238 z m 0,2.9989036 c 9.96833,0 17.99342,8.0250772 17.99342,17.9934202 0,9.968344 -8.02509,17.993421 -17.99342,17.993421 -9.96835,0 -17.99342,-8.025077 -17.99342,-17.993421 0,-9.968343 8.02507,-17.9934202 17.99342,-17.9934202 z m -5.9978,8.9967102 v 17.993421 l 14.99451,-8.996711 z"
+     style="color:#4d4d4d;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:2.99890351"
      inkscape:connector-curvature="0" />
 </svg>

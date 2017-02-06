@@ -51,6 +51,7 @@ void ScrollText::setAlignment(Qt::Alignment al) {
 }
 
 void ScrollText::paintEvent(QPaintEvent *evt) {
+    Q_UNUSED(evt);
   QPainter p(this);
   if (direction == RightToLeft) {
     px -= speed;

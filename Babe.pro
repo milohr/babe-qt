@@ -18,12 +18,19 @@ QT       += multimedia
 QT       += sql
 QT       += network
 QT       += xml
+QT       += dbus
+QT += KNotifications
+QT += KI18n
+QT += KConfigCore KConfigGui
+
+
 CONFIG   += c++14
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = Babe
 TEMPLATE = app
+
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked as deprecated (the exact warnings
@@ -54,7 +61,9 @@ SOURCES += main.cpp\
     taginfo.cpp \
     artwork.cpp \
     infoview.cpp \
-    lyrics.cpp
+    lyrics.cpp \
+    mpris2.cpp \
+    notify.cpp
 
 HEADERS  += mainwindow.h \
             playlist.h \
@@ -71,7 +80,9 @@ HEADERS  += mainwindow.h \
     colortag.h \
     artwork.h \
     infoview.h \
-    lyrics.h
+    lyrics.h \
+    mpris2.h \
+    notify.h
 
 FORMS    += mainwindow.ui \
     settings.ui \
