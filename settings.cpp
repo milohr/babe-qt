@@ -268,12 +268,12 @@ void settings::collectionWatcher()
             //qDebug() << "Adding to watcher -dir:"<< QFileInfo(query.value(CollectionDB::LOCATION).toString()).dir().path();
         }
 
-        if (!files.contains(query.value(CollectionDB::LOCATION).toString()) && QFileInfo(query.value(CollectionDB::LOCATION).toString()).exists())
+        /*if (!files.contains(query.value(CollectionDB::LOCATION).toString()) && QFileInfo(query.value(CollectionDB::LOCATION).toString()).exists())
         {
             newFiles<<query.value(CollectionDB::LOCATION).toString();
             files << query.value(CollectionDB::LOCATION).toString();
             //qDebug() << "Adding to watcher -file:"<< query.value(CollectionDB::LOCATION).toString();
-        }
+        }*/
 
     }
 
@@ -440,6 +440,8 @@ void settings::finishedAddingTracks(bool state) {
 
     }
 
+
+
     // qDebug()<<"good to hear it g¿finished yay!!!!!!";
 }
 
@@ -490,7 +492,8 @@ void settings::fetchArt() {
 
         artistHead->setDataHead(artist, cachePath);
     }
-
+    auto *nof = new Notify();
+    nof->notify("Finished fetching art","the artwork for your collection is ready :)");
 
     // emit collectionDBFinishedAdding(true);
 }

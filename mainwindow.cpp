@@ -68,6 +68,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(this, SIGNAL(finishedPlayingSong(QString)),this,SLOT(addToPlayed(QString)));
     connect(this,SIGNAL(getCover(QString,QString)),this,SLOT(setCoverArt(QString,QString)));
+    connect(this,SIGNAL(collectionChecked()),this,SLOT(refreshTables()));
+
     //this->setWindowFlags(Qt::Widget | Qt::FramelessWindowHint);
 
 
@@ -137,11 +139,7 @@ MainWindow::MainWindow(QWidget *parent) :
     {
         //collectionWatcher();
         settings_widget->collection_db.setCollectionLists();
-
-        refreshTables();
-        QStringList list =settings_widget->getCollectionDB().getPlaylists();
-        playlistTable->setPlaylists(list);
-
+        //refreshTables();
         populateMainList();
         emit collectionChecked();
     }
@@ -153,7 +151,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     /*THE STREAMING / PLAYLIST*/
     connect(updater, SIGNAL(timeout()), this, SLOT(update()));
-   //connect(player, SIGNAL(stateChanged(QMediaPlayer::State)),this,SLOT(update()));
+    //connect(player, SIGNAL(stateChanged(QMediaPlayer::State)),this,SLOT(update()));
     player->setVolume(100);
     addMusicImg = new QLabel(ui->listWidget);
     addMusicImg->setPixmap(QPixmap(":Data/data/add.png").scaled(120,120,Qt::KeepAspectRatio));
@@ -392,7 +390,7 @@ void MainWindow::putOnPlay(QString artist, QString album)
     {
         qDebug()<<"put on play<<"<<artist<<album;
         //updater->stop();
-       // player->stop();
+        // player->stop();
 
 
         QSqlQuery query;
@@ -404,7 +402,7 @@ void MainWindow::putOnPlay(QString artist, QString album)
 
         if(query.exec())
         {
-             qDebug()<<"put on play<<2";
+            qDebug()<<"put on play<<2";
             while(query.next())
             {
                 list<<query.value(BabeTable::LOCATION).toString();
@@ -488,6 +486,9 @@ void MainWindow::refreshTables()
     artistsTable->flushGrid();
     artistsTable->populateTableViewHeads(settings_widget->getCollectionDB().getQuery("SELECT * FROM artists ORDER by title asc"));
     artistsTable->hideAlbumFrame();
+
+    QStringList list =settings_widget->getCollectionDB().getPlaylists();
+    playlistTable->setPlaylists(list);
 }
 
 
@@ -815,7 +816,7 @@ void MainWindow::expand()
     //qDebug()<<this->minimumWidth()<<this->minimumHeight();
 
     this->resize(700,500);
-    this->setMinimumSize(0,0);
+    //this->setMinimumSize(0,0);
     // this->adjustSize();
     ui->hide_sidebar_btn->setToolTip("Go Mini");
 
@@ -1128,8 +1129,8 @@ void MainWindow::loadTrack()
         }
 
         //AND WHETHER THE SONG EXISTS OR  DO NOT GET THE TRACK INFO
-         loadCover(artist,album,title);
-        getTrackInfo(artist,album,title);
+        loadCover(artist,album,title);
+        //getTrackInfo(artist,album,title);
 
         qDebug()<<"Current song playing is: "<< current_song_url;
     }else
@@ -1155,10 +1156,15 @@ void MainWindow::loadCover(QString artist, QString album, QString title)
 
 
                 album_art->image.load( queryCover.value(2).toString());
-                QPixmap pix;
-                pix.load(queryCover.value(2).toString());
-                auto *nof = new Notify();
-                nof->notify(title,artist+" \xe2\x99\xa1 "+album,pix);
+                if(!this->isActiveWindow())
+                {
+
+                    QPixmap pix;
+                    pix.load(queryCover.value(2).toString());
+                    auto *nof = new Notify();
+                    connect(nof,SIGNAL(babeSong(QString)),this,SLOT(babeIt(QString)));
+                    nof->notifySong(title,artist,album,current_song_url,pix);
+                }
 
             }else album_art->image.load(":Data/data/cover.svg");
 
@@ -1199,7 +1205,7 @@ void MainWindow::loadCover(QString artist, QString album, QString title)
                         QPixmap pix;
                         pix.load(queryCover.value(2).toString());
                         auto *nof = new Notify();
-                        nof->notify(title,artist+" \xe2\x99\xa1 "+album,pix);
+                        nof->notifySong(title,artist,album,current_song_url,pix);
                     }
                     else album_art->image.load(":Data/data/cover.svg");
 
@@ -1208,9 +1214,9 @@ void MainWindow::loadCover(QString artist, QString album, QString title)
 
             }else
             {
-QPixmap pix;
+                QPixmap pix;
                 auto *nof = new Notify();
-                nof->notify(title,artist+" \xe2\x99\xa1 "+album, pix);
+                nof->notifySong(title,artist,album,current_song_url, pix);
                 emit getCover(artist,album);
             }
         }
@@ -1376,7 +1382,8 @@ void MainWindow::collectionDBFinishedAdding(bool state)
         qDebug()<<"now it i time to put the tracks in the table ;)";
         //settings_widget->getCollectionDB().closeConnection();
         refreshTables();
-
+        auto *nof = new Notify();
+        nof->notify("Songs added to collection","finished writting new songs to the collection :)");
     }
 }
 
@@ -1395,22 +1402,37 @@ void MainWindow::on_fav_btn_clicked()
 {
 
 
-    if(settings_widget->getCollectionDB().checkQuery("SELECT * FROM tracks WHERE location = \""+current_song_url+"\" AND babe = \"1\""))
+    babeIt(current_song_url);
+
+
+
+}
+
+void MainWindow::unbabeIt(QString url)
+{
+    qDebug()<<"The song is already babed";
+    if(settings_widget->getCollectionDB().insertInto("tracks","babe",url,0))
+    {
+        ui->fav_btn->setIcon(QIcon(":Data/data/love-amarok.svg"));
+
+    }
+}
+
+void MainWindow::babeIt(QString url)
+{
+    if(settings_widget->getCollectionDB().checkQuery("SELECT * FROM tracks WHERE location = \""+url+"\" AND babe = \"1\""))
     {
         //ui->fav_btn->setIcon(QIcon::fromTheme("face-in-love"));
-        qDebug()<<"The song is already babed";
-        if(settings_widget->getCollectionDB().insertInto("tracks","babe",current_song_url,0))
-        {
-            ui->fav_btn->setIcon(QIcon(":Data/data/love-amarok.svg"));
+        unbabeIt(current_song_url);
 
-        }
-
+        auto *nof = new Notify();
+        nof->notify("Song unBabe'd it",url);
     }else
     {
 
-        if(settings_widget->getCollectionDB().check_existance("tracks","location",current_song_url))
+        if(settings_widget->getCollectionDB().check_existance("tracks","location",url))
         {
-            if(settings_widget->getCollectionDB().insertInto("tracks","babe",current_song_url,1))
+            if(settings_widget->getCollectionDB().insertInto("tracks","babe",url,1))
             {
                 ui->fav_btn->setIcon(QIcon(":Data/data/loved.svg"));
 
@@ -1420,7 +1442,7 @@ void MainWindow::on_fav_btn_clicked()
         {
             qDebug()<<"Sorry but that song is not in the database";
 
-            addToCollectionDB_t({current_song_url},"1");
+            addToCollectionDB_t({url},"1");
 
 
             ui->fav_btn->setIcon(QIcon(":Data/data/loved.svg"));
@@ -1431,14 +1453,11 @@ void MainWindow::on_fav_btn_clicked()
 
             //to-do: create a list and a tracks object and send it the new song and then write that track list into the database
         }
-        // addToFavorites({QString::fromStdString(playlist.tracks[getIndex()].getTitle()),QString::fromStdString(playlist.tracks[getIndex()].getArtist()),QString::fromStdString(playlist.tracks[getIndex()].getAlbum()),QString::fromStdString(playlist.tracks[getIndex()].getLocation()),"\xe2\x99\xa1","1"});
 
+        auto *nof = new Notify();
+        nof->notify("Song Babe'd it",url);
     }
-
-
-
-
-
+    // addToFavorites({QString::fromStdString(playlist.tracks[getIndex()].getTitle()),QString::fromStdString(playlist.tracks[getIndex()].getArtist()),QString::fromStdString(playlist.tracks[getIndex()].getAlbum()),QString::fromStdString(playlist.tracks[getIndex()].getLocation()),"\xe2\x99\xa1","1"});
 
 }
 
@@ -1466,12 +1485,25 @@ void MainWindow::scanNewDir(QString url)
         //qDebug() << it.next();
     }
 
-    if (!list.isEmpty())  addToCollectionDB_t(list);
+    if (!list.isEmpty())
+    {
+        auto *nof = new Notify();
+        nof->notify("New music added to collection",listToString(list));
+
+        addToCollectionDB_t(list);
+    }
     else { refreshTables(); qDebug()<<"a folder probably got removed or changed";  }
 
 
 }
 
+QString MainWindow::listToString(QStringList list)
+{   QString result;
+
+    for(auto str : list) result+= str+"\n";
+
+    return result;
+}
 
 
 //iterates through the paths of the modify folders tp search for new music and then refreshes the collection view
@@ -1662,6 +1694,7 @@ void MainWindow::on_refreshBtn_clicked()
 
     //QStringList
     populateMainList();
+    ui->listWidget->scrollToTop();
 }
 
 void MainWindow::on_tracks_view_2_clicked()

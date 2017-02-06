@@ -136,6 +136,10 @@ private slots:
     void removeSong(int index);
     void putOnPlay(QString artist, QString album);
     void loadCover(QString artist, QString album, QString title);
+    void babeIt(QString url);
+    void unbabeIt(QString url);
+
+
 private:
 
     Ui::MainWindow *ui;
@@ -196,6 +200,7 @@ private:
     bool shuffle = false;
     QMenu *saveResults_menu;
     // void collectionWatcher();
+    QString listToString(QStringList list);
 
 signals:
     void finishedPlayingSong(QString url);

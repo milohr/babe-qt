@@ -12,7 +12,7 @@
 #include <QWidgetAction>
 #include <settings.h>
 #include <QColorDialog>
-
+#include <notify.h>
 
 BabeTable::BabeTable(QTableWidget *parent) : QTableWidget(parent) {
 
@@ -217,7 +217,7 @@ void BabeTable::populateTableView(QString indication) {
     QSqlQuery query = connection->getQuery(indication);
     bool missingDialog = false;
     QStringList missingFiles;
-    qDebug() << "ON POPULATE:";
+    qDebug() << "ON POPULATE:"<<indication;
 
     if(connection->checkQuery(indication))
     {
@@ -307,6 +307,10 @@ void BabeTable::populateTableView(QString indication) {
             QString parentDir;
             // QMessageBox::about(this,"Removing missing
             // files",missingFiles.join("\n"));
+
+            auto *nof = new Notify();
+            nof->notifyUrgent("Removing missing files...",missingFiles.join("\n"));
+
             for (auto file_r : missingFiles) {
                 if (connection->removeQuery("DELETE FROM tracks WHERE location =  \"" +
                                             file_r + "\""))
