@@ -66,6 +66,14 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setWindowIcon(QIcon(":Data/data/babe_48.svg"));
     this->setWindowIconText("Babe...");
 
+ timer = new QTimer(this);
+ connect(timer, &QTimer::timeout, [this]() {
+       // this->setLyrics(artist,title);
+      timer->stop();
+     qDebug()<<"antonpirulilului";
+     this->getTrackInfo();
+
+     });
 
     connect(this, SIGNAL(finishedPlayingSong(QString)),this,SLOT(addToPlayed(QString)));
     connect(this,SIGNAL(getCover(QString,QString)),this,SLOT(setCoverArt(QString,QString)));
@@ -1108,9 +1116,9 @@ void MainWindow::loadTrack()
 
     if(fileExists(current_song_url))
     {
-        QString artist=QString::fromStdString(playlist.tracks[getIndex()].getArtist());
-        QString album=QString::fromStdString(playlist.tracks[getIndex()].getAlbum());
-        QString title=QString::fromStdString(playlist.tracks[getIndex()].getTitle());
+        current_artist=QString::fromStdString(playlist.tracks[getIndex()].getArtist());
+        current_album=QString::fromStdString(playlist.tracks[getIndex()].getAlbum());
+        current_title=QString::fromStdString(playlist.tracks[getIndex()].getTitle());
 
 
 
@@ -1118,10 +1126,10 @@ void MainWindow::loadTrack()
         player->play();
         ui->play_btn->setIcon(QIcon(":Data/data/media-playback-pause.svg"));
 qDebug()<<"Current song playing is: "<< current_song_url;
-        this->setWindowTitle(title+" \xe2\x99\xa1 "+artist);
+        this->setWindowTitle(current_title+" \xe2\x99\xa1 "+current_artist);
 
-        album_art->setArtist(artist);
-        album_art->setAlbum(album);
+        album_art->setArtist(current_artist);
+        album_art->setAlbum(current_album);
         album_art->setTitle();
 
         //CHECK IF THE SONG IS BABED IT OR IT ISN'T
@@ -1134,10 +1142,17 @@ qDebug()<<"Current song playing is: "<< current_song_url;
         }
 
         //AND WHETHER THE SONG EXISTS OR  DO NOT GET THE TRACK INFO
-        loadCover(artist,album,title);
+        loadCover(current_artist,current_album,current_title);
 
         //if(player->position()>player->duration()/4)
-           // getTrackInfo(artist,album,title);
+
+
+
+
+
+           timer->start(2000);
+
+
 
 
     }else
@@ -1233,16 +1248,19 @@ void MainWindow::loadCover(QString artist, QString album, QString title)
     }
 }
 
-void MainWindow::getTrackInfo(QString artist, QString album,QString title)
+void MainWindow::getTrackInfo()
 {
-    auto coverInfo = new ArtWork();
+    if(!current_album.isEmpty()&&!current_artist.isEmpty())
+    {
+            auto coverInfo = new ArtWork();
     auto artistInfo = new ArtWork;
     connect(coverInfo, SIGNAL(infoReady(QString)), infoTable, SLOT(setAlbumInfo(QString)));
     connect(artistInfo, SIGNAL(bioReady(QString)), infoTable, SLOT(setArtistInfo(QString)));
-    coverInfo->setDataCoverInfo(artist,album);
-    artistInfo->setDataHeadInfo(artist);
+    coverInfo->setDataCoverInfo(current_artist,current_album);
+    artistInfo->setDataHeadInfo(current_artist);
 
-    setLyrics(artist,title);
+    setLyrics(current_artist,current_title);
+    }
 }
 
 
@@ -1298,6 +1316,10 @@ void MainWindow::next()
     //ui->searchBar->clear();
 
     loadTrack();
+
+
+     // timer->setInterval(1000);
+
 
 
 }

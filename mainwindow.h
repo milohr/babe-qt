@@ -132,7 +132,7 @@ private slots:
     void saveResultsTo(QAction *action);
     void on_saveResults_clicked();
     void setLyrics(QString artist,QString title);
-    void getTrackInfo(QString artist, QString album, QString title);
+    void getTrackInfo();
     void removeSong(int index);
     void putOnPlay(QString artist, QString album);
     void loadCover(QString artist, QString album, QString title);
@@ -186,6 +186,9 @@ private:
     QMediaPlayer *player = new QMediaPlayer();
     QTimer *updater = new QTimer(this);
     QString current_song_url;
+    QString current_title;
+    QString current_album;
+    QString current_artist;
     QSlider *seekBar;
     QLabel *addMusicImg;
     int mini_mode=0;
