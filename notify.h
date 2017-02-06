@@ -17,8 +17,10 @@ private:
 
 
 signals:
+    void babeSong(QString title, QString artist, QString album);
 
 public slots:
+    void babeIt();
 };
 
 #endif // NOTIFY_H

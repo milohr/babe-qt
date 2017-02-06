@@ -25,9 +25,18 @@ void Notify::notify(  const QString &title, const QString &body, const QPixmap &
         notification->setText(QStringLiteral("%1").arg(body));
         if(!pix.isNull()) notification->setPixmap(pix);
 
+        notification->setActions(QStringList(i18n("Babe it  \xe2\x99\xa1")));
+
+          connect(notification, SIGNAL(activated(uint)), SLOT(babeIt()));
+
 
         //connect(notification, SIGNAL(ac), this, SLOT(notify()));
 
          notification->sendEvent();
 
+}
+
+void Notify::babeIt()
+{
+    qDebug()<<"babe the shit out of it";
 }
