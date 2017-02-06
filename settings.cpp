@@ -15,6 +15,7 @@
 #include <iostream>
 #include <QFileDialog>
 #include "notify.h"
+#include <QFile>
 
 
 settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
@@ -25,6 +26,19 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
     qDebug() << "Getting collectionDB info from: " << collectionDBPath;
     qDebug() << "Getting settings info from: " << settingPath;
     qDebug() << "Getting artwork files from: " << cachePath;
+
+
+   if(!fileExists(notifyDir+"/Babe.notifyrc"))
+   {
+        qDebug()<<"The Knotify file does not exists, going to create it";
+        QFile knotify(":Data/data/Babe.notifyrc");
+
+        if(knotify.copy(notifyDir+"/Babe.notifyrc"))
+        {
+            qDebug()<<"the knotify file got copied";
+        }
+
+   }
 
     QDir collectionDBPath_dir(collectionDBPath);
     QDir settingsPath_dir(settingPath);

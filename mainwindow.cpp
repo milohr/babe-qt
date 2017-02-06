@@ -394,8 +394,6 @@ void MainWindow::putOnPlay(QString artist, QString album)
         //updater->stop();
        // player->stop();
 
-        ui->listWidget->clear();
-        playlist.removeAll();
 
         QSqlQuery query;
         QStringList list;
@@ -414,6 +412,9 @@ void MainWindow::putOnPlay(QString artist, QString album)
             qDebug()<<"put on play<<3";
             if(!list.isEmpty())
             {
+                ui->listWidget->clear();
+                playlist.removeAll();
+
                 addToPlaylist(list);
 
                 if(ui->listWidget->count() != 0)
@@ -1195,13 +1196,23 @@ void MainWindow::loadCover(QString artist, QString album, QString title)
                         qDebug()<<"found the artwork in cache3";
                         album_art->image.load( queryCover.value(2).toString());
                         infoTable->artist->image.load( queryCover.value(2).toString());
+                        QPixmap pix;
+                        pix.load(queryCover.value(2).toString());
+                        auto *nof = new Notify();
+                        nof->notify(title,artist+" \xe2\x99\xa1 "+album,pix);
                     }
                     else album_art->image.load(":Data/data/cover.svg");
 
 
                 }
 
-            }else emit getCover(artist,album);
+            }else
+            {
+QPixmap pix;
+                auto *nof = new Notify();
+                nof->notify(title,artist+" \xe2\x99\xa1 "+album, pix);
+                emit getCover(artist,album);
+            }
         }
 
 

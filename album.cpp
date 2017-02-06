@@ -58,7 +58,7 @@ Album::Album(QString imagePath, int widgetSize, int widgetRadius, bool isDraggab
     playBtn->setIcon(QIcon(":Data/data/playBtn.svg"));
     playBtn->setIconSize(QSize(48,48));
     playBtn->setGeometry((size/2)-24,(size/2)-24,48,48);
-    playBtn->setStyleSheet("QToolButton{border-radius:24px;} QToolButton:hover{background:#333;} ");
+    playBtn->setStyleSheet("QToolButton{border-radius:2px;} QToolButton:hover{background: url(':Data/data/playBtn_hover.svg') top center no-repeat;} ");
     playBtn->setAutoRaise(true);
     QObject::connect(playBtn,SIGNAL(clicked()),this,SLOT(playBtn_clicked()));
     playBtn->hide();

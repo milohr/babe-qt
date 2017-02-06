@@ -9,6 +9,10 @@
 Notify::Notify(QObject *parent) : QObject(parent)
 {
     //qDebug()<<QStandardPaths::GenericConfigLocation;
+
+
+
+
 }
 
 void Notify::notify(  const QString &title, const QString &body, const QPixmap &pix)

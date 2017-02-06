@@ -15,7 +15,7 @@
 #include <QMovie>
 #include <QStringList>
 #include <QFileSystemWatcher>
-
+#include <QStandardPaths>
 
 namespace Ui {
 class settings;
@@ -69,11 +69,13 @@ public slots:
 
 private:
     Ui::settings *ui;
-    const QString settingPath= QDir().homePath()+"/.config/babe/";
-    const QString collectionDBPath=QDir().homePath()+"/.local/share/babe/";
-    const QString cachePath=QDir().homePath()+"/.cache/babe/";
+    const QString settingPath= QStandardPaths::writableLocation(QStandardPaths::ConfigLocation)+"/babe/";
+    const QString collectionDBPath=QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation)+"/babe/";
+    const QString cachePath=QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation)+"/babe/";
+    const QString notifyDir= QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
     const QString collectionDBName = "collection.db";
     const QString settingsName = "settings.conf";
+
     int iconSize = 16;
     QStringList collectionPaths={};
     QLabel *artFetcherNotice;
