@@ -11,7 +11,7 @@
 #include <QListWidgetItem>
 #include "mainwindow.h"
 #include <QToolTip>
-AlbumsView::AlbumsView(QWidget *parent) :
+AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     QWidget(parent)
 {
 
@@ -91,7 +91,7 @@ AlbumsView::AlbumsView(QWidget *parent) :
     scroll->setWidget(scrollWidget   );
     albumTable = new BabeTable();
 
-    albumTable->setMaximumHeight(120);
+
     albumTable->horizontalHeader()->setVisible(false);
     albumTable->showColumn(BabeTable::TRACK);
 
@@ -101,6 +101,8 @@ AlbumsView::AlbumsView(QWidget *parent) :
 
 
     albumTable->setFrameShape(QFrame::NoFrame);
+
+
 
     //  connect(albumTable,SIGNAL(tableWidget_doubleClicked(QStringList)),this,SLOT(albumTable_clicked(QStringList)));
     //  connect(albumTable,SIGNAL( babeIt_clicked(QStringList)),this,SLOT(albumTable_babeIt(QStringList)));
@@ -155,10 +157,38 @@ AlbumsView::AlbumsView(QWidget *parent) :
 
     line->setFrameShape(QFrame::VLine);
     line->setFrameShadow(QFrame::Sunken);
+    line->setMaximumWidth(1);
     //connect(cover, SIGNAL(albumCoverEnter()),this,SLOT(albumHover()));
-    albumBox->addWidget(cover,0,0,Qt::AlignLeft);
-    albumBox->addWidget(line,0,1,Qt::AlignLeft);
-    albumBox->addWidget(albumTable,0,2);
+
+    if(extraList)
+    {
+        this->extraList=true;
+        albumBox_frame->setMaximumHeight(200);
+        artistList=new QListWidget();
+        connect(artistList,SIGNAL(clicked(QModelIndex)),this,SLOT(filterAlbum(QModelIndex)));
+        artistList->setFrameShape(QFrame::NoFrame);
+    artistList->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        artistList->setMaximumWidth(120);
+        artistList->setAlternatingRowColors(true);
+
+        //albumTable->setMaximumHeight(200);
+        albumBox->addWidget(cover,0,0,Qt::AlignLeft);
+        albumBox->addWidget(artistList,1,0,Qt::AlignLeft);
+        albumBox->addWidget(line,0,1,2,1, Qt::AlignLeft);
+        albumBox->addWidget(albumTable,0,2,2,1);
+
+    }else
+    {
+        albumTable->setMaximumHeight(120);
+        albumBox->addWidget(cover,0,0,Qt::AlignLeft);
+        albumBox->addWidget(line,0,1,Qt::AlignLeft);
+        albumBox->addWidget(albumTable,0,2);
+
+    }
+
+
+
+
     albumBox_frame->hide();
     line_h->hide();
     this->setLayout(layout);
@@ -185,6 +215,22 @@ void AlbumsView::hideAlbumFrame()
     albumTable->flushTable();
     albumBox_frame->hide();
     line_h->hide();
+}
+
+
+void AlbumsView::filterAlbum(QModelIndex index) {
+    QString album = index.data().toString();
+    qDebug()<<album;
+    albumTable->flushTable();
+    albumTable->populateTableView("SELECT * FROM tracks WHERE album = \""+album+"\" AND artist =\""+cover->getArtist()+"\" ORDER by album asc, track asc ");
+
+    QSqlQuery queryCover = connection->getQuery("SELECT * FROM albums WHERE title = \""+album+"\" AND artist =\""+cover->getArtist()+"\"");
+    while (queryCover.next())
+    {
+        if(!queryCover.value(2).toString().isEmpty()&&queryCover.value(2).toString()!="NULL") cover->image.load( queryCover.value(2).toString());
+
+    }
+
 }
 
 void AlbumsView::albumsSize(int value)
@@ -291,6 +337,21 @@ void AlbumsView::populateTableViewHeads(QSqlQuery query)
 
 }
 
+void AlbumsView::populateExtraList(QSqlQuery query)
+{
+    artistList->clear();
+    QStringList albums;
+    qDebug()<<"ON POPULATE ALBUM VIEW:";
+    while (query.next())
+    {
+        albums<< query.value(TITLE).toString();
+    }
+
+    artistList->addItems(albums);
+
+
+}
+
 
 void AlbumsView::playAlbum_clicked(QString artist, QString album)
 {
@@ -328,6 +389,7 @@ void AlbumsView::getArtistInfo(QStringList info)
         if(!queryCover.value(1).toString().isEmpty()&&queryCover.value(1).toString()!="NULL") cover->image.load( queryCover.value(1).toString());
 
     }
+    if(extraList) populateExtraList(connection->getQuery("SELECT * FROM albums WHERE artist = \""+info.at(0)+"\""));
 
 }
 

@@ -20,10 +20,11 @@ class AlbumsView : public QWidget
     Q_OBJECT
 
 public:
-    explicit AlbumsView(QWidget *parent = 0);
+    explicit AlbumsView(bool extraList=false, QWidget *parent = 0);
     ~AlbumsView();
     void populateTableView(QSqlQuery query);
     void populateTableViewHeads(QSqlQuery query);
+    void populateExtraList(QSqlQuery query);
     void passConnection(CollectionDB *con);
     void flushGrid();
     QSlider *slider;
@@ -34,7 +35,7 @@ public:
     enum ALBUMSVIEW_H{ TITLE, ARTIST, ART };
 
 private:
-
+    bool extraList=false;
     QListWidget *grid;
     QList<Album*> albumsList;
     QFrame *albumBox_frame;
@@ -42,7 +43,7 @@ private:
     Album *cover;
     CollectionDB *connection;
     Playlist *playlist;
-
+    QListWidget *artistList;
     QToolButton *closeBtn;
 
 public slots:
@@ -59,6 +60,7 @@ private slots:
     void albumHover();
     void albumsSize(int value);
     void orderChanged(QString order);
+    void filterAlbum(QModelIndex index);
 
 signals:
     void songClicked(QStringList url);

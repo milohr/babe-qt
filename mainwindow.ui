@@ -583,8 +583,7 @@
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset theme="insert-page-break">
-         <normaloff>.</normaloff>.</iconset>
+        <iconset theme="list-add"/>
        </property>
        <property name="autoRaise">
         <bool>true</bool>
@@ -600,8 +599,7 @@
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset theme="source-playlist">
-         <normaloff>.</normaloff>.</iconset>
+        <iconset theme="document-save-as"/>
        </property>
        <property name="autoRaise">
         <bool>true</bool>

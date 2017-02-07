@@ -202,7 +202,7 @@ void Album::mouseReleaseEvent ( QMouseEvent * evt)
 
 void Album::enterEvent(QEvent *event)
 {
-      Q_UNUSED(event);
+    Q_UNUSED(event);
     //title->show();
     //title->setSpeed(1);
     //  widget->setStyleSheet("background:rgba(180, 225, 230, 150)");
@@ -216,7 +216,7 @@ void Album::enterEvent(QEvent *event)
 
 void Album::leaveEvent(QEvent *event)
 {
-      Q_UNUSED(event);
+    Q_UNUSED(event);
     //title->hide();
     //title->setSpeed(0);
     // title->reset();

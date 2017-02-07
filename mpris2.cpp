@@ -24,9 +24,9 @@ Mpris::Mpris(QObject *p)
     connect(this, SIGNAL(setSeekId(qint32, quint32)), MPDConnection::self(), SLOT(setSeekId(qint32, quint32)));
     connect(this, SIGNAL(setVolume(int)), MPDConnection::self(), SLOT(setVolume(int)));*/
 
-//    connect(MPDConnection::self(), SIGNAL(currentSongUpdated(const Song &)), this, SLOT(updateCurrentSong(const Song &)));
+    //    connect(MPDConnection::self(), SIGNAL(currentSongUpdated(const Song &)), this, SLOT(updateCurrentSong(const Song &)));
     //connect(MPDStatus::self(), SIGNAL(updated()), this, SLOT(updateStatus()));
-   /* if (mprisPath.isEmpty()) {
+    /* if (mprisPath.isEmpty()) {
         mprisPath=QLatin1String(CANTATA_REV_URL);
         mprisPath.replace(".", "/");
         mprisPath="/"+mprisPath+"/Track/%1";
@@ -41,7 +41,7 @@ Mpris::~Mpris()
 
 void Mpris::Pause()
 {
-   qDebug()<<"pause";
+    qDebug()<<"pause";
 
 }
 
@@ -112,9 +112,9 @@ void Mpris::signalUpdate(const QVariantMap &map)
                                                      "org.freedesktop.DBus.Properties",
                                                      "PropertiesChanged");
     QVariantList args = QVariantList()
-                          << "org.mpris.MediaPlayer2.Player"
-                          << map
-                          << QStringList();
+            << "org.mpris.MediaPlayer2.Player"
+            << map
+            << QStringList();
     signal.setArguments(args);
     QDBusConnection::sessionBus().send(signal);
 }

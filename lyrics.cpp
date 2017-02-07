@@ -150,13 +150,10 @@ void Lyrics::getLyrics(QNetworkReply *reply)
 
 
         emit lyricsReady(text);
-         //disconnect(this, SIGNAL(lyricsReady(QString)), 0, 0);
+        //disconnect(this, SIGNAL(lyricsReady(QString)), 0, 0);
 
 
     }
 }
 
-void Lyrics::clean()
-{
-    if(!artist.isEmpty()&&!song.isEmpty()) disconnect(this, SIGNAL(lyricsReady(QString)), 0, 0);
-}
+

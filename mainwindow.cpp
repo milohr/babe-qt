@@ -66,14 +66,14 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setWindowIcon(QIcon(":Data/data/babe_48.svg"));
     this->setWindowIconText("Babe...");
 
- timer = new QTimer(this);
- connect(timer, &QTimer::timeout, [this]() {
-       // this->setLyrics(artist,title);
-      timer->stop();
-     qDebug()<<"antonpirulilului";
-     this->getTrackInfo();
+    timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, [this]() {
+        // this->setLyrics(artist,title);
+        timer->stop();
+        //qDebug()<<"antonpirulilului";
+        this->getTrackInfo();
 
-     });
+    });
 
     connect(this, SIGNAL(finishedPlayingSong(QString)),this,SLOT(addToPlayed(QString)));
     connect(this,SIGNAL(getCover(QString,QString)),this,SLOT(setCoverArt(QString,QString)));
@@ -114,8 +114,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(albumsTable,SIGNAL(playAlbum(QString, QString)),this,SLOT(putOnPlay(QString, QString)));
 
 
-    artistsTable = new AlbumsView();
+    artistsTable = new AlbumsView(true);
     artistsTable->albumTable->showColumn(BabeTable::ALBUM);
+    //artistsTable->albumTable->setMaximumHeight(200);
     connect(artistsTable->albumTable,SIGNAL(tableWidget_doubleClicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
     connect(artistsTable->albumTable,SIGNAL( babeIt_clicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
     connect(artistsTable,SIGNAL(playAlbum(QString, QString)),this,SLOT(putOnPlay(QString, QString)));
@@ -238,7 +239,7 @@ MainWindow::MainWindow(QWidget *parent) :
     hideAlbumViewUtils();
 
 
-    ui->saveResults->setEnabled(false);
+    ui->saveResults->setEnabled(true);
 
 
     this->addToolBar(Qt::BottomToolBarArea, ui->mainToolBar);
@@ -376,6 +377,7 @@ MainWindow::MainWindow(QWidget *parent) :
         //player->pause();
         updater->start();
         go_mini();
+        views->setCurrentIndex(COLLECTION);
 
     }else
     {
@@ -1125,7 +1127,7 @@ void MainWindow::loadTrack()
         player->setMedia(QUrl::fromLocalFile(current_song_url));
         player->play();
         ui->play_btn->setIcon(QIcon(":Data/data/media-playback-pause.svg"));
-qDebug()<<"Current song playing is: "<< current_song_url;
+        qDebug()<<"Current song playing is: "<< current_song_url;
         this->setWindowTitle(current_title+" \xe2\x99\xa1 "+current_artist);
 
         album_art->setArtist(current_artist);
@@ -1146,13 +1148,7 @@ qDebug()<<"Current song playing is: "<< current_song_url;
 
         //if(player->position()>player->duration()/4)
 
-
-
-
-
-           timer->start(2000);
-
-
+        timer->start(2000);
 
 
     }else
@@ -1252,14 +1248,14 @@ void MainWindow::getTrackInfo()
 {
     if(!current_album.isEmpty()&&!current_artist.isEmpty())
     {
-            auto coverInfo = new ArtWork();
-    auto artistInfo = new ArtWork;
-    connect(coverInfo, SIGNAL(infoReady(QString)), infoTable, SLOT(setAlbumInfo(QString)));
-    connect(artistInfo, SIGNAL(bioReady(QString)), infoTable, SLOT(setArtistInfo(QString)));
-    coverInfo->setDataCoverInfo(current_artist,current_album);
-    artistInfo->setDataHeadInfo(current_artist);
+        auto coverInfo = new ArtWork();
+        auto artistInfo = new ArtWork;
+        connect(coverInfo, SIGNAL(infoReady(QString)), infoTable, SLOT(setAlbumInfo(QString)));
+        connect(artistInfo, SIGNAL(bioReady(QString)), infoTable, SLOT(setArtistInfo(QString)));
+        coverInfo->setDataCoverInfo(current_artist,current_album);
+        artistInfo->setDataHeadInfo(current_artist);
 
-    setLyrics(current_artist,current_title);
+        setLyrics(current_artist,current_title);
     }
 }
 
@@ -1318,7 +1314,7 @@ void MainWindow::next()
     loadTrack();
 
 
-     // timer->setInterval(1000);
+    // timer->setInterval(1000);
 
 
 
@@ -1773,8 +1769,8 @@ void MainWindow::saveResultsTo(QAction *action)
     switch(views->currentIndex())
     {
     case COLLECTION: collectionTable->populatePlaylist(collectionTable->getTableContent(BabeTable::LOCATION),playlist); break;
-    case ALBUMS: collectionTable->populatePlaylist(collectionTable->getTableContent(BabeTable::LOCATION),playlist); break;
-    case ARTISTS: collectionTable->populatePlaylist(collectionTable->getTableContent(BabeTable::LOCATION),playlist); break;
+    case ALBUMS: albumsTable->albumTable->populatePlaylist(albumsTable->albumTable->getTableContent(BabeTable::LOCATION),playlist); break;
+    case ARTISTS: artistsTable->albumTable->populatePlaylist(artistsTable->albumTable->getTableContent(BabeTable::LOCATION),playlist); break;
     case PLAYLISTS: playlistTable->table->populatePlaylist(playlistTable->table->getTableContent(BabeTable::LOCATION),playlist); break;
     case QUEUE: collectionTable->populatePlaylist(collectionTable->getTableContent(BabeTable::LOCATION),playlist); break;
     case INFO: collectionTable->populatePlaylist(collectionTable->getTableContent(BabeTable::LOCATION),playlist); break;
