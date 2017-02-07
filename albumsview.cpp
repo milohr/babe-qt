@@ -391,7 +391,7 @@ void AlbumsView::getArtistInfo(QStringList info)
         if(!queryCover.value(1).toString().isEmpty()&&queryCover.value(1).toString()!="NULL") cover->image.load( queryCover.value(1).toString());
 
     }
-    if(extraList) populateExtraList(connection->getQuery("SELECT * FROM albums WHERE artist = \""+info.at(0)+"\""));
+    if(extraList) populateExtraList(connection->getQuery("SELECT * FROM albums WHERE artist = \""+info.at(0)+"\" ORDER by title asc"));
 
 }
 

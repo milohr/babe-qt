@@ -1173,12 +1173,12 @@ void MainWindow::loadCover(QString artist, QString album, QString title)
             {
 
 
-                album_art->image.load( queryCover.value(2).toString());
+                if (!queryCover.value(2).toString().isEmpty()) album_art->image.load( queryCover.value(2).toString());
                 if(!this->isActiveWindow())
                 {
 
                     QPixmap pix;
-                    pix.load(queryCover.value(2).toString());
+                    if (!queryCover.value(2).toString().isEmpty())  pix.load(queryCover.value(2).toString());
                     auto *nof = new Notify();
                     connect(nof,SIGNAL(babeSong(QString)),this,SLOT(babeIt(QString)));
                     nof->notifySong(title,artist,album,current_song_url,pix);
@@ -1194,7 +1194,7 @@ void MainWindow::loadCover(QString artist, QString album, QString title)
 
             if(!queryHead.value(1).toString().isEmpty()||queryCover.value(1).toString()!="NULL")
             {
-                infoTable->artist->image.load( queryHead.value(1).toString());
+                if (!queryHead.value(1).toString().isEmpty())  infoTable->artist->image.load( queryHead.value(1).toString());
                 infoTable->artist->setArtist(artist);
             }else  infoTable->artist->image.load(":Data/data/cover.svg");
 
@@ -1218,8 +1218,8 @@ void MainWindow::loadCover(QString artist, QString album, QString title)
                     if(!queryCover.value(2).toString().isEmpty()||queryCover.value(2).toString()!="NULL")
                     {
                         qDebug()<<"found the artwork in cache3";
-                        album_art->image.load( queryCover.value(2).toString());
-                        infoTable->artist->image.load( queryCover.value(2).toString());
+                         if (!queryCover.value(2).toString().isEmpty())  album_art->image.load( queryCover.value(2).toString());
+                         if (!queryCover.value(2).toString().isEmpty()) infoTable->artist->image.load( queryCover.value(2).toString());
                         QPixmap pix;
                         pix.load(queryCover.value(2).toString());
                         auto *nof = new Notify();
