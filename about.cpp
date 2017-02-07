@@ -41,5 +41,5 @@ void About::on_pushButton_clicked()
 void About::on_codeBtn_clicked()
 {
 
-     QDesktopServices::openUrl(this->url);
+    QDesktopServices::openUrl(this->url);
 }

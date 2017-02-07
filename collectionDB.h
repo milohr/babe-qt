@@ -33,7 +33,8 @@ public:
     bool check_existance(QString tableName, QString searchId, QString search);
     void addSong(QStringList paths, int babe);
     void createTable(QString tableName);
-
+    QStringList albums;
+    QStringList artists;
     enum colums
     {
         TRACK,TITLE,ARTIST,ALBUM,GENRE,LOCATION,STARS,BABE,ART,PLAYED,PLAYLIST
@@ -43,8 +44,7 @@ private:
 
     QSqlDatabase m_db;
     QList <Track> trackList;
-    QStringList albums;
-    QStringList artists;
+
 
 public slots:
     void addTrack(QStringList paths, int babe=0);

@@ -35,7 +35,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     void setStyle();
-    void updateList();    
+    void updateList();
     void populateMainList();
 
     enum views
@@ -44,7 +44,7 @@ public:
     };
     enum utilsBar
     {
-       INFO_UB,PLAYLISTS_UB,SEARCH_UB,ALBUMS_UB,COLLECTION_UB, FAVORITES_UB,QUEUE_UB
+        INFO_UB,PLAYLISTS_UB,SEARCH_UB,ALBUMS_UB,COLLECTION_UB, FAVORITES_UB,QUEUE_UB
     };
 
 
@@ -60,9 +60,9 @@ protected:
 
 public slots:
 
- void addToPlaylist(QStringList list);
-void putPixmap(QByteArray array);
-void dummy();
+    void addToPlaylist(QStringList list);
+    void putPixmap(QByteArray array);
+    void dummy();
 private slots:
 
     void on_hide_sidebar_btn_clicked();
@@ -88,8 +88,7 @@ private slots:
 
     void addToFavorites(QStringList list);
     void addToCollection(QStringList list);
-    void addToCollectionDB(QStringList url, QString babe);
-    void addToCollectionDB_t(QStringList url);
+    void addToCollectionDB_t(QStringList url,QString babe=0);
     void scanNewDir(QString url);
 
 
@@ -110,27 +109,26 @@ private slots:
     void setCoverArt(QString artist, QString album);
 
     void on_settings_view_clicked();
-    void labelClicked();
     void orderTables();
 
-   void on_rowInserted(QModelIndex model ,int x,int y);
-   void showAlbumViewUtils();
-   void hideAlbumViewUtils();
-   void AlbumsViewOrder(QString order);
-   void refreshTables();
-   void addToPlayed(QString url);
+    void on_rowInserted(QModelIndex model ,int x,int y);
+    void showAlbumViewUtils();
+    void hideAlbumViewUtils();
+    void AlbumsViewOrder(QString order);
+    void refreshTables();
+    void addToPlayed(QString url);
 
 
-   void on_refreshBtn_clicked();
+    void on_refreshBtn_clicked();
 
-   void on_tracks_view_2_clicked();
+    void on_tracks_view_2_clicked();
 
-   void on_refreshAll_clicked();
+    void on_refreshAll_clicked();
 
-   void on_addAll_clicked();
-   void saveResultsTo(QAction *action);
-   void on_saveResults_clicked();
-void setLyrics(QString artist,QString title);
+    void on_addAll_clicked();
+    void saveResultsTo(QAction *action);
+    void on_saveResults_clicked();
+    void setLyrics(QString artist,QString title);
     void getTrackInfo(QString artist, QString album, QString title);
 private:
 
@@ -174,6 +172,7 @@ private:
 
     /*the streaming */
     Playlist playlist;
+    Playlist queueList;
     QMediaPlayer *player = new QMediaPlayer();
     QTimer *updater = new QTimer(this);
     QString current_song_url;
@@ -190,7 +189,7 @@ private:
     vector<unsigned short int> shuffledPlaylist;
     bool shuffle = false;
     QMenu *saveResults_menu;
-   // void collectionWatcher();
+    // void collectionWatcher();
 
 signals:
     void finishedPlayingSong(QString url);

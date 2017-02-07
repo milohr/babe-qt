@@ -13,6 +13,7 @@
 #include <QFileSystemWatcher>
 #include <QLabel>
 #include <QMovie>
+#include <QStringList>
 
 namespace Ui {
 class settings;
@@ -59,6 +60,7 @@ public slots:
 
     void populateDB(QString path);
     void fetchArt();
+    void refreshWatchFiles();
 
 private:
     Ui::settings *ui;
@@ -75,6 +77,8 @@ private:
    // QFileSystemWatcher watcher;
     QThread* thread;
     About *about_ui;
+    QStringList files;
+    QStringList dirs;
 
 signals:
 
