@@ -88,6 +88,8 @@ MainWindow::MainWindow(QWidget *parent) :
     frame->setFrameShadow(QFrame::Raised);
 
     settings_widget = new settings(); //this needs to go fist
+    queueTable = new BabeTable();
+
 
     collectionTable = new BabeTable();
     collectionTable->passCollectionConnection(&settings_widget->getCollectionDB());
@@ -96,6 +98,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(collectionTable,SIGNAL(leftTable()),this,SLOT(showControls()));
     connect(collectionTable,SIGNAL(finishedPopulating()),this,SLOT(orderTables()));
     connect(collectionTable,SIGNAL( babeIt_clicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
+    connect(collectionTable,SIGNAL(queueIt_clicked(QString)),this,SLOT(addToQueue(QString)));
 
 
     resultsTable=new BabeTable();
@@ -106,12 +109,15 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(resultsTable,SIGNAL(enteredTable()),this,SLOT(hideControls()));
     connect(resultsTable,SIGNAL(leftTable()),this,SLOT(showControls()));
     connect(resultsTable,SIGNAL( babeIt_clicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
+    connect(resultsTable,SIGNAL(queueIt_clicked(QString)),this,SLOT(addToQueue(QString)));
+
 
     albumsTable = new AlbumsView();
     connect(albumsTable,SIGNAL(albumOrderChanged(QString)),this,SLOT(AlbumsViewOrder(QString)));
     connect(albumsTable->albumTable,SIGNAL(tableWidget_doubleClicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
     connect(albumsTable->albumTable,SIGNAL( babeIt_clicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
     connect(albumsTable,SIGNAL(playAlbum(QString, QString)),this,SLOT(putOnPlay(QString, QString)));
+    connect(albumsTable->albumTable,SIGNAL(queueIt_clicked(QString)),this,SLOT(addToQueue(QString)));
 
 
     artistsTable = new AlbumsView(true);
@@ -120,6 +126,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(artistsTable->albumTable,SIGNAL(tableWidget_doubleClicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
     connect(artistsTable->albumTable,SIGNAL( babeIt_clicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
     connect(artistsTable,SIGNAL(playAlbum(QString, QString)),this,SLOT(putOnPlay(QString, QString)));
+    connect(artistsTable->albumTable,SIGNAL(queueIt_clicked(QString)),this,SLOT(addToQueue(QString)));
 
 
     playlistTable = new PlaylistsView();
@@ -127,6 +134,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(playlistTable->table,SIGNAL(tableWidget_doubleClicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
     connect(playlistTable->table,SIGNAL( babeIt_clicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
     connect(playlistTable->table,SIGNAL(createPlaylist_clicked()),this,SLOT(playlistsView()));
+    connect(playlistTable->table,SIGNAL(queueIt_clicked(QString)),this,SLOT(addToQueue(QString)));
 
 
     infoTable = new InfoView();
@@ -135,6 +143,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(lyrics,SIGNAL(lyricsReady(QString)),infoTable,SLOT(setLyrics(QString)));
 
     //playback = new QToolBar();
+
+
+
+
     utilsBar = new QToolBar();
 
     settings_widget->readSettings();
@@ -256,7 +268,7 @@ MainWindow::MainWindow(QWidget *parent) :
     views->addWidget(albumsTable);
     views->addWidget(artistsTable);
     views->addWidget(playlistTable);
-    views->addWidget(new BabeTable());
+    views->addWidget(queueTable);
     views->addWidget(infoTable);
     views->addWidget(settings_widget);
     views->addWidget(resultsTable);
@@ -1145,6 +1157,13 @@ void MainWindow::loadTrack()
             ui->fav_btn->setIcon(QIcon(":Data/data/love-amarok.svg"));
         }
 
+        QSqlQuery query = settings_widget->collection_db.getQuery("SELECT * FROM tracks WHERE location = \""+current_song_url+"\"");
+        if(query.exec())
+            while (query.next())
+               loadMood(query.value(BabeTable::ART).toString());
+
+
+
         //AND WHETHER THE SONG EXISTS OR  DO NOT GET THE TRACK INFO
         loadCover(current_artist,current_album,current_title);
 
@@ -1160,6 +1179,23 @@ void MainWindow::loadTrack()
     }
 }
 
+
+void MainWindow::loadMood(QString color)
+{
+    if(!color.isEmpty())
+    {
+        seekBar->setStyleSheet(QString("QSlider\n{\nbackground:transparent;}\nQSlider::groove:horizontal {border: none; background: transparent; height: 5px; border-radius: 0; } QSlider::sub-page:horizontal {\nbackground: %1 ;border: none; height: 5px;border-radius: 0;} QSlider::add-page:horizontal {\nbackground: transparent; border: none; height: 5px; border-radius: 0; } QSlider::handle:horizontal {background: %1; width: 8px; } QSlider::handle:horizontal:hover {background: qlineargradient(x1:0, y1:0, x2:1, y2:1,stop:0 #fff, stop:1 #ddd);border: 1px solid #444;border-radius: 4px;}QSlider::sub-page:horizontal:disabled {background: #bbb;border-color: #999;}QSlider::add-page:horizontal:disabled {background: #eee;border-color: #999;}QSlider::handle:horizontal:disabled {background: #eee;border: 1px solid #aaa;border-radius: 4px;}").arg(color));
+        //ui->listWidget->setStyleSheet(QString("QListWidget::item:selected {background:%1;}").arg(color));
+    }else
+    {
+        //ui->listWidget->setBackgroundRole(QPalette::Highlight);
+        //ui->listWidget->setpa
+        seekBar->setStyleSheet("QSlider\n{\nbackground:transparent;}\nQSlider::groove:horizontal {border: none; background: transparent; height: 5px; border-radius: 0; } QSlider::sub-page:horizontal {\nbackground: #f85b79;border: none; height: 5px;border-radius: 0;} QSlider::add-page:horizontal {\nbackground: transparent; border: none; height: 5px; border-radius: 0; } QSlider::handle:horizontal {background: #f85b79; width: 8px; } QSlider::handle:horizontal:hover {background: qlineargradient(x1:0, y1:0, x2:1, y2:1,stop:0 #fff, stop:1 #ddd);border: 1px solid #444;border-radius: 4px;}QSlider::sub-page:horizontal:disabled {background: #bbb;border-color: #999;}QSlider::add-page:horizontal:disabled {background: #eee;border-color: #999;}QSlider::handle:horizontal:disabled {background: #eee;border: 1px solid #aaa;border-radius: 4px;}");
+
+    }
+}
+
+
 void MainWindow::loadCover(QString artist, QString album, QString title)
 {
 
@@ -1173,7 +1209,6 @@ void MainWindow::loadCover(QString artist, QString album, QString title)
         {
             if(!queryCover.value(2).toString().isEmpty()||queryCover.value(2).toString()!="NULL")
             {
-
 
                 if (!queryCover.value(2).toString().isEmpty()) album_art->image.load( queryCover.value(2).toString());
                 if(!this->isActiveWindow())
@@ -1220,8 +1255,8 @@ void MainWindow::loadCover(QString artist, QString album, QString title)
                     if(!queryCover.value(2).toString().isEmpty()||queryCover.value(2).toString()!="NULL")
                     {
                         qDebug()<<"found the artwork in cache3";
-                         if (!queryCover.value(2).toString().isEmpty())  album_art->image.load( queryCover.value(2).toString());
-                         if (!queryCover.value(2).toString().isEmpty()) infoTable->artist->image.load( queryCover.value(2).toString());
+                        if (!queryCover.value(2).toString().isEmpty())  album_art->image.load( queryCover.value(2).toString());
+                        if (!queryCover.value(2).toString().isEmpty()) infoTable->artist->image.load( queryCover.value(2).toString());
                         QPixmap pix;
                         pix.load(queryCover.value(2).toString());
                         auto *nof = new Notify();
@@ -1244,6 +1279,24 @@ void MainWindow::loadCover(QString artist, QString album, QString title)
 
 
     }
+}
+
+void MainWindow::addToQueue(QString url)
+{
+    qDebug()<<"SONGS IN QUEUE";
+    queue_list<<url;
+    queueList.add({url});
+   queueTable->flushTable();
+
+    for(auto a:queue_list)queueTable->populateTableView("SELECT * FROM tracks WHERE location = \""+a+"\"");
+}
+
+void MainWindow::removeFromQueue(QString url)
+{
+    queue_list.removeAll(url);
+    queueList.removeAll();
+    queueList.add(queue_list);
+   // queueList.remove();
 }
 
 void MainWindow::getTrackInfo()

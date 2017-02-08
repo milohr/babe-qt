@@ -112,9 +112,11 @@ BabeTable::BabeTable(QTableWidget *parent) : QTableWidget(parent) {
     connect(this, SIGNAL(rightClicked(QPoint)), this,
             SLOT(setUpContextMenu(QPoint)));
 
+
     connect(babeIt, SIGNAL(triggered()), this, SLOT(babeIt_action()));
     connect(removeIt, SIGNAL(triggered()), this, SLOT(babeIt_action()));
     connect(moodIt, SIGNAL(triggered()), this, SLOT(moodIt_action()));
+    connect(queueIt, SIGNAL(triggered()), this, SLOT(queueIt_action()));
 
 
     QButtonGroup *bg = new QButtonGroup(contextMenu);
@@ -631,9 +633,41 @@ void BabeTable::moodIt_action() {
 
     QColor color = QColorDialog::getColor(Qt::black, this, "Pick a color",  QColorDialog::DontUseNativeDialog);
     qDebug()<< color.name();
+
+    if(!color.name().isEmpty())
+    {
+        QSqlQuery query;
+        query.prepare("UPDATE tracks SET art = (:art) WHERE location = (:location)" );
+        //query.prepare("SELECT * FROM "+tableName+" WHERE "+searchId+" = (:search)");
+        query.bindValue(":art",  color.name() );
+        query.bindValue(":location", this->model()->data(this->model()->index(row, LOCATION)).toString());
+
+        if(query.exec())
+        {
+            qDebug()<<"Art[color] inserted into DB"<< color.name();
+
+        }else
+        {
+            qDebug()<<"COULDN'T insert art[color] into DB";
+        }
+    }
+
+
+    //emit moodIt_clicked(this->model()->data(this->model()->index(row, LOCATION)).toString(),color.name());
     /*emit babeIt_clicked(
       {this->model()->data(this->model()->index(row, LOCATION)).toString()});*/
 }
+
+
+ void BabeTable::queueIt_action()
+ {
+     qDebug() << "queueIt clicked!";
+     // int row= this->currentIndex().row();
+    QString url = this->model()->data(this->model()->index(row, LOCATION)).toString();
+     qDebug()<<url;
+     emit queueIt_clicked(url);
+
+ }
 
 void BabeTable::flushTable() {
     this->clearContents();

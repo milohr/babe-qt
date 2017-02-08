@@ -138,7 +138,9 @@ private slots:
     void loadCover(QString artist, QString album, QString title);
     void babeIt(QString url);
     void unbabeIt(QString url);
-
+    void loadMood(QString color);
+    void addToQueue(QString url);
+    void removeFromQueue(QString url);
 
 private:
 
@@ -179,10 +181,11 @@ private:
     AlbumsView* artistsTable;
     PlaylistsView *playlistTable;
     InfoView *infoTable;
-
+    BabeTable *queueTable;
     /*the streaming */
     Playlist playlist;
     Playlist queueList;
+    QStringList queue_list;
     QMediaPlayer *player = new QMediaPlayer();
     QTimer *updater = new QTimer(this);
     QString current_song_url;

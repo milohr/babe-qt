@@ -63,6 +63,7 @@ private slots:
     void addToPlaylist(QAction* action);
     void babeIt_action();
     void moodIt_action();
+     void queueIt_action();
 
 public slots:
      QStringList getPlaylistMenus();
@@ -89,6 +90,8 @@ signals:
     void babeIt_clicked(QStringList list);
     void createPlaylist_clicked();
     void refreshPlaylistsMenu(QStringList list);
+    void moodIt_clicked(QString url, QString art);
+    void queueIt_clicked(QString url);
 
 };
 
