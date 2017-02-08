@@ -384,6 +384,7 @@ MainWindow::MainWindow(QWidget *parent) :
         addMusicImg->show();
         ui->tracks_view->setChecked(true);
     }
+    updater->start();
 }
 
 
@@ -1126,7 +1127,7 @@ void MainWindow::loadTrack()
 
         player->setMedia(QUrl::fromLocalFile(current_song_url));
         player->play();
-         updater->start();
+
         ui->play_btn->setIcon(QIcon(":Data/data/media-playback-pause.svg"));
         qDebug()<<"Current song playing is: "<< current_song_url;
         this->setWindowTitle(current_title+" \xe2\x99\xa1 "+current_artist);
@@ -1362,7 +1363,7 @@ void MainWindow::on_play_btn_clicked()
         else
         {
             player->play();
-            updater->start();
+            //updater->start();
             ui->play_btn->setIcon(QIcon(":Data/data/media-playback-pause.svg"));
         }
     }
