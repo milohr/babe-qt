@@ -7,7 +7,7 @@ Babe will also handle your whole music collection, letting you create playlists 
 
 (previous unfinished gtk3 version still in my repository) 
 
-you need to have taglib installed in order to compile this app
+you need to have [ taglib - knotification ]installed in order to compile this app
 
 <h3> To run: </h3>
 qmake && make && ./Babe
@@ -38,8 +38,8 @@ qmake && make && ./Babe
 <h3> Albums View </h3>
 ![alt tag](https://github.com/milohr/babe-qt/blob/master/screenshots/albums_view.png?raw=true) 
 
-<h3> Favorites View </h3>
-![alt tag](https://github.com/milohr/babe-qt/blob/master/screenshots/favorites_view.png?raw=true) 
+<h3> Artists View </h3>
+![alt tag](https://github.com/milohr/babe-qt/blob/master/screenshots/artists_view.png?raw=true) 
 
 <h3> Playlists View </h3>
 ![alt tag](https://github.com/milohr/babe-qt/blob/master/screenshots/playlists_view.png?raw=true) 

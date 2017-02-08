@@ -375,7 +375,7 @@ MainWindow::MainWindow(QWidget *parent) :
     {
         loadTrack();
         //player->pause();
-        updater->start();
+        //updater->start();
         go_mini();
         views->setCurrentIndex(COLLECTION);
 
