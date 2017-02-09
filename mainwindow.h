@@ -151,6 +151,7 @@ private:
     void keepOnTop(bool state);
     void setUpViews();
     void loadTrack();
+    void loadTrackOnQueue();
     int getIndex();
     void next();
     void back();

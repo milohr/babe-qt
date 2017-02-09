@@ -1184,62 +1184,67 @@ void MainWindow::loadTrack()
         }
     }else
     {
-        current_song_url = QString::fromStdString(queueList.tracks[0].getLocation());
-
-
-        if(fileExists(current_song_url))
-        {
-            current_artist=QString::fromStdString(queueList.tracks[0].getArtist());
-            current_album=QString::fromStdString(queueList.tracks[0].getAlbum());
-            current_title=QString::fromStdString(queueList.tracks[0].getTitle());
-
-
-
-            player->setMedia(QUrl::fromLocalFile(current_song_url));
-            player->play();
-
-            ui->play_btn->setIcon(QIcon(":Data/data/media-playback-pause.svg"));
-            qDebug()<<"Current song playing is: "<< current_song_url;
-            this->setWindowTitle(current_title+" \xe2\x99\xa1 "+current_artist);
-
-            album_art->setArtist(current_artist);
-            album_art->setAlbum(current_album);
-            album_art->setTitle();
-
-            //CHECK IF THE SONG IS BABED IT OR IT ISN'T
-            if(settings_widget->getCollectionDB().checkQuery("SELECT * FROM tracks WHERE location = \""+current_song_url+"\" AND babe = \"1\""))
-            {
-                ui->fav_btn->setIcon(QIcon(":Data/data/loved.svg"));
-            }else
-            {
-                ui->fav_btn->setIcon(QIcon(":Data/data/love-amarok.svg"));
-            }
-
-            QSqlQuery query = settings_widget->collection_db.getQuery("SELECT * FROM tracks WHERE location = \""+current_song_url+"\"");
-            if(query.exec())
-                while (query.next())
-                    loadMood(query.value(BabeTable::ART).toString());
-
-
-
-            //AND WHETHER THE SONG EXISTS OR  DO NOT GET THE TRACK INFO
-            loadCover(current_artist,current_album,current_title);
-
-            removeFromQueue(current_song_url);
-            lCounter--;
-            //if(player->position()>player->duration()/4)
-
-            timer->start(2000);
-
-
-        }else
-        {
-            removeSong(getIndex());
-            qDebug()<<"this song doesn't exists: "<< current_song_url;
-        }
+        loadTrackOnQueue();
     }
 }
 
+
+void MainWindow::loadTrackOnQueue()
+{
+    current_song_url = QString::fromStdString(queueList.tracks[0].getLocation());
+
+
+    if(fileExists(current_song_url))
+    {
+        current_artist=QString::fromStdString(queueList.tracks[0].getArtist());
+        current_album=QString::fromStdString(queueList.tracks[0].getAlbum());
+        current_title=QString::fromStdString(queueList.tracks[0].getTitle());
+
+
+
+        player->setMedia(QUrl::fromLocalFile(current_song_url));
+        player->play();
+
+        ui->play_btn->setIcon(QIcon(":Data/data/media-playback-pause.svg"));
+        qDebug()<<"Current song playing is: "<< current_song_url;
+        this->setWindowTitle(current_title+" \xe2\x99\xa1 "+current_artist);
+
+        album_art->setArtist(current_artist);
+        album_art->setAlbum(current_album);
+        album_art->setTitle();
+
+        //CHECK IF THE SONG IS BABED IT OR IT ISN'T
+        if(settings_widget->getCollectionDB().checkQuery("SELECT * FROM tracks WHERE location = \""+current_song_url+"\" AND babe = \"1\""))
+        {
+            ui->fav_btn->setIcon(QIcon(":Data/data/loved.svg"));
+        }else
+        {
+            ui->fav_btn->setIcon(QIcon(":Data/data/love-amarok.svg"));
+        }
+
+        QSqlQuery query = settings_widget->collection_db.getQuery("SELECT * FROM tracks WHERE location = \""+current_song_url+"\"");
+        if(query.exec())
+            while (query.next())
+                loadMood(query.value(BabeTable::ART).toString());
+
+
+
+        //AND WHETHER THE SONG EXISTS OR  DO NOT GET THE TRACK INFO
+        loadCover(current_artist,current_album,current_title);
+
+        removeFromQueue(current_song_url);
+        //lCounter--;
+        //if(player->position()>player->duration()/4)
+
+        timer->start(2000);
+
+
+    }else
+    {
+        removeSong(getIndex());
+        qDebug()<<"this song doesn't exists: "<< current_song_url;
+    }
+}
 
 void MainWindow::loadMood(QString color)
 {
@@ -1419,6 +1424,9 @@ void MainWindow::update()
 
 void MainWindow::next()
 {
+
+    if(queue_list.isEmpty())
+    {
     lCounter++;
 
     if(repeat)
@@ -1433,7 +1441,7 @@ void MainWindow::next()
 
     //ui->play->setChecked(false);
     //ui->searchBar->clear();
-
+}
     loadTrack();
 
 
