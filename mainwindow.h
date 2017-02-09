@@ -43,7 +43,7 @@ public:
 
     enum views
     {
-        COLLECTION,ALBUMS,ARTISTS,PLAYLISTS,QUEUE,INFO,SETTINGS,RESULTS
+        COLLECTION,ALBUMS,ARTISTS,PLAYLISTS,QUEUE,INFO,YOUTUBE,SETTINGS,RESULTS
     };
     enum utilsBar
     {
@@ -85,6 +85,7 @@ private slots:
     void queueView();
     void playlistsView();
     void infoView();
+    void youtubeView();
     void settingsView();
 
     /*the view stacked actions*/

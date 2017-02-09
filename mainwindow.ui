@@ -231,8 +231,7 @@
      <string>Info</string>
     </property>
     <property name="icon">
-     <iconset theme="internet-amarok">
-      <normaloff>.</normaloff>.</iconset>
+     <iconset theme="kstars_constellationart"/>
     </property>
     <property name="checkable">
      <bool>true</bool>
@@ -1009,8 +1008,8 @@ border-top: 1px solid #333;
    <widget class="QToolButton" name="youtube_view">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>0</y>
+      <x>0</x>
+      <y>-10</y>
       <width>31</width>
       <height>33</height>
      </rect>
@@ -1018,8 +1017,14 @@ border-top: 1px solid #333;
     <property name="text">
      <string>YouTube</string>
     </property>
+    <property name="icon">
+     <iconset theme="internet-amarok"/>
+    </property>
+    <property name="autoExclusive">
+     <bool>true</bool>
+    </property>
     <property name="toolButtonStyle">
-     <enum>Qt::ToolButtonFollowStyle</enum>
+     <enum>Qt::ToolButtonIconOnly</enum>
     </property>
     <property name="autoRaise">
      <bool>true</bool>

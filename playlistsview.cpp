@@ -176,7 +176,12 @@ void PlaylistsView::createMoodPlaylist(QColor color) {
         list->addItem(item);
 
         if (!color.name().isEmpty())
+        {
+            moods<<color.name();
             emit playlistCreated(item->text(),color.name());
+
+
+        }
     }else
     {
         qDebug()<<"that mood already exists";

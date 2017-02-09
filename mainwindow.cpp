@@ -235,11 +235,13 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->info_view->setToolTip("Info");
     ui->mainToolBar->addWidget(ui->info_view);
 
+    ui->youtube_view->setToolTip("YouTube");
+    ui->mainToolBar->addWidget(ui->youtube_view);
+
     ui->settings_view->setToolTip("Setings");
     ui->mainToolBar->addWidget(ui->settings_view);
 
-    ui->youtube_view->setToolTip("YouTube");
-    ui->mainToolBar->addWidget(ui->youtube_view);
+
 
     ui->mainToolBar->addWidget(right_spacer);
 
@@ -283,6 +285,7 @@ MainWindow::MainWindow(QWidget *parent) :
     views->addWidget(playlistTable);
     views->addWidget(queueTable);
     views->addWidget(infoTable);
+    views->addWidget(new BabeTable());
     views->addWidget(settings_widget);
     views->addWidget(resultsTable);
 
@@ -293,6 +296,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->playlists_view, SIGNAL(clicked()), this, SLOT(playlistsView()));
     connect(ui->queue_view, SIGNAL(clicked()), this, SLOT(queueView()));
     connect(ui->info_view, SIGNAL(clicked()), this, SLOT(infoView()));
+    connect(ui->youtube_view, SIGNAL(clicked()), this, SLOT(youtubeView()));
     connect(ui->settings_view, SIGNAL(clicked()), this, SLOT(settingsView()));
 
 
@@ -834,6 +838,22 @@ qDebug()<<url;
     //updateList();
     populateTableView();*/
 }
+
+void MainWindow::youtubeView()
+{
+    views->setCurrentIndex(YOUTUBE);
+    if(mini_mode!=0) expand();
+    //if(!hideSearch) utilsBar->hide(); line->hide();
+    hideAlbumViewUtils();
+    utilsBar->actions().at(COLLECTION_UB)->setVisible(true);
+    utilsBar->actions().at(PLAYLISTS_UB)->setVisible(false); ui->frame_3->hide();
+    utilsBar->actions().at(INFO_UB)->setVisible(false);
+
+
+    prevIndex=views->currentIndex();
+
+}
+
 void MainWindow::settingsView()
 {
     views->setCurrentIndex(SETTINGS);
@@ -893,7 +913,8 @@ this->show();*/
     case ARTISTS:  icon="draw-star"; break;
     case PLAYLISTS:  icon="amarok_lyrics"; break;
     case QUEUE:  icon="amarok_clock"; break;
-    case INFO: icon="internet-amarok"; break;
+    case INFO: icon="documentinfo"; break;
+        case YOUTUBE: icon="amarok-internet"; break;
     case SETTINGS:  icon="games-config-options"; break;
     default:  icon="search";
     }
@@ -1872,9 +1893,9 @@ void MainWindow::on_addAll_clicked()
     case ALBUMS: addToPlaylist(albumsTable->albumTable->getTableContent(BabeTable::LOCATION)); break;
     case ARTISTS: addToPlaylist(artistsTable->albumTable->getTableContent(BabeTable::LOCATION)); break;
     case PLAYLISTS: addToPlaylist(playlistTable->table->getTableContent(BabeTable::LOCATION)); break;
-    case QUEUE: addToPlaylist(collectionTable->getTableContent(BabeTable::LOCATION)); break;
-    case INFO: addToPlaylist(collectionTable->getTableContent(BabeTable::LOCATION)); break;
-    case SETTINGS:  addToPlaylist(collectionTable->getTableContent(BabeTable::LOCATION)); break;
+    case QUEUE: addToPlaylist(queueTable->getTableContent(BabeTable::LOCATION)); break;
+    //case INFO: addToPlaylist(collectionTable->getTableContent(BabeTable::LOCATION)); break;
+   // case SETTINGS:  addToPlaylist(collectionTable->getTableContent(BabeTable::LOCATION)); break;
     case RESULTS: addToPlaylist(resultsTable->getTableContent(BabeTable::LOCATION)); break;
 
     }
@@ -1902,9 +1923,9 @@ void MainWindow::saveResultsTo(QAction *action)
     case ALBUMS: albumsTable->albumTable->populatePlaylist(albumsTable->albumTable->getTableContent(BabeTable::LOCATION),playlist); break;
     case ARTISTS: artistsTable->albumTable->populatePlaylist(artistsTable->albumTable->getTableContent(BabeTable::LOCATION),playlist); break;
     case PLAYLISTS: playlistTable->table->populatePlaylist(playlistTable->table->getTableContent(BabeTable::LOCATION),playlist); break;
-    case QUEUE: collectionTable->populatePlaylist(collectionTable->getTableContent(BabeTable::LOCATION),playlist); break;
-    case INFO: collectionTable->populatePlaylist(collectionTable->getTableContent(BabeTable::LOCATION),playlist); break;
-    case SETTINGS:  collectionTable->populatePlaylist(collectionTable->getTableContent(BabeTable::LOCATION),playlist); break;
+    case QUEUE: queueTable->populatePlaylist(queueTable->getTableContent(BabeTable::LOCATION),playlist); break;
+    //case INFO: collectionTable->populatePlaylist(collectionTable->getTableContent(BabeTable::LOCATION),playlist); break;
+    //case SETTINGS:  collectionTable->populatePlaylist(collectionTable->getTableContent(BabeTable::LOCATION),playlist); break;
     case RESULTS: resultsTable->populatePlaylist(resultsTable->getTableContent(BabeTable::LOCATION),playlist); break;
 
     }

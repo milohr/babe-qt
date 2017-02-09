@@ -160,7 +160,8 @@ void Album::setAlbum(QString album)
 
 void Album::setTitle()
 {
-    title->setText(album+" - "+artist);
+    QString str = album.isEmpty()? artist : album+" - "+artist;
+    title->setText(str);
     // scrollText->setText(album+" - "+artist);
     //this->setToolTip(album+" - "+artist);
 }
