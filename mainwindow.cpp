@@ -54,6 +54,7 @@
 #include "notify.h"
 
 
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -65,6 +66,9 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setAcceptDrops(true);
     this->setWindowIcon(QIcon(":Data/data/babe_48.svg"));
     this->setWindowIconText("Babe...");
+
+     mpris = new Mpris(this);
+    //mpris->updateCurrentSong( );
 
     timer = new QTimer(this);
     connect(timer, &QTimer::timeout, [this]() {
@@ -1180,7 +1184,7 @@ void MainWindow::loadTrack()
             current_album=QString::fromStdString(playlist.tracks[getIndex()].getAlbum());
             current_title=QString::fromStdString(playlist.tracks[getIndex()].getTitle());
 
-
+            timer->start(3000);
 
             player->setMedia(QUrl::fromLocalFile(current_song_url));
             player->play();
@@ -1211,7 +1215,7 @@ void MainWindow::loadTrack()
 
             //if(player->position()>player->duration()/4)
 
-            timer->start(2000);
+
 
 
         }else
@@ -1319,6 +1323,7 @@ void MainWindow::loadCover(QString artist, QString album, QString title)
             {
 
                 album_art->putPixmap( queryCover.value(2).toString());
+                mpris->updateCurrentCover(queryCover.value(2).toString());
                 if(!this->isActiveWindow())
                 {
 

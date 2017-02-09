@@ -22,6 +22,7 @@
 #include <infoview.h>
 #include <lyrics.h>
 #include <QFileInfo>
+#include "mpris2.h"
 
 
 namespace Ui {
@@ -149,6 +150,7 @@ private:
     ArtWork *coverArt;
     ArtWork *artistHead;
     Lyrics *lyrics;
+    Mpris *mpris;
     void keepOnTop(bool state);
     void setUpViews();
     void loadTrack();

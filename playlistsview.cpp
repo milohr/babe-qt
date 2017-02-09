@@ -13,6 +13,7 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent) {
     list->setFixedWidth(120);
     list->setAlternatingRowColors(true);
     list->setFrameShape(QFrame::NoFrame);
+    list->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     // list->setStyleSheet("background: #575757; color:white;");
 
