@@ -99,7 +99,7 @@ private slots:
     void collectionDBFinishedAdding(bool state);
 
     void on_fav_btn_clicked();
-    void on_utilsBar_clicked();
+
 
     void hideControls();
     void showControls();
@@ -197,7 +197,7 @@ private:
     QLabel *addMusicImg;
     int mini_mode=0;
     int prevIndex;
-    bool hideSearch=true;
+
     int lCounter = 0;
     int  shuffle_state=0;
     bool repeat = false;

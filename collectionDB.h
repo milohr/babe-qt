@@ -34,6 +34,8 @@ public:
     bool check_existance(QString tableName, QString searchId, QString search);
     void addSong(QStringList paths, int babe);
     void createTable(QString tableName);
+    QStringList getPlaylists();
+    QStringList getPlaylistsMoods();
     QStringList albums;
     QStringList artists;
     enum colums
@@ -50,8 +52,8 @@ private:
 public slots:
     void addTrack(QStringList paths, int babe=0);
     void closeConnection();
-    void insertPlaylist(QString name);
-    QStringList getPlaylists();
+    void insertPlaylist(QString name, QString color);
+
     void removePath(QString path);
     void setCollectionLists();
     void insertCoverArt(QString path, QStringList info);

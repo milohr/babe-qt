@@ -13,6 +13,7 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent) {
     list->setFixedWidth(120);
     list->setAlternatingRowColors(true);
     list->setFrameShape(QFrame::NoFrame);
+
     // list->setStyleSheet("background: #575757; color:white;");
 
     connect(list, SIGNAL(doubleClicked(QModelIndex)), list,
@@ -140,10 +141,14 @@ void PlaylistsView::populatePlaylist(QModelIndex index) {
         // table->showColumn(BabeTable::PLAYED);
         table->populateTableView(
                     "SELECT * FROM tracks WHERE babe = \"1\" ORDER  by played desc");
-    } else {
+    } else if(!currentPlaylist.isEmpty()&&!currentPlaylist.contains("#")) {
 
         table->hideColumn(BabeTable::PLAYED);
         table->populateTableView("SELECT * FROM tracks WHERE playlist LIKE \"%" +
+                                 currentPlaylist + "%\"");
+    }else if (currentPlaylist.contains("#")) {
+        table->hideColumn(BabeTable::PLAYED);
+        table->populateTableView("SELECT * FROM tracks WHERE art LIKE \"%" +
                                  currentPlaylist + "%\"");
     }
 }
@@ -159,14 +164,45 @@ void PlaylistsView::createPlaylist() {
     // item->setFlags (item->flags () & Qt::ItemIsEditable);
 }
 
+void PlaylistsView::createMoodPlaylist(QColor color) {
+
+    if(!moods.contains(color.name()))
+    {
+        qDebug()<<"trying to cretae mooded palylist";
+        auto *item = new QListWidgetItem(color.name());
+        item->setBackgroundColor(QColor::fromRgb(color.rgb()));
+
+        // item->setFlags(item->flags() | Qt::ItemIsEditable);
+        list->addItem(item);
+
+        if (!color.name().isEmpty())
+            emit playlistCreated(item->text(),color.name());
+    }else
+    {
+        qDebug()<<"that mood already exists";
+    }
+
+    // emit list->doubleClicked(list->model()->index(list->count() - 1, 0));
+
+    // item->setFlags (item->flags () & Qt::ItemIsEditable);
+}
+
 void PlaylistsView::playlistName(QListWidgetItem *item) {
     qDebug() << "old playlist name: " << currentPlaylist
              << "new playlist name: " << item->text();
     //  qDebug()<<"new playlist name: "<<item->text();
-    if (currentPlaylist == "")
-        emit playlistCreated(item->text());
-    else if (item->text() != currentPlaylist)
-        emit modifyPlaylistName(item->text());
+
+    if(!playlists.contains(item->text()))
+    {
+        if (currentPlaylist.isEmpty())
+            emit playlistCreated(item->text(),"");
+        else if (item->text() != currentPlaylist)
+            emit modifyPlaylistName(item->text());
+    }else
+    {
+        qDebug()<<"that playlist already exists";
+        list->takeItem(list->count() - 1);
+    }
 }
 
 void PlaylistsView::on_removeBtn_clicked() {}
@@ -175,12 +211,39 @@ void PlaylistsView::setPlaylists(QStringList playlists) {
     // list->addItems(playlists);
 
     for (auto playlist : playlists) {
+
         auto item = new QListWidgetItem(playlist);
         item->setFlags(item->flags() | Qt::ItemIsEditable);
         list->addItem(item);
     }
 
+
     // for (auto o: playlists) qDebug( )<<o;
+}
+
+void PlaylistsView::setPlaylistsMoods(QStringList moods) {
+    // list->addItems(playlists);
+
+    for (auto mood : moods) {
+
+        auto item = new QListWidgetItem(mood);
+        QColor color;
+        color.setNamedColor(mood);
+        item->setBackgroundColor(color);
+        list->addItem(item);
+
+    }
+
+    // for (auto o: playlists) qDebug( )<<o;
+}
+
+void PlaylistsView::definePlaylists(QStringList playlists){
+    this->playlists=playlists;
+}
+
+void PlaylistsView::defineMoods(QStringList moods)
+{
+    this->moods=moods;
 }
 
 PlaylistsView::~PlaylistsView() {}

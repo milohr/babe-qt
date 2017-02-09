@@ -105,6 +105,7 @@ void Album::paintEvent(QPaintEvent *e)
 
     //this->setStyleSheet("border:1px solid red;");
     this->setPixmap(image);
+
 }
 
 QPixmap Album::getPixmap()
@@ -115,6 +116,13 @@ QPixmap Album::getPixmap()
 void Album::putPixmap(QByteArray pix)
 {
     if(!pix.isEmpty()) this->image.loadFromData(pix);
+    else this->image.load(":Data/data/cover.svg");
+}
+
+void Album::putPixmap(QString path)
+{
+    if(!path.isEmpty()) this->image.load(path);
+    else this->image.load(":Data/data/cover.svg");
 }
 
 void Album::setCoverArt(QString path)

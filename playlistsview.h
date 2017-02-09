@@ -21,11 +21,17 @@ public:
     QToolButton *addToPlaylist;
     BabeTable *table;
     QListWidget *list;
+    QListWidget *moodList;
     void setPlaylists(QStringList playlists);
+    void setPlaylistsMoods(QStringList moods);
     void setDefaultPlaylists();
+    void definePlaylists(QStringList playlists);
+    void defineMoods(QStringList moods);
     QFrame *line_v;
     QWidget *btnContainer;
     QString currentPlaylist;
+    QStringList playlists;
+    QStringList moods;
 
    // QToolButton *removeBtn;
 
@@ -44,10 +50,11 @@ public slots:
     void on_removeBtn_clicked();
     void populatePlaylist(QModelIndex index);
     void tableClicked(QStringList list);
+    void createMoodPlaylist(QColor color);
     void dummy();
 
 signals:
-    void playlistCreated(QString name);
+    void playlistCreated(QString name, QString art);
     void songClicked(QStringList list);
     void playlistClicked(QString playlist);
     void modifyPlaylistName(QString newName);

@@ -645,6 +645,7 @@ void BabeTable::moodIt_action() {
         if(query.exec())
         {
             qDebug()<<"Art[color] inserted into DB"<< color.name();
+            emit moodIt_clicked(color);
 
         }else
         {

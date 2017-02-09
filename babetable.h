@@ -90,7 +90,7 @@ signals:
     void babeIt_clicked(QStringList list);
     void createPlaylist_clicked();
     void refreshPlaylistsMenu(QStringList list);
-    void moodIt_clicked(QString url, QString art);
+    void moodIt_clicked(QColor color);
     void queueIt_clicked(QString url);
 
 };

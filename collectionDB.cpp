@@ -88,7 +88,7 @@ void CollectionDB::prepareCollectionDB()
     QSqlQuery query;
     query.exec("CREATE TABLE tracks(track integer, title text, artist text, album text, genre text, location text unique, stars integer, babe integer, art text, played integer, playlist text);");
     query.exec("CREATE TABLE albums(title text, artist text, art text, location text);");
-    query.exec("CREATE TABLE playlists(title text, art text);");
+    query.exec("CREATE TABLE playlists(title text, art text unique);");
     query.exec("CREATE TABLE artists(title text, art text, location text);");
 
     //query.exec("CREATE TABLE tracks(title text, album text, artist text, location text, stars integer, babe integer);");
@@ -416,41 +416,79 @@ void CollectionDB::createTable(QString tableName)
 
 }
 
-void CollectionDB::insertPlaylist(QString name)
+void CollectionDB::insertPlaylist(QString name, QString color)
 {
 
 
-
-    QSqlQuery query;
-    query.prepare("INSERT INTO playlists (title)" "VALUES (:title) ");
-
-    query.bindValue(":title", name);
-
-    if(query.exec())
+    if(color.isEmpty())
     {
-        //qDebug()<<"insertInto<<"<<"UPDATE playlists SET title = "+ name ;
-        // createTable(name);
+        QSqlQuery query;
+        query.prepare("INSERT INTO playlists (title)" "VALUES (:title) ");
 
+        query.bindValue(":title", name);
 
-    }else
+        if(query.exec())
+        {
+            //qDebug()<<"insertInto<<"<<"UPDATE playlists SET title = "+ name ;
+
+        }
+    }else if(name.isEmpty())
+    {  QSqlQuery query;
+        query.prepare("INSERT INTO playlists (title, art)" "VALUES (:title, :art) ");
+
+        query.bindValue(":title", "mood");
+        query.bindValue(":art", color);
+
+        if(query.exec())
+        {
+            //qDebug()<<"insertInto<<"<<"UPDATE playlists SET title = "+ name ;
+
+        }
+
+    }else if(!name.isEmpty()&&!color.isEmpty())
     {
 
+        QSqlQuery query;
+        query.prepare("INSERT INTO playlists (title, art)" "VALUES (:title, :art) ");
+
+        query.bindValue(":title", "mood");
+        query.bindValue(":art", color);
+        if(query.exec())
+        {
+            //qDebug()<<"insertInto<<"<<"UPDATE playlists SET title = "+ name ;
+
+        }
     }
 
 }
 
 QStringList CollectionDB::getPlaylists()
 {
-
-
-
     QSqlQuery query;
     QStringList files;
     query.prepare("SELECT * FROM playlists");
 
-    if (query.exec())   while (query.next()) files << query.value(0).toString();
+    if (query.exec())
+        while (query.next())
+            if(!query.value(0).toString().contains("mood")&&!query.value(0).toString().isEmpty())
+                files << query.value(0).toString();
 
     return files;
 
+}
+
+QStringList CollectionDB::getPlaylistsMoods()
+{
+     QStringList moods;
+    QSqlQuery query;
+
+    query.prepare("SELECT * FROM playlists order by title");
+
+    if (query.exec())
+        while (query.next())
+            if(!query.value(1).toString().isEmpty()&&query.value(0).toString().contains("mood"))
+                moods << query.value(1).toString();
+
+    return moods;
 
 }

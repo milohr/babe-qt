@@ -28,5 +28,6 @@
         <file>data/playBtn.svg</file>
         <file>data/playBtn_hover.svg</file>
         <file>data/Babe.notifyrc</file>
+        <file>data/babe_128.svg</file>
     </qresource>
 </RCC>

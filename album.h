@@ -53,6 +53,7 @@ signals:
 
 public slots:
       void putPixmap(QByteArray pix);
+      void putPixmap(QString path);
       void playBtn_clicked();
 
 protected:
