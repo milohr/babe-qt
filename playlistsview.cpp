@@ -229,7 +229,7 @@ void PlaylistsView::setPlaylistsMoods(QStringList moods) {
         auto item = new QListWidgetItem(mood);
         QColor color;
         color.setNamedColor(mood);
-        item->setBackgroundColor(color);
+        item->setBackgroundColor(color.lighter(125));
         list->addItem(item);
 
     }

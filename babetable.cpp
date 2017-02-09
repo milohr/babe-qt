@@ -631,7 +631,7 @@ void BabeTable::moodIt_action() {
     qDebug()
             << this->model()->data(this->model()->index(row, LOCATION)).toString();
 
-    QColor color = QColorDialog::getColor(Qt::black, this, "Pick a color",  QColorDialog::DontUseNativeDialog);
+    QColor color = QColorDialog::getColor(Qt::black, this, "Pick a Mood",  QColorDialog::DontUseNativeDialog);
     qDebug()<< color.name();
 
     if(!color.name().isEmpty())

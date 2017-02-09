@@ -138,7 +138,7 @@ private slots:
     void loadCover(QString artist, QString album, QString title);
     void babeIt(QString url);
     void unbabeIt(QString url);
-    void loadMood(QString color);
+    void loadMood();
     void addToQueue(QString url);
     void removeFromQueue(QString url);
 

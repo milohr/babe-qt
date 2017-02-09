@@ -210,10 +210,9 @@ MainWindow::MainWindow(QWidget *parent) :
     auto *right_spacer = new QWidget();
     right_spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    this->setToolButtonStyle(Qt::ToolButtonIconOnly);
+    //this->setToolButtonStyle(Qt::ToolButtonIconOnly);
 
     //this->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-
 
     ui->mainToolBar->addWidget(left_spacer);
 
@@ -327,8 +326,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     album_art->titleVisible(false);
     //album_art->setTitleGeometry(0,0,200,30);
-    album_art->widget->setGeometry(0,0,200,30);
-    album_art->widget->setStyleSheet( QString("background-color: rgba(0,0,0,150); border: none;"));
+    //album_art->widget->setGeometry(0,0,200,30);
+    //album_art->widget->setStyleSheet( QString("background-color: rgba(0,0,0,150); border: none;"));
 
     ui->hide_sidebar_btn->setToolTip("Go Mini");
     ui->shuffle_btn->setToolTip("Shuffle");
@@ -375,6 +374,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //album_widget->setLayout(album_view);
     album_art_frame->setLayout(album_view);
     album_widget->setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Expanding  );
+    album_widget->setFixedWidth(200);
 
     line = new QFrame();
     line->setFrameShape(QFrame::HLine);
@@ -386,6 +386,7 @@ MainWindow::MainWindow(QWidget *parent) :
     frame_layout->addWidget(line);
     frame_layout->addWidget(utilsBar);
     frame->setLayout(frame_layout);
+
     layout->addWidget(frame, 0,0 );
     layout->addWidget(album_art_frame,0,1, Qt::AlignRight);
 
@@ -402,13 +403,14 @@ MainWindow::MainWindow(QWidget *parent) :
         loadTrack();
         //player->pause();
         //updater->start();
+
+        collectionView();
         go_mini();
-        views->setCurrentIndex(COLLECTION);
 
     }else
     {
         addMusicImg->show();
-        ui->tracks_view->setChecked(true);
+        collectionView();
     }
     updater->start();
 }
@@ -748,6 +750,7 @@ void MainWindow::collectionView()
     utilsBar->actions().at(PLAYLISTS_UB)->setVisible(false); ui->frame_3->hide();
     utilsBar->actions().at(INFO_UB)->setVisible(false);
 
+    ui->tracks_view->setChecked(true);
     prevIndex=views->currentIndex();
 }
 
@@ -868,7 +871,7 @@ void MainWindow::expand()
 
     ui->hide_sidebar_btn->setIcon(QIcon(":Data/data/mini_mode.svg"));
     //ui->mainToolBar->actions().at(0)->setVisible(true);
-   // ui->mainToolBar->actions().at(8)->setVisible(true);
+    // ui->mainToolBar->actions().at(8)->setVisible(true);
 
     mini_mode=0;
     //keepOnTop(false);
@@ -1178,12 +1181,9 @@ void MainWindow::loadTrack()
                 ui->fav_btn->setIcon(QIcon(":Data/data/love-amarok.svg"));
             }
 
-            QSqlQuery query = settings_widget->collection_db.getQuery("SELECT * FROM tracks WHERE location = \""+current_song_url+"\"");
-            if(query.exec())
-                while (query.next())
-                    loadMood(query.value(BabeTable::ART).toString());
 
 
+            loadMood();
 
             //AND WHETHER THE SONG EXISTS OR  DO NOT GET THE TRACK INFO
             loadCover(current_artist,current_album,current_title);
@@ -1238,10 +1238,8 @@ void MainWindow::loadTrackOnQueue()
             ui->fav_btn->setIcon(QIcon(":Data/data/love-amarok.svg"));
         }
 
-        QSqlQuery query = settings_widget->collection_db.getQuery("SELECT * FROM tracks WHERE location = \""+current_song_url+"\"");
-        if(query.exec())
-            while (query.next())
-                loadMood(query.value(BabeTable::ART).toString());
+
+        loadMood();
 
 
 
@@ -1262,17 +1260,24 @@ void MainWindow::loadTrackOnQueue()
     }
 }
 
-void MainWindow::loadMood(QString color)
+void MainWindow::loadMood()
 {
+    QString color;
+    QSqlQuery query = settings_widget->collection_db.getQuery("SELECT * FROM tracks WHERE location = \""+current_song_url+"\"");
+    if(query.exec())
+        while (query.next())
+            color=query.value(BabeTable::ART).toString();
+
     if(!color.isEmpty())
     {
         seekBar->setStyleSheet(QString("QSlider\n{\nbackground:transparent;}\nQSlider::groove:horizontal {border: none; background: transparent; height: 5px; border-radius: 0; } QSlider::sub-page:horizontal {\nbackground: %1 ;border: none; height: 5px;border-radius: 0;} QSlider::add-page:horizontal {\nbackground: transparent; border: none; height: 5px; border-radius: 0; } QSlider::handle:horizontal {background: %1; width: 8px; } QSlider::handle:horizontal:hover {background: qlineargradient(x1:0, y1:0, x2:1, y2:1,stop:0 #fff, stop:1 #ddd);border: 1px solid #444;border-radius: 4px;}QSlider::sub-page:horizontal:disabled {background: #bbb;border-color: #999;}QSlider::add-page:horizontal:disabled {background: #eee;border-color: #999;}QSlider::handle:horizontal:disabled {background: #eee;border: 1px solid #aaa;border-radius: 4px;}").arg(color));
-        //ui->listWidget->setStyleSheet(QString("QListWidget::item:selected {background:%1;}").arg(color));
+        ui->listWidget->setStyleSheet(QString("QListWidget::item:selected {background:%1; color: %2}").arg(QColor(color).lighter(125).name(),QColor(color).darker(150).name()));
     }else
     {
         //ui->listWidget->setBackgroundRole(QPalette::Highlight);
         //ui->listWidget->setpa
         seekBar->setStyleSheet("QSlider\n{\nbackground:transparent;}\nQSlider::groove:horizontal {border: none; background: transparent; height: 5px; border-radius: 0; } QSlider::sub-page:horizontal {\nbackground: #f85b79;border: none; height: 5px;border-radius: 0;} QSlider::add-page:horizontal {\nbackground: transparent; border: none; height: 5px; border-radius: 0; } QSlider::handle:horizontal {background: #f85b79; width: 8px; } QSlider::handle:horizontal:hover {background: qlineargradient(x1:0, y1:0, x2:1, y2:1,stop:0 #fff, stop:1 #ddd);border: 1px solid #444;border-radius: 4px;}QSlider::sub-page:horizontal:disabled {background: #bbb;border-color: #999;}QSlider::add-page:horizontal:disabled {background: #eee;border-color: #999;}QSlider::handle:horizontal:disabled {background: #eee;border: 1px solid #aaa;border-radius: 4px;}");
+        ui->listWidget->setStyleSheet(QString("QListWidget::item:selected {background:%1; color: %2}").arg("rgba(0,0,0,150)","white"));
 
     }
 }
@@ -1320,7 +1325,7 @@ void MainWindow::loadCover(QString artist, QString album, QString title)
                 infoTable->artist->setArtist(artist);
             }else
             {
-               infoTable->artist->putPixmap( QString(":Data/data/cover.svg"));
+                infoTable->artist->putPixmap( QString(":Data/data/cover.svg"));
             }
 
         }
@@ -1351,7 +1356,7 @@ void MainWindow::loadCover(QString artist, QString album, QString title)
                         nof->notifySong(title,artist,album,current_song_url,pix);
                     }else
                     {
-                      album_art->putPixmap( QString(":Data/data/cover.svg"));
+                        album_art->putPixmap( QString(":Data/data/cover.svg"));
                     }
 
 
@@ -1454,21 +1459,21 @@ void MainWindow::next()
 
     if(queue_list.isEmpty())
     {
-    lCounter++;
+        lCounter++;
 
-    if(repeat)
-    {
-        lCounter--;
+        if(repeat)
+        {
+            lCounter--;
+        }
+
+        if(lCounter >= ui->listWidget->count())
+            lCounter = 0;
+
+        (!shuffle or repeat) ? ui->listWidget->setCurrentRow(lCounter) : ui->listWidget->setCurrentRow(shuffledPlaylist[lCounter]);
+
+        //ui->play->setChecked(false);
+        //ui->searchBar->clear();
     }
-
-    if(lCounter >= ui->listWidget->count())
-        lCounter = 0;
-
-    (!shuffle or repeat) ? ui->listWidget->setCurrentRow(lCounter) : ui->listWidget->setCurrentRow(shuffledPlaylist[lCounter]);
-
-    //ui->play->setChecked(false);
-    //ui->searchBar->clear();
-}
     loadTrack();
 
 
