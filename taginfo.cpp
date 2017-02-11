@@ -12,7 +12,7 @@ TagInfo::TagInfo(QString file) {
 QString TagInfo::getAlbum() {
     return QString::fromStdWString(file.tag()->album().toWString()).size() > 0
             ? QString::fromStdWString(file.tag()->album().toWString())
-            : "UNKWON";
+            : "UNKNOWN";
 }
 
 QString TagInfo::getTitle() {
@@ -24,7 +24,7 @@ QString TagInfo::getTitle() {
 QString TagInfo::getArtist() {
     return QString::fromStdWString(file.tag()->artist().toWString()).size() > 0
             ? QString::fromStdWString(file.tag()->artist().toWString())
-            : "UNKWON";
+            : "UNKNOWN";
 }
 
 int TagInfo::getTrack() { return file.tag()->track(); }
@@ -32,7 +32,7 @@ int TagInfo::getTrack() { return file.tag()->track(); }
 QString TagInfo::getGenre() {
     return QString::fromStdWString(file.tag()->genre().toWString()).size() > 0
             ? QString::fromStdWString(file.tag()->genre().toWString())
-            : "UNKWON";
+            : "UNKNOWN";
 }
 
 QString TagInfo::fileName() {

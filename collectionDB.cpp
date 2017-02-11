@@ -64,15 +64,6 @@ void CollectionDB::removePath(QString path)
 
 
 
-    QSqlQuery queryAlbums;
-    queryAlbums.prepare("DELETE FROM albums  WHERE location LIKE \"%"+path+"%\"");
-    success = queryAlbums.exec();
-
-    QSqlQuery queryArtists;
-    queryArtists.prepare("DELETE FROM artists  WHERE location LIKE \"%"+path+"%\"");
-    success = queryArtists.exec();
-
-    setCollectionLists();
     emit DBactionFinished(false);
 
     if(!success)
@@ -80,6 +71,52 @@ void CollectionDB::removePath(QString path)
         qDebug() << "removePerson error: ";
 
     }
+
+}
+
+void CollectionDB::cleanCollectionLists()
+{
+
+
+    QSqlQuery queryArtists("SELECT * FROM artists");
+    if(queryArtists.exec())
+    {
+        while(queryArtists.next())
+        {
+            QString  oldArtists = queryArtists.value(0).toString();
+            if(artists.contains(oldArtists))
+            {
+                continue;
+            }else
+            {
+                qDebug()<<"artists list does not longer contains"<<oldArtists;
+                QSqlQuery queryArtist_delete;
+                queryArtist_delete.prepare("DELETE FROM artists  WHERE title = \""+oldArtists+"\"");
+                if(queryArtist_delete.exec()) qDebug()<<"deleted gone album";
+
+            }
+        }
+    }
+
+    QSqlQuery queryAlbums("SELECT * FROM albums");
+    if(queryAlbums.exec())
+    {
+        while(queryAlbums.next())
+        {
+            QString  oldAlbum = queryAlbums.value(1).toString()+" "+queryAlbums.value(0).toString();
+            if(albums.contains(oldAlbum))
+            {
+                continue;
+            }else
+            {
+                qDebug()<<"albums list does not longer contains"<<oldAlbum;
+                QSqlQuery queryAlbum_delete;
+                queryAlbum_delete.prepare("DELETE FROM albums  WHERE title = \""+queryAlbums.value(0).toString()+"\"");
+                if(queryAlbum_delete.exec()) qDebug()<<"deleted gone album";
+            }
+        }
+    }
+
 
 }
 
@@ -156,6 +193,43 @@ void CollectionDB::setCollectionLists()
         if(!albums.contains(artist+" "+album)) albums<<artist+" "+album;
         if(!artists.contains(artist)) artists<<artist;
     }
+    // refreshArtistsTable();
+    qDebug()<<"artist in collection list::";
+    for(auto artist:artists)qDebug()<<artist;
+    qDebug()<<"albums in collection list::";
+    for(auto album:albums)qDebug()<<album;
+}
+
+void CollectionDB::refreshArtistsTable()
+{
+    QSqlQuery query ("SELECT * FROM tracks");
+
+
+    qDebug()<<"updating artists table";
+
+
+
+    if(query.exec())
+    {
+        while(query.next())
+        {
+            //success = true;
+            QString artist = query.value(ARTIST).toString();
+            QString file = query.value(LOCATION).toString();
+            if(!artists.contains(artist))
+            {
+                query.prepare("INSERT INTO artists (title, art, location)" "VALUES (:title, :art, :location)");
+                query.bindValue(":title", artist);
+                query.bindValue(":art", "");
+                query.bindValue(":location", QFileInfo(file).dir().path());
+                if(query.exec()) artists<<artist;
+            }
+        }
+
+
+    }
+
+
 }
 
 void CollectionDB::addTrack(QStringList paths, int babe)
@@ -202,7 +276,7 @@ void CollectionDB::addTrack(QStringList paths, int babe)
                 query.bindValue(":title", album);
                 query.bindValue(":artist", artist);
                 query.bindValue(":art", "");
-                query.bindValue(":location", QFileInfo(file).dir().path());
+                // query.bindValue(":location", QFileInfo(file).dir().path());
                 if(query.exec()) albums<<artist+" "+album;
             }
 
@@ -211,7 +285,7 @@ void CollectionDB::addTrack(QStringList paths, int babe)
                 query.prepare("INSERT INTO artists (title, art, location)" "VALUES (:title, :art, :location)");
                 query.bindValue(":title", artist);
                 query.bindValue(":art", "");
-                query.bindValue(":location", QFileInfo(file).dir().path());
+                // query.bindValue(":location", QFileInfo(file).dir().path());
                 if(query.exec()) artists<<artist;
             }
 
@@ -334,7 +408,7 @@ void CollectionDB::setTrackList(QList <Track> trackList)
 bool CollectionDB::check_existance(QString tableName, QString searchId, QString search)
 {
     QSqlQuery query;
-    query.prepare("SELECT * FROM "+tableName+" WHERE "+searchId+" = (:search)");
+    query.prepare("SELECT "+ searchId +" FROM "+tableName+" WHERE "+searchId+" = (:search)");
     query.bindValue(":search", search);
 
     if (query.exec())
@@ -479,7 +553,7 @@ QStringList CollectionDB::getPlaylists()
 
 QStringList CollectionDB::getPlaylistsMoods()
 {
-     QStringList moods;
+    QStringList moods;
     QSqlQuery query;
 
     query.prepare("SELECT * FROM playlists order by title");

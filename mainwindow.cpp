@@ -67,7 +67,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setWindowIcon(QIcon(":Data/data/babe_48.svg"));
     this->setWindowIconText("Babe...");
 
-     mpris = new Mpris(this);
+    // mpris = new Mpris(this);
     //mpris->updateCurrentSong( );
 
     timer = new QTimer(this);
@@ -80,7 +80,7 @@ MainWindow::MainWindow(QWidget *parent) :
     });
 
     connect(this, SIGNAL(finishedPlayingSong(QString)),this,SLOT(addToPlayed(QString)));
-    connect(this,SIGNAL(getCover(QString,QString)),this,SLOT(setCoverArt(QString,QString)));
+    connect(this,SIGNAL(getCover(QString,QString,QString)),this,SLOT(setCoverArt(QString,QString,QString)));
     connect(this,SIGNAL(collectionChecked()),this,SLOT(refreshTables()));
 
     //this->setWindowFlags(Qt::Widget | Qt::FramelessWindowHint);
@@ -155,6 +155,8 @@ MainWindow::MainWindow(QWidget *parent) :
     lyrics = new Lyrics();
     connect(lyrics,SIGNAL(lyricsReady(QString)),infoTable,SLOT(setLyrics(QString)));
 
+
+    youtubeTable = new YouTube(this);
     //playback = new QToolBar();
 
 
@@ -289,7 +291,7 @@ MainWindow::MainWindow(QWidget *parent) :
     views->addWidget(playlistTable);
     views->addWidget(queueTable);
     views->addWidget(infoTable);
-    views->addWidget(new BabeTable());
+    views->addWidget(youtubeTable);
     views->addWidget(settings_widget);
     views->addWidget(resultsTable);
 
@@ -582,8 +584,8 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     }
     default :
     {
-        ui->search->setFocusPolicy(Qt::StrongFocus);
-        ui->search->setFocus();
+        //ui->search->setFocusPolicy(Qt::StrongFocus);
+        //ui->search->setFocus();
         qDebug()<<"trying to focus the serachbar";
         break;
     }
@@ -692,14 +694,14 @@ void MainWindow::setLyrics(QString artist,QString title)
 }
 
 
-void MainWindow::setCoverArt(QString artist, QString album)
+void MainWindow::setCoverArt(QString artist, QString album,QString title)
 {
-    qDebug()<<"Going to try and get the cover for: "<< album <<"by"<<artist;
+
     auto coverArt = new ArtWork();
     auto artistHead = new ArtWork;
     connect(coverArt, SIGNAL(coverReady(QByteArray)), this, SLOT(putPixmap(QByteArray)));
     connect(artistHead, SIGNAL(headReady(QByteArray)), infoTable, SLOT(setArtistArt(QByteArray)));
-    coverArt->setDataCover(artist,album);
+    coverArt->setDataCover(artist,album,title);
     artistHead->setDataHead(artist);
 
 }
@@ -1323,7 +1325,7 @@ void MainWindow::loadCover(QString artist, QString album, QString title)
             {
 
                 album_art->putPixmap( queryCover.value(2).toString());
-                mpris->updateCurrentCover(queryCover.value(2).toString());
+                //mpris->updateCurrentCover(queryCover.value(2).toString());
                 if(!this->isActiveWindow())
                 {
 
@@ -1393,7 +1395,7 @@ void MainWindow::loadCover(QString artist, QString album, QString title)
                 QPixmap pix;
                 auto *nof = new Notify();
                 nof->notifySong(title,artist,album,current_song_url, pix);
-                emit getCover(artist,album);
+                emit getCover(artist,album,title);
             }
         }
 
@@ -1707,7 +1709,11 @@ void MainWindow::scanNewDir(QString url)
 
         addToCollectionDB_t(list);
     }
-    else { refreshTables(); qDebug()<<"a folder probably got removed or changed";  }
+    else {
+
+        refreshTables();
+        settings_widget->refreshWatchFiles(); qDebug()<<"a folder probably got removed or changed";
+    }
 
 
 }

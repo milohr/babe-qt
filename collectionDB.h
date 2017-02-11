@@ -56,6 +56,8 @@ public slots:
 
     void removePath(QString path);
     void setCollectionLists();
+    void refreshArtistsTable();
+    void cleanCollectionLists();
     void insertCoverArt(QString path, QStringList info);
     void insertHeadArt(QString path, QStringList info);
 

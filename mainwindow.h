@@ -23,6 +23,7 @@
 #include <lyrics.h>
 #include <QFileInfo>
 #include "mpris2.h"
+#include "youtube.h"
 
 
 namespace Ui {
@@ -111,7 +112,7 @@ private slots:
     void on_search_textChanged(const QString &arg1);
 
     //void on_resultsPLaylist_clicked();
-    void setCoverArt(QString artist, QString album);
+    void setCoverArt(QString artist, QString album, QString title);
 
     void on_settings_view_clicked();
     void orderTables();
@@ -186,6 +187,7 @@ private:
     PlaylistsView *playlistTable;
     InfoView *infoTable;
     BabeTable *queueTable;
+    YouTube *youtubeTable;
     /*the streaming */
     Playlist playlist;
     Playlist queueList;
@@ -215,7 +217,7 @@ private:
 signals:
     void finishedPlayingSong(QString url);
     void collectionChecked();
-    void getCover(QString artist, QString album);
+    void getCover(QString artist, QString album, QString title);
 
 
 };

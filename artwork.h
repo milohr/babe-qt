@@ -16,10 +16,11 @@ class ArtWork : public QObject
 
 public:
     explicit ArtWork(QObject *parent = 0);
-    void setDataCover(QString artist, QString album, QString path="");
+    void setDataCover(QString artist, QString album,QString title, QString path="");
     void setDataHead(QString artist, QString path="");
     void setDataCoverInfo(QString artist, QString album);
     void setDataHeadInfo(QString artist);
+    void setDataCover_title(QString artist, QString title);
     QByteArray getCover();
     QString getInfo();
     QByteArray selectCover(QString url);
@@ -32,7 +33,7 @@ public:
 
     enum ART
     {
-        ALBUM,ARTIST,ALBUM_INFO,ARTIST_INFO
+        ALBUM,ARTIST,ALBUM_INFO,ARTIST_INFO,ALBUM_by_TITLE
     };
 
 private:
@@ -41,6 +42,7 @@ private:
     QPixmap art;
     QString album;
     QString artist;
+    QString title;
     QString xmlData;
     QByteArray coverArray;
     QString path;

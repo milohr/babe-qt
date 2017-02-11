@@ -28,8 +28,8 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
     qDebug() << "Getting artwork files from: " << cachePath;
 
 
-   if(!fileExists(notifyDir+"/Babe.notifyrc"))
-   {
+    if(!fileExists(notifyDir+"/Babe.notifyrc"))
+    {
         qDebug()<<"The Knotify file does not exists, going to create it";
         QFile knotify(":Data/data/Babe.notifyrc");
 
@@ -38,11 +38,12 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
             qDebug()<<"the knotify file got copied";
         }
 
-   }
+    }
 
     QDir collectionDBPath_dir(collectionDBPath);
     QDir settingsPath_dir(settingPath);
     QDir cachePath_dir(cachePath);
+    QDir youtubeCache_dir(youtubeCachePath);
 
     if (!collectionDBPath_dir.exists())
         collectionDBPath_dir.mkpath(".");
@@ -50,6 +51,8 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
         settingsPath_dir.mkpath(".");
     if (!cachePath_dir.exists())
         cachePath_dir.mkpath(".");
+    if (!youtubeCache_dir.exists())
+        youtubeCache_dir.mkpath(".");
 
     connect(this, SIGNAL(collectionPathChanged(QString)), this,
             SLOT(populateDB(QString)));
@@ -72,6 +75,7 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
     ui->label->hide();
     ui->label2->hide();
     watcher = new QFileSystemWatcher();
+    watcher->addPath(youtubeCachePath);
     connect(watcher, SIGNAL(fileChanged(QString)), this,
             SLOT(handleFileChanged(QString)));
     connect(watcher, SIGNAL(directoryChanged(QString)), this,
@@ -115,10 +119,12 @@ void settings::refreshWatchFiles()
 
     dirs.clear(); files.clear();
 
+
     QSqlQuery query = collection_db.getQuery("SELECT * FROM tracks");
 
     while (query.next()) {
-
+        if(!query.value(CollectionDB::LOCATION).toString().contains(youtubeCachePath))
+        {
         if (!dirs.contains(QFileInfo(query.value(CollectionDB::LOCATION).toString()).dir().path())&&QFileInfo(query.value(CollectionDB::LOCATION).toString()).exists())
         {
             QString dir =QFileInfo(query.value(CollectionDB::LOCATION).toString()).dir().path();
@@ -126,14 +132,16 @@ void settings::refreshWatchFiles()
             dirs << QFileInfo(dir).dir().path();
         }
 
-        if(QFileInfo(query.value(CollectionDB::LOCATION).toString()).exists())
-            files << query.value(CollectionDB::LOCATION).toString();
+        /*if(QFileInfo(query.value(CollectionDB::LOCATION).toString()).exists())
+            files << query.value(CollectionDB::LOCATION).toString();*/
+        }
     }
 
     for(auto path:files) qDebug() << "refreshed watcher -file:"<< path;
     for(auto path:dirs) qDebug() << "refreshed watcher -dir:"<< path;
     watcher->removePaths(watcher->directories());
-    watcher->removePaths(watcher->files());
+   // watcher->removePaths(watcher->files());
+
     addToWatcher(dirs);
 
 }
@@ -251,21 +259,23 @@ void settings::collectionWatcher()
 
 {
     QSqlQuery query = collection_db.getQuery("SELECT * FROM tracks");
-    QStringList newDirs, newFiles;
+
     while (query.next()) {
-        if (!dirs.contains(QFileInfo(query.value(CollectionDB::LOCATION).toString()).dir().path())&&QFileInfo(query.value(CollectionDB::LOCATION).toString()).exists())
+        if(!query.value(CollectionDB::LOCATION).toString().contains(youtubeCachePath))
         {
-            QString dir =QFileInfo(query.value(CollectionDB::LOCATION).toString()).dir().path();
-            dirs << dir;
-            if(!dirs.contains(QFileInfo(dir).dir().path()))
-                dirs << QFileInfo(dir).dir().path();
 
-            newDirs<< dir;
-            if(!newDirs.contains(QFileInfo(dir).dir().path()))
-                newDirs<< QFileInfo(dir).dir().path();
+            if (!dirs.contains(QFileInfo(query.value(CollectionDB::LOCATION).toString()).dir().path())&&QFileInfo(query.value(CollectionDB::LOCATION).toString()).exists())
+            {
 
 
-            //qDebug() << "Adding to watcher -dir:"<< QFileInfo(query.value(CollectionDB::LOCATION).toString()).dir().path();
+                QString dir =QFileInfo(query.value(CollectionDB::LOCATION).toString()).dir().path();
+                dirs << dir;
+                if(!dirs.contains(QFileInfo(dir).dir().path()))
+                    dirs << QFileInfo(dir).dir().path();
+
+
+                //qDebug() << "Adding to watcher -dir:"<< QFileInfo(query.value(CollectionDB::LOCATION).toString()).dir().path();
+            }
         }
 
         /*if (!files.contains(query.value(CollectionDB::LOCATION).toString()) && QFileInfo(query.value(CollectionDB::LOCATION).toString()).exists())
@@ -277,7 +287,7 @@ void settings::collectionWatcher()
 
     }
 
-    addToWatcher(newDirs);
+    addToWatcher(dirs);
     // for(auto m: dirs) qDebug()<<m;
 }
 
@@ -296,7 +306,7 @@ void settings::handleFileChanged(QString file) {
 
 void settings::handleDirectoryChanged(QString dir) {
     qDebug() << "this directory changed: " << dir;
-    refreshWatchFiles();
+
     emit dirChanged(dir);
 }
 
@@ -457,7 +467,10 @@ void settings::fetchArt() {
 
         QString artist = query_Covers.value(1).toString();
         QString album = query_Covers.value(0).toString();
-
+        QString title;
+        QSqlQuery query_Title =
+                collection_db.getQuery("SELECT * FROM tracks WHERE artist = \""+artist+"\" AND album = \""+album+"\"");
+        if(query_Title.next()) title=query_Title.value(CollectionDB::TITLE).toString();
 
 
         auto coverArt = new ArtWork();
@@ -469,7 +482,7 @@ void settings::fetchArt() {
         //  QString art = cachePath+artist+"_"+album+".jpg";
 
         qDebug() << artist << album;
-        coverArt->setDataCover(artist, album, cachePath);
+        coverArt->setDataCover(artist, album,title, cachePath);
 
 
     }
@@ -507,8 +520,8 @@ void settings::on_pushButton_clicked() {
 void settings::on_debugBtn_clicked()
 {
     /*qDebug()<<"Current files being watched:";
-    for(auto file: watcher->files()) qDebug()<<file;
+    for(auto file: watcher->files()) qDebug()<<file;*/
     qDebug()<<"Current dirs being watched:";
-    for(auto dir: watcher->directories()) qDebug()<<dir;*/
+    for(auto dir: watcher->directories()) qDebug()<<dir;
 
 }

@@ -72,6 +72,7 @@ private:
     const QString settingPath= QStandardPaths::writableLocation(QStandardPaths::ConfigLocation)+"/babe/";
     const QString collectionDBPath=QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation)+"/babe/";
     const QString cachePath=QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation)+"/babe/";
+    const QString youtubeCachePath=QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation)+"/babe/youtube/";
     const QString notifyDir= QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
     const QString collectionDBName = "collection.db";
     const QString settingsName = "settings.conf";

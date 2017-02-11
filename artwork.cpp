@@ -11,12 +11,19 @@ ArtWork::ArtWork(QObject *parent) : QObject(parent) {
     url = "http://ws.audioscrobbler.com/2.0/";
 } //
 
-void ArtWork::setDataCover(QString artist, QString album, QString path) {
+void ArtWork::setDataCover(QString artist, QString album,QString title, QString path) {
     this->artist = artist;
     this->album = album;
+    this->title=title;
     this->path = path;
 
-    if (artist.size() != 0 && album.size() != 0) {
+    qDebug()<<"Going to try and get the art cover for: "<< album <<"by"<<artist<<title;
+
+
+if(!album.contains("UNKNOWN"))
+{
+
+    if (!artist.isEmpty() && !album.isEmpty()) {
         url.append("?method=album.getinfo");
         url.append("&api_key=ba6f0bd3c887da9101c10a50cf2af133");
         QUrl q_artist(artist.replace("&", "and"));
@@ -30,6 +37,34 @@ void ArtWork::setDataCover(QString artist, QString album, QString path) {
             url.append("&album=" + q_album.toString());
         type = ALBUM;
         // qDebug()<<"on setDataCover:"<<url;
+        startConnection();
+    }else if(!title.isEmpty()&&!artist.isEmpty())
+    {
+        setDataCover_title(artist,title);
+    }
+}else if(!title.isEmpty()&&!artist.isEmpty())
+{
+    setDataCover_title(artist,title);
+}
+}
+
+void ArtWork::setDataCover_title(QString artist, QString title) {
+    qDebug()<<"Going to try and get the art cover from title: "<< title <<"by"<<artist;
+    url = "http://ws.audioscrobbler.com/2.0/";
+    if (artist.size() != 0 && title.size() != 0) {
+        url.append("?method=track.getinfo");
+        url.append("&api_key=ba6f0bd3c887da9101c10a50cf2af133");
+        QUrl q_artist(artist.replace("&", "and"));
+        q_artist.toEncoded(QUrl::FullyEncoded);
+        QUrl q_title(title.replace("&", "and"));
+        q_title.toEncoded(QUrl::FullyEncoded);
+
+        if (!q_artist.isEmpty())
+            url.append("&artist=" + q_artist.toString());
+        if (!q_title.isEmpty())
+            url.append("&track=" + q_title.toString());
+        type = ALBUM_by_TITLE;
+qDebug()<<"trying to get cover by_title:"<<url;
         startConnection();
     }
 }
@@ -190,13 +225,58 @@ void ArtWork::xmlInfo(QNetworkReply *reply) {
                              << " cover "
                                 "for \""
                              << album << "\".";
-                }
-                // qDebug() << "the cover art url is" << coverUrl;
+                    setDataCover_title(artist,title);
+                }else
+                {
+                    qDebug() << "the cover art url is" << coverUrl;
 
-                this->coverArray = selectCover(coverUrl);
+                    this->coverArray = selectCover(coverUrl);
+                }
                 // selectInfo(info);
 
-            } else if (type == ALBUM_INFO) {
+            }else if(type == ALBUM_by_TITLE)
+            {
+
+                const QDomNodeList list =
+                        doc.documentElement().namedItem("track").childNodes();
+
+                for (int i = 0; i < list.count(); i++) {
+                    QDomNode n = list.item(i);
+                    if (n.isElement()) {
+                        if (n.nodeName() == "album")
+                        {
+                            auto list2=n.childNodes();
+                            for(int j=0; j<list2.size();j++)
+                            {
+                                auto m= list2.item(j);
+                                //qDebug()<<m.nodeName();
+                                if(m.nodeName().contains("image"))
+                                {
+                                    QString imageSize = m.attributes().namedItem("size").nodeValue();
+                                    if (imageSize == "extralarge")
+                                        if (m.isElement()) {
+                                            coverUrl = m.toElement().text();
+                                            break;
+                                        }
+                                }
+                            }
+                        }
+                    }
+                }
+                //qDebug()<<coverUrl;
+                if (coverUrl.isEmpty()) {
+                    qDebug() << "Could not find "
+                             << " cover by title "
+                                "for \""
+                             << album << "\".";
+                    //setDataCover_title(artist,title);
+                }else
+
+                    // qDebug() << "the cover art url is" << coverUrl;
+
+                    this->coverArray = selectCover(coverUrl);
+
+            }else if (type == ALBUM_INFO) {
                 const QDomNodeList list2 =
                         doc.documentElement().namedItem("album").childNodes();
 

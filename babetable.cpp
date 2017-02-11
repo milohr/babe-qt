@@ -313,18 +313,17 @@ void BabeTable::populateTableView(QString indication) {
             auto *nof = new Notify();
             nof->notifyUrgent("Removing missing files...",missingFiles.join("\n"));
 
-            for (auto file_r : missingFiles) {
-                if (connection->removeQuery("DELETE FROM tracks WHERE location =  \"" +
-                                            file_r + "\""))
-                {
-                    qDebug() << "deleted from db: " << file_r;
+            for (auto file_r : missingFiles)
+            {
+                connection->removePath(file_r);
 
-                    parentDir=QFileInfo(QFileInfo(file_r)).dir().path();
+                qDebug() << "deleted from db: " << file_r;
 
-                }
-                else
-                    qDebug() << "couldn't delete file" << file_r;
+                parentDir=QFileInfo(QFileInfo(file_r)).dir().path();
+
             }
+            connection->setCollectionLists();
+            connection->cleanCollectionLists();
 
             if (!QFileInfo(parentDir).exists())
             {
@@ -660,15 +659,15 @@ void BabeTable::moodIt_action() {
 }
 
 
- void BabeTable::queueIt_action()
- {
-     qDebug() << "queueIt clicked!";
-     // int row= this->currentIndex().row();
+void BabeTable::queueIt_action()
+{
+    qDebug() << "queueIt clicked!";
+    // int row= this->currentIndex().row();
     QString url = this->model()->data(this->model()->index(row, LOCATION)).toString();
-     qDebug()<<url;
-     emit queueIt_clicked(url);
+    qDebug()<<url;
+    emit queueIt_clicked(url);
 
- }
+}
 
 void BabeTable::flushTable() {
     this->clearContents();
