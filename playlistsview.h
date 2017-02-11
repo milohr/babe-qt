@@ -23,7 +23,7 @@ public:
     QListWidget *list;
     QListWidget *moodList;
     void setPlaylists(QStringList playlists);
-    void setPlaylistsMoods(QStringList moods);
+    void setPlaylistsMoods(QStringList moods_n);
     void setDefaultPlaylists();
     void definePlaylists(QStringList playlists);
     void defineMoods(QStringList moods);

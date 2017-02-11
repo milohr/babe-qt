@@ -24,7 +24,7 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent) {
     connect(list, SIGNAL(itemChanged(QListWidgetItem *)), this,
             SLOT(playlistName(QListWidgetItem *)));
 
-    setDefaultPlaylists();
+
     // connect(table,SIGNAL(tableWidget_doubleClicked(QStringList)),this,SLOT(tableClicked(QStringList)));
     // connect(table,SIGNAL(createPlaylist_clicked()),this,SLOT(createPlaylist()));
     // auto item =new QListWidgetItem();
@@ -112,10 +112,14 @@ void PlaylistsView::setDefaultPlaylists() {
     favorites->setText("Favorites");
     list->addItem(favorites);
 
+
     auto babes = new QListWidgetItem();
     babes->setIcon(QIcon::fromTheme("love-amarok"));
     babes->setText("Babes");
     list->addItem(babes);
+
+
+
 }
 
 void PlaylistsView::tableClicked(QStringList list)
@@ -227,16 +231,18 @@ void PlaylistsView::setPlaylists(QStringList playlists) {
     // for (auto o: playlists) qDebug( )<<o;
 }
 
-void PlaylistsView::setPlaylistsMoods(QStringList moods) {
+void PlaylistsView::setPlaylistsMoods(QStringList moods_n) {
     // list->addItems(playlists);
 
-    for (auto mood : moods) {
+    for (auto mood : moods_n) {
+
 
         auto item = new QListWidgetItem(mood);
         QColor color;
         color.setNamedColor(mood);
         item->setBackgroundColor(color.lighter(125));
-        list->addItem(item);
+       list->addItem(item);
+
 
     }
 

@@ -235,6 +235,7 @@ void CollectionDB::refreshArtistsTable()
 void CollectionDB::addTrack(QStringList paths, int babe)
 {
     //bool success = false;
+
     QSqlQuery query;
 
     query.exec("PRAGMA synchronous=OFF");
@@ -242,6 +243,8 @@ void CollectionDB::addTrack(QStringList paths, int babe)
     qDebug()<<"started wrrting to database...";
     for(auto file:paths)
     {
+        qDebug()<<file;
+
         TagInfo info(file);
         int track;
         QString  title, artist, album, genre;
@@ -349,7 +352,7 @@ void CollectionDB::insertHeadArt(QString path, QStringList info)
     }
 }
 
-void CollectionDB::addSong(QStringList paths, int babe=0)
+void CollectionDB::addSong(QStringList paths, int babe=0)//deprecared
 {
     //bool success = false;
 

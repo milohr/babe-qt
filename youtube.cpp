@@ -1,6 +1,6 @@
 #include "youtube.h"
 #include "ui_youtube.h"
-#include <QProcess>
+
 #include <QDebug>
 #include <QStandardPaths>
 YouTube::YouTube(QWidget *parent) :
@@ -9,33 +9,46 @@ YouTube::YouTube(QWidget *parent) :
 {
 
     ui->setupUi(this);
+    ui->label->hide();
+    movie = new QMovie(":Data/data/ajax-loader.gif");
+    ui->label->setMovie(movie);
 }
 
 YouTube::~YouTube()
 {
     delete ui;
+
 }
 
 void YouTube::on_goBtn_clicked()
 {
     if(!ui->lineEdit->text().isEmpty())
     {
-        QProcess process;
-        process.setWorkingDirectory(cachePath);
 
-        process.start(ydl+" "+ui->lineEdit->text());
-        if (process.waitForStarted() && process.waitForFinished()) {
-          QString StdOut_sdcompare = process.readAllStandardOutput();
-          QString StdError_sdcompare = process.readAllStandardError();
+        process = new QProcess(this);
+        process->setWorkingDirectory(cachePath);
 
-          if(StdOut_sdcompare.isEmpty())
-              qDebug()<<   process.program()<<process.arguments();
-          }
-        }
+        connect(process, SIGNAL(readyReadStandardOutput()), this, SLOT(processFinished()));
+        process->start(ydl+" "+ui->lineEdit->text());
+        ui->goBtn->hide();
+        ui->label->show();
+        movie->start();
+        //connect(&process, SIGNAL(QProcess::finished(int)), this, SLOT(processFinished(int)));
+
+
     }
+}
 
 
 void YouTube::processFinished()
 {
-    qDebug()<<"finished the process";
+    QByteArray processOutput;
+    processOutput = process->readAllStandardOutput();
+
+    qDebug() << "Output was " << QString(processOutput);
+    ui->lineEdit->clear();
+    movie->stop();
+    ui->label->hide();
+    ui->goBtn->show();
+    //emit youtubeTrackReady(true);
 }

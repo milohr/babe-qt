@@ -16,6 +16,7 @@
 #include <QStringList>
 #include <QFileSystemWatcher>
 #include <QStandardPaths>
+#include <QTimer>
 
 namespace Ui {
 class settings;
@@ -41,6 +42,7 @@ public:
     void addToWatcher(QStringList paths);
     CollectionDB collection_db;
     bool fileExists(QString url);
+    bool youtubeTrackDone=false;
     enum iconSizes
     {
         s16,s22,s24
@@ -66,6 +68,8 @@ public slots:
     void populateDB(QString path);
     void fetchArt();
     void refreshWatchFiles();
+    void youtubeTrackReady(bool state);
+    void handleDirectoryChanged_cache(QString dir);
 
 private:
     Ui::settings *ui;
@@ -88,6 +92,7 @@ private:
     QStringList files;
     QStringList dirs;
     QFileSystemWatcher *watcher;
+    QTimer *cacheTimer;
 
 signals:
 

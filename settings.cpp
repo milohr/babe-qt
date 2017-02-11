@@ -54,6 +54,22 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
     if (!youtubeCache_dir.exists())
         youtubeCache_dir.mkpath(".");
 
+    cacheTimer = new QTimer();
+    connect(cacheTimer, &QTimer::timeout, [this]() {
+        // this->setLyrics(artist,title);
+        emit dirChanged(youtubeCachePath);
+        cacheTimer->stop();
+        //qDebug()<<"antonpirulilului";
+        //this->getTrackInfo();
+
+    });
+
+    auto cacheWatcher = new QFileSystemWatcher();
+    cacheWatcher->addPath(youtubeCachePath);
+
+    connect(cacheWatcher, SIGNAL(directoryChanged(QString)), this,
+            SLOT(handleDirectoryChanged_cache(QString)));
+
     connect(this, SIGNAL(collectionPathChanged(QString)), this,
             SLOT(populateDB(QString)));
     connect(&collection_db, SIGNAL(DBactionFinished(bool)), this,
@@ -85,6 +101,25 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
 settings::~settings() {
     delete ui;
     collection_db.closeConnection();
+}
+
+
+void settings::youtubeTrackReady(bool state)
+{
+    if(state)
+    {
+        youtubeTrackDone=true;
+    }else
+    {
+        youtubeTrackDone=false;
+    }
+}
+
+void settings::handleDirectoryChanged_cache(QString dir)
+{
+
+    cacheTimer->start(1000);
+
 }
 
 void settings::on_collectionPath_clicked(const QModelIndex &index) {
