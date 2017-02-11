@@ -29,7 +29,7 @@ public:
     void selectInfo(QString info);
     QString info;
     QString bio;
-    QString fixTitle(QString title);
+    QString fixTitle(QString title, QString s, QString e);
 
     void startConnection();
 

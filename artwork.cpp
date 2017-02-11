@@ -48,27 +48,57 @@ void ArtWork::setDataCover(QString artist, QString album,QString title, QString 
     }
 }
 
-QString ArtWork::fixTitle(QString title)
+QString ArtWork::fixTitle(QString title,QString s,QString e)
 {
     QString newTitle;
     for(int i=0; i<title.size();i++)
     {
 
-        if(title.at(i)=="("||title.at(i)=="["||title.at(i)=="{")
+        if(title.at(i)==s)
         {
-            while(title.at(i)!=")") i++;
-        }else if(title.at(i)=="f"&&title.at(i+1)=="t")
-        {
-            break;
-
+            while(title.at(i)!=e) i++;
         }else
         {
             newTitle+=title.at(i);
         }
     }
 
+    QString result;
 
-    return newTitle.simplified();
+    if(newTitle.contains("ft"))
+    {
+        qDebug()<<"new title still constains unfixed string ft";
+        for(int i=0; i<newTitle.size();i++)
+        {
+
+            if(newTitle.at(i)=="f"&&newTitle.at(i+1)=="t")
+            {
+               break;
+
+            }else
+            {
+                result+=newTitle.at(i);
+            }
+        }
+
+    }else if (newTitle.contains("feat"))
+    {
+        for(int i=0; i<newTitle.size();i++)
+        {
+
+            if(newTitle.at(i)=="f"&&newTitle.at(i+1)=="e"&&newTitle.at(i+2)=="a"&&newTitle.at(i+3)=="t")
+            {
+               break;
+
+            }else
+            {
+                result+=newTitle.at(i);
+            }
+        }
+    }
+
+
+    return result.isEmpty()? newTitle.simplified(): result.simplified();
 }
 
 void ArtWork::setDataCover_title(QString artist, QString title) {
@@ -76,8 +106,13 @@ void ArtWork::setDataCover_title(QString artist, QString title) {
     url = "http://ws.audioscrobbler.com/2.0/";
 
 
-    qDebug()<<"fixing the title string:"<<fixTitle(title);
-    title=fixTitle(title);
+
+
+    title=title.contains("(")?fixTitle(title,"(",")"):title;
+
+    title=title.contains("[")?fixTitle(title,"[","]"):title;
+
+    qDebug()<<"fixing the title string:"<<title;
     if (artist.size() != 0 && title.size() != 0) {
         url.append("?method=track.getinfo");
         url.append("&api_key=ba6f0bd3c887da9101c10a50cf2af133");
