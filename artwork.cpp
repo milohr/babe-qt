@@ -20,37 +20,64 @@ void ArtWork::setDataCover(QString artist, QString album,QString title, QString 
     qDebug()<<"Going to try and get the art cover for: "<< album <<"by"<<artist<<title;
 
 
-if(!album.contains("UNKNOWN"))
-{
+    if(!album.contains("UNKNOWN"))
+    {
 
-    if (!artist.isEmpty() && !album.isEmpty()) {
-        url.append("?method=album.getinfo");
-        url.append("&api_key=ba6f0bd3c887da9101c10a50cf2af133");
-        QUrl q_artist(artist.replace("&", "and"));
-        q_artist.toEncoded(QUrl::FullyEncoded);
-        QUrl q_album(album.replace("&", "and"));
-        q_album.toEncoded(QUrl::FullyEncoded);
+        if (!artist.isEmpty() && !album.isEmpty()) {
+            url.append("?method=album.getinfo");
+            url.append("&api_key=ba6f0bd3c887da9101c10a50cf2af133");
+            QUrl q_artist(artist.replace("&", "and"));
+            q_artist.toEncoded(QUrl::FullyEncoded);
+            QUrl q_album(album.replace("&", "and"));
+            q_album.toEncoded(QUrl::FullyEncoded);
 
-        if (!q_artist.isEmpty())
-            url.append("&artist=" + q_artist.toString());
-        if (!q_album.isEmpty())
-            url.append("&album=" + q_album.toString());
-        type = ALBUM;
-        // qDebug()<<"on setDataCover:"<<url;
-        startConnection();
+            if (!q_artist.isEmpty())
+                url.append("&artist=" + q_artist.toString());
+            if (!q_album.isEmpty())
+                url.append("&album=" + q_album.toString());
+            type = ALBUM;
+            // qDebug()<<"on setDataCover:"<<url;
+            startConnection();
+        }else if(!title.isEmpty()&&!artist.isEmpty())
+        {
+            setDataCover_title(artist,title);
+        }
     }else if(!title.isEmpty()&&!artist.isEmpty())
     {
         setDataCover_title(artist,title);
     }
-}else if(!title.isEmpty()&&!artist.isEmpty())
-{
-    setDataCover_title(artist,title);
 }
+
+QString ArtWork::fixTitle(QString title)
+{
+    QString newTitle;
+    for(int i=0; i<title.size();i++)
+    {
+
+        if(title.at(i)=="("||title.at(i)=="["||title.at(i)=="{")
+        {
+            while(title.at(i)!=")") i++;
+        }else if(title.at(i)=="f"&&title.at(i+1)=="t")
+        {
+            break;
+
+        }else
+        {
+            newTitle+=title.at(i);
+        }
+    }
+
+
+    return newTitle.simplified();
 }
 
 void ArtWork::setDataCover_title(QString artist, QString title) {
     qDebug()<<"Going to try and get the art cover from title: "<< title <<"by"<<artist;
     url = "http://ws.audioscrobbler.com/2.0/";
+
+
+    qDebug()<<"fixing the title string:"<<fixTitle(title);
+    title=fixTitle(title);
     if (artist.size() != 0 && title.size() != 0) {
         url.append("?method=track.getinfo");
         url.append("&api_key=ba6f0bd3c887da9101c10a50cf2af133");
@@ -64,7 +91,27 @@ void ArtWork::setDataCover_title(QString artist, QString title) {
         if (!q_title.isEmpty())
             url.append("&track=" + q_title.toString());
         type = ALBUM_by_TITLE;
-qDebug()<<"trying to get cover by_title:"<<url;
+        qDebug()<<"trying to get cover by_title:"<<url;
+        startConnection();
+    }
+}
+
+void ArtWork::setDataHead_asCover(QString artist, QString path) {
+    this->artist = artist;
+    this->path = path;
+ url = "http://ws.audioscrobbler.com/2.0/";
+    if (artist.size() != 0) {
+        url.append("?method=artist.getinfo");
+        url.append("&api_key=ba6f0bd3c887da9101c10a50cf2af133");
+
+        QUrl q_artist(artist);
+        q_artist.toEncoded(QUrl::FullyEncoded);
+
+        if (!q_artist.isEmpty())
+            url.append("&artist=" + q_artist.toString());
+        type = ARTIST_COVER;
+        qDebug()<<url;
+
         startConnection();
     }
 }
@@ -148,15 +195,15 @@ QByteArray ArtWork::getCover() { return coverArray; }
 void ArtWork::dummy() { qDebug() << "QQQQQQQQQQQQQQQQQQQQ on DUMMYT"; }
 
 /*void ArtWork::onFinished(QNetworkReply* reply)
-{
-    if (reply->error() == QNetworkReply::NoError)
-    {
-       QByteArray bts = reply->readAll();
-       QString xmlData(bts);
-      // gotAlbumInfo(xmlData);
-    //emit prueba(&str);
-    }
-}*/
+                  {
+                      if (reply->error() == QNetworkReply::NoError)
+                      {
+                         QByteArray bts = reply->readAll();
+                         QString xmlData(bts);
+                        // gotAlbumInfo(xmlData);
+                      //emit prueba(&str);
+                      }
+                  }*/
 
 void ArtWork::saveArt(QByteArray array) {
     QImage img;
@@ -181,7 +228,6 @@ void ArtWork::saveArt(QByteArray array) {
 }
 
 void ArtWork::xmlInfo(QNetworkReply *reply) {
-
     if (reply->error() == QNetworkReply::NoError) {
         QByteArray bts = reply->readAll();
         QString xmlData(bts);
@@ -269,12 +315,17 @@ void ArtWork::xmlInfo(QNetworkReply *reply) {
                              << " cover by title "
                                 "for \""
                              << album << "\".";
-                    //setDataCover_title(artist,title);
-                }else
+
+                        setDataHead_asCover(artist);
+
+
+                }else{
 
                     // qDebug() << "the cover art url is" << coverUrl;
 
                     this->coverArray = selectCover(coverUrl);
+                }
+
 
             }else if (type == ALBUM_INFO) {
                 const QDomNodeList list2 =
@@ -301,7 +352,34 @@ void ArtWork::xmlInfo(QNetworkReply *reply) {
 
                 emit infoReady(info);
 
-            } else if (type == ARTIST) {
+            } else if (type == ARTIST_COVER)
+            {
+                qDebug()<<"trying to get cover now by artistHead"<<artist;
+                const QDomNodeList list3 =
+                        doc.documentElement().namedItem("artist").childNodes();
+                for (int i = 0; i < list3.count(); i++) {
+                    QDomNode n = list3.item(i);
+                    if (n.nodeName() != "image")
+                        continue;
+                    if (!n.hasAttributes())
+                        continue;
+
+                    QString imageSize = n.attributes().namedItem("size").nodeValue();
+                    if (imageSize == "extralarge")
+                        if (n.isElement()) {
+                            artistHead = n.toElement().text();
+                            break;
+                        }
+                }
+
+                if (artistHead.isEmpty()) {
+                    qDebug() << "Could not find "
+                             << " head "
+                                "for \""
+                             << artist << "\".";
+                }
+                selectCover(artistHead);
+            }else if (type == ARTIST) {
 
                 const QDomNodeList list3 =
                         doc.documentElement().namedItem("artist").childNodes();

@@ -18,6 +18,7 @@ public:
     explicit ArtWork(QObject *parent = 0);
     void setDataCover(QString artist, QString album,QString title, QString path="");
     void setDataHead(QString artist, QString path="");
+     void setDataHead_asCover(QString artist, QString path="");
     void setDataCoverInfo(QString artist, QString album);
     void setDataHeadInfo(QString artist);
     void setDataCover_title(QString artist, QString title);
@@ -28,12 +29,13 @@ public:
     void selectInfo(QString info);
     QString info;
     QString bio;
+    QString fixTitle(QString title);
 
     void startConnection();
 
     enum ART
     {
-        ALBUM,ARTIST,ALBUM_INFO,ARTIST_INFO,ALBUM_by_TITLE
+        ALBUM,ARTIST,ALBUM_INFO,ARTIST_INFO,ALBUM_by_TITLE,ARTIST_COVER
     };
 
 private:
@@ -58,10 +60,10 @@ private slots:
 signals:
     void pixmapReady(QImage *pix);
     void coverReady(QByteArray array);
-     void headReady(QByteArray array);
-     void bioReady(QString bio);
-     void infoReady(QString info);
-     void artSaved(QString path,QStringList info);
+    void headReady(QByteArray array);
+    void bioReady(QString bio);
+    void infoReady(QString info);
+    void artSaved(QString path,QStringList info);
 
 };
 

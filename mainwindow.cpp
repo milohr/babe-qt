@@ -714,6 +714,7 @@ void MainWindow::setCoverArt(QString artist, QString album,QString title)
 void MainWindow::putPixmap(QByteArray array)
 {
     if(!array.isEmpty()) album_art->putPixmap(array);
+    else  album_art->putPixmap(QString(":Data/data/cover.svg"));
     //infoTable->setAlbumInfo(coverArt->info);
 
     //delete artwork;
