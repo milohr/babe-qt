@@ -16,7 +16,8 @@
 #include <QFileDialog>
 #include "notify.h"
 #include <QFile>
-
+#include "youtube.h"
+#include <QDirIterator>
 
 settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
     ui->setupUi(this);
@@ -26,6 +27,10 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
     qDebug() << "Getting collectionDB info from: " << collectionDBPath;
     qDebug() << "Getting settings info from: " << settingPath;
     qDebug() << "Getting artwork files from: " << cachePath;
+    qDebug() << "Getting extension files files from: " << extensionFetchingPath;
+
+    ui->ytLineEdit->setText(extensionFetchingPath);
+    ui->frame_4->setEnabled(false);
 
 
     if(!fileExists(notifyDir+"/Babe.notifyrc"))
@@ -57,7 +62,7 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
     cacheTimer = new QTimer();
     connect(cacheTimer, &QTimer::timeout, [this]() {
         // this->setLyrics(artist,title);
-        emit dirChanged(youtubeCachePath);
+        emit dirChanged(youtubeCachePath,"1");
         cacheTimer->stop();
         //qDebug()<<"antonpirulilului";
         //this->getTrackInfo();
@@ -66,9 +71,13 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
 
     auto cacheWatcher = new QFileSystemWatcher();
     cacheWatcher->addPath(youtubeCachePath);
-
     connect(cacheWatcher, SIGNAL(directoryChanged(QString)), this,
             SLOT(handleDirectoryChanged_cache(QString)));
+
+    extensionWatcher = new QFileSystemWatcher();
+    extensionWatcher->addPath(extensionFetchingPath);
+    connect(extensionWatcher, SIGNAL(directoryChanged(QString)), this,
+            SLOT(handleDirectoryChanged_extension()));
 
     connect(this, SIGNAL(collectionPathChanged(QString)), this,
             SLOT(populateDB(QString)));
@@ -117,9 +126,36 @@ void settings::youtubeTrackReady(bool state)
 
 void settings::handleDirectoryChanged_cache(QString dir)
 {
-
+    Q_UNUSED(dir);
     cacheTimer->start(1000);
+}
 
+void settings::handleDirectoryChanged_extension()
+{
+    QStringList urls, ids;
+
+    QDirIterator it(extensionFetchingPath, QStringList() << "*.babe", QDir::Files);
+    while (it.hasNext())
+    {
+        QString song = it.next();
+
+            urls<<song;
+            QFileInfo fileInfo(QFile(song).fileName());
+            QString id=fileInfo.fileName().section(".",0,-2);
+            ids<<id;
+            auto *nof = new Notify();
+            nof->notify("Song recived!","wait a sec while the track ["+id+"] is added to your collection :)");
+
+
+    }
+
+    if (!urls.isEmpty())
+    {
+        auto ytFetch = new YouTube();
+        ytFetch->fetch(ids);
+        for(auto url:urls) if(QFile::remove(url)) qDebug()<<"the urls are going to be cleaned up"<< url;
+        qDebug()<<ids;
+    }
 }
 
 void settings::on_collectionPath_clicked(const QModelIndex &index) {
@@ -558,5 +594,10 @@ void settings::on_debugBtn_clicked()
     for(auto file: watcher->files()) qDebug()<<file;*/
     qDebug()<<"Current dirs being watched:";
     for(auto dir: watcher->directories()) qDebug()<<dir;
+
+}
+
+void settings::on_ytBtn_clicked()
+{
 
 }

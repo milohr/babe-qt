@@ -30,6 +30,8 @@ public:
     QString info;
     QString bio;
     QString fixTitle(QString title, QString s, QString e);
+    QString removeFeat(QString newTitle);
+    QString removeOfficial(QString newTitle);
 
     void startConnection();
 

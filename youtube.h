@@ -17,11 +17,13 @@ class YouTube : public QWidget
 
 public:
     explicit YouTube(QWidget *parent = 0);
+    void fetch(QStringList ids);
     ~YouTube();
 
 private slots:
     void on_goBtn_clicked();
     void processFinished();
+    void processFinished_totally(int state);
 
 private:
     Ui::YouTube *ui;

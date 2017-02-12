@@ -63,6 +63,8 @@ private slots:
 
     void on_debugBtn_clicked();
 
+    void on_ytBtn_clicked();
+
 public slots:
 
     void populateDB(QString path);
@@ -70,6 +72,7 @@ public slots:
     void refreshWatchFiles();
     void youtubeTrackReady(bool state);
     void handleDirectoryChanged_cache(QString dir);
+    void handleDirectoryChanged_extension();
 
 private:
     Ui::settings *ui;
@@ -77,6 +80,8 @@ private:
     const QString collectionDBPath=QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation)+"/babe/";
     const QString cachePath=QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation)+"/babe/";
     const QString youtubeCachePath=QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation)+"/babe/youtube/";
+    QString extensionFetchingPath=QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
+
     const QString notifyDir= QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
     const QString collectionDBName = "collection.db";
     const QString settingsName = "settings.conf";
@@ -92,6 +97,7 @@ private:
     QStringList files;
     QStringList dirs;
     QFileSystemWatcher *watcher;
+    QFileSystemWatcher *extensionWatcher;
     QTimer *cacheTimer;
 
 signals:
@@ -100,7 +106,7 @@ signals:
     void collectionPathChanged(QString newPath);
     void collectionDBFinishedAdding(bool state);
     void fileChanged(QString url);
-    void dirChanged(QString url);
+    void dirChanged(QString url,QString babe="0");
     void collectionPathRemoved(QString url);
     void refreshTables();
 

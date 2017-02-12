@@ -287,7 +287,7 @@
      <string>Info</string>
     </property>
     <property name="icon">
-     <iconset theme="kstars_constellationart">
+     <iconset theme="internet-amarok">
       <normaloff>.</normaloff>.</iconset>
     </property>
     <property name="checkable">
@@ -900,8 +900,11 @@ border-top: 1px solid #333;
      <string>YouTube</string>
     </property>
     <property name="icon">
-     <iconset theme="internet-amarok">
+     <iconset theme="kstars_constellationart">
       <normaloff>.</normaloff>.</iconset>
+    </property>
+    <property name="checkable">
+     <bool>true</bool>
     </property>
     <property name="autoExclusive">
      <bool>true</bool>

@@ -171,7 +171,7 @@ MainWindow::MainWindow(QWidget *parent) :
     setToolbarIconSize(settings_widget->getToolbarIconSize());
     connect(settings_widget, SIGNAL(toolbarIconSizeChanged(int)), this, SLOT(setToolbarIconSize(int)));
     connect(settings_widget, SIGNAL(collectionDBFinishedAdding(bool)), this, SLOT(collectionDBFinishedAdding(bool)));
-    connect(settings_widget, SIGNAL(dirChanged(QString)),this, SLOT(scanNewDir(QString)));
+    connect(settings_widget, SIGNAL(dirChanged(QString,QString)),this, SLOT(scanNewDir(QString, QString)));
     //connect(settings_widget, SIGNAL(collectionPathRemoved(QString)),&settings_widget->getCollectionDB(), SLOT(removePath(QString)));
     connect(settings_widget, SIGNAL(refreshTables()),this, SLOT(refreshTables()));
 
@@ -541,7 +541,7 @@ void MainWindow::refreshTables()
     artistsTable->hideAlbumFrame();
 
     playlistTable->list->clear();
-     playlistTable->setDefaultPlaylists();
+    playlistTable->setDefaultPlaylists();
     QStringList playLists =settings_widget->getCollectionDB().getPlaylists();
     playlistTable->definePlaylists(playLists);
     playlistTable->setPlaylists(playLists);
@@ -924,8 +924,8 @@ this->show();*/
     case ARTISTS:  icon="draw-star"; break;
     case PLAYLISTS:  icon="amarok_lyrics"; break;
     case QUEUE:  icon="amarok_clock"; break;
-    case INFO: icon="documentinfo"; break;
-        case YOUTUBE: icon="amarok-internet"; break;
+    case INFO: icon="internet-amarok"; break;
+    case YOUTUBE: icon="kstars_constellationart"; break;
     case SETTINGS:  icon="games-config-options"; break;
     default:  icon="search";
     }
@@ -1691,7 +1691,7 @@ bool MainWindow::fileExists(QString url)
 }
 
 
-void MainWindow::scanNewDir(QString url)
+void MainWindow::scanNewDir(QString url,QString babe)
 {
     QStringList list;
 
@@ -1712,7 +1712,8 @@ void MainWindow::scanNewDir(QString url)
         auto *nof = new Notify();
         nof->notify("New music added to collection",listToString(list));
 
-        addToCollectionDB_t(list);
+        addToCollectionDB_t(list,babe);
+
     }
     else {
 
@@ -1736,13 +1737,10 @@ QString MainWindow::listToString(QStringList list)
 void MainWindow::addToCollectionDB_t(QStringList url, QString babe)
 {
     settings_widget->getCollectionDB().addTrack(url,babe.toInt());
-    collectionTable->flushTable();
-    collectionTable->populateTableView("SELECT * FROM tracks");
-    albumsTable->flushGrid();
-    albumsTable->populateTableView(settings_widget->getCollectionDB().getQuery("SELECT * FROM albums ORDER by title asc"));
-
-    artistsTable->flushGrid();
-    artistsTable->populateTableViewHeads(settings_widget->getCollectionDB().getQuery("SELECT * FROM artists ORDER by title asc"));
+    if(babe.contains("1"))
+    {
+        addToPlaylist(url);
+    }
 
 }
 
@@ -1910,8 +1908,8 @@ void MainWindow::on_addAll_clicked()
     case ARTISTS: addToPlaylist(artistsTable->albumTable->getTableContent(BabeTable::LOCATION)); break;
     case PLAYLISTS: addToPlaylist(playlistTable->table->getTableContent(BabeTable::LOCATION)); break;
     case QUEUE: addToPlaylist(queueTable->getTableContent(BabeTable::LOCATION)); break;
-    //case INFO: addToPlaylist(collectionTable->getTableContent(BabeTable::LOCATION)); break;
-   // case SETTINGS:  addToPlaylist(collectionTable->getTableContent(BabeTable::LOCATION)); break;
+        //case INFO: addToPlaylist(collectionTable->getTableContent(BabeTable::LOCATION)); break;
+        // case SETTINGS:  addToPlaylist(collectionTable->getTableContent(BabeTable::LOCATION)); break;
     case RESULTS: addToPlaylist(resultsTable->getTableContent(BabeTable::LOCATION)); break;
 
     }
@@ -1940,8 +1938,8 @@ void MainWindow::saveResultsTo(QAction *action)
     case ARTISTS: artistsTable->albumTable->populatePlaylist(artistsTable->albumTable->getTableContent(BabeTable::LOCATION),playlist); break;
     case PLAYLISTS: playlistTable->table->populatePlaylist(playlistTable->table->getTableContent(BabeTable::LOCATION),playlist); break;
     case QUEUE: queueTable->populatePlaylist(queueTable->getTableContent(BabeTable::LOCATION),playlist); break;
-    //case INFO: collectionTable->populatePlaylist(collectionTable->getTableContent(BabeTable::LOCATION),playlist); break;
-    //case SETTINGS:  collectionTable->populatePlaylist(collectionTable->getTableContent(BabeTable::LOCATION),playlist); break;
+        //case INFO: collectionTable->populatePlaylist(collectionTable->getTableContent(BabeTable::LOCATION),playlist); break;
+        //case SETTINGS:  collectionTable->populatePlaylist(collectionTable->getTableContent(BabeTable::LOCATION),playlist); break;
     case RESULTS: resultsTable->populatePlaylist(resultsTable->getTableContent(BabeTable::LOCATION),playlist); break;
 
     }

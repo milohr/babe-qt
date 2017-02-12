@@ -63,6 +63,14 @@ QString ArtWork::fixTitle(QString title,QString s,QString e)
         }
     }
 
+
+
+
+    return newTitle.simplified();
+}
+
+QString ArtWork::removeFeat(QString newTitle)
+{
     QString result;
 
     if(newTitle.contains("ft"))
@@ -96,9 +104,21 @@ QString ArtWork::fixTitle(QString title,QString s,QString e)
             }
         }
     }
+    return result.simplified();
+}
 
+QString ArtWork::removeOfficial(QString newTitle)
+{
+    QString result;
 
-    return result.isEmpty()? newTitle.simplified(): result.simplified();
+    if(newTitle.contains("official video"))
+    {
+        qDebug()<<"new title still constains unfixed string official video";
+
+      result=newTitle.section("official video",0,-2);
+
+    }
+    return result.simplified();
 }
 
 void ArtWork::setDataCover_title(QString artist, QString title) {
@@ -111,7 +131,9 @@ void ArtWork::setDataCover_title(QString artist, QString title) {
     title=title.contains("(")?fixTitle(title,"(",")"):title;
 
     title=title.contains("[")?fixTitle(title,"[","]"):title;
-
+    title=title.contains("ft")?removeFeat(title):title;
+    title=title.contains("feat")?removeFeat(title):title;
+    title=title.contains("official video")?removeOfficial(title):title;
     qDebug()<<"fixing the title string:"<<title;
     if (artist.size() != 0 && title.size() != 0) {
         url.append("?method=track.getinfo");
