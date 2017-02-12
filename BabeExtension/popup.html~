@@ -7,8 +7,9 @@
      <link type="text/css" rel="stylesheet" href="style.css"/>
   </head>
   <body>
-    
-    <button class="btn" id="add">Add to collection</button>
-    <button class="btn" id="babe">Babe It!</button>
+    <div id="btns">
+        <button class="btn" id="add">Add to collection</button>
+        <button class="btn" id="babe">Babe It!</button>
+    </div>
   </body>
 </html>

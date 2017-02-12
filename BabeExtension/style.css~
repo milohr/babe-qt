@@ -19,11 +19,12 @@ button
     height:100%;
     margin:10px;
     
+    
 }
 
 .btn
 {
-   
+   padding:10px;
     width:100%;
      text-align:center;
     border:none;
@@ -36,9 +37,19 @@ button
 {
     
     width:100%;
-    border-radius:10px;
+    border-radius:5px;
     background:#f85b79;
      text-align:center;
     color:white;
     
+}
+
+div #warning
+{
+    width:100%;
+}
+
+div #warning p
+{
+    color:red;
 }

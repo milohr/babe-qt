@@ -3,16 +3,45 @@
 #include <taglib/fileref.h>
 #include <taglib/tag.h>
 #include <taglib/taglib.h>
+#include <taglib/id3v2tag.h>
+#include <taglib/id3v2header.h>
+#include <artwork.h>
 
-TagInfo::TagInfo(QString file) {
+TagInfo::TagInfo(QString file)  {
     this->file = TagLib::FileRef(file.toUtf8());
     path = file;
 }
 
+
+void TagInfo::writeData()
+{
+   // QString album_=this->getAlbum();
+    QString title_=this->getTitle();
+    QString artist_=this->getArtist();
+
+    if(!title_.isEmpty()&&!artist_.isEmpty())
+    {
+        auto info = new ArtWork ();
+std::string newTitle=info->getAlbumTitle(artist_,title_).toStdString();
+
+            this->file.tag()->setAlbum(newTitle.empty()?"UNKNOWN":newTitle);
+            this->file.save();
+
+
+    }
+}
+
 QString TagInfo::getAlbum() {
-    return QString::fromStdWString(file.tag()->album().toWString()).size() > 0
-            ? QString::fromStdWString(file.tag()->album().toWString())
-            : "UNKNOWN";
+
+    QString albumName= QString::fromStdWString(file.tag()->album().toWString());
+
+ /*if(albumName.isEmpty())
+ {
+     writeData();
+     albumName= QString::fromStdWString(file.tag()->album().toWString());
+ }*/
+
+    return albumName;
 }
 
 QString TagInfo::getTitle() {

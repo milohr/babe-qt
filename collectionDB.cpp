@@ -252,7 +252,22 @@ void CollectionDB::addTrack(QStringList paths, int babe)
         track=info.getTrack();
         title=info.getTitle();
         artist= info.getArtist();
-        album=info.getAlbum();
+
+
+
+
+        if(info.getAlbum().isEmpty())
+        {
+            qDebug()<<"the album has not title, so i'm going to try and get it for you";
+           info.writeData();
+           album=info.getAlbum();
+        }else
+        {
+            qDebug()<<"the album has a title";
+            album=info.getAlbum();
+        }
+
+
         genre=info.getGenre();
 
 

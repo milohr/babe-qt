@@ -43,3 +43,15 @@ button
     color:white;
     
 }
+
+div #warning
+{
+    width:100%;
+}
+
+#warning
+{
+    color:red;
+    width:100%;
+    text-align:center;
+}

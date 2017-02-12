@@ -131,6 +131,7 @@ void Lyrics::getLyrics(QNetworkReply *reply)
     if(lyrics.isEmpty())
     {
         qDebug("Not found");
+        text+="\n<h3 align='center'>:( Nothing Here</h3>";
     }
     else
     {
@@ -145,20 +146,20 @@ void Lyrics::getLyrics(QNetworkReply *reply)
     {
         qDebug()<<"Could not find " <<
                   " lyrics ";
-        text="<h1 align='center'>:( Nothing Here</h1>";
+
 
     }else
     {
         // qDebug()<<"the lyrics are"<< lyric;
         text= "<p align='center'>"+text+"<p>";
 
-
+ emit lyricsReady(text);
 
         //disconnect(this, SIGNAL(lyricsReady(QString)), 0, 0);
 
 
     }
-     emit lyricsReady(text);
+
 }
 
 

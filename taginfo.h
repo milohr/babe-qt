@@ -8,6 +8,7 @@
 
 class TagInfo
 {
+
 public:
     TagInfo(QString file);
     QString getAlbum();
@@ -16,6 +17,7 @@ public:
     int getTrack();
     QString getGenre();
     QString fileName();
+    void writeData();
 
 
 private:

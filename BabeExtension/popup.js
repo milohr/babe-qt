@@ -17,7 +17,10 @@ document.addEventListener('DOMContentLoaded', function()
           chrome.browserAction.setIcon({path: "icon_done.png"});
           
         }else
-        { console.log("url does not contains yuotube"); }
+        { console.log("url does not contains yuotube");
+            
+            document.getElementById("warning").innerHTML+= "This isn't a YouTube url";
+        }
         
     });
   }, false);

@@ -32,12 +32,14 @@ public:
     QString fixTitle(QString title, QString s, QString e);
     QString removeFeat(QString newTitle);
     QString removeOfficial(QString newTitle);
+    QString getAlbumTitle(QString info);
+    QString getAlbumTitle(QString artist, QString title);
 
     void startConnection();
 
     enum ART
     {
-        ALBUM,ARTIST,ALBUM_INFO,ARTIST_INFO,ALBUM_by_TITLE,ARTIST_COVER
+        ALBUM,ARTIST,ALBUM_INFO,ARTIST_INFO,ALBUM_by_TITLE,ARTIST_COVER,ALBUM_TITLE
     };
 
 private:
@@ -66,6 +68,7 @@ signals:
     void bioReady(QString bio);
     void infoReady(QString info);
     void artSaved(QString path,QStringList info);
+    void albumTitleReady(QString title);
 
 };
 

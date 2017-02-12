@@ -55,7 +55,7 @@ void YouTube::processFinished_totally(int state)
     ui->goBtn->show();
     ui->textBrowser->hide(); ui->frame_3->hide();
     ui->lineEdit->setEnabled(true);
-     //emit youtubeTrackReady(true);
+    emit youtubeTrackReady(true);
 }
 
 

@@ -157,7 +157,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     youtubeTable = new YouTube(this);
-    //connect(youtubeTable,SIGNAL(youtubeTrackReady(bool)),settings_widget,SLOT(youtubeTrackReady(bool)));
+    connect(youtubeTable,SIGNAL(youtubeTrackReady(bool)),settings_widget,SLOT(youtubeTrackReady(bool)));
 
     //playback = new QToolBar();
 

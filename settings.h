@@ -74,6 +74,7 @@ public slots:
     void handleDirectoryChanged_cache(QString dir);
     void handleDirectoryChanged_extension();
 
+
 private:
     Ui::settings *ui;
     const QString settingPath= QStandardPaths::writableLocation(QStandardPaths::ConfigLocation)+"/babe/";

@@ -59,7 +59,7 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
     if (!youtubeCache_dir.exists())
         youtubeCache_dir.mkpath(".");
 
-    cacheTimer = new QTimer();
+    /*cacheTimer = new QTimer();
     connect(cacheTimer, &QTimer::timeout, [this]() {
         // this->setLyrics(artist,title);
         emit dirChanged(youtubeCachePath,"1");
@@ -67,12 +67,12 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
         //qDebug()<<"antonpirulilului";
         //this->getTrackInfo();
 
-    });
+    });*/
 
-    auto cacheWatcher = new QFileSystemWatcher();
+   /* auto cacheWatcher = new QFileSystemWatcher();
     cacheWatcher->addPath(youtubeCachePath);
     connect(cacheWatcher, SIGNAL(directoryChanged(QString)), this,
-            SLOT(handleDirectoryChanged_cache(QString)));
+            SLOT(handleDirectoryChanged_cache(QString)));*/
 
     extensionWatcher = new QFileSystemWatcher();
     extensionWatcher->addPath(extensionFetchingPath);
@@ -100,7 +100,7 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
     ui->label->hide();
     ui->label2->hide();
     watcher = new QFileSystemWatcher();
-    watcher->addPath(youtubeCachePath);
+   // watcher->addPath(youtubeCachePath);
     connect(watcher, SIGNAL(fileChanged(QString)), this,
             SLOT(handleFileChanged(QString)));
     connect(watcher, SIGNAL(directoryChanged(QString)), this,
@@ -115,19 +115,24 @@ settings::~settings() {
 
 void settings::youtubeTrackReady(bool state)
 {
+
+
     if(state)
     {
-        youtubeTrackDone=true;
-    }else
-    {
-        youtubeTrackDone=false;
+         qDebug()<<"the youtube track is ready";
+         emit dirChanged(youtubeCachePath,"1");
+
     }
 }
 
 void settings::handleDirectoryChanged_cache(QString dir)
 {
     Q_UNUSED(dir);
-    cacheTimer->start(1000);
+    qDebug()<<"the cache youtube dir has some changes but...";
+    if(youtubeTrackDone)
+    {
+        qDebug()<<"youtubeTrackDone";
+    }
 }
 
 void settings::handleDirectoryChanged_extension()
@@ -152,6 +157,8 @@ void settings::handleDirectoryChanged_extension()
     if (!urls.isEmpty())
     {
         auto ytFetch = new YouTube();
+        connect(ytFetch,SIGNAL(youtubeTrackReady(bool)),this,SLOT(youtubeTrackReady(bool)));
+
         ytFetch->fetch(ids);
         for(auto url:urls) if(QFile::remove(url)) qDebug()<<"the urls are going to be cleaned up"<< url;
         qDebug()<<ids;

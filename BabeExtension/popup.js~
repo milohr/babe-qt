@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function()
           console.log(newStr);
           download(newStr, newStr+'.babe', 'text/plain');
           chrome.browserAction.setIcon({path: "icon_done.png"});
-          chrome.browserAction.setIcon({path: "icon_1.png"});
+          
         }else
         { console.log("url does not contains yuotube"); }
         

@@ -28,7 +28,7 @@ private:
     Ui::InfoView *ui;
 
     QToolButton *hideBtn;
-    bool hide= true;
+    bool hide= false;
 
 private slots:
     void setAlbumArt(QByteArray array);

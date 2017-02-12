@@ -33,7 +33,7 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView) {
     infoUtils = new QWidget();
     // artistContainer->setStyleSheet("QWidget{background-color: #575757;
     // color:white;}");
-    infoUtils->setFixedWidth(200);
+    infoUtils->setMaximumWidth(200);
     auto infoUtils_layout = new QHBoxLayout();
     infoUtils_layout->setContentsMargins(0, 0, 0, 0);
     infoUtils_layout->setSpacing(0);
@@ -45,9 +45,6 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView) {
     moreBtn->setAutoRaise(true);
     moreBtn->setIcon(QIcon::fromTheme("filename-discnumber-amarok"));
 
-    auto loveBtn = new QToolButton();
-    loveBtn->setAutoRaise(true);
-    loveBtn->setIcon(QIcon::fromTheme("preferences-media-playback-amarok"));
 
     hideBtn = new QToolButton();
     connect(hideBtn, SIGNAL(clicked()), this, SLOT(hideArtistInfo()));
@@ -57,9 +54,12 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView) {
 
     infoUtils_layout->addWidget(similarBtn);
     infoUtils_layout->addWidget(moreBtn);
-    infoUtils_layout->addWidget(loveBtn);
+
     infoUtils_layout->addWidget(hideBtn);
     infoUtils->setLayout(infoUtils_layout);
+    ui->artistFrame->hide();
+    infoUtils->hide();
+
 }
 
 InfoView::~InfoView() { delete ui; }

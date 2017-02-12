@@ -48,6 +48,106 @@ void ArtWork::setDataCover(QString artist, QString album,QString title, QString 
     }
 }
 
+
+
+QString ArtWork::getAlbumTitle(QString artist, QString title) {
+
+     QString title_album;
+    this->artist = artist;
+
+    this->title=title;
+
+    qDebug()<<"Going to try and get the album name for: "<< artist <<"as"<<title;
+
+    url = "http://ws.audioscrobbler.com/2.0/";
+
+    title=title.contains("(")?fixTitle(title,"(",")"):title;
+
+    title=title.contains("[")?fixTitle(title,"[","]"):title;
+    title=title.contains("ft")?removeFeat(title):title;
+    title=title.contains("feat")?removeFeat(title):title;
+    title=title.contains("official video")?removeOfficial(title):title;
+
+    qDebug()<<"fixing the title string in order to get album title:"<<title;
+    if (!artist.isEmpty() && !title.isEmpty()) {
+        url.append("?method=track.getinfo");
+        url.append("&api_key=ba6f0bd3c887da9101c10a50cf2af133");
+        QUrl q_artist(artist.replace("&", "and"));
+        q_artist.toEncoded(QUrl::FullyEncoded);
+        QUrl q_title(title.replace("&", "and"));
+        q_title.toEncoded(QUrl::FullyEncoded);
+
+        if (!q_artist.isEmpty())
+            url.append("&artist=" + q_artist.toString());
+        if (!q_title.isEmpty())
+            url.append("&track=" + q_title.toString());
+        type = ALBUM_TITLE;
+        qDebug()<<"trying to get album name by_title:"<<url;
+
+
+
+        QNetworkAccessManager manager;
+
+        QNetworkReply *reply = manager.get(QNetworkRequest(QUrl(url)));
+
+        QEventLoop loop;
+        QObject::connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+        QObject::connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), &loop,
+                         SLOT(quit()));
+
+        loop.exec();
+
+
+
+        if (reply->error() == QNetworkReply::NoError)
+        {
+            QByteArray bts = reply->readAll();
+            QString xmlData(bts);
+            QDomDocument doc;
+
+            if (!doc.setContent(xmlData)) {
+                qDebug() << "The XML obtained from last.fm "
+                            "is invalid.";
+            } else {
+
+                const QDomNodeList list =
+                        doc.documentElement().namedItem("track").childNodes();
+
+                for (int i = 0; i < list.count(); i++) {
+                    QDomNode n = list.item(i);
+                    if (n.isElement()) {
+                        if (n.nodeName() == "album")
+                        {
+                            title_album = n.childNodes().item(1).toElement().text();
+
+                        }
+                    }
+                }
+                //qDebug()<<coverUrl;
+                if (title_album.isEmpty()) {
+                    qDebug() << "Could not find "
+                             << " album title "
+                                "for \""
+                             << title << artist<<"\".";
+                }else
+                {
+                    qDebug()<<title_album;
+                }
+
+
+            }
+        }
+
+
+        delete reply;
+
+    }
+
+    return title_album;
+}
+
+
+
 QString ArtWork::fixTitle(QString title,QString s,QString e)
 {
     QString newTitle;
@@ -81,7 +181,7 @@ QString ArtWork::removeFeat(QString newTitle)
 
             if(newTitle.at(i)=="f"&&newTitle.at(i+1)=="t")
             {
-               break;
+                break;
 
             }else
             {
@@ -96,7 +196,7 @@ QString ArtWork::removeFeat(QString newTitle)
 
             if(newTitle.at(i)=="f"&&newTitle.at(i+1)=="e"&&newTitle.at(i+2)=="a"&&newTitle.at(i+3)=="t")
             {
-               break;
+                break;
 
             }else
             {
@@ -115,7 +215,7 @@ QString ArtWork::removeOfficial(QString newTitle)
     {
         qDebug()<<"new title still constains unfixed string official video";
 
-      result=newTitle.section("official video",0,-2);
+        result=newTitle.section("official video",0,-2);
 
     }
     return result.simplified();
@@ -156,7 +256,7 @@ void ArtWork::setDataCover_title(QString artist, QString title) {
 void ArtWork::setDataHead_asCover(QString artist, QString path) {
     this->artist = artist;
     this->path = path;
- url = "http://ws.audioscrobbler.com/2.0/";
+    url = "http://ws.audioscrobbler.com/2.0/";
     if (artist.size() != 0) {
         url.append("?method=artist.getinfo");
         url.append("&api_key=ba6f0bd3c887da9101c10a50cf2af133");
@@ -373,7 +473,7 @@ void ArtWork::xmlInfo(QNetworkReply *reply) {
                                 "for \""
                              << album << "\".";
 
-                        setDataHead_asCover(artist);
+                    setDataHead_asCover(artist);
 
 
                 }else{
@@ -545,3 +645,8 @@ void ArtWork::selectHead(QString url) {
 void ArtWork::selectInfo(QString info) { this->info = info; }
 
 QString ArtWork::getInfo() { return info; }
+
+QString ArtWork::getAlbumTitle(QString info)
+{
+
+}
