@@ -66,7 +66,9 @@ QString ArtWork::getAlbumTitle(QString artist, QString title) {
     title=title.contains("[")?fixTitle(title,"[","]"):title;
     title=title.contains("ft")?removeFeat(title):title;
     title=title.contains("feat")?removeFeat(title):title;
-    title=title.contains("official video")?removeOfficial(title):title;
+    title=title.contains("official video")?removeSubstring(title, "official video"):title;
+    title=title.contains("live")?removeSubstring(title, "live"):title;
+
 
     qDebug()<<"fixing the title string in order to get album title:"<<title;
     if (!artist.isEmpty() && !title.isEmpty()) {
@@ -207,15 +209,16 @@ QString ArtWork::removeFeat(QString newTitle)
     return result.simplified();
 }
 
-QString ArtWork::removeOfficial(QString newTitle)
+QString ArtWork::removeSubstring(QString newTitle,QString subString)
 {
     QString result;
-
-    if(newTitle.contains("official video"))
+    newTitle=newTitle.toLower();
+    subString=subString.toLower();
+    if(newTitle.contains(subString))
     {
-        qDebug()<<"new title still constains unfixed string official video";
+        qDebug()<<"new title still constains unfixed string: "<< subString;
 
-        result=newTitle.section("official video",0,-2);
+        result=newTitle.section(subString,0,-2);
 
     }
     return result.simplified();
@@ -233,7 +236,8 @@ void ArtWork::setDataCover_title(QString artist, QString title) {
     title=title.contains("[")?fixTitle(title,"[","]"):title;
     title=title.contains("ft")?removeFeat(title):title;
     title=title.contains("feat")?removeFeat(title):title;
-    title=title.contains("official video")?removeOfficial(title):title;
+    title=title.contains("official video")?removeSubstring(title, "official video"):title;
+    title=title.contains("live")?removeSubstring(title, "live"):title;
     qDebug()<<"fixing the title string:"<<title;
     if (artist.size() != 0 && title.size() != 0) {
         url.append("?method=track.getinfo");

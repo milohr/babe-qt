@@ -14,6 +14,14 @@ document.addEventListener('DOMContentLoaded', function()
       if(url.includes("youtube.com/watch?v"))
       {
           var newStr = url.substring(url.lastIndexOf("watch?v=")+8,url.length);
+          
+           if(newStr.includes("&"))
+           {
+               console.log("the string inclues ambersan");
+              newStr = newStr.substring(newStr.indexOf("watch?v=")+8,newStr.indexOf("&"));
+           }
+           
+          
           console.log(newStr);
           download(newStr, newStr+'.babe', 'text/plain');
           chrome.browserAction.setIcon({path: "icon_done.png"});

@@ -16,12 +16,12 @@ Think of Babe as the playlist where all your favorite tracks at the moment are. 
 
 
 
-##### you need to have [ taglib - knotification lib - qt 5.8 libs ]installed in order to compile this app from source
+##### you need to have [ taglib - knotification lib - ki18n lib - qt 5.8 libs ]installed in order to compile this app from source
 any extra help to package this app is welcome and I'm willing to solve any doubts or questions about it.
 
 
 <h3> To run: </h3>
-qmake && make && ./Babe
+qmake-qt5 && make && ./Babe
 
 
 

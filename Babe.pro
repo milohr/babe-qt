@@ -19,9 +19,9 @@ QT       += sql
 QT       += network
 QT       += xml
 QT       += dbus
-QT += KNotifications
-QT += KI18n
-QT += KConfigCore KConfigGui
+QT       += KNotifications
+QT       += KI18n
+
 
 
 CONFIG   += c++14

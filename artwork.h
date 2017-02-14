@@ -31,7 +31,7 @@ public:
     QString bio;
     QString fixTitle(QString title, QString s, QString e);
     QString removeFeat(QString newTitle);
-    QString removeOfficial(QString newTitle);
+    QString removeSubstring(QString newTitle, QString subString);
     QString getAlbumTitle(QString info);
     QString getAlbumTitle(QString artist, QString title);
 
