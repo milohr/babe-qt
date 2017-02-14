@@ -5,12 +5,14 @@
 
 https://milohr.github.io/BabeIt/
 
-Babe will handle your whole music collection, letting you create custom playlists to organize it and filter your music by artist, title, album, genre, date and location. Babe also let's you babe-mark your favorite YouTube music videos into your local collection by using the Chromium extension. 
+Babe will handle your whole music collection, letting you create custom playlists to organize your music.
 
-Think of Babe as the playlist where all your favorite tracks at the moment are. And when needed you also have a collection manager integrated.
+You can also filter your music by artist, title, album, genre, date and location. Babe let's you babe-mark your favorite YouTube music videos into your local collection by using the Chromium extension. 
+
+Think of Babe as the playlist where all your favorite tracks at the moment are. And when needed you also have an integrated collection manager.
 
 
-(a previous unfinished gtk3 version is still in my repository and I plain to turn it into a simple version of Noise for the Pantheon desktop of elementaryOS) 
+(a previous unfinished gtk3 version is still in my repository and I plan to turn it into a simple version of Noise for the Pantheon desktop of elementaryOS) 
 
 
 
@@ -22,24 +24,31 @@ any extra help to package this app is welcome and I'm willing to solve any doubt
 qmake && make && ./Babe
 
 
+
 * Planned Features :
-  ... youtube-dl streamming [5%]
-  ... babe chrome-chromium extension for youtube-dl supported sites [90%]
-  ... krunner integration[0%]
+  ** youtube-dl streamming [5%]
+  ** babe chrome-chromium extension for youtube-dl supported sites [90%]
+  ** krunner integration[0%]
 
 * Expected Features :
-  -simple music collection manager [100%]
-  -artist and lyrics info [100%] 
+  ** simple music collection manager [100%]
+  ** artist and lyrics info [100%] 
   
-* Features :
-    -enjoy three different view modes: the mini mode keeps on top of the windows and its size is just 200x200 px ,just displaying the art and playback controls, the playlist mode is unobtrusive and displays a list of your songs, the collection view let's you browse your whole music collection by tracks, artists and albums, also let's you get information about the current song playing.
+  
+<h3> Features : </h3> 
+
+    -Babe has three different view modes: 
+    * the mini mode keeps on top of the windows and its size is just 200x200 px ,just displaying the art and playback controls
+    * the playlist mode is unobtrusive and displays a list of your songs
+    * the collection view let's you browse your whole music collection by tracks, artists and albums, also let's you get information about the current song playing.
     
     -search keys to filter the results: 
-    location:  (example: to see all the tracks from the YouTube extension: "location:youtube")
-    artist: (get all matching artists)
-    album: (get all matching albums)    
-    title: (get all matching titles)
-    genre: (get all matching genres)
+    
+    * location:  (example: to see all the tracks from the YouTube extension: "location:youtube")
+    * artist: (get all matching artists)
+    * album: (get all matching albums)    
+    * title: (get all matching titles)
+    * genre: (get all matching genres)
     
     -quickly append search results, albums, artists and tracks to the main playlist or save them to a specific playlist
     
