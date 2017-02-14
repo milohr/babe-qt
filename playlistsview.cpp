@@ -118,6 +118,11 @@ void PlaylistsView::setDefaultPlaylists() {
     babes->setText("Babes");
     list->addItem(babes);
 
+    auto online = new QListWidgetItem();
+    online->setIcon(QIcon::fromTheme("kstars_constellationart"));
+    online->setText("Online");
+    list->addItem(online);
+
 
 
 }
@@ -146,6 +151,10 @@ void PlaylistsView::populatePlaylist(QModelIndex index) {
         // table->showColumn(BabeTable::PLAYED);
         table->populateTableView(
                     "SELECT * FROM tracks WHERE babe = \"1\" ORDER  by played desc");
+    }else if (currentPlaylist == "Online") {
+        // table->showColumn(BabeTable::PLAYED);
+        table->populateTableView("SELECT * FROM tracks WHERE location LIKE \"%" +
+                                 youtubeCachePath + "%\"");
     } else if(!currentPlaylist.isEmpty()&&!currentPlaylist.contains("#")) {
 
         table->hideColumn(BabeTable::PLAYED);

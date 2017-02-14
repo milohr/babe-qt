@@ -511,7 +511,7 @@ void MainWindow::addToPlayed(QString url)
 void MainWindow::resizeEvent(QResizeEvent* event)
 {
     QMainWindow::resizeEvent(event);
-    qDebug()<<event->size().width()<<"x"<<event->size().height();
+    //qDebug()<<event->size().width()<<"x"<<event->size().height();
     if(mini_mode==0 && event->size().width()<this->minimumSize().width()+20)
     {
         //this->setMaximumWidth(200);

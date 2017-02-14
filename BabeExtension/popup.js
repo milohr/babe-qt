@@ -9,6 +9,8 @@ document.addEventListener('DOMContentLoaded', function()
     {
       d = document;
       var url =tab.url;
+      var ydoc= tab.title;
+      console.log(ydoc);
       if(url.includes("youtube.com/watch?v"))
       {
           var newStr = url.substring(url.lastIndexOf("watch?v=")+8,url.length);
@@ -25,7 +27,6 @@ document.addEventListener('DOMContentLoaded', function()
     });
   }, false);
 }, false);
-
 
 
 
@@ -51,7 +52,7 @@ function download(strData, strFileName, strMimeType) {
 
     if ('download' in a) { //FF20, CH19
         a.setAttribute("download", n);
-        a.innerHTML = "downloading...";
+      /* a.innerHTML = "downloading...";*/
         D.body.appendChild(a);
         setTimeout(function() {
             var e = D.createEvent("MouseEvents");
