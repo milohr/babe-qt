@@ -169,42 +169,19 @@ QString ArtWork::fixTitle(QString title,QString s,QString e)
     return newTitle.simplified();
 }
 
-QString ArtWork::removeFeat(QString newTitle)
-{
-    QString result;
-
-    if(newTitle.contains("ft"))
-    {
-        qDebug()<<"new title still constains unfixed string ft";
-        for(int i=0; i<newTitle.size();i++)
-        {
-
-            if(newTitle.at(i)=="f"&&newTitle.at(i+1)=="t")
-            {
-                break;
-
-            }else
-            {
-                result+=newTitle.at(i);
-            }
-        }
-
-    }else if (newTitle.contains("feat"))
-    {
-        for(int i=0; i<newTitle.size();i++)
-        {
-
-            if(newTitle.at(i)=="f"&&newTitle.at(i+1)=="e"&&newTitle.at(i+2)=="a"&&newTitle.at(i+3)=="t")
-            {
-                break;
-
-            }else
-            {
-                result+=newTitle.at(i);
-            }
-        }
-    }
-    return result.simplified();
+QString ArtWork::removeFeat(QString newTitle)                                                                                                                                                                    
+{                                                                               
+    const int indexFt = newTitle.indexOf("ft", 0, Qt::CaseInsensitive);         
+                                                                                
+    if (indexFt != -1) {                                                        
+        return newTitle.left(indexFt).simplified();                             
+    }                                                                           
+                                                                                
+    const int indexFeat = newTitle.indexOf("feat", 0, Qt::CaseInsensitive);     
+                                                                                
+    if (indexFeat != -1) {                                                      
+         return newTitle.left(indexFeat).simplified();                           
+    }                                                                           
 }
 
 QString ArtWork::removeOfficial(QString newTitle)
