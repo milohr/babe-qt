@@ -3,28 +3,56 @@
 
 #### Babe is a tiny Qt music player to keep you favorite songs at hand
 
-Babe will also handle your whole music collection, letting you create playlists and search trough out your music collection
+https://milohr.github.io/BabeIt/
 
-(previous unfinished gtk3 version still in my repository) 
+Babe will handle your whole music collection, letting you create custom playlists to organize it and filter your music by artist, title, album, genre, date and location. Babe also let's you babe-mark your favorite YouTube music videos into your local collection by using the Chromium extension. 
 
-you need to have [ taglib - knotification ]installed in order to compile this app
+Think of Babe as the playlist where all your favorite tracks at the moment are. And when needed you also have a collection manager integrated.
+
+
+(a previous unfinished gtk3 version is still in my repository and I plain to turn it into a simple version of Noise for the Pantheon desktop of elementaryOS) 
+
+
+
+##### you need to have [ taglib - knotification lib - qt 5.8 libs ]installed in order to compile this app from source
+any extra help to package this app is welcome and I'm willing to solve any doubts or questions about it.
+
 
 <h3> To run: </h3>
 qmake && make && ./Babe
 
 
 * Planned Features :
-  ... youtube-dl streamming 
-  ... babe chrome-chromium extension for youtube-dl supported sites
-  ... krunner integration
+  ... youtube-dl streamming [5%]
+  ... babe chrome-chromium extension for youtube-dl supported sites [90%]
+  ... krunner integration[0%]
 
 * Expected Features :
-  -simple music collection manager
-  -artist and lyrics infogit 
+  -simple music collection manager [100%]
+  -artist and lyrics info [100%] 
   
 * Features :
-    -search keys to filter the results: location: , artist: , album: , artist: , title: , genre:
-    -quickly add search results to playlist or save them to a specific playlist
+    -enjoy three different view modes: the mini mode keeps on top of the windows and its size is just 200x200 px ,just displaying the art and playback controls, the playlist mode is unobtrusive and displays a list of your songs, the collection view let's you browse your whole music collection by tracks, artists and albums, also let's you get information about the current song playing.
+    
+    -search keys to filter the results: 
+    location:  (example: to see all the tracks from the YouTube extension: "location:youtube")
+    artist: (get all matching artists)
+    album: (get all matching albums)    
+    title: (get all matching titles)
+    genre: (get all matching genres)
+    
+    -quickly append search results, albums, artists and tracks to the main playlist or save them to a specific playlist
+    
+    -create colored mood tags for tracks that modify the main playlist color
+    
+    -use the chromium extension to babe your favorite youtube music videos and Babe will fetch the art and metadata of the track
+    
+    -quickly move between albums/artists with the playAll button that shows on hover in all the artworks
+    
+    -get native kde notifications for the plasma desktop
+    
+    -add songs to a queued special playlist if you want to play some track next
+    
 
 <h3> Playlist Mode </h3>
 ![alt tag](https://github.com/milohr/babe-qt/blob/master/screenshots/playlist_mode.png?raw=true) 
@@ -49,4 +77,7 @@ qmake && make && ./Babe
 
 <h3> About View </h3>
 ![alt tag](https://github.com/milohr/babe-qt/blob/master/screenshots/about_view.png?raw=true) 
+
+<h3> Chromium Extension </h3>
+![alt tag](https://github.com/milohr/babe-qt/blob/master/screenshots/chromium_extension.png?raw=true) 
 
