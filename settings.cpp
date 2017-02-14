@@ -69,7 +69,7 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
 
     });*/
 
-   /* auto cacheWatcher = new QFileSystemWatcher();
+    /* auto cacheWatcher = new QFileSystemWatcher();
     cacheWatcher->addPath(youtubeCachePath);
     connect(cacheWatcher, SIGNAL(directoryChanged(QString)), this,
             SLOT(handleDirectoryChanged_cache(QString)));*/
@@ -100,9 +100,8 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
     ui->label->hide();
     ui->label2->hide();
     watcher = new QFileSystemWatcher();
-   // watcher->addPath(youtubeCachePath);
-    connect(watcher, SIGNAL(fileChanged(QString)), this,
-            SLOT(handleFileChanged(QString)));
+    // watcher->addPath(youtubeCachePath);
+
     connect(watcher, SIGNAL(directoryChanged(QString)), this,
             SLOT(handleDirectoryChanged(QString)));
 }
@@ -119,8 +118,8 @@ void settings::youtubeTrackReady(bool state)
 
     if(state)
     {
-         qDebug()<<"the youtube track is ready";
-         emit dirChanged(youtubeCachePath,"1");
+        qDebug()<<"the youtube track is ready";
+        emit dirChanged(youtubeCachePath,"1");
 
     }
 }
@@ -144,12 +143,12 @@ void settings::handleDirectoryChanged_extension()
     {
         QString song = it.next();
 
-            urls<<song;
-            QFileInfo fileInfo(QFile(song).fileName());
-            QString id=fileInfo.fileName().section(".",0,-2);
-            ids<<id;
-            auto *nof = new Notify();
-            nof->notify("Song recived!","wait a sec while the track ["+id+"] is added to your collection :)");
+        urls<<song;
+        QFileInfo fileInfo(QFile(song).fileName());
+        QString id=fileInfo.fileName().section(".",0,-2);
+        ids<<id;
+        auto *nof = new Notify();
+        nof->notify("Song recived!","wait a sec while the track ["+id+"] is added to your collection :)");
 
 
     }
@@ -195,30 +194,42 @@ void settings::refreshWatchFiles()
 {
     qDebug()<<"refreshing watched files";
 
-    dirs.clear(); files.clear();
-
+    dirs.clear();
 
     QSqlQuery query = collection_db.getQuery("SELECT * FROM tracks");
 
-    while (query.next()) {
+    while (query.next())
+    {
         if(!query.value(CollectionDB::LOCATION).toString().contains(youtubeCachePath))
         {
-        if (!dirs.contains(QFileInfo(query.value(CollectionDB::LOCATION).toString()).dir().path())&&QFileInfo(query.value(CollectionDB::LOCATION).toString()).exists())
-        {
-            QString dir =QFileInfo(query.value(CollectionDB::LOCATION).toString()).dir().path();
-            dirs << dir;
-            dirs << QFileInfo(dir).dir().path();
+            if (!dirs.contains(QFileInfo(query.value(CollectionDB::LOCATION).toString()).dir().path())&&QFileInfo(query.value(CollectionDB::LOCATION).toString()).exists())
+            {
+
+                QString dir =QFileInfo(query.value(CollectionDB::LOCATION).toString()).dir().path();
+
+                dirs << dir;
+                QDirIterator it(dir, QDirIterator::Subdirectories);
+                while (it.hasNext())
+                {
+                    QString subDir = it.next();
+                    subDir=QFileInfo(subDir).path();
+                    if(QFileInfo(subDir).isDir()&&QFileInfo(subDir).exists())
+                    {
+                        //QDir dir = new QDir(url.path());
+                        if(!dirs.contains(subDir))
+                            dirs <<QFileInfo(subDir).path();
+                    }
+                }
+
+            }
         }
 
-        /*if(QFileInfo(query.value(CollectionDB::LOCATION).toString()).exists())
-            files << query.value(CollectionDB::LOCATION).toString();*/
-        }
     }
 
-    for(auto path:files) qDebug() << "refreshed watcher -file:"<< path;
-    for(auto path:dirs) qDebug() << "refreshed watcher -dir:"<< path;
+    /*for(auto path:files) qDebug() << "refreshed watcher -file:"<< path;
+    for(auto path:dirs) qDebug() << "refreshed watcher -dir:"<< path;*/
     watcher->removePaths(watcher->directories());
-   // watcher->removePaths(watcher->files());
+    // watcher->removePaths(watcher->files());
 
     addToWatcher(dirs);
 
@@ -325,6 +336,8 @@ void settings::removeSettings(QStringList setting) {
 
 void settings::addToWatcher(QStringList paths) {
 
+    qDebug()<<"duplicated paths in watcher removd: "<<paths.removeDuplicates();
+
     for(auto path:paths) qDebug() << "Adding to watcher -dir:"<< path;
 
     // watcher->addPath(path);
@@ -337,31 +350,38 @@ void settings::collectionWatcher()
 
 {
     QSqlQuery query = collection_db.getQuery("SELECT * FROM tracks");
-
-    while (query.next()) {
+    while (query.next())
+    {
         if(!query.value(CollectionDB::LOCATION).toString().contains(youtubeCachePath))
         {
-
             if (!dirs.contains(QFileInfo(query.value(CollectionDB::LOCATION).toString()).dir().path())&&QFileInfo(query.value(CollectionDB::LOCATION).toString()).exists())
             {
 
-
                 QString dir =QFileInfo(query.value(CollectionDB::LOCATION).toString()).dir().path();
+
                 dirs << dir;
-                if(!dirs.contains(QFileInfo(dir).dir().path()))
-                    dirs << QFileInfo(dir).dir().path();
+                //qDebug()<<"adding to dirs::1/"<<dir;
+                QDirIterator it(dir, QDirIterator::Subdirectories);
+                while (it.hasNext())
+                {
+                    QString subDir = it.next();
 
+                    subDir=QFileInfo(subDir).path();
+                    //qDebug()<<"the subDir:"<<subDir;
 
-                //qDebug() << "Adding to watcher -dir:"<< QFileInfo(query.value(CollectionDB::LOCATION).toString()).dir().path();
+                    if(QFileInfo(subDir).isDir()&&QFileInfo(subDir).exists())
+                    {
+                        //QDir dir = new QDir(url.path());
+                        if(!dirs.contains(subDir))
+                        {
+                            dirs <<QFileInfo(subDir).path();
+                            //qDebug()<<"adding to dirs::2/"<<dir;
+                        }
+                    }
+                }
+
             }
         }
-
-        /*if (!files.contains(query.value(CollectionDB::LOCATION).toString()) && QFileInfo(query.value(CollectionDB::LOCATION).toString()).exists())
-        {
-            newFiles<<query.value(CollectionDB::LOCATION).toString();
-            files << query.value(CollectionDB::LOCATION).toString();
-            //qDebug() << "Adding to watcher -file:"<< query.value(CollectionDB::LOCATION).toString();
-        }*/
 
     }
 

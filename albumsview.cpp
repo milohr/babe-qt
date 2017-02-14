@@ -308,7 +308,7 @@ void AlbumsView::populateTableView(QSqlQuery query)
 
 void AlbumsView::populateTableViewHeads(QSqlQuery query)
 {
-    qDebug()<<"ON POPULATE ALBUM VIEW:";
+    qDebug()<<"ON POPULATE HEADS VIEW:";
     while (query.next())
     {
         Album *album= new Album(":Data/data/cover.svg",albumSize,4);
@@ -343,7 +343,7 @@ void AlbumsView::populateExtraList(QSqlQuery query)
 {
     artistList->clear();
     QStringList albums;
-    qDebug()<<"ON POPULATE ALBUM VIEW:";
+    qDebug()<<"ON POPULATE EXTRA LIST:";
     while (query.next())
     {
         albums<< query.value(TITLE).toString();

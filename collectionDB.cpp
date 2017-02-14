@@ -259,8 +259,8 @@ void CollectionDB::addTrack(QStringList paths, int babe)
         if(info.getAlbum().isEmpty())
         {
             qDebug()<<"the album has not title, so i'm going to try and get it for you";
-           info.writeData();
-           album=info.getAlbum();
+            info.writeData();
+            album=info.getAlbum();
         }else
         {
             qDebug()<<"the album has a title";

@@ -1694,11 +1694,16 @@ bool MainWindow::fileExists(QString url)
 void MainWindow::scanNewDir(QString url,QString babe)
 {
     QStringList list;
-
+qDebug()<<"scanning new dir: "<<url;
     QDirIterator it(url, QStringList() << "*.mp4" << "*.mp3" << "*.wav" <<"*.flac" <<"*.ogg" <<"*.m4a", QDir::Files, QDirIterator::Subdirectories);
     while (it.hasNext())
     {
         QString song = it.next();
+        qDebug()<<song;
+        if(QFileInfo(song).isDir())
+        {
+            qDebug()<<"found the dir";
+        }
         if(!settings_widget->getCollectionDB().check_existance("tracks","location",song))
         {
             // qDebug()<<"New music files recently added: "<<it.next();
@@ -1879,10 +1884,10 @@ void MainWindow::on_refreshBtn_clicked()
 
     playlist.removeAll();
 
-    addToPlaylist({current_song_url});
+    //addToPlaylist({current_song_url});
     ui->listWidget->setCurrentRow(0);
 
-    lCounter=0;
+    lCounter=-1;
 
     //QStringList
     populateMainList();

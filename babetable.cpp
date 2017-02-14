@@ -315,21 +315,26 @@ void BabeTable::populateTableView(QString indication) {
 
             for (auto file_r : missingFiles)
             {
+                parentDir=QFileInfo(QFileInfo(file_r)).dir().path();
+                if (!QFileInfo(parentDir).exists())
+                 {
+                     connection->removePath(parentDir);
+                     qDebug()<<"the parent file doesn't exists"<<parentDir;
+                 }else
+                {
+
                 connection->removePath(file_r);
 
                 qDebug() << "deleted from db: " << file_r;
+                }
 
-                parentDir=QFileInfo(QFileInfo(file_r)).dir().path();
+
 
             }
             connection->setCollectionLists();
             connection->cleanCollectionLists();
 
-            if (!QFileInfo(parentDir).exists())
-            {
-                connection->removePath(parentDir);
-                qDebug()<<"the parent file doesn't exists"<<parentDir;
-            }
+
         }
 
         this->setSortingEnabled(true);
