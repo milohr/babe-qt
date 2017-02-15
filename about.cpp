@@ -14,7 +14,7 @@ About::About(QWidget *parent) :
     ui->icon->setPixmap(QPixmap(":Data/data/banner.png"));
 
 
-    ui->about->appendPlainText("Babe..\nTiny Qt Music Player\nVerion: 0.0 Alpha\nBabe is developed and designed by Camilo Higuita \nThis is a free and open source app, so feel free to fork it, submit code or redistribute it");
+    ui->about->appendPlainText("Babe..\nTiny Qt Music Player\nVerion: 0.0 Alpha\nBabe wurde entwickelt und konzepiert von Camilo Higuita \nEs handelt sich um freie und quelloffene Software, der Code kann genommen, bearbeitet und weiter verteilt werden.");
     //connect(ui->about,SIGNAL(clicked()),this,SLOT(labelClicked()));
     this->setWindowIcon(QIcon(":Data/data/babe_48.svg"));
     this->setWindowIconText("About Babe...");
@@ -30,7 +30,7 @@ About::~About()
 
 void About::labelClicked()
 {
-    qDebug()<<"the label got clicked";
+    qDebug()<<"Das Label wurde angeklickt";
 }
 
 void About::on_pushButton_clicked()
