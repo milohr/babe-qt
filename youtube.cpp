@@ -48,7 +48,7 @@ void YouTube::fetch(QStringList ids)
 
 void YouTube::processFinished_totally(int state)
 {
-    qDebug()<<"process finished totally"<<state;
+    qDebug()<<"Vorgang vollständig fertig"<<state;
     ui->lineEdit->clear();
     movie->stop();
     ui->label->hide();
@@ -67,7 +67,7 @@ void YouTube::processFinished()
     processOutput = process->readAllStandardOutput();
     ui->textBrowser->clear();
     ui->textBrowser->append(QString(processOutput));
-    qDebug() << "Output was " << QString(processOutput);
+    qDebug() << "Ausgabe war " << QString(processOutput);
 
 
 
