@@ -24,8 +24,13 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     grid->setViewMode(QListWidget::IconMode);
     grid->setResizeMode(QListWidget::Adjust);
     grid->setUniformItemSizes(true);
+    grid->setWrapping(true);
+    grid->setMovement(QListWidget::Static);
+
     //grid->setFrameShadow(QFrame::);
     grid->setFrameShape(QFrame::NoFrame);
+    grid->setSizePolicy(QSizePolicy ::Expanding , QSizePolicy ::Expanding );
+    grid->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
     //grid->setStyleSheet("QListWidget {background:#2E2F30; border:1px solid black; border-radius: 2px; }");
 
     grid->setStyleSheet("QListWidget {background:transparent; padding-top:15px; padding-left:15px; }");
@@ -38,7 +43,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     //grid->setWrapping(false);
     //grid->setSpacing(20);
     //grid->setIconSize(QSize(120,120));
-    grid->setGridSize(QSize(albumSize+10,albumSize+10));
+    //grid->setGridSize(QSize(albumSize+10,albumSize+10));
     //grid->setAlignment(Qt::AlignLeading);
 
     utilsFrame = new QFrame();
@@ -293,7 +298,7 @@ void AlbumsView::populateTableView(QSqlQuery query)
 
         //album->setStyleSheet(":hover {background:#3daee9; }");
         auto item =new QListWidgetItem();
-        item->setSizeHint( QSize( albumSize, albumSize) );
+        item->setSizeHint( QSize( albumSize+10, albumSize+10) );
 
         item->setTextAlignment(Qt::AlignCenter);
         grid->addItem(item);
@@ -326,7 +331,7 @@ void AlbumsView::populateTableViewHeads(QSqlQuery query)
         connect(album,SIGNAL(playAlbum(QString , QString)),this,SLOT(playAlbum_clicked(QString, QString)));
         //album->setStyleSheet(":hover {background:#3daee9; }");
         auto item =new QListWidgetItem();
-        item->setSizeHint( QSize( albumSize, albumSize) );
+        item->setSizeHint( QSize( albumSize+10, albumSize+10) );
 
         item->setTextAlignment(Qt::AlignCenter);
         grid->addItem(item);

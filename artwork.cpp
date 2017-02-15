@@ -90,6 +90,10 @@ void ArtWork::setDataCover_spotify(QString artist, QString album,QString title)
 
 QString ArtWork::fixString(QString title)
 {
+
+    //title.remove(QRegExp(QString::fromUtf8("[·-`~!@#$%^&*()_—+=|:;<>«»,.?/{}\'\"\\\[\\\]\\\\]")));
+
+
     title=title.contains("(")?fixTitle(title,"(",")"):title;
     title=title.contains("[")?fixTitle(title,"[","]"):title;
     title=title.contains("{")?fixTitle(title,"{","}"):title;

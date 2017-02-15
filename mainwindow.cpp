@@ -1900,9 +1900,9 @@ void MainWindow::on_refreshBtn_clicked()
     playlist.removeAll();
 
     //addToPlaylist({current_song_url});
-    ui->listWidget->setCurrentRow(0);
+    //ui->listWidget->setCurrentRow(0);
 
-    lCounter=-1;
+   // lCounter=-1;
 
     //QStringList
     populateMainList();
