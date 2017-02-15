@@ -26,13 +26,13 @@ qmake-qt5 && make && ./Babe
 
 
 * Planned Features :
-  ** youtube-dl streamming [5%]
-  ** babe chrome-chromium extension for youtube-dl supported sites [90%]
-  ** krunner integration[0%]
+  * [5%] youtube-dl streamming
+  * [90%] babe chrome-chromium extension for youtube-dl supported sites
+  * [0%] krunner integration
 
 * Expected Features :
-  ** simple music collection manager [100%]
-  ** artist and lyrics info [100%] 
+  * [100%] simple music collection manager 
+  * [100%] artist and lyrics info 
   
   
 <h3> Features : </h3> 
