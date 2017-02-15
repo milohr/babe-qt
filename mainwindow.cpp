@@ -1657,27 +1657,31 @@ void MainWindow::babeIt(QString url)
             if(settings_widget->getCollectionDB().insertInto("tracks","babe",url,1))
             {
                 ui->fav_btn->setIcon(QIcon(":Data/data/loved.svg"));
+                auto *nof = new Notify();
+                nof->notify("Song Babe'd it",url);
 
             }
             qDebug()<<"trying to babe sth";
         }else
         {
+
+
             qDebug()<<"Sorry but that song is not in the database";
 
-            addToCollectionDB_t({url},"1");
-
-
-            ui->fav_btn->setIcon(QIcon(":Data/data/loved.svg"));
+            if(addToCollectionDB_t({url},"1"))
+            {
+                ui->fav_btn->setIcon(QIcon(":Data/data/loved.svg"));
+                auto *nof = new Notify();
+                nof->notify("Song Babe'd it",url);
+            }
 
             //ui->tableWidget->insertRow(ui->tableWidget->rowCount());
-
 
 
             //to-do: create a list and a tracks object and send it the new song and then write that track list into the database
         }
 
-        auto *nof = new Notify();
-        nof->notify("Song Babe'd it",url);
+
     }
     // addToFavorites({QString::fromStdString(playlist.tracks[getIndex()].getTitle()),QString::fromStdString(playlist.tracks[getIndex()].getArtist()),QString::fromStdString(playlist.tracks[getIndex()].getAlbum()),QString::fromStdString(playlist.tracks[getIndex()].getLocation()),"\xe2\x99\xa1","1"});
 
@@ -1714,10 +1718,13 @@ qDebug()<<"scanning new dir: "<<url;
 
     if (!list.isEmpty())
     {
-        auto *nof = new Notify();
-        nof->notify("New music added to collection",listToString(list));
 
-        addToCollectionDB_t(list,babe);
+
+        if(addToCollectionDB_t(list,babe))
+        {
+            auto *nof = new Notify();
+            nof->notify("New music added to collection",listToString(list));
+        }
 
     }
     else {
@@ -1739,13 +1746,21 @@ QString MainWindow::listToString(QStringList list)
 
 
 //iterates through the paths of the modify folders tp search for new music and then refreshes the collection view
-void MainWindow::addToCollectionDB_t(QStringList url, QString babe)
+bool MainWindow::addToCollectionDB_t(QStringList url, QString babe)
 {
-    settings_widget->getCollectionDB().addTrack(url,babe.toInt());
-    if(babe.contains("1"))
+    if(settings_widget->getCollectionDB().addTrack(url,babe.toInt()))
     {
-        addToPlaylist(url);
+        if(babe.contains("1"))
+        {
+            addToPlaylist(url);
+
+        }
+        return true;
+    }else
+    {
+        return false;
     }
+
 
 }
 

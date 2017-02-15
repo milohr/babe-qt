@@ -20,6 +20,7 @@ void ArtWork::setDataCover(QString artist, QString album,QString title, QString 
     this->title=title;
     this->path = path;
 
+    title = fixString(title);
     qDebug()<<"Going to try and get the art cover for: "<< album <<"by"<<artist<<title;
 
 
@@ -37,9 +38,10 @@ void ArtWork::setDataCover(QString artist, QString album,QString title, QString 
             if (!q_artist.isEmpty())
                 url.append("&artist=" + q_artist.toString());
             if (!q_album.isEmpty())
-                url.append("&album=" + q_album.toString());
+                url.append("&album=" + album); ///maybe this doens't needs to be encoded
             type = ALBUM;
-            // qDebug()<<"on setDataCover:"<<url;
+            qDebug()<<"thealbum name is:"<<q_album.toString();
+            qDebug()<<"on setDataCover:"<<url;
             startConnection();
         }else if(!title.isEmpty()&&!artist.isEmpty())
         {
@@ -97,10 +99,105 @@ QString ArtWork::fixString(QString title)
     title=title.contains("feat")?removeSubstring(title, "feat"):title;
     title=title.contains("official video")?removeSubstring(title, "official video"):title;
     title=title.contains("live")?removeSubstring(title, "live"):title;
+    title=title.contains("...")?title.replace("...",""):title;
     qDebug()<<"fixing the title string in order to get album title:"<<title;
 
     return title;
 }
+
+
+
+QString ArtWork::getAlbumTitle_Spotify(QString artist, QString title)
+{
+    QString title_album;
+    this->artist = artist;
+
+    this->title=title;
+
+    qDebug()<<"Going to try and get the albumt title from spotify service: "<< title <<"by"<<artist;
+    url = "https://api.spotify.com/v1/search?q=";
+
+    title=fixString(title);
+
+    if (!artist.isEmpty() && !title.isEmpty()) {
+        url.append("track:");
+        QUrl q_title(title.replace("&", "and"));
+        q_title.toEncoded(QUrl::FullyEncoded);
+        if (!q_title.isEmpty())
+            url.append(q_title.toString());
+
+
+        url.append("%20artist:");
+        QUrl q_artist(artist.replace("&", "and"));
+        q_artist.toEncoded(QUrl::FullyEncoded);
+
+        if (!q_artist.isEmpty())
+            url.append(q_artist.toString());
+
+        url.append("&type=track");
+
+        qDebug()<<"spotify api url:"<<url;
+        type = ALBUM_by_SPOTIFY;
+        qDebug()<<"trying to get cover by_title:"<<url;
+
+    }
+
+
+    QNetworkAccessManager manager;
+
+    QNetworkReply *reply = manager.get(QNetworkRequest(QUrl(url)));
+
+    QEventLoop loop;
+    QObject::connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+    QObject::connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), &loop,
+                     SLOT(quit()));
+
+    loop.exec();
+
+    if (reply->error() == QNetworkReply::NoError)
+    {
+
+        QString strReply = (QString)reply->readAll();
+        QJsonParseError jsonParseError;
+        QJsonDocument jsonResponse = QJsonDocument::fromJson(strReply.toUtf8(), &jsonParseError);
+
+
+        if (jsonParseError.error != QJsonParseError::NoError) {
+            qDebug() << "Error happened:" << jsonParseError.errorString();
+
+        }else
+        {
+
+            if (!jsonResponse.isObject()) {
+                qDebug() << "The json data is not an object";
+
+            }else
+            {
+
+                QJsonObject mainJsonObject(jsonResponse.object());
+                auto data = mainJsonObject.toVariantMap();
+
+                title_album = data.value("tracks").toMap().value("items").toList().at(0).toMap().value("album").toMap().value("name").toString();
+
+                if(!title_album.isEmpty())
+                {
+                    qDebug()<<"the album title is: "<<title_album;
+                }else
+
+                {
+                   qDebug()<<"couldn't find album name from spotify api";
+                }
+
+
+            }
+        }
+    }
+
+return title_album;
+
+}
+
+
 
 QString ArtWork::getAlbumTitle(QString artist, QString title) {
 
@@ -176,6 +273,7 @@ QString ArtWork::getAlbumTitle(QString artist, QString title) {
                              << " album title "
                                 "for \""
                              << title << artist<<"\".";
+                    title_album=getAlbumTitle_Spotify(artist,title);
                 }else
                 {
                     qDebug()<<title_album;
@@ -190,6 +288,7 @@ QString ArtWork::getAlbumTitle(QString artist, QString title) {
 
     }
 
+    qDebug()<<"the ALBUM TITLE FOR THE TRACK FINAL IS:"<<title_album;
     return title_album;
 }
 
@@ -414,58 +513,57 @@ void ArtWork::saveArt(QByteArray array) {
 void ArtWork::jsonInfo(QNetworkReply *reply)
 {
 
-    QString strReply = (QString)reply->readAll();
-    QJsonParseError jsonParseError;
-    QJsonDocument jsonResponse = QJsonDocument::fromJson(strReply.toUtf8(), &jsonParseError);
 
-
-    if (jsonParseError.error != QJsonParseError::NoError) {
-        qDebug() << "Error happened:" << jsonParseError.errorString();
-
-    }
-
-    if (!jsonResponse.isObject()) {
-        qDebug() << "The json data is not an object";
-
-    }
-
-    QJsonObject mainJsonObject(jsonResponse.object());
-
-    QJsonValue returnJsonValue = mainJsonObject.value(QStringLiteral("tracks"));
-
-    if (!returnJsonValue.isObject()) {
-        qDebug() << "The json data is not an object";
-
-    }
-
-    qDebug() << "KEYS WANTED:" << returnJsonValue.toObject().keys();
-
-    auto data = mainJsonObject.toVariantMap();
-
-    //qDebug()<<data.<QVariantMap>value().value("data").toMap().value("weather").toList().at(0).toMap().value("weatherDesc").toList().at(0).toMap().value("value");
-
-    //QMap<QString, QVariant> combinedMap;
-
-
-
-    QString img = data.value("tracks").toMap().value("items").toList().at(0).toMap().value("album").toMap().value("images").toList().at(0).toMap().value("url").toString();
-
-    if(!img.isEmpty())
+    if (reply->error() == QNetworkReply::NoError)
     {
-         this->coverArray = selectCover(img);
+
+        QString strReply = (QString)reply->readAll();
+        QJsonParseError jsonParseError;
+        QJsonDocument jsonResponse = QJsonDocument::fromJson(strReply.toUtf8(), &jsonParseError);
+
+
+        if (jsonParseError.error != QJsonParseError::NoError) {
+            qDebug() << "Error happened:" << jsonParseError.errorString();
+
+        }else
+        {
+
+            if (!jsonResponse.isObject()) {
+                qDebug() << "The json data is not an object";
+
+            }else
+            {
+
+                QJsonObject mainJsonObject(jsonResponse.object());
+                auto data = mainJsonObject.toVariantMap();
+
+
+                if(type== ALBUM_by_SPOTIFY)
+                {
+                    QString img = data.value("tracks").toMap().value("items").toList().at(0).toMap().value("album").toMap().value("images").toList().at(0).toMap().value("url").toString();
+
+                    if(!img.isEmpty())
+                    {
+                        this->coverArray = selectCover(img);
+                    }else
+
+                    {
+                        setDataHead_asCover(artist);
+                    }
+
+                }else if(type== ALBUM_by_ITUNES)
+                {
+
+                }
+            }
+        }
     }else
-
     {
-        setDataHead_asCover(artist);
+        qDebug()<<"eror in network reply in jsonInfo";
     }
 
-    /*QMap<QString, QVariant> combinedMap;
 
-    combinedMap["tempMaxC"] = weatherEntryMap.value("tempMaxC");
 
-    combinedMap["weatherDesc"] = weatherDescEntryMap.value("value");
-
-    m_model->insert(combinedMap);*/
 }
 
 
@@ -620,7 +718,7 @@ void ArtWork::xmlInfo(QNetworkReply *reply) {
                                 "for \""
                              << artist << "\".";
                 }
-                 this->coverArray=  selectCover(artistHead);
+                this->coverArray=  selectCover(artistHead);
             }else if (type == ARTIST) {
 
                 const QDomNodeList list3 =
@@ -731,7 +829,3 @@ void ArtWork::selectInfo(QString info) { this->info = info; }
 
 QString ArtWork::getInfo() { return info; }
 
-QString ArtWork::getAlbumTitle(QString info)
-{
-
-}

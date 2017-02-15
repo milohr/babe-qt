@@ -232,94 +232,111 @@ void CollectionDB::refreshArtistsTable()
 
 }
 
-void CollectionDB::addTrack(QStringList paths, int babe)
+bool CollectionDB::addTrack(QStringList paths, int babe)
 {
-    //bool success = false;
+    bool success = false;
+
+    if(paths.isEmpty()) return false;
+
 
     QSqlQuery query;
 
-    query.exec("PRAGMA synchronous=OFF");
-    int i=0;
-    qDebug()<<"started wrrting to database...";
-    for(auto file:paths)
+
+    if(query.exec("PRAGMA synchronous=OFF"))
     {
-        qDebug()<<file;
+        success=true;
 
-        TagInfo info(file);
-        int track;
-        QString  title, artist, album, genre;
-        // you should check if args are ok first...
-        track=info.getTrack();
-        title=info.getTitle();
-        artist= info.getArtist();
-
-
-
-
-        if(info.getAlbum().isEmpty())
+        int i=0;
+        qDebug()<<"started wrrting to database...";
+        for(auto file:paths)
         {
-            qDebug()<<"the album has not title, so i'm going to try and get it for you";
-            info.writeData();
-            album=info.getAlbum();
-        }else
-        {
-            qDebug()<<"the album has a title";
-            album=info.getAlbum();
-        }
+            qDebug()<<file;
 
+            TagInfo info(file);
+            int track;
+            QString  title, artist, album, genre;
+            // you should check if args are ok first...
+            track=info.getTrack();
+            title=info.getTitle();
+            artist= info.getArtist();
+            genre=info.getGenre();
 
-        genre=info.getGenre();
-
-
-        query.prepare("INSERT INTO tracks (track, title, artist, album, genre, location, stars, babe, art, played)" "VALUES (:track, :title, :artist, :album, :genre, :location, :stars, :babe, :art, :played) ");
-        query.bindValue(":track", track);
-        query.bindValue(":title", title);
-        query.bindValue(":artist", artist);
-        query.bindValue(":album", album);
-        query.bindValue(":genre", genre);
-        query.bindValue(":location", file);
-        query.bindValue(":stars", 0);
-        query.bindValue(":babe", babe);
-        query.bindValue(":art", "");//here need to fecth the artwork
-        query.bindValue(":played", 0);
-
-
-        if(query.exec())
-        {
-            //success = true;
-            qDebug()<< "writting to db: "<<info.getTitle();
-            if(!albums.contains(artist+" "+album))
+            if(info.getAlbum().isEmpty())
             {
-                query.prepare("INSERT INTO albums (title, artist, art, location)" "VALUES (:title, :artist, :art, :location)");
-                query.bindValue(":title", album);
-                query.bindValue(":artist", artist);
-                query.bindValue(":art", "");
-                // query.bindValue(":location", QFileInfo(file).dir().path());
-                if(query.exec()) albums<<artist+" "+album;
+                qDebug()<<"the album has not title, so i'm going to try and get it for you";
+                info.writeData();
+                album=info.getAlbum();
+            }else
+            {
+                qDebug()<<"the album has a title";
+                album=info.getAlbum();
             }
 
-            if(!artists.contains(artist))
-            {
-                query.prepare("INSERT INTO artists (title, art, location)" "VALUES (:title, :art, :location)");
-                query.bindValue(":title", artist);
-                query.bindValue(":art", "");
-                // query.bindValue(":location", QFileInfo(file).dir().path());
-                if(query.exec()) artists<<artist;
-            }
 
-            emit progress((i++)+1);
+            query.prepare("INSERT INTO tracks (track, title, artist, album, genre, location, stars, babe, art, played)" "VALUES (:track, :title, :artist, :album, :genre, :location, :stars, :babe, :art, :played) ");
+            query.bindValue(":track", track);
+            query.bindValue(":title", title);
+            query.bindValue(":artist", artist);
+            query.bindValue(":album", album);
+            query.bindValue(":genre", genre);
+            query.bindValue(":location", file);
+            query.bindValue(":stars", 0);
+            query.bindValue(":babe", babe);
+            query.bindValue(":art", "");//here need to fecth the artwork
+            query.bindValue(":played", 0);
+
+
+            if(query.exec())
+            {
+                success = true;
+                qDebug()<< "writting to db: "<<info.getTitle();
+                if(!albums.contains(artist+" "+album))
+                {
+                    query.prepare("INSERT INTO albums (title, artist, art, location)" "VALUES (:title, :artist, :art, :location)");
+                    query.bindValue(":title", album);
+                    query.bindValue(":artist", artist);
+                    query.bindValue(":art", "");
+                    // query.bindValue(":location", QFileInfo(file).dir().path());
+                    if(query.exec())
+                    {
+                        albums<<artist+" "+album;
+                        success=true;
+                    }else
+                    {
+                        return false;
+                    }
+                }
+
+                if(!artists.contains(artist))
+                {
+                    query.prepare("INSERT INTO artists (title, art, location)" "VALUES (:title, :art, :location)");
+                    query.bindValue(":title", artist);
+                    query.bindValue(":art", "");
+                    // query.bindValue(":location", QFileInfo(file).dir().path());
+                    if(query.exec()) artists<<artist;
+                }
+
+                emit progress((i++)+1);
+            }
+            else
+            {
+                qDebug() << "adding track error:  "
+                         << query.lastError()
+                         <<info.getTitle();
+                return false;
+            }
         }
-        else
-        {
-            qDebug() << "adding track error:  "
-                     << query.lastError()
-                     <<info.getTitle();
-        }
+
+        qDebug()<<"finished wrrting to database";
+        emit DBactionFinished(true);
+    }
+    else
+    {
+       return false;
     }
 
-    qDebug()<<"finished wrrting to database";
-    emit DBactionFinished(true);
 
+    return success;
 }
 
 void CollectionDB::insertCoverArt(QString path,QStringList info)

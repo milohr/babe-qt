@@ -35,7 +35,7 @@ public:
     QString fixTitle(QString title, QString s, QString e);
     QString removeSubstring(QString newTitle, QString subString);
     QString removeSubstring_old(QString newTitle, QString subString);
-    QString getAlbumTitle(QString info);
+    QString getAlbumTitle_Spotify(QString artist, QString title);
     QString getAlbumTitle(QString artist, QString title);
 
 

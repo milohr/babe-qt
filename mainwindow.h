@@ -94,7 +94,7 @@ private slots:
 
     void addToFavorites(QStringList list);
     void addToCollection(QStringList list);
-    void addToCollectionDB_t(QStringList url,QString babe=0);
+    bool addToCollectionDB_t(QStringList url,QString babe=0);
     void scanNewDir(QString url,QString babe="0");
 
 
