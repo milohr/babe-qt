@@ -24,10 +24,10 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
     // QFrame frame = new QFrame();
 
     // collectionDBPath=QDir().absolutePath()+collectionDBPath;
-    qDebug() << "Getting collectionDB info from: " << collectionDBPath;
-    qDebug() << "Getting settings info from: " << settingPath;
-    qDebug() << "Getting artwork files from: " << cachePath;
-    qDebug() << "Getting extension files files from: " << extensionFetchingPath;
+    qDebug() << "Beziehe Sammlungsdatenbank-Informationen von: " << collectionDBPath;
+    qDebug() << "Beziehe Einstellungsdaten von: " << settingPath;
+    qDebug() << "Beziehe Bilddateien von: " << cachePath;
+    qDebug() << "Beziehe Erweiterungen von: " << extensionFetchingPath;
 
     ui->ytLineEdit->setText(extensionFetchingPath);
     ui->frame_4->setEnabled(false);
@@ -35,12 +35,12 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
 
     if(!fileExists(notifyDir+"/Babe.notifyrc"))
     {
-        qDebug()<<"The Knotify file does not exists, going to create it";
+        qDebug()<<"Keine Knotify Datei vorhanden, erstelle diese jetzt";
         QFile knotify(":Data/data/Babe.notifyrc");
 
         if(knotify.copy(notifyDir+"/Babe.notifyrc"))
         {
-            qDebug()<<"the knotify file got copied";
+            qDebug()<<"Die Knotify Datei wurde kopiert";
         }
 
     }
@@ -118,7 +118,7 @@ void settings::youtubeTrackReady(bool state)
 
     if(state)
     {
-        qDebug()<<"the youtube track is ready";
+        qDebug()<<"Der Youtube Track ist bereit";
         emit dirChanged(youtubeCachePath,"1");
 
     }
@@ -127,7 +127,7 @@ void settings::youtubeTrackReady(bool state)
 void settings::handleDirectoryChanged_cache(QString dir)
 {
     Q_UNUSED(dir);
-    qDebug()<<"the cache youtube dir has some changes but...";
+    qDebug()<<"Das YouTube Cache-Verzeichnis hat Änderungen, allerdings...";
     if(youtubeTrackDone)
     {
         qDebug()<<"youtubeTrackDone";
@@ -148,7 +148,7 @@ void settings::handleDirectoryChanged_extension()
         QString id=fileInfo.fileName().section(".",0,-2);
         ids<<id;
         auto *nof = new Notify();
-        nof->notify("Song recived!","wait a sec while the track ["+id+"] is added to your collection :)");
+        nof->notify("Lied empfangen!","warte einen Moment bis der Titel ["+id+"] Deiner Sammlung hinzugefügt wurde :)");
 
 
     }
@@ -159,7 +159,7 @@ void settings::handleDirectoryChanged_extension()
         connect(ytFetch,SIGNAL(youtubeTrackReady(bool)),this,SLOT(youtubeTrackReady(bool)));
 
         ytFetch->fetch(ids);
-        for(auto url:urls) if(QFile::remove(url)) qDebug()<<"the urls are going to be cleaned up"<< url;
+        for(auto url:urls) if(QFile::remove(url)) qDebug()<<"URLs werden aufgeräumt"<< url;
         qDebug()<<ids;
     }
 }
@@ -246,13 +246,13 @@ void settings::on_toolbarIconSize_activated(const QString &arg1) {
 }
 
 void settings::on_open_clicked() {
-    QString url = QFileDialog::getExistingDirectory(this,"Select folder...", QDir().homePath()+"/Music/");
+    QString url = QFileDialog::getExistingDirectory(this,"Verzeichnis auswählen...", QDir().homePath()+"/Music/");
 
     // qDebug()<<url;
     if (!collectionPaths.contains(url) && !url.isEmpty()) {
         ui->collectionPath->addItem(url);
         collectionPaths << url;
-        qDebug() << "Collection dir added: " << url;
+        qDebug() << "Sammlungsadresse hinzugefügt: " << url;
         setSettings({"collectionPath=", url});
         emit collectionPathChanged(url);
     }
@@ -336,9 +336,9 @@ void settings::removeSettings(QStringList setting) {
 
 void settings::addToWatcher(QStringList paths) {
 
-    qDebug()<<"duplicated paths in watcher removd: "<<paths.removeDuplicates();
+    qDebug()<<"Duplizierte Pfade im Wächter werden entfernt: "<<paths.removeDuplicates();
 
-    for(auto path:paths) qDebug() << "Adding to watcher -dir:"<< path;
+    for(auto path:paths) qDebug() << "Füge zum Wächter hinzu -dir:"<< path;
 
     // watcher->addPath(path);
     if(!paths.isEmpty()) watcher->addPaths(paths);
@@ -349,7 +349,7 @@ void settings::addToWatcher(QStringList paths) {
 void settings::collectionWatcher()
 
 {
-    QSqlQuery query = collection_db.getQuery("SELECT * FROM tracks");
+    QSqlQuery query = collection_db.getQuery("WÄHLE * AUS Liedern");
     while (query.next())
     {
         if(!query.value(CollectionDB::LOCATION).toString().contains(youtubeCachePath))
@@ -397,13 +397,13 @@ bool settings::fileExists(QString url)
 }
 
 void settings::handleFileChanged(QString file) {
-    qDebug() << "this file changed: " << file;
+    qDebug() << "diese Datei wurde verändert: " << file;
     refreshWatchFiles();
     emit fileChanged(file);
 }
 
 void settings::handleDirectoryChanged(QString dir) {
-    qDebug() << "this directory changed: " << dir;
+    qDebug() << "das Verzeichnis wurde verändert: " << dir;
 
     emit dirChanged(dir);
 }
@@ -417,7 +417,7 @@ void settings::readSettings() {
         // qDebug()<<get_setting;
         if (get_setting.contains("collectionPath=")) {
             collectionPaths << get_setting.replace("collectionPath=", "");
-            qDebug() << "Setting the cPath: "
+            qDebug() << "Richte cPath ein: "
                      << get_setting.replace("collectionPath=", "");
             ui->collectionPath->addItem(get_setting.replace("collectionPath=", ""));
 
@@ -427,7 +427,7 @@ void settings::readSettings() {
 
         if (get_setting.contains("toolbarIconSize=")) {
             iconSize = get_setting.replace("toolbarIconSize=", "").toInt();
-            qDebug() << "Setting the tSize: " << iconSize;
+            qDebug() << "Richte tSize ein: " << iconSize;
 
             switch (iconSize) {
             case 16:
@@ -440,7 +440,7 @@ void settings::readSettings() {
                 ui->toolbarIconSize->setCurrentIndex(2);
                 break;
             default:
-                qDebug() << "error setting icon size";
+                qDebug() << "Fehler beim ändern der Symbolgröße";
             }
         }
     }
@@ -450,7 +450,7 @@ bool settings::checkCollection() {
     // QString collection_db_path="collection.db";
     QFileInfo check_db(collectionDBPath + collectionDBName);
     if (check_db.exists()) {
-        qDebug() << "The CollectionDB does exists.";
+        qDebug() << "Sammlungsdatenbank existiert.";
         // collection_db.setCollectionDB(collection_db_path);
         // qDebug()<<"Ahora obtener la informacion de ella y populate tableView";
         // populateTableView();
@@ -459,8 +459,8 @@ bool settings::checkCollection() {
         collectionWatcher();
         return true;
     } else {
-        qDebug() << "The CollectionDB doesn't exists. Going to create the database "
-                    "and tables";
+        qDebug() << "Die Sammlungsdatenbank existiert nicht. Werde die Datenbank "
+                    "und Tabellen erstellen.";
         qDebug() << "opening collection with path: "
                  << collectionDBPath + collectionDBName;
         collection_db.openCollection(collectionDBPath + collectionDBName);
@@ -472,8 +472,8 @@ bool settings::checkCollection() {
 
 void settings::populateDB(QString path) {
 
-    qDebug() << "Function Name: " << Q_FUNC_INFO
-             << "new path for database action: " << path;
+    qDebug() << "Funktionsname: " << Q_FUNC_INFO
+             << "neuer Pfad für Datenbankaktion: " << path;
 
     QStringList urlCollection;
     // QDir dir = new QDir(url);
@@ -530,7 +530,7 @@ void settings::finishedAddingTracks(bool state) {
 
         emit collectionDBFinishedAdding(true);
 
-        qDebug() << "good to hear it finished yay! now going to fetch artwork";
+        qDebug() << "schön zu hören dass es fertig ist, yay! Hole nun Bilder";
         fetchArt();
 
         movie->stop();
@@ -550,16 +550,16 @@ void settings::finishedAddingTracks(bool state) {
 
 
 
-    // qDebug()<<"good to hear it g¿finished yay!!!!!!";
+    // qDebug()<<"schön zu hören, dass es fertig ist, yay!!!!!!";
 }
 
 void settings::fetchArt() {
 
     ui->label->show();
     QSqlQuery query_Covers =
-            collection_db.getQuery("SELECT * FROM albums WHERE art = ''");
+            collection_db.getQuery("WÄHLE * AUS Alben MIT Bild = ''");
     QSqlQuery query_Heads =
-            collection_db.getQuery("SELECT * FROM artists WHERE art = ''");
+            collection_db.getQuery("WÄHLE * AUS Interpret MIT Bild = ''");
 
     while (query_Covers.next()) {
 
@@ -567,7 +567,7 @@ void settings::fetchArt() {
         QString album = query_Covers.value(0).toString();
         QString title;
         QSqlQuery query_Title =
-                collection_db.getQuery("SELECT * FROM tracks WHERE artist = \""+artist+"\" AND album = \""+album+"\"");
+                collection_db.getQuery("WÄHLE * AUS Liedern MIT Interpret = \""+artist+"\" UND album = \""+album+"\"");
         if(query_Title.next()) title=query_Title.value(CollectionDB::TITLE).toString();
 
 
@@ -604,22 +604,22 @@ void settings::fetchArt() {
         artistHead->setDataHead(artist, cachePath);
     }
     auto *nof = new Notify();
-    nof->notify("Finished fetching art","the artwork for your collection is ready :)");
+    nof->notify("Bilder beziehen fertig","die Bilder für Deine Sammlung sind nun bereit :)");
 
     // emit collectionDBFinishedAdding(true);
 }
 
 void settings::on_pushButton_clicked() {
     // QMessageBox::about(this, "Babe Tiny Music Player","Version: 0.0
-    // Alpha\nWritten and designed\nby: Camilo Higuita");
+    // Alpha\nEntwickelt und konzeptiert\nvon: Camilo Higuita");
     about_ui->show();
 }
 
 void settings::on_debugBtn_clicked()
 {
-    /*qDebug()<<"Current files being watched:";
+    /*qDebug()<<"Aktuelle Dateien werden überwacht:";
     for(auto file: watcher->files()) qDebug()<<file;*/
-    qDebug()<<"Current dirs being watched:";
+    qDebug()<<"Aktuelle Verzeichnisse werden überwacht:";
     for(auto dir: watcher->directories()) qDebug()<<dir;
 
 }
