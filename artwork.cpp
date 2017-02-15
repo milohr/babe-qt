@@ -6,6 +6,9 @@
 #include <QNetworkRequest>
 #include <QNetworkRequest>
 #include <QUrl>
+#include <QJsonDocument>
+#include <QVariantMap>
+#include <qjson/parser.h>
 
 ArtWork::ArtWork(QObject *parent) : QObject(parent) {
     url = "http://ws.audioscrobbler.com/2.0/";
@@ -48,6 +51,41 @@ void ArtWork::setDataCover(QString artist, QString album,QString title, QString 
     }
 }
 
+
+void ArtWork::setDataCover_spotify(QString artist, QString album,QString title)
+{
+
+    qDebug()<<"Going to try and get the art cover from title by spotify service: "<< title <<"by"<<artist;
+    url = "https://api.spotify.com/v1/search?q=";
+
+    title=fixString(title);
+
+    if (!artist.isEmpty() && !title.isEmpty()) {
+        url.append("track:");
+        QUrl q_title(title.replace("&", "and"));
+        q_title.toEncoded(QUrl::FullyEncoded);
+        if (!q_title.isEmpty())
+            url.append(q_title.toString());
+
+
+        url.append("%20artist:");
+        QUrl q_artist(artist.replace("&", "and"));
+        q_artist.toEncoded(QUrl::FullyEncoded);
+
+        if (!q_artist.isEmpty())
+            url.append(q_artist.toString());
+
+        url.append("&type=track");
+
+        qDebug()<<"spotify api url:"<<url;
+        type = ALBUM_by_SPOTIFY;
+        qDebug()<<"trying to get cover by_title:"<<url;
+        bool json =true;
+        startConnection(json);
+    }
+
+}
+
 QString ArtWork::fixString(QString title)
 {
     title=title.contains("(")?fixTitle(title,"(",")"):title;
@@ -56,7 +94,7 @@ QString ArtWork::fixString(QString title)
     title=title.contains("ft")?removeSubstring(title, "ft"):title;
     title=title.contains("ft.")?removeSubstring(title, "ft."):title;
     title=title.contains("featuring")?removeSubstring(title, "featuring"):title;
-     title=title.contains("feat")?removeSubstring(title, "feat"):title;
+    title=title.contains("feat")?removeSubstring(title, "feat"):title;
     title=title.contains("official video")?removeSubstring(title, "official video"):title;
     title=title.contains("live")?removeSubstring(title, "live"):title;
     qDebug()<<"fixing the title string in order to get album title:"<<title;
@@ -209,7 +247,7 @@ void ArtWork::setDataCover_title(QString artist, QString title) {
     qDebug()<<"Going to try and get the art cover from title: "<< title <<"by"<<artist;
     url = "http://ws.audioscrobbler.com/2.0/";
 
-   title=fixString(title);
+    title=fixString(title);
 
     if (!artist.isEmpty() && !title.isEmpty()) {
         url.append("?method=track.getinfo");
@@ -305,7 +343,7 @@ void ArtWork::setDataHeadInfo(QString artist) {
     }
 }
 
-void ArtWork::startConnection() {
+void ArtWork::startConnection(bool json) {
 
     QNetworkAccessManager manager;
 
@@ -315,8 +353,14 @@ void ArtWork::startConnection() {
     QObject::connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
     QObject::connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), &loop,
                      SLOT(quit()));
-    QObject::connect(&manager, SIGNAL(finished(QNetworkReply *)), this,
-                     SLOT(xmlInfo(QNetworkReply *)));
+    if(!json)
+    {QObject::connect(&manager, SIGNAL(finished(QNetworkReply *)), this,
+                      SLOT(xmlInfo(QNetworkReply *)));
+    }else
+    {
+        QObject::connect(&manager, SIGNAL(finished(QNetworkReply *)), this,
+                         SLOT(jsonInfo(QNetworkReply *)));
+    }
     loop.exec();
 
     // qDebug()<<url;
@@ -364,6 +408,66 @@ void ArtWork::saveArt(QByteArray array) {
         }
     }
 }
+
+
+
+void ArtWork::jsonInfo(QNetworkReply *reply)
+{
+
+    QString strReply = (QString)reply->readAll();
+    QJsonParseError jsonParseError;
+    QJsonDocument jsonResponse = QJsonDocument::fromJson(strReply.toUtf8(), &jsonParseError);
+
+
+    if (jsonParseError.error != QJsonParseError::NoError) {
+        qDebug() << "Error happened:" << jsonParseError.errorString();
+
+    }
+
+    if (!jsonResponse.isObject()) {
+        qDebug() << "The json data is not an object";
+
+    }
+
+    QJsonObject mainJsonObject(jsonResponse.object());
+
+    QJsonValue returnJsonValue = mainJsonObject.value(QStringLiteral("tracks"));
+
+    if (!returnJsonValue.isObject()) {
+        qDebug() << "The json data is not an object";
+
+    }
+
+    qDebug() << "KEYS WANTED:" << returnJsonValue.toObject().keys();
+
+    auto data = mainJsonObject.toVariantMap();
+
+    //qDebug()<<data.<QVariantMap>value().value("data").toMap().value("weather").toList().at(0).toMap().value("weatherDesc").toList().at(0).toMap().value("value");
+
+    //QMap<QString, QVariant> combinedMap;
+
+
+
+    QString img = data.value("tracks").toMap().value("items").toList().at(0).toMap().value("album").toMap().value("images").toList().at(0).toMap().value("url").toString();
+
+    if(!img.isEmpty())
+    {
+         this->coverArray = selectCover(img);
+    }else
+
+    {
+        setDataHead_asCover(artist);
+    }
+
+    /*QMap<QString, QVariant> combinedMap;
+
+    combinedMap["tempMaxC"] = weatherEntryMap.value("tempMaxC");
+
+    combinedMap["weatherDesc"] = weatherDescEntryMap.value("value");
+
+    m_model->insert(combinedMap);*/
+}
+
 
 void ArtWork::xmlInfo(QNetworkReply *reply) {
     if (reply->error() == QNetworkReply::NoError) {
@@ -453,8 +557,8 @@ void ArtWork::xmlInfo(QNetworkReply *reply) {
                              << " cover by title "
                                 "for \""
                              << album << "\".";
-
-                    setDataHead_asCover(artist);
+                    setDataCover_spotify(artist,album,title);
+                    //setDataHead_asCover(artist);
 
 
                 }else{
@@ -516,7 +620,7 @@ void ArtWork::xmlInfo(QNetworkReply *reply) {
                                 "for \""
                              << artist << "\".";
                 }
-                selectCover(artistHead);
+                 this->coverArray=  selectCover(artistHead);
             }else if (type == ARTIST) {
 
                 const QDomNodeList list3 =

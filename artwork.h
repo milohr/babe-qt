@@ -22,6 +22,8 @@ public:
     void setDataCoverInfo(QString artist, QString album);
     void setDataHeadInfo(QString artist);
     void setDataCover_title(QString artist, QString title);
+    void setDataCover_spotify(QString artist, QString album,QString title);
+    void setDataCover_itunes(QString artist, QString album,QString title);
     QByteArray getCover();
     QString getInfo();
     QByteArray selectCover(QString url);
@@ -36,11 +38,12 @@ public:
     QString getAlbumTitle(QString info);
     QString getAlbumTitle(QString artist, QString title);
 
-    void startConnection();
+
+    void startConnection(bool json=false);
 
     enum ART
     {
-        ALBUM,ARTIST,ALBUM_INFO,ARTIST_INFO,ALBUM_by_TITLE,ARTIST_COVER,ALBUM_TITLE
+        ALBUM,ARTIST,ALBUM_INFO,ARTIST_INFO,ALBUM_by_TITLE,ARTIST_COVER,ALBUM_TITLE,ALBUM_by_SPOTIFY,ALBUM_by_ITUNES
     };
 
 private:
@@ -60,6 +63,7 @@ private:
 private slots:
 
     void xmlInfo(QNetworkReply* reply);
+    void jsonInfo(QNetworkReply *reply);
     void saveArt(QByteArray array);
     void dummy();
 signals:
