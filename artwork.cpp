@@ -48,11 +48,25 @@ void ArtWork::setDataCover(QString artist, QString album,QString title, QString 
     }
 }
 
+QString ArtWork::fixString(QString title)
+{
+    title=title.contains("(")?fixTitle(title,"(",")"):title;
+    title=title.contains("[")?fixTitle(title,"[","]"):title;
+    title=title.contains("{")?fixTitle(title,"{","}"):title;
+    title=title.contains("ft")?removeSubstring(title, "ft"):title;
+    title=title.contains("ft.")?removeSubstring(title, "ft."):title;
+    title=title.contains("featuring")?removeSubstring(title, "featuring"):title;
+     title=title.contains("feat")?removeSubstring(title, "feat"):title;
+    title=title.contains("official video")?removeSubstring(title, "official video"):title;
+    title=title.contains("live")?removeSubstring(title, "live"):title;
+    qDebug()<<"fixing the title string in order to get album title:"<<title;
 
+    return title;
+}
 
 QString ArtWork::getAlbumTitle(QString artist, QString title) {
 
-     QString title_album;
+    QString title_album;
     this->artist = artist;
 
     this->title=title;
@@ -61,16 +75,9 @@ QString ArtWork::getAlbumTitle(QString artist, QString title) {
 
     url = "http://ws.audioscrobbler.com/2.0/";
 
-    title=title.contains("(")?fixTitle(title,"(",")"):title;
-
-    title=title.contains("[")?fixTitle(title,"[","]"):title;
-    title=title.contains("ft")?removeFeat(title):title;
-    title=title.contains("feat")?removeFeat(title):title;
-    title=title.contains("official video")?removeSubstring(title, "official video"):title;
-    title=title.contains("live")?removeSubstring(title, "live"):title;
+    title=fixString(title);
 
 
-    qDebug()<<"fixing the title string in order to get album title:"<<title;
     if (!artist.isEmpty() && !title.isEmpty()) {
         url.append("?method=track.getinfo");
         url.append("&api_key=ba6f0bd3c887da9101c10a50cf2af133");
@@ -171,22 +178,19 @@ QString ArtWork::fixTitle(QString title,QString s,QString e)
     return newTitle.simplified();
 }
 
-QString ArtWork::removeFeat(QString newTitle)
+QString ArtWork::removeSubstring(QString newTitle, QString subString)
 {
-    const int indexFt = newTitle.indexOf("ft", 0, Qt::CaseInsensitive);
+    const int indexFt = newTitle.indexOf(subString, 0, Qt::CaseInsensitive);
 
     if (indexFt != -1) {
         return newTitle.left(indexFt).simplified();
-    }
-
-    const int indexFeat = newTitle.indexOf("feat", 0, Qt::CaseInsensitive);
-
-    if (indexFeat != -1) {
-        return newTitle.left(indexFeat).simplified();
+    }else
+    {
+        return newTitle;
     }
 }
 
-QString ArtWork::removeSubstring(QString newTitle,QString subString)
+QString ArtWork::removeSubstring_old(QString newTitle,QString subString)
 {
     QString result;
     newTitle=newTitle.toLower();
@@ -205,18 +209,9 @@ void ArtWork::setDataCover_title(QString artist, QString title) {
     qDebug()<<"Going to try and get the art cover from title: "<< title <<"by"<<artist;
     url = "http://ws.audioscrobbler.com/2.0/";
 
+   title=fixString(title);
 
-
-
-    title=title.contains("(")?fixTitle(title,"(",")"):title;
-
-    title=title.contains("[")?fixTitle(title,"[","]"):title;
-    title=title.contains("ft")?removeFeat(title):title;
-    title=title.contains("feat")?removeFeat(title):title;
-    title=title.contains("official video")?removeSubstring(title, "official video"):title;
-    title=title.contains("live")?removeSubstring(title, "live"):title;
-    qDebug()<<"fixing the title string:"<<title;
-    if (artist.size() != 0 && title.size() != 0) {
+    if (!artist.isEmpty() && !title.isEmpty()) {
         url.append("?method=track.getinfo");
         url.append("&api_key=ba6f0bd3c887da9101c10a50cf2af133");
         QUrl q_artist(artist.replace("&", "and"));
@@ -234,9 +229,9 @@ void ArtWork::setDataCover_title(QString artist, QString title) {
     }
 }
 
-void ArtWork::setDataHead_asCover(QString artist, QString path) {
+void ArtWork::setDataHead_asCover(QString artist) {
     this->artist = artist;
-    this->path = path;
+
     url = "http://ws.audioscrobbler.com/2.0/";
     if (artist.size() != 0) {
         url.append("?method=artist.getinfo");
@@ -344,24 +339,29 @@ void ArtWork::dummy() { qDebug() << "QQQQQQQQQQQQQQQQQQQQ on DUMMYT"; }
                   }*/
 
 void ArtWork::saveArt(QByteArray array) {
-    QImage img;
-    img.loadFromData(array);
-    QString name = album.size() > 0 ? artist + "_" + album : artist;
-    name.replace("/", "-");
-    name.replace("&", "-");
-    QString format = "JPEG";
-    if (img.save(path + name + ".jpg", format.toLatin1(), 100)) {
-        if (album.isEmpty())
-            emit artSaved(path + name + ".jpg", {artist});
-        else
-            emit artSaved(path + name + ".jpg", {album, artist});
-    } else {
-        qDebug() << "couldn't save artwork";
 
-        if (album.isEmpty())
-            emit artSaved("", {artist});
-        else
-            emit artSaved("", {album, artist});
+    qDebug()<<"trying to save the array";
+    if(!array.isNull()&&!array.isEmpty())
+    {
+        QImage img;
+        img.loadFromData(array);
+        QString name = album.size() > 0 ? artist + "_" + album : artist;
+        name.replace("/", "-");
+        name.replace("&", "-");
+        QString format = "JPEG";
+        if (img.save(path + name + ".jpg", format.toLatin1(), 100)) {
+            if (album.isEmpty())
+                emit artSaved(path + name + ".jpg", {artist});
+            else
+                emit artSaved(path + name + ".jpg", {album, artist});
+        } else {
+            qDebug() << "couldn't save artwork";
+
+            if (album.isEmpty())
+                emit artSaved("", {artist});
+            else
+                emit artSaved("", {album, artist});
+        }
     }
 }
 

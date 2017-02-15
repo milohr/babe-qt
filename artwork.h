@@ -18,7 +18,7 @@ public:
     explicit ArtWork(QObject *parent = 0);
     void setDataCover(QString artist, QString album,QString title, QString path="");
     void setDataHead(QString artist, QString path="");
-     void setDataHead_asCover(QString artist, QString path="");
+     void setDataHead_asCover(QString artist);
     void setDataCoverInfo(QString artist, QString album);
     void setDataHeadInfo(QString artist);
     void setDataCover_title(QString artist, QString title);
@@ -29,9 +29,10 @@ public:
     void selectInfo(QString info);
     QString info;
     QString bio;
+    QString fixString(QString title);
     QString fixTitle(QString title, QString s, QString e);
-    QString removeFeat(QString newTitle);
     QString removeSubstring(QString newTitle, QString subString);
+    QString removeSubstring_old(QString newTitle, QString subString);
     QString getAlbumTitle(QString info);
     QString getAlbumTitle(QString artist, QString title);
 
