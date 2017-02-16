@@ -184,8 +184,11 @@ void PlaylistsView::createMoodPlaylist(QColor color) {
     {
         qDebug()<<"trying to cretae mooded palylist";
         auto *item = new QListWidgetItem(color.name());
-        item->setBackgroundColor(QColor::fromRgb(color.rgb()));
-
+        color.setAlpha(40);
+        item->setBackgroundColor(color);
+        /*QBrush brush;
+        brush.setColor(color.darker(160));
+        item->setForeground(brush);*/
         // item->setFlags(item->flags() | Qt::ItemIsEditable);
         list->addItem(item);
 
@@ -249,10 +252,11 @@ void PlaylistsView::setPlaylistsMoods(QStringList moods_n) {
         auto item = new QListWidgetItem(mood);
         QColor color;
         color.setNamedColor(mood);
-        item->setBackgroundColor(color.lighter(140));
-        QBrush brush;
+        color.setAlpha(40);
+        item->setBackgroundColor(color);
+        /*QBrush brush;
         brush.setColor(color.darker(160));
-        item->setForeground(brush);
+        item->setForeground(brush);*/
        list->addItem(item);
 
 

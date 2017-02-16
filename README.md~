@@ -23,8 +23,7 @@ any extra help to package this app is welcome and I'm willing to solve any doubt
 <h3> To run: </h3>
 qmake-qt5 && make && ./Babe
 
-<h3> To try the Youtube Chromium extension</h3>
-In Chrome/mium go to chrome://extensions/, then enable the Developer mode check box in the right upper corner, after that click on "Load unpacked extension..." and select the BabeExtension folder.
+
 
 * Planned Features :
   * [5%] youtube-dl streamming
