@@ -424,7 +424,7 @@ MainWindow::MainWindow(QWidget *parent) :
         addMusicImg->show();
         collectionView();
     }
-    updater->start();
+    updater->start(1000);
 }
 
 
@@ -1601,6 +1601,7 @@ void MainWindow::collectionDBFinishedAdding(bool state)
 {
     if(state)
     {
+        if(!ui->fav_btn->isEnabled()) ui->fav_btn->setEnabled(true);
         qDebug()<<"now it i time to put the tracks in the table ;)";
         //settings_widget->getCollectionDB().closeConnection();
         refreshTables();
@@ -1668,9 +1669,12 @@ void MainWindow::babeIt(QString url)
 
             qDebug()<<"Sorry but that song is not in the database";
 
+
+             ui->fav_btn->setIcon(QIcon(":Data/data/loved.svg"));
+             ui->fav_btn->setEnabled(false);
             if(addToCollectionDB_t({url},"1"))
             {
-                ui->fav_btn->setIcon(QIcon(":Data/data/loved.svg"));
+
                 auto *nof = new Notify();
                 nof->notify("Song Babe'd it",url);
             }

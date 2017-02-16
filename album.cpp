@@ -17,6 +17,7 @@ Album::Album(QString imagePath, int widgetSize, int widgetRadius, bool isDraggab
     //this->setStyleSheet("QLabel{border:transparent} QLabel:hover{border:1px solid #3daee9} QLabel:pressed{border:1px solid red}");
 
     this->size=widgetSize;
+    this->setFixedSize(size,size);
     this->border_radius=widgetRadius;
     this->setFixedSize(size,size);
     this->draggable=isDraggable;
@@ -29,6 +30,14 @@ Album::Album(QString imagePath, int widgetSize, int widgetRadius, bool isDraggab
     widget->setLayout(layout);
 
 
+
+
+
+    //widget->setGeometry(0,size-30,size,30);
+   // widget->setMinimumWidth(size);
+    //title->setMaximumWidth(size);
+    //title->setFixedWidth(size);
+    //widget->setMaximumWidth(size);
 
     auto contextMenu = new QMenu(this);
     this->setContextMenuPolicy(Qt::ActionsContextMenu);
@@ -46,6 +55,7 @@ Album::Album(QString imagePath, int widgetSize, int widgetRadius, bool isDraggab
 
 
     title = new ScrollText();
+     title->setMaxSize(size);
     //title->setMaxSize(size);
     //title->hide();
     auto *left_spacer = new QWidget();
@@ -87,13 +97,7 @@ void Album::playBtn_clicked()
 void Album::paintEvent(QPaintEvent *e)
 {
     Q_UNUSED(e)
-    this->setFixedSize(size,size);
-    title->setMaxSize(size);
-    //widget->setGeometry(0,size-30,size,30);
-    widget->setMinimumWidth(size);
-    //title->setMaximumWidth(size);
-    //title->setFixedWidth(size);
-    //widget->setMaximumWidth(size);
+
 
     QBrush brush(image.scaled(size,size,Qt::KeepAspectRatio));
     // brush.setStyle(Qt::no);
@@ -104,7 +108,7 @@ void Album::paintEvent(QPaintEvent *e)
     painter.drawRoundedRect(0,0, size, size, border_radius, border_radius);
 
     //this->setStyleSheet("border:1px solid red;");
-    this->setPixmap(image);
+
 
 }
 
@@ -117,20 +121,16 @@ void Album::putPixmap(QByteArray pix)
 {
     if(!pix.isEmpty()) this->image.loadFromData(pix);
     else this->image.load(":Data/data/cover.svg");
+
+    this->setPixmap(image);
 }
 
 void Album::putPixmap(QString path)
 {
     if(!path.isEmpty()) this->image.load(path);
     else this->image.load(":Data/data/cover.svg");
-}
 
-void Album::setCoverArt(QString path)
-{
-    //this->setPixmap(QPixmap(path).scaled(120,120,Qt::KeepAspectRatio));
-    image.load(path);
-    // image.scaled(size,size,Qt::KeepAspectRatio,Qt::SmoothTransformation);
-
+    this->setPixmap(image);
 }
 
 QString Album::getTitle()
@@ -203,11 +203,7 @@ void Album::mousePressEvent ( QMouseEvent * evt)
 
 
 
-void Album::mouseReleaseEvent ( QMouseEvent * evt)
-{
-    qDebug()<<"mouseReleaseEvent";
-    QLabel::mouseReleaseEvent(evt);
-}
+
 
 void Album::enterEvent(QEvent *event)
 {

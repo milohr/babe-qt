@@ -234,7 +234,7 @@ cover->setTitle();
     QSqlQuery queryCover = connection->getQuery("SELECT * FROM albums WHERE title = \""+album+"\" AND artist =\""+cover->getArtist()+"\"");
     while (queryCover.next())
     {
-        if(!queryCover.value(2).toString().isEmpty()&&queryCover.value(2).toString()!="NULL") cover->image.load( queryCover.value(2).toString());
+        if(!queryCover.value(2).toString().isEmpty()&&queryCover.value(2).toString()!="NULL") cover->putPixmap( queryCover.value(2).toString());
 
     }
 
@@ -289,7 +289,7 @@ void AlbumsView::populateTableView(QSqlQuery query)
         album->setAlbum(query.value(TITLE).toString());
         album->setTitle();
         if(!query.value(ART).toString().isEmpty()&&query.value(ART).toString()!="NULL")
-            album->image.load(query.value(ART).toString());
+            album->putPixmap(query.value(ART).toString());
 
         // album->setTitle(query.value(1).toString(),query.value(2).toString());
         //album->setToolTip(query.value(2).toString());
@@ -316,19 +316,19 @@ void AlbumsView::populateTableViewHeads(QSqlQuery query)
     qDebug()<<"ON POPULATE HEADS VIEW:";
     while (query.next())
     {
-        Album *album= new Album(":Data/data/cover.svg",albumSize,4);
+        auto album= new Album(":Data/data/cover.svg",albumSize,4);
 
         albumsList.push_back(album);
         album->borderColor=true;
         album->setArtist(query.value(TITLE).toString());
         album->setTitle();
         //album->titleVisible(false);
-        if(!query.value(1).toString().isEmpty()&&query.value(1).toString()!="NULL")album->image.load(query.value(1).toString());
+        if(!query.value(1).toString().isEmpty()&&query.value(1).toString()!="NULL")album->putPixmap(query.value(1).toString());
 
         // album->setTitle(query.value(1).toString(),query.value(2).toString());
         //album->setToolTip(query.value(2).toString());
-        connect(album, SIGNAL(albumCoverClicked(QStringList)),this,SLOT(getArtistInfo(QStringList)));
-        connect(album,SIGNAL(playAlbum(QString , QString)),this,SLOT(playAlbum_clicked(QString, QString)));
+        //connect(album, SIGNAL(albumCoverClicked(QStringList)),this,SLOT(getArtistInfo(QStringList)));
+        //connect(album,SIGNAL(playAlbum(QString , QString)),this,SLOT(playAlbum_clicked(QString, QString)));
         //album->setStyleSheet(":hover {background:#3daee9; }");
         auto item =new QListWidgetItem();
         item->setSizeHint( QSize( albumSize, albumSize) );
@@ -393,7 +393,7 @@ void AlbumsView::getArtistInfo(QStringList info)
     QSqlQuery queryCover = connection->getQuery("SELECT * FROM artists WHERE title = \""+info.at(0)+"\"");
     while (queryCover.next())
     {
-        if(!queryCover.value(1).toString().isEmpty()&&queryCover.value(1).toString()!="NULL") cover->image.load( queryCover.value(1).toString());
+        if(!queryCover.value(1).toString().isEmpty()&&queryCover.value(1).toString()!="NULL") cover->putPixmap( queryCover.value(1).toString());
 
     }
     if(extraList) populateExtraList(connection->getQuery("SELECT * FROM albums WHERE artist = \""+info.at(0)+"\" ORDER by title asc"));
@@ -422,7 +422,7 @@ void AlbumsView::getAlbumInfo(QStringList info)
     QSqlQuery queryCover = connection->getQuery("SELECT * FROM albums WHERE title = \""+info.at(1)+"\" AND artist = \""+info.at(0)+"\"");
     while (queryCover.next())
     {
-        if(!queryCover.value(2).toString().isEmpty()&&queryCover.value(2).toString()!="NULL") cover->image.load( queryCover.value(2).toString());
+        if(!queryCover.value(2).toString().isEmpty()&&queryCover.value(2).toString()!="NULL") cover->putPixmap( queryCover.value(2).toString());
 
     }
 

@@ -69,7 +69,4 @@ void YouTube::processFinished()
     ui->textBrowser->append(QString(processOutput));
     qDebug() << "Output was " << QString(processOutput);
 
-
-
-
 }

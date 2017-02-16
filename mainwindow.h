@@ -193,7 +193,7 @@ private:
     Playlist queueList;
     QStringList queue_list;
     QMediaPlayer *player = new QMediaPlayer();
-    QTimer *updater = new QTimer(this);
+   QTimer *updater = new QTimer(this);
     QString current_song_url;
     QString current_title;
     QString current_album;

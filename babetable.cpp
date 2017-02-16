@@ -190,13 +190,13 @@ void BabeTable::passPlaylists() {}
 void BabeTable::enterEvent(QEvent *event) {
     // qDebug()<<"entered the playlist";
     Q_UNUSED(event);
-    emit enteredTable();
+   // emit enteredTable();
 }
 
 void BabeTable::leaveEvent(QEvent *event) {
     // qDebug()<<"left the playlist";
     Q_UNUSED(event);
-    emit leftTable();
+  //  emit leftTable();
 }
 
 void BabeTable::passStyle(QString style) { this->setStyleSheet(style); }

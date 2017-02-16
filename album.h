@@ -14,7 +14,6 @@ public:
 
     explicit Album(QString imagePath,int widgetSize, int widgetRadius=0, bool isDraggable=false, QWidget *parent = 0);
 
-    void setCoverArt(QString path);
     void setArtist(QString artist);
     void setAlbum(QString album);
     void setTitle();
@@ -59,7 +58,6 @@ public slots:
 protected:
 
     virtual void mousePressEvent ( QMouseEvent * evt);
-    virtual void mouseReleaseEvent ( QMouseEvent * evt);
     virtual void enterEvent(QEvent *event);
     virtual void leaveEvent(QEvent *event);
 

@@ -249,7 +249,10 @@ void PlaylistsView::setPlaylistsMoods(QStringList moods_n) {
         auto item = new QListWidgetItem(mood);
         QColor color;
         color.setNamedColor(mood);
-        item->setBackgroundColor(color.lighter(125));
+        item->setBackgroundColor(color.lighter(140));
+        QBrush brush;
+        brush.setColor(color.darker(160));
+        item->setForeground(brush);
        list->addItem(item);
 
 
