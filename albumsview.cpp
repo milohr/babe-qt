@@ -242,7 +242,7 @@ cover->setTitle();
 
 void AlbumsView::albumsSize(int value)
 {
-    albumSize=value;
+   /* albumSize=value;
     //slider->setToo
     slider->setToolTip(QString::number(value));
     QToolTip::showText( slider->mapToGlobal( QPoint( 0, 0 ) ), QString::number(value) );
@@ -252,7 +252,7 @@ void AlbumsView::albumsSize(int value)
         album->setTitleGeometry(0,albumSize-30,albumSize,30);
         //grid->setGridSize(QSize(albumSize+10,albumSize+10));
 
-    }
+    }*/
 }
 
 void AlbumsView::albumHover()
@@ -264,7 +264,7 @@ void  AlbumsView::flushGrid()
 {
     albumTable->flushTable();
     grid->clear();
-    albumsList.clear();
+   // albumsList.clear();
 
 
     // grid->setRowCount(0);
@@ -283,7 +283,7 @@ void AlbumsView::populateTableView(QSqlQuery query)
     {
         Album *album= new Album(":Data/data/cover.svg",albumSize,4);
 
-        albumsList.push_back(album);
+        //albumsList.push_back(album);
         album->borderColor=true;
         album->setArtist(query.value(ARTIST).toString());
         album->setAlbum(query.value(TITLE).toString());
@@ -318,7 +318,7 @@ void AlbumsView::populateTableViewHeads(QSqlQuery query)
     {
         auto album= new Album(":Data/data/cover.svg",albumSize,4);
 
-        albumsList.push_back(album);
+       // albumsList.push_back(album);
         album->borderColor=true;
         album->setArtist(query.value(TITLE).toString());
         album->setTitle();

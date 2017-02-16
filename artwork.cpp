@@ -141,11 +141,11 @@ QString ArtWork::getAlbumTitle_Spotify(QString artist, QString title)
         url.append("&type=track");
 
         qDebug()<<"spotify api url:"<<url;
-        type = ALBUM_by_SPOTIFY;
+
         qDebug()<<"trying to get cover by_title:"<<url;
 
     }
-
+    qDebug("getAlbumTitle_Spotify about to connect to network");
 
     QNetworkAccessManager manager;
 
@@ -181,7 +181,15 @@ QString ArtWork::getAlbumTitle_Spotify(QString artist, QString title)
                 QJsonObject mainJsonObject(jsonResponse.object());
                 auto data = mainJsonObject.toVariantMap();
 
-                title_album = data.value("tracks").toMap().value("items").toList().at(0).toMap().value("album").toMap().value("name").toString();
+                auto itemMap = data.value("tracks").toMap().value("items");
+
+                if(!itemMap.isNull())
+                {
+                    QList<QVariant> items     = itemMap.toList();
+
+
+                if(!items.isEmpty()) title_album =items.at(0).toMap().value("album").toMap().value("name").toString();
+                }
 
                 if(!title_album.isEmpty())
                 {
@@ -456,11 +464,14 @@ void ArtWork::startConnection(bool json) {
     QObject::connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
     QObject::connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), &loop,
                      SLOT(quit()));
+
+
     if(!json)
     {QObject::connect(&manager, SIGNAL(finished(QNetworkReply *)), this,
                       SLOT(xmlInfo(QNetworkReply *)));
     }else
     {
+        qDebug()<<"trying to connect thgrough json";
         QObject::connect(&manager, SIGNAL(finished(QNetworkReply *)), this,
                          SLOT(jsonInfo(QNetworkReply *)));
     }
@@ -517,7 +528,7 @@ void ArtWork::saveArt(QByteArray array) {
 void ArtWork::jsonInfo(QNetworkReply *reply)
 {
 
-
+qDebug()<<"i'm in json";
     if (reply->error() == QNetworkReply::NoError)
     {
 
@@ -544,15 +555,29 @@ void ArtWork::jsonInfo(QNetworkReply *reply)
 
                 if(type== ALBUM_by_SPOTIFY)
                 {
-                    QString img = data.value("tracks").toMap().value("items").toList().at(0).toMap().value("album").toMap().value("images").toList().at(0).toMap().value("url").toString();
+                    QString img;
+                    qDebug()<<"ALBUM_by_SPOTIFY";
+
+                     auto itemMap = data.value("tracks").toMap().value("items");
+
+                    if(!itemMap.isNull())
+                    {
+                        QList<QVariant> items     = itemMap.toList();
+
+
+                    if(!items.isEmpty()) img =items.at(0).toMap().value("album").toMap().value("images").toList().at(0).toMap().value("url").toString();
+                    }
+
 
                     if(!img.isEmpty())
                     {
                         this->coverArray = selectCover(img);
+                        qDebug()<<"ALBUM_by_SPOTIFY placing covver array";
                     }else
 
                     {
                         setDataHead_asCover(artist);
+
                     }
 
                 }else if(type== ALBUM_by_ITUNES)
