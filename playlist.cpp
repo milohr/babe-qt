@@ -69,8 +69,8 @@ void Playlist::add(QStringList files) {
             QString genre = info.getGenre();
 
             title = title.size() > 0 ? title : info.fileName();
-            artist = artist.size() > 0 ? artist : "UNKNOWN";
-            album = album.size() > 0 ? album : "UNKNOWN";
+            artist = artist.size() > 0 ? artist : "Unbekannt";
+            album = album.size() > 0 ? album : "Unbekannt";
 
             track.setTitle(title.toStdString());
 
@@ -84,7 +84,7 @@ void Playlist::add(QStringList files) {
 
             tracks.push_back(track);
         } else {
-            qDebug() << "file not valid: " << files[i];
+            qDebug() << "Datei nicht zulässig: " << files[i];
         }
     }
 }
@@ -107,8 +107,8 @@ void Playlist::addClean(QStringList files) {
         QString genre = info.getGenre();
 
         title = title.size() > 0 ? title : info.fileName();
-        artist = artist.size() > 0 ? artist : "UNKNOWN";
-        album = album.size() > 0 ? album : "UNKNOWN";
+        artist = artist.size() > 0 ? artist : "Unbekannt";
+        album = album.size() > 0 ? album : "Unbekannt";
 
         track.setTitle(title.toStdString());
 

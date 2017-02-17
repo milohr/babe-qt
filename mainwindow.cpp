@@ -204,7 +204,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //MAIN PLAYLIST CONTEXT MENU
     QAction *babe, *remove;
     babe = new QAction("Babe it");
-    remove = new QAction("Remove from list");
+    remove = new QAction("Aus Liste entfernen");
     ui->listWidget->setContextMenuPolicy(Qt::ActionsContextMenu);
     ui->listWidget->addAction(babe);
     ui->listWidget->addAction(remove);
@@ -224,20 +224,20 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->mainToolBar->addWidget(left_spacer);
 
-    ui->tracks_view->setToolTip("Collection");
+    ui->tracks_view->setToolTip("Sammlung");
     ui->mainToolBar->addWidget(ui->tracks_view);
     //ui->tracks_view->setChecked(true);
 
-    ui->albums_view->setToolTip("Albums");
+    ui->albums_view->setToolTip("Alben");
     ui->mainToolBar->addWidget(ui->albums_view);
 
-    ui->artists_view->setToolTip("Artists");
+    ui->artists_view->setToolTip("Interpreten");
     ui->mainToolBar->addWidget(ui->artists_view);
 
     ui->playlists_view->setToolTip("Playlists");
     ui->mainToolBar->addWidget(ui->playlists_view);
 
-    ui->queue_view->setToolTip("Queue");
+    ui->queue_view->setToolTip("Warteschlange");
     ui->mainToolBar->addWidget(ui->queue_view);
 
     ui->info_view->setToolTip("Info");
@@ -341,8 +341,8 @@ MainWindow::MainWindow(QWidget *parent) :
     //album_art->widget->setGeometry(0,0,200,30);
     //album_art->widget->setStyleSheet( QString("background-color: rgba(0,0,0,150); border: none;"));
 
-    ui->hide_sidebar_btn->setToolTip("Go Mini");
-    ui->shuffle_btn->setToolTip("Shuffle");
+    ui->hide_sidebar_btn->setToolTip("Go Mini"); # Need to revisit this to find a proper translation
+    ui->shuffle_btn->setToolTip("Zufall");
 
 
 
@@ -898,7 +898,7 @@ void MainWindow::expand()
     this->resize(700,500);
     //this->setMinimumSize(0,0);
     // this->adjustSize();
-    ui->hide_sidebar_btn->setToolTip("Go Mini");
+    ui->hide_sidebar_btn->setToolTip("Go Mini"); #Same as in line 344
 
     ui->hide_sidebar_btn->setIcon(QIcon(":Data/data/mini_mode.svg"));
     //ui->mainToolBar->actions().at(0)->setVisible(true);
