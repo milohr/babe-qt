@@ -167,7 +167,7 @@ bool CollectionDB::checkQuery(QString queryTxt)
             return true;
         }else
         {
-            qDebug()<<"didn't ind the query!";
+            qDebug()<<"didn't find the query!";
             return false;
         }
     }else
