@@ -8,7 +8,6 @@
 #include <QUrl>
 #include <QJsonDocument>
 #include <QVariantMap>
-#include <qjson/parser.h>
 
 ArtWork::ArtWork(QObject *parent) : QObject(parent) {
     url = "http://ws.audioscrobbler.com/2.0/";

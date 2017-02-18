@@ -203,8 +203,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //MAIN PLAYLIST CONTEXT MENU
     QAction *babe, *remove;
-    babe = new QAction("Babe it");
-    remove = new QAction("Remove from list");
+    babe = new QAction("Babe it",this);
+    remove = new QAction("Remove from list",this);
     ui->listWidget->setContextMenuPolicy(Qt::ActionsContextMenu);
     ui->listWidget->addAction(babe);
     ui->listWidget->addAction(remove);
