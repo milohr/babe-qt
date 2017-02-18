@@ -38,7 +38,7 @@ void ArtWork::setDataCover(QString artist, QString album,QString title, QString 
             if (!q_artist.isEmpty())
                 url.append("&artist=" + q_artist.toString());
             if (!q_album.isEmpty())
-                url.append("&album=" + album); ///maybe this doens't needs to be encoded
+                url.append("&album=" + q_album.toString()); ///maybe this doens't needs to be encoded
             type = ALBUM;
             qDebug()<<"thealbum name is:"<<q_album.toString();
             qDebug()<<"on setDataCover:"<<url;
@@ -79,9 +79,9 @@ void ArtWork::setDataCover_spotify(QString artist, QString album,QString title)
 
         url.append("&type=track");
 
-        qDebug()<<"spotify api url:"<<url;
+       // qDebug()<<"spotify api url:"<<url;
         type = ALBUM_by_SPOTIFY;
-        qDebug()<<"trying to get cover by_title:"<<url;
+        //qDebug()<<"trying to get cover by_title:"<<url;
         bool json =true;
         startConnection(json);
     }
@@ -104,6 +104,8 @@ QString ArtWork::fixString(QString title)
     title=title.contains("official video")?removeSubstring(title, "official video"):title;
     title=title.contains("live")?removeSubstring(title, "live"):title;
     title=title.contains("...")?title.replace("...",""):title;
+    title=title.contains("|")?title.replace("|",""):title;
+    title=title.contains('"')?title.replace('"',""):title;
     qDebug()<<"fixing the title string in order to get album title:"<<title;
 
     return title;

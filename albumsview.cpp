@@ -327,8 +327,8 @@ void AlbumsView::populateTableViewHeads(QSqlQuery query)
 
         // album->setTitle(query.value(1).toString(),query.value(2).toString());
         //album->setToolTip(query.value(2).toString());
-        //connect(album, SIGNAL(albumCoverClicked(QStringList)),this,SLOT(getArtistInfo(QStringList)));
-        //connect(album,SIGNAL(playAlbum(QString , QString)),this,SLOT(playAlbum_clicked(QString, QString)));
+        connect(album, SIGNAL(albumCoverClicked(QStringList)),this,SLOT(getArtistInfo(QStringList)));
+        connect(album,SIGNAL(playAlbum(QString , QString)),this,SLOT(playAlbum_clicked(QString, QString)));
         //album->setStyleSheet(":hover {background:#3daee9; }");
         auto item =new QListWidgetItem();
         item->setSizeHint( QSize( albumSize, albumSize) );
