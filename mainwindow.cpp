@@ -274,7 +274,7 @@ MainWindow::MainWindow(QWidget *parent) :
     hideAlbumViewUtils();
 
 
-    ui->saveResults->setEnabled(true);
+   // ui->saveResults->setEnabled(true);
 
 
     this->addToolBar(Qt::BottomToolBarArea, ui->mainToolBar);
@@ -1883,7 +1883,7 @@ void MainWindow::on_search_textChanged(const QString &arg1)
             ui->search->setBackgroundRole(QPalette :: Light);
         }
 
-        ui->saveResults->setEnabled(true);
+        //ui->saveResults->setEnabled(true);
         ui->refreshAll->setEnabled(false);
         // prevIndex= views->currentIndex();
 
@@ -1893,7 +1893,7 @@ void MainWindow::on_search_textChanged(const QString &arg1)
         if(views->currentIndex()==ALBUMS) showAlbumViewUtils();
         if(views->currentIndex()==PLAYLISTS) {utilsBar->actions().at(PLAYLISTS_UB)->setVisible(true); ui->frame_3->show();}
         resultsTable->flushTable();
-        ui->saveResults->setEnabled(false);
+       // ui->saveResults->setEnabled(false);
         ui->refreshAll->setEnabled(true);
     }
 

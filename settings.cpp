@@ -208,7 +208,8 @@ void settings::refreshWatchFiles()
                 QString dir =QFileInfo(query.value(CollectionDB::LOCATION).toString()).dir().path();
 
                 dirs << dir;
-                QDirIterator it(dir, QDirIterator::Subdirectories);
+                QDirIterator it(dir,QDir::Dirs | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
+
                 while (it.hasNext())
                 {
                     QString subDir = it.next();
@@ -217,7 +218,7 @@ void settings::refreshWatchFiles()
                     {
                         //QDir dir = new QDir(url.path());
                         if(!dirs.contains(subDir))
-                            dirs <<QFileInfo(subDir).path();
+                            dirs <<subDir;
                     }
                 }
 
@@ -361,7 +362,7 @@ void settings::collectionWatcher()
 
                 dirs << dir;
                 //qDebug()<<"adding to dirs::1/"<<dir;
-                QDirIterator it(dir, QDirIterator::Subdirectories);
+                QDirIterator it(dir,QDir::Dirs | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
                 while (it.hasNext())
                 {
                     QString subDir = it.next();
@@ -374,7 +375,7 @@ void settings::collectionWatcher()
                         //QDir dir = new QDir(url.path());
                         if(!dirs.contains(subDir))
                         {
-                            dirs <<QFileInfo(subDir).path();
+                            dirs <<subDir;
                             //qDebug()<<"adding to dirs::2/"<<dir;
                         }
                     }
