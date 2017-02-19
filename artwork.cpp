@@ -808,7 +808,7 @@ void ArtWork::xmlInfo(QNetworkReply *reply) {
         // Better let the user know what's going on.
 
     } else {
-        qDebug() << "Error in parser :(";
+        qDebug() << "Error in parser :("; //this needs some more work and fixes
 
             if (album.isEmpty())
                 emit artSaved("", {artist});
