@@ -20,7 +20,7 @@ void ScrollText::enterEvent(QEvent *event) {
     Q_UNUSED(event);
     if (maxSize < this->sizeHint().width())
         speed = 1;
-    timer.start(40);
+    timer.start(30);
 
 }
 

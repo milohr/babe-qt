@@ -78,7 +78,7 @@ void ArtWork::setDataCover_spotify(QString artist, QString album,QString title)
 
         url.append("&type=track");
 
-       // qDebug()<<"spotify api url:"<<url;
+        // qDebug()<<"spotify api url:"<<url;
         type = ALBUM_by_SPOTIFY;
         //qDebug()<<"trying to get cover by_title:"<<url;
         bool json =true;
@@ -189,7 +189,7 @@ QString ArtWork::getAlbumTitle_Spotify(QString artist, QString title)
                     QList<QVariant> items     = itemMap.toList();
 
 
-                if(!items.isEmpty()) title_album =items.at(0).toMap().value("album").toMap().value("name").toString();
+                    if(!items.isEmpty()) title_album =items.at(0).toMap().value("album").toMap().value("name").toString();
                 }
 
                 if(!title_album.isEmpty())
@@ -198,7 +198,7 @@ QString ArtWork::getAlbumTitle_Spotify(QString artist, QString title)
                 }else
 
                 {
-                   qDebug()<<"couldn't find album name from spotify api";
+                    qDebug()<<"couldn't find album name from spotify api";
                 }
 
 
@@ -206,7 +206,7 @@ QString ArtWork::getAlbumTitle_Spotify(QString artist, QString title)
         }
     }
 
-return title_album;
+    return title_album;
 
 }
 
@@ -529,7 +529,7 @@ void ArtWork::saveArt(QByteArray array) {
 void ArtWork::jsonInfo(QNetworkReply *reply)
 {
 
-qDebug()<<"i'm in json";
+    qDebug()<<"i'm in json";
     if (reply->error() == QNetworkReply::NoError)
     {
 
@@ -559,14 +559,14 @@ qDebug()<<"i'm in json";
                     QString img;
                     qDebug()<<"ALBUM_by_SPOTIFY";
 
-                     auto itemMap = data.value("tracks").toMap().value("items");
+                    auto itemMap = data.value("tracks").toMap().value("items");
 
                     if(!itemMap.isNull())
                     {
                         QList<QVariant> items     = itemMap.toList();
 
 
-                    if(!items.isEmpty()) img =items.at(0).toMap().value("album").toMap().value("images").toList().at(0).toMap().value("url").toString();
+                        if(!items.isEmpty()) img =items.at(0).toMap().value("album").toMap().value("images").toList().at(0).toMap().value("url").toString();
                     }
 
 
@@ -810,10 +810,10 @@ void ArtWork::xmlInfo(QNetworkReply *reply) {
     } else {
         qDebug() << "Error in parser :("; //this needs some more work and fixes
 
-            if (album.isEmpty())
-                emit artSaved("", {artist});
-            else
-                emit artSaved("", {album, artist});
+        if (album.isEmpty())
+            emit artSaved("", {artist});
+        else
+            emit artSaved("", {album, artist});
 
     }
 }
