@@ -1116,17 +1116,16 @@ void MainWindow::populateMainList()
 {
     QSqlQuery query= settings_widget->getCollectionDB().getQuery("SELECT * FROM tracks WHERE babe = 1 ORDER by played desc");
 
+
     QStringList files;
     while (query.next())
     {
-
-
-
-        files << query.value(BabeTable::LOCATION).toString();
+        QString file =  query.value(BabeTable::LOCATION).toString();
+        files << file;
 
     }
 
-    addToPlaylist(files);
+    addToPlaylist(files,true);
 
 }
 
@@ -1759,7 +1758,7 @@ bool MainWindow::addToCollectionDB_t(QStringList url, QString babe)
     {
         if(babe.contains("1"))
         {
-            addToPlaylist(url);
+            addToPlaylist(url,true);
 
         }
         return true;
@@ -1772,13 +1771,35 @@ bool MainWindow::addToCollectionDB_t(QStringList url, QString babe)
 }
 
 
-void MainWindow::addToPlaylist(QStringList list)
+void MainWindow::addToPlaylist(QStringList list, bool repeated)
 {
     qDebug()<<"Adding lists to mainPlaylist";
+if(repeated)
+{
+    QStringList alreadyInList;
+    QStringList newList;
+    for(auto track :  playlist.getTracks())
+    {
+        alreadyInList<<QString::fromStdString(track.getLocation());
+    }
+
+    for(auto file: list)
+    {
+
+        if(!alreadyInList.contains(file)) newList<<file;
+    }
+
+   playlist.add(newList);
+
+}else
+{
 
     playlist.add(list);
-    updateList();
 
+
+}
+
+ updateList();
     if(shuffle) shufflePlaylist();
     ui->listWidget->scrollToBottom();
 }

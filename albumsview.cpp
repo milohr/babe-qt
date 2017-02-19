@@ -281,7 +281,7 @@ void AlbumsView::populateTableView(QSqlQuery query)
 
     while (query.next())
     {
-        Album *album= new Album(":Data/data/cover.svg",albumSize,4);
+        Album *album= new Album(":Data/data/cover.svg",albumSize,4,false, this);
 
         //albumsList.push_back(album);
         album->borderColor=true;

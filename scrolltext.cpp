@@ -8,16 +8,20 @@ ScrollText::ScrollText(QWidget *parent) {
     speed = 0;
     direction = RightToLeft;
     connect(&timer, SIGNAL(timeout()), this, SLOT(refreshLabel()));
-    timer.start(10);
+    //
 }
 void ScrollText::refreshLabel() { repaint(); }
 
 void ScrollText::start() {}
 
+
+
 void ScrollText::enterEvent(QEvent *event) {
     Q_UNUSED(event);
     if (maxSize < this->sizeHint().width())
         speed = 1;
+    timer.start(40);
+
 }
 
 void ScrollText::leaveEvent(QEvent *event) {
@@ -38,6 +42,7 @@ void ScrollText::stop() {
 void ScrollText::reset() {
     px = 0;
     repaint();
+    timer.stop();
 }
 
 ScrollText::~ScrollText() {}

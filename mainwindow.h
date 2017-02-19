@@ -65,7 +65,7 @@ protected:
 
 public slots:
 
-    void addToPlaylist(QStringList list);
+    void addToPlaylist(QStringList list, bool repeated=false);
     void putPixmap(QByteArray array);
     void dummy();
 private slots:
