@@ -323,7 +323,7 @@ bool CollectionDB::addTrack(QStringList paths, int babe)
                 qDebug() << "adding track error:  "
                          << query.lastError()
                          <<info.getTitle();
-                return false;
+
             }
         }
 

@@ -300,7 +300,7 @@ void AlbumsView::populateTableView(QSqlQuery query)
         auto item =new QListWidgetItem();
         item->setSizeHint( QSize( albumSize, albumSize) );
 
-        item->setTextAlignment(Qt::AlignCenter);
+        //item->setTextAlignment(Qt::AlignCenter);
         grid->addItem(item);
 
         grid->setItemWidget(item,album);
@@ -333,7 +333,7 @@ void AlbumsView::populateTableViewHeads(QSqlQuery query)
         auto item =new QListWidgetItem();
         item->setSizeHint( QSize( albumSize, albumSize) );
 
-        item->setTextAlignment(Qt::AlignCenter);
+        // item->setTextAlignment(Qt::AlignCenter);
         grid->addItem(item);
 
         grid->setItemWidget(item,album);
@@ -355,7 +355,6 @@ void AlbumsView::populateExtraList(QSqlQuery query)
     }
 
     artistList->addItems(albums);
-
 
 }
 

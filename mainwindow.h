@@ -65,7 +65,7 @@ protected:
 
 public slots:
 
-    void addToPlaylist(QStringList list, bool repeated=false);
+    void addToPlaylist(QStringList list, bool notRepeated=false);
     void putPixmap(QByteArray array);
     void dummy();
 private slots:
@@ -139,7 +139,7 @@ private slots:
     void removeSong(int index);
     void putOnPlay(QString artist, QString album);
     void loadCover(QString artist, QString album, QString title);
-    void babeIt(QString url);
+    void babeIt(QStringList urls);
     void unbabeIt(QString url);
     void loadMood();
     void addToQueue(QString url);

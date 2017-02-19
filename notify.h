@@ -22,7 +22,7 @@ private:
 
 
 signals:
-    void babeSong(QString url);
+    void babeSong(QStringList urls);
 
 public slots:
     void babeIt();

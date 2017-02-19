@@ -162,8 +162,8 @@ void PlaylistsView::populatePlaylist(QModelIndex index) {
                                  currentPlaylist + "%\"");
     }else if (currentPlaylist.contains("#")) {
         table->hideColumn(BabeTable::PLAYED);
-        table->populateTableView("SELECT * FROM tracks WHERE art LIKE \"%" +
-                                 currentPlaylist + "%\"");
+        table->populateTableView("SELECT * FROM tracks WHERE art = \"" +
+                                 currentPlaylist + "\"");
     }
 }
 
