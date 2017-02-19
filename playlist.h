@@ -10,9 +10,9 @@ class Playlist
 {
 public:
     Playlist();
-
+    QStringList getList();
     void add(QStringList files);
-void addClean(QStringList files);
+    void addClean(QStringList files);
     void remove(int index);
     void removeAll();
     void save();
@@ -22,7 +22,7 @@ void addClean(QStringList files);
 
     std::vector<Track> tracks;
 
-     QList<Track> getTracks();
+    QList<Track> getTracks();
 
 private:
     //QMediaPlayer *p;

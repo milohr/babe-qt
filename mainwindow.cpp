@@ -274,6 +274,12 @@ MainWindow::MainWindow(QWidget *parent) :
     hideAlbumViewUtils();
 
 
+
+    ui->filter->setVisible(false);
+    ui->filter->setClearButtonEnabled(true);
+
+    ui->filterBtn->setChecked(false);
+
    // ui->saveResults->setEnabled(true);
 
 
@@ -1122,6 +1128,7 @@ void MainWindow::populateMainList()
     {
         QString file =  query.value(BabeTable::LOCATION).toString();
         files << file;
+        //currentList<<file;
 
     }
 
@@ -1783,12 +1790,9 @@ void MainWindow::addToPlaylist(QStringList list, bool notRepeated)
     qDebug()<<"Adding lists to mainPlaylist";
     if(notRepeated)
     {
-        QStringList alreadyInList;
+        QStringList alreadyInList=playlist.getList();
         QStringList newList;
-        for(auto track :  playlist.getTracks())
-        {
-            alreadyInList<<QString::fromStdString(track.getLocation());
-        }
+
 
         for(auto file: list)
         {
@@ -1797,12 +1801,14 @@ void MainWindow::addToPlaylist(QStringList list, bool notRepeated)
         }
 
         playlist.add(newList);
+        currentList=newList;
+
 
     }else
     {
 
         playlist.add(list);
-
+        currentList=list;
 
     }
 
@@ -1998,4 +2004,44 @@ void MainWindow::saveResultsTo(QAction *action)
     case RESULTS: resultsTable->populatePlaylist(resultsTable->getTableContent(BabeTable::LOCATION),playlist); break;
 
     }
+}
+
+void MainWindow::on_filterBtn_clicked()
+{
+    if(!showFilter)
+    {
+        ui->filterBtn->setChecked(true);
+        ui->filter->setVisible(true);
+        showFilter=true;
+    }else
+    {
+        ui->filterBtn->setChecked(false);
+        ui->filter->setVisible(false);
+        showFilter=false;
+    }
+
+}
+
+void MainWindow::on_filter_textChanged(const QString &arg1)
+{
+
+    if(arg1.isEmpty())
+    {
+         playlist.removeAll();
+         ui->listWidget->clear();
+
+        addToPlaylist(currentList);
+    }else
+    {
+    QRegExp filter(arg1,Qt::CaseInsensitive, QRegExp::Wildcard);
+    QStringList old = playlist.getList().filter(filter);
+    playlist.removeAll();
+   playlist.add(old);
+
+    ui->listWidget->clear();
+    ui->listWidget->addItems(playlist.getTracksNameList().filter(filter));
+}
+
+
+
 }

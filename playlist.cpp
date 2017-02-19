@@ -174,3 +174,14 @@ QList<Track> Playlist::getTracks() {
     }
     return list;
 }
+
+QStringList Playlist::getList()
+{
+    QStringList list;
+    for(auto track : getTracks())
+    {
+        list<<QString::fromStdString(track.getLocation());
+    }
+
+    return list;
+}

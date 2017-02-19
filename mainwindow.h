@@ -145,6 +145,10 @@ private slots:
     void addToQueue(QString url);
     void removeFromQueue(QString url);
 
+    void on_filterBtn_clicked();
+
+    void on_filter_textChanged(const QString &arg1);
+
 private:
 
     Ui::MainWindow *ui;
@@ -191,6 +195,7 @@ private:
     /*the streaming */
     Playlist playlist;
     Playlist queueList;
+    QStringList currentList;
     QStringList queue_list;
     QMediaPlayer *player = new QMediaPlayer();
    QTimer *updater = new QTimer(this);
@@ -208,6 +213,7 @@ private:
     bool repeat = false;
     bool muted = false;
     bool playing = false;
+    bool showFilter= false;
     vector<unsigned short int> shuffledPlaylist;
     bool shuffle = false;
     QMenu *saveResults_menu;
