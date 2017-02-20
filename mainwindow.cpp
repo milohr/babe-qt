@@ -275,7 +275,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
 
-    ui->filter->setVisible(false);
+    ui->filterBox->setVisible(false);
     ui->filter->setClearButtonEnabled(true);
 
     ui->filterBtn->setChecked(false);
@@ -1808,7 +1808,7 @@ void MainWindow::addToPlaylist(QStringList list, bool notRepeated)
     {
 
         playlist.add(list);
-        currentList=list;
+        currentList+=list;
 
     }
 
@@ -2011,12 +2011,13 @@ void MainWindow::on_filterBtn_clicked()
     if(!showFilter)
     {
         ui->filterBtn->setChecked(true);
-        ui->filter->setVisible(true);
+        ui->filterBox->setVisible(true);
+        ui->filter->setFocus();
         showFilter=true;
     }else
     {
         ui->filterBtn->setChecked(false);
-        ui->filter->setVisible(false);
+        ui->filterBox->setVisible(false);
         showFilter=false;
     }
 
@@ -2030,7 +2031,7 @@ void MainWindow::on_filter_textChanged(const QString &arg1)
          playlist.removeAll();
          ui->listWidget->clear();
 
-        addToPlaylist(currentList);
+        addToPlaylist(currentList,true);
     }else
     {
     QRegExp filter(arg1,Qt::CaseInsensitive, QRegExp::Wildcard);
