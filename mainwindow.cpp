@@ -470,6 +470,7 @@ void MainWindow::putOnPlay(QString artist, QString album)
             if(!list.isEmpty())
             {
                 ui->listWidget->clear();
+                currentList.clear();
                 playlist.removeAll();
 
                 addToPlaylist(list);
