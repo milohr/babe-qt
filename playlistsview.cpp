@@ -7,9 +7,9 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent) {
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
 
-    table = new BabeTable();
+    table = new BabeTable(this);
 
-    list = new QListWidget();
+    list = new QListWidget(this);
     list->setFixedWidth(120);
     list->setAlternatingRowColors(true);
     list->setFrameShape(QFrame::NoFrame);
@@ -39,12 +39,12 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent) {
     table->setFrameShape(QFrame::NoFrame);
     // table->setSizePolicy(QSizePolicy::Expanding);
 
-    frame = new QFrame();
+    frame = new QFrame(this);
     frame->setFrameShadow(QFrame::Raised);
     frame->setFrameShape(QFrame::NoFrame);
 
-    addBtn = new QToolButton();
-    removeBtn = new QToolButton();
+    addBtn = new QToolButton(this);
+    removeBtn = new QToolButton(this);
     // addBtn->setGeometry(50,50,16,16);
     connect(addBtn, SIGNAL(clicked()), this, SLOT(createPlaylist()));
     connect(removeBtn, SIGNAL(clicked()), this, SLOT(removePlaylist()));
@@ -55,15 +55,15 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent) {
     addBtn->setIcon(QIcon::fromTheme("list-add"));
     removeBtn->setIcon(QIcon::fromTheme("entry-delete"));
 
-    auto line = new QFrame();
+    auto line = new QFrame(this);
     line->setFrameShape(QFrame::VLine);
     line->setFrameShadow(QFrame::Plain);
     line->setMaximumWidth(1);
 
-    btnContainer = new QWidget();
+    btnContainer = new QWidget(this);
     btnContainer->setFixedWidth(120);
     // btnContainer->setGeometry(0,150,150,30);
-    auto *left_spacer = new QWidget();
+    auto *left_spacer = new QWidget(this);
     left_spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     auto btnLayout = new QHBoxLayout();
     btnLayout->setSpacing(0);
@@ -74,7 +74,7 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent) {
     btnLayout->addWidget(removeBtn);
     // btnLayout->addWidget(line);
 
-    line_v = new QFrame();
+    line_v = new QFrame(this);
     line_v->setFrameShape(QFrame::VLine);
     line_v->setFrameShadow(QFrame::Plain);
     line_v->setMaximumWidth(1);

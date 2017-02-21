@@ -87,15 +87,15 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     /*THE VIEWS*/
-    frame = new QFrame();
+    frame = new QFrame(this);
     frame->setFrameShape(QFrame::StyledPanel);
     frame->setFrameShadow(QFrame::Raised);
 
-    settings_widget = new settings(); //this needs to go fist
-    queueTable = new BabeTable();
+    settings_widget = new settings(this); //this needs to go fist
+    queueTable = new BabeTable(this);
 
 
-    playlistTable = new PlaylistsView();
+    playlistTable = new PlaylistsView(this);
     connect(playlistTable,SIGNAL(playlistCreated(QString, QString)),&settings_widget->getCollectionDB(),SLOT(insertPlaylist(QString, QString)));
     connect(playlistTable->table,SIGNAL(tableWidget_doubleClicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
     connect(playlistTable->table,SIGNAL( babeIt_clicked(QStringList)),this,SLOT(babeIt(QStringList)));
@@ -104,7 +104,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(playlistTable->table,SIGNAL(moodIt_clicked(QColor)),playlistTable,SLOT(createMoodPlaylist(QColor)));
 
 
-    collectionTable = new BabeTable();
+    collectionTable = new BabeTable(this);
     collectionTable->passCollectionConnection(&settings_widget->getCollectionDB());
     connect(collectionTable,SIGNAL(tableWidget_doubleClicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
     connect(collectionTable,SIGNAL(enteredTable()),this,SLOT(hideControls()));
@@ -115,7 +115,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(collectionTable,SIGNAL(moodIt_clicked(QColor)),playlistTable,SLOT(createMoodPlaylist(QColor)));
 
 
-    resultsTable=new BabeTable();
+    resultsTable=new BabeTable(this);
     //resultsTable->passStyle("QHeaderView::section { background-color:#474747; }");
     resultsTable->setVisibleColumn(BabeTable::STARS);
     resultsTable->showColumn(BabeTable::GENRE);
@@ -127,7 +127,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(resultsTable,SIGNAL(moodIt_clicked(QColor)),playlistTable,SLOT(createMoodPlaylist(QColor)));
 
 
-    albumsTable = new AlbumsView();
+    albumsTable = new AlbumsView(false,this);
     connect(albumsTable,SIGNAL(albumOrderChanged(QString)),this,SLOT(AlbumsViewOrder(QString)));
     connect(albumsTable->albumTable,SIGNAL(tableWidget_doubleClicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
     connect(albumsTable->albumTable,SIGNAL( babeIt_clicked(QStringList)),this,SLOT(babeIt(QStringList)));
@@ -136,7 +136,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(albumsTable->albumTable,SIGNAL(moodIt_clicked(QColor)),playlistTable,SLOT(createMoodPlaylist(QColor)));
 
 
-    artistsTable = new AlbumsView(true);
+    artistsTable = new AlbumsView(true,this);
     artistsTable->albumTable->showColumn(BabeTable::ALBUM);
     //artistsTable->albumTable->setMaximumHeight(200);
     connect(artistsTable->albumTable,SIGNAL(tableWidget_doubleClicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
@@ -150,7 +150,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
 
-    infoTable = new InfoView();
+    infoTable = new InfoView(this);
     connect(infoTable,SIGNAL(playAlbum(QString, QString)),this,SLOT(putOnPlay(QString, QString)));
     lyrics = new Lyrics();
     connect(lyrics,SIGNAL(lyricsReady(QString)),infoTable,SLOT(setLyrics(QString)));
@@ -165,7 +165,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //queueTable->setEditTriggers(QAbstractItemView::EditTriggers(0));
 
 
-    utilsBar = new QToolBar();
+    utilsBar = new QToolBar(this);
 
     settings_widget->readSettings();
     setToolbarIconSize(settings_widget->getToolbarIconSize());
@@ -212,10 +212,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     /*SETUP MAIN TOOLBAR*/
 
-    auto *left_spacer = new QWidget();
+    auto *left_spacer = new QWidget(this);
     left_spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    auto *right_spacer = new QWidget();
+    auto *right_spacer = new QWidget(this);
     right_spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     //this->setToolButtonStyle(Qt::ToolButtonIconOnly);
@@ -291,7 +291,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     /*COMPOSE THE VIEWS*/
 
-    views = new QStackedWidget;
+    views = new QStackedWidget(this);
     views->setFrameShape(QFrame::NoFrame);
     views->addWidget(collectionTable);
     views->addWidget(albumsTable);
@@ -319,18 +319,18 @@ MainWindow::MainWindow(QWidget *parent) :
     frame_layout->setContentsMargins(0,0,0,0);
     layout = new QGridLayout();
     layout->setContentsMargins(6,0,6,0);
-    main_widget= new QWidget();
+    main_widget= new QWidget(this);
     main_widget->setLayout(layout);
     this->setCentralWidget(main_widget);
 
 
 
     /*album view*/
-    auto *album_widget= new QWidget();
+    auto *album_widget= new QWidget(this);
     //  album_widget->setStyleSheet("background-color:red;");
 
     auto *album_view = new QGridLayout();
-    album_art_frame=new QFrame();
+    album_art_frame=new QFrame(this);
     album_art_frame->setFrameShadow(QFrame::Raised);
     album_art_frame->setFrameShape(QFrame::StyledPanel);
 
@@ -355,7 +355,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // ui->controls = new QWidget(album_art);
     ui->controls->setParent(album_art);
     //ui->controls->setBackgroundRole(QPalette::Dark);
-    seekBar = new QSlider();
+    seekBar = new QSlider(this);
     seekBar->setMaximum(1000);
     seekBar->setOrientation(Qt::Horizontal);
     seekBar->setContentsMargins(0,0,0,0);
@@ -394,7 +394,7 @@ MainWindow::MainWindow(QWidget *parent) :
     album_widget->setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Expanding  );
     album_widget->setFixedWidth(200);
 
-    line = new QFrame();
+    line = new QFrame(this);
     line->setFrameShape(QFrame::HLine);
     line->setFrameShadow(QFrame::Plain);
     line->setMaximumHeight(1);
@@ -409,7 +409,7 @@ MainWindow::MainWindow(QWidget *parent) :
     layout->addWidget(album_art_frame,0,1, Qt::AlignRight);
 
 
-    saveResults_menu = new QMenu();
+    saveResults_menu = new QMenu(this);
     ui->saveResults->setMenu(saveResults_menu);
     ui->saveResults->setStyleSheet("QToolButton::menu-indicator { image: none; }");
     connect(saveResults_menu, SIGNAL(triggered(QAction*)), this, SLOT(saveResultsTo(QAction*)));
@@ -1008,7 +1008,7 @@ void MainWindow::on_hide_sidebar_btn_clicked()
 
         this->setFixedSize(200,200);
         //album_art->border_radius=5;
-        album_art->borderColor=true;
+        //album_art->borderColor=true;
 
         // album_art->setStyleSheet("QLabel{background-color:transparent;}");
         // album_art_frame->setStyleSheet("QFrame{border: 1px solid red;border-radius:5px;}");
@@ -1016,7 +1016,7 @@ void MainWindow::on_hide_sidebar_btn_clicked()
         //album_widget.
         layout->setContentsMargins(0,0,0,0);
 
-        this->setWindowFlags(Qt::Tool | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+       // this->setWindowFlags(Qt::Tool | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
         this->show();
         ui->hide_sidebar_btn->setToolTip("Expand");
 
@@ -1024,7 +1024,7 @@ void MainWindow::on_hide_sidebar_btn_clicked()
 
     }else if(mini_mode==2)
     {
-        this->setWindowFlags(Qt::Window| Qt::WindowTitleHint | Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint);
+       // this->setWindowFlags(Qt::Window| Qt::WindowTitleHint | Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint);
         this->show();
         // ui->mainToolBar->show();
         ui->listWidget->show();
@@ -1802,7 +1802,7 @@ void MainWindow::addToPlaylist(QStringList list, bool notRepeated)
         }
 
         playlist.add(newList);
-        currentList+=newList;
+        currentList=newList;
 
 
     }else
@@ -2032,7 +2032,7 @@ void MainWindow::on_filter_textChanged(const QString &arg1)
          playlist.removeAll();
          ui->listWidget->clear();
 
-        addToPlaylist(currentList);
+        addToPlaylist(currentList,true);
     }else
     {
     QRegExp filter(arg1,Qt::CaseInsensitive, QRegExp::Wildcard);

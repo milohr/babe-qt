@@ -20,7 +20,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     //frame->setFrameShadow(QFrame::Raised);
     // frame->setFrameShape(QFrame::StyledPanel);
     // grid = new QGridLayout();
-    grid = new QListWidget();
+    grid = new QListWidget(this);
     grid->setViewMode(QListWidget::IconMode);
     grid->setResizeMode(QListWidget::Adjust);
     grid->setUniformItemSizes(true);
@@ -46,7 +46,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     grid->setGridSize(QSize(albumSize+10,albumSize+10));
     //grid->setAlignment(Qt::AlignLeading);
 
-    utilsFrame = new QFrame();
+    utilsFrame = new QFrame(this);
     // utilsFrame->setFrameShape(QFrame::StyledPanel);
     utilsFrame->setFrameShadow(QFrame::Plain);
     utilsFrame->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Minimum);
@@ -64,7 +64,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
 
 
 
-    order = new QComboBox();
+    order = new QComboBox(this);
     order->setFrame(false);
     order->setMaximumWidth(70);
     order->setMaximumHeight(22);
@@ -85,16 +85,16 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     utilsFrame->setLayout(utilsLayout);
 
 
-    auto scroll= new QScrollArea();
+   /* auto scroll= new QScrollArea(this);
     scroll->setWidgetResizable(true);
     scroll->setAlignment(Qt::AlignCenter);
     //grid->setMinimumWidth(137*4);
 
     //scroll->setLayoutDirection(Qt::AlignCenter);
-    auto scrollWidget = new QWidget();
+    auto scrollWidget = new QWidget(this);
     //scrollWidget->setLayout(grid);
-    scroll->setWidget(scrollWidget   );
-    albumTable = new BabeTable();
+    scroll->setWidget(scrollWidget   );*/
+    albumTable = new BabeTable(this);
 
 
     albumTable->horizontalHeader()->setVisible(false);
@@ -120,16 +120,16 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
 
 
     //frame->setLayout(albumsFrame);
-    auto layout = new QGridLayout;
+    auto layout = new QGridLayout();
     layout->setMargin(0);
     layout->addWidget(grid,0,0);
     layout->setSpacing(0);
 
     //scroll->setMaximumSize(120*4,120*4);
-    scroll->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding  );
+   // scroll->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding  );
 
     auto albumBox = new QGridLayout();
-    albumBox_frame = new QFrame();
+    albumBox_frame = new QFrame(this);
     /*QPalette palette = albumBox_frame->palette();
    palette.setColor( backgroundRole(), QColor( 0, 0, 0,200 ) );
    albumBox_frame->setPalette( palette );
@@ -141,14 +141,14 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     albumBox->setSpacing(0);
     albumBox_frame->setLayout(albumBox);
 
-    line_h = new QFrame();
+    line_h = new QFrame(this);
     line_h->setFrameShape(QFrame::HLine);
     line_h->setFrameShadow(QFrame::Plain);
     line_h->setMaximumHeight(1);
 
     layout->addWidget(line_h,1,0,Qt::AlignBottom);
     layout->addWidget(albumBox_frame,2,0,Qt::AlignBottom);
-    cover= new Album(":Data/data/cover.svg",120,0);
+    cover= new Album(":Data/data/cover.svg",120,0,false,this);
     connect(cover,SIGNAL(playAlbum(QString , QString)),this,SLOT(playAlbum_clicked(QString, QString)));
 
 
@@ -158,7 +158,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     closeBtn->setAutoRaise(true);
     connect(closeBtn,SIGNAL(clicked()),SLOT(hideAlbumFrame()));
     //cover->setSizeHint( QSize( 120, 120) );
-    auto line = new QFrame();
+    auto line = new QFrame(this);
 
     line->setFrameShape(QFrame::VLine);
     line->setFrameShadow(QFrame::Sunken);
@@ -169,7 +169,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     {
         this->extraList=true;
         albumBox_frame->setMaximumHeight(200);
-        artistList=new QListWidget();
+        artistList=new QListWidget(this);
         connect(artistList,SIGNAL(clicked(QModelIndex)),this,SLOT(filterAlbum(QModelIndex)));
         artistList->setFrameShape(QFrame::NoFrame);
     artistList->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -281,11 +281,11 @@ void AlbumsView::populateTableView(QSqlQuery query)
 
     while (query.next())
     {
-        QString art=":Data/data/cover.jpg";
+        QString art=":Data/data/cover.svg";
         if(!query.value(ART).toString().isEmpty()&&query.value(ART).toString()!="NULL")
             art =query.value(ART).toString();
 
-        Album *album= new Album(art,albumSize,4);
+        Album *album= new Album(art,albumSize,4,false,this);
         //albumsList.push_back(album);
         album->borderColor=true;
         album->setArtist(query.value(ARTIST).toString());
@@ -317,14 +317,23 @@ void AlbumsView::populateTableViewHeads(QSqlQuery query)
     qDebug()<<"ON POPULATE HEADS VIEW:";
     while (query.next())
     {
-        auto album= new Album(":Data/data/cover.svg",albumSize,4);
+
 
        // albumsList.push_back(album);
+
+
+        QString art=":Data/data/cover.svg";
+
+        if(!query.value(1).toString().isEmpty()&&query.value(1).toString()!="NULL")
+           art=(query.value(1).toString());
+
+        Album *album= new Album(art,albumSize,4,false,this);
+
+
         album->borderColor=true;
         album->setArtist(query.value(TITLE).toString());
         album->setTitle();
         //album->titleVisible(false);
-        if(!query.value(1).toString().isEmpty()&&query.value(1).toString()!="NULL")album->putPixmap(query.value(1).toString());
 
         // album->setTitle(query.value(1).toString(),query.value(2).toString());
         //album->setToolTip(query.value(2).toString());

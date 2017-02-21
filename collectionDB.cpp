@@ -194,10 +194,10 @@ void CollectionDB::setCollectionLists()
         if(!artists.contains(artist)) artists<<artist;
     }
     // refreshArtistsTable();
-    qDebug()<<"artist in collection list::";
+    /*qDebug()<<"artist in collection list::";
     for(auto artist:artists)qDebug()<<artist;
     qDebug()<<"albums in collection list::";
-    for(auto album:albums)qDebug()<<album;
+    for(auto album:albums)qDebug()<<album;*/
 }
 
 void CollectionDB::refreshArtistsTable()

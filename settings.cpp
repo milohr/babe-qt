@@ -99,7 +99,7 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
     ui->label->setMovie(movie);
     ui->label->hide();
     ui->label2->hide();
-    watcher = new QFileSystemWatcher();
+    watcher = new QFileSystemWatcher(this);
     // watcher->addPath(youtubeCachePath);
 
     connect(watcher, SIGNAL(directoryChanged(QString)), this,
@@ -147,15 +147,15 @@ void settings::handleDirectoryChanged_extension()
         QFileInfo fileInfo(QFile(song).fileName());
         QString id=fileInfo.fileName().section(".",0,-2);
         ids<<id;
-        auto *nof = new Notify();
-        nof->notify("Song recived!","wait a sec while the track ["+id+"] is added to your collection :)");
+        Notify nof;
+        nof.notify("Song recived!","wait a sec while the track ["+id+"] is added to your collection :)");
 
 
     }
 
     if (!urls.isEmpty())
     {
-        auto ytFetch = new YouTube();
+        auto ytFetch = new YouTube(this);
         connect(ytFetch,SIGNAL(youtubeTrackReady(bool)),this,SLOT(youtubeTrackReady(bool)));
 
         ytFetch->fetch(ids);
@@ -339,7 +339,7 @@ void settings::addToWatcher(QStringList paths) {
 
     qDebug()<<"duplicated paths in watcher removd: "<<paths.removeDuplicates();
 
-    for(auto path:paths) qDebug() << "Adding to watcher -dir:"<< path;
+    //for(auto path:paths) qDebug() << "Adding to watcher -dir:"<< path;
 
     // watcher->addPath(path);
     if(!paths.isEmpty()) watcher->addPaths(paths);
@@ -572,16 +572,16 @@ void settings::fetchArt() {
         if(query_Title.next()) title=query_Title.value(CollectionDB::TITLE).toString();
 
 
-        auto coverArt = new ArtWork();
-        connect(coverArt, SIGNAL(coverReady(QByteArray)), coverArt,
+        ArtWork coverArt;
+        connect(&coverArt, SIGNAL(coverReady(QByteArray)), &coverArt,
                 SLOT(saveArt(QByteArray)));
-        connect(coverArt, SIGNAL(artSaved(QString, QStringList)), &collection_db,
+        connect(&coverArt, SIGNAL(artSaved(QString, QStringList)), &collection_db,
                 SLOT(insertCoverArt(QString, QStringList)));
 
         //  QString art = cachePath+artist+"_"+album+".jpg";
 
         qDebug() << artist << album;
-        coverArt->setDataCover(artist, album,title, cachePath);
+        coverArt.setDataCover(artist, album,title, cachePath);
 
 
     }
@@ -592,20 +592,20 @@ void settings::fetchArt() {
 
 
 
-        auto artistHead = new ArtWork();
+        ArtWork artistHead;
 
-        connect(artistHead, SIGNAL(headReady(QByteArray)), artistHead,
+        connect(&artistHead, SIGNAL(headReady(QByteArray)), &artistHead,
                 SLOT(saveArt(QByteArray)));
-        connect(artistHead, SIGNAL(artSaved(QString, QStringList)), &collection_db,
+        connect(&artistHead, SIGNAL(artSaved(QString, QStringList)), &collection_db,
                 SLOT(insertHeadArt(QString, QStringList)));
 
         QString artist = query_Heads.value(0).toString();
         // QString art = cachePath+artist+".jpg";
 
-        artistHead->setDataHead(artist, cachePath);
+        artistHead.setDataHead(artist, cachePath);
     }
-    auto *nof = new Notify();
-    nof->notify("Finished fetching art","the artwork for your collection is ready :)");
+    Notify nof;
+    nof.notify("Finished fetching art","the artwork for your collection is ready :)");
 
     // emit collectionDBFinishedAdding(true);
 }

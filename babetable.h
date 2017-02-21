@@ -19,7 +19,7 @@ class BabeTable : public QTableWidget
     Q_OBJECT
 
 public:
-    explicit BabeTable(QTableWidget *parent = 0);
+    explicit BabeTable(QWidget *parent = 0);
     ~BabeTable();
 
     enum columns

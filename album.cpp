@@ -34,7 +34,7 @@ Album::Album(QString imagePath, int widgetSize, int widgetRadius, bool isDraggab
 
 
     //widget->setGeometry(0,size-30,size,30);
-   // widget->setMinimumWidth(size);
+    // widget->setMinimumWidth(size);
     //title->setMaximumWidth(size);
     //title->setFixedWidth(size);
     //widget->setMaximumWidth(size);
@@ -54,14 +54,14 @@ Album::Album(QString imagePath, int widgetSize, int widgetRadius, bool isDraggab
 
 
 
-    title = new ScrollText();
-     title->setMaxSize(size);
+    title = new ScrollText(this);
+    title->setMaxSize(size);
     //title->setMaxSize(size);
     //title->hide();
-    auto *left_spacer = new QWidget();
+    auto *left_spacer = new QWidget(this);
     left_spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    auto *right_spacer = new QWidget();
+    auto *right_spacer = new QWidget(this);
     right_spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     playBtn = new QToolButton(this);

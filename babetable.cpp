@@ -14,7 +14,7 @@
 #include <QColorDialog>
 #include <notify.h>
 
-BabeTable::BabeTable(QTableWidget *parent) : QTableWidget(parent) {
+BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
 
     /* connection = new CollectionDB();
   connection->openCollection("../player/collection.db");*/
