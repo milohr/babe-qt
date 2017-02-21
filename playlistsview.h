@@ -52,7 +52,7 @@ public slots:
     void on_removeBtn_clicked();
     void populatePlaylist(QModelIndex index);
     void tableClicked(QStringList list);
-    void createMoodPlaylist(QColor color);
+    void createMoodPlaylist(QString color);
     void dummy();
 
 signals:

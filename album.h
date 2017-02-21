@@ -12,11 +12,12 @@ class Album : public QLabel
     Q_OBJECT
 public:
 
-    explicit Album(QString imagePath,int widgetSize, int widgetRadius=0, bool isDraggable=false, QWidget *parent = 0);
+    explicit Album(QString imagePath, int widgetSize, int widgetRadius=0, bool isDraggable=false, bool plain=false, QWidget *parent = 0);
 
     void setArtist(QString artist);
     void setAlbum(QString album);
     void setTitle();
+    void setBGcolor(QString bgColor);
     void titleVisible(bool state);
     void setTitleGeometry(int x, int y, int w, int h);
     void setSize(int value);
@@ -28,17 +29,21 @@ public:
     QString getTitle();
     QString getArtist();
     QString getAlbum();
+    QString getBGcolor();
     QPixmap image;
     QPixmap getPixmap();
     QToolButton *playBtn;
 
 
+
 private:
 
     bool draggable;
-
+     bool isPlain=false;
+QString imagePath;
     QString artist="";
     QString album="";
+    QString bgColor="";
     ScrollText *title;
 
     QPoint oldPos;

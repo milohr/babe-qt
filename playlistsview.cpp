@@ -209,20 +209,28 @@ void PlaylistsView::removePlaylist()
         table->populateTableView("SELECT * FROM tracks WHERE playlist LIKE \"%" +
                                  currentPlaylist + "%\"");*/
     }else if (currentPlaylist.contains("#")) {
-        /*table->hideColumn(BabeTable::PLAYED);
+
+
+        table->connection->execQuery("UPDATE tracks SET art = \"\" WHERE art = \"" +
+                                     currentPlaylist + "\"");
+
+        table->connection->execQuery("DELETE FROM playlists  WHERE art = \""+currentPlaylist+"\"");
+        table->flushTable();
+
         table->populateTableView("SELECT * FROM tracks WHERE art = \"" +
-                                 currentPlaylist + "\"");*/
+                                 currentPlaylist+ "\"");
     }
 }
 
 
-void PlaylistsView::createMoodPlaylist(QColor color) {
+void PlaylistsView::createMoodPlaylist(QString color)
+{
 
-    if(!moods.contains(color.name()))
+    if(!moods.contains(color))
     {
         qDebug()<<"trying to cretae mooded palylist";
-        auto *item = new QListWidgetItem(color.name());
-        color.setAlpha(40);
+        auto *item = new QListWidgetItem(color);
+        //color.setAlpha(40);
         item->setBackgroundColor(color);
         /*QBrush brush;
         brush.setColor(color.darker(160));
@@ -230,21 +238,16 @@ void PlaylistsView::createMoodPlaylist(QColor color) {
         // item->setFlags(item->flags() | Qt::ItemIsEditable);
         list->addItem(item);
 
-        if (!color.name().isEmpty())
+        if (!color.isEmpty())
         {
-            moods<<color.name();
-            emit playlistCreated(item->text(),color.name());
-
-
+            moods<<color;
+            emit playlistCreated(item->text(),color);
         }
     }else
     {
         qDebug()<<"that mood already exists";
     }
 
-    // emit list->doubleClicked(list->model()->index(list->count() - 1, 0));
-
-    // item->setFlags (item->flags () & Qt::ItemIsEditable);
 }
 
 void PlaylistsView::playlistName(QListWidgetItem *item) {

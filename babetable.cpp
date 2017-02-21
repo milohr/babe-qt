@@ -97,8 +97,8 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
     playlistsMenu = new QMenu("...");
     addEntry->setMenu(playlistsMenu);
 
-    auto moodIt = new QAction("Mood..", contextMenu);
-    this->addAction(moodIt);
+   // auto moodIt = new QAction("Mood..", contextMenu);
+   // this->addAction(moodIt);
 
     /*QAction *moodEntry = contextMenu->addAction("Mood...");
   this->addAction(moodEntry);
@@ -115,8 +115,38 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
 
     connect(babeIt, SIGNAL(triggered()), this, SLOT(babeIt_action()));
     connect(removeIt, SIGNAL(triggered()), this, SLOT(babeIt_action()));
-    connect(moodIt, SIGNAL(triggered()), this, SLOT(moodIt_action()));
+   // connect(moodIt, SIGNAL(triggered()), this, SLOT(moodIt_action()));
     connect(queueIt, SIGNAL(triggered()), this, SLOT(queueIt_action()));
+
+    QStringList colors = {"#F44336","#E91E63","#9C27B0","#2196F3","#CDDC39"};
+
+    QVector<Album*> colorsTags(5);
+    for(int i=0; i<5; i++)
+    {
+         Album *colorTag = new Album(colors.at(i),13,100,false,true,this);
+         connect(colorTag, SIGNAL(albumCoverClicked(QStringList)),this,SLOT(moodTrack(QStringList)));
+
+         colorTag->borderColor=true;
+         colorTag->setBGcolor(colors.at(i));
+         //colorTag->setStyleSheet(QString("QLabel { background-color: %1;}").arg(colors.at(i)));
+        colorsTags[i] = colorTag;
+    }
+
+    auto moods = new QWidget();
+    auto moodsLayout = new QHBoxLayout();
+/*moodsLayout->setMargin(0);
+moodsLayout->setSpacing(0);*/
+    for(auto mood : colorsTags)
+    {
+        moodsLayout->addWidget(mood);
+
+    }
+    moods->setLayout(moodsLayout);
+    QWidgetAction *moodsAction = new QWidgetAction(contextMenu);
+    moodsAction->setDefaultWidget(moods);
+
+    this->addAction(moodsAction);
+
 
 
     QButtonGroup *bg = new QButtonGroup(contextMenu);
@@ -141,6 +171,15 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
     chkBoxAction->setDefaultWidget(gr);
 
     this->addAction(chkBoxAction);
+}
+
+
+void BabeTable::moodTrack(QStringList color)
+{
+    qDebug()<<color.at(2);
+    /*QColor color_mood;
+    color_mood.setNamedColor(color.at(2));*/
+    moodIt_action(color.at(2));
 }
 
 void BabeTable::addToPlaylist(QAction *action) {
@@ -629,26 +668,26 @@ void BabeTable::babeIt_action() {
     {this->model()->data(this->model()->index(row, LOCATION)).toString()});
 }
 
-void BabeTable::moodIt_action() {
+void BabeTable::moodIt_action(QString color) {
     qDebug() << "right clicked!";
     // int row= this->currentIndex().row();
     qDebug()
             << this->model()->data(this->model()->index(row, LOCATION)).toString();
 
-    QColor color = QColorDialog::getColor(Qt::black, this, "Pick a Mood",  QColorDialog::DontUseNativeDialog);
-    qDebug()<< color.name();
+   // QColor color = QColorDialog::getColor(Qt::black, this, "Pick a Mood",  QColorDialog::DontUseNativeDialog);
+    qDebug()<< color;
 
-    if(!color.name().isEmpty())
+    if(!color.isEmpty())
     {
         QSqlQuery query;
         query.prepare("UPDATE tracks SET art = (:art) WHERE location = (:location)" );
         //query.prepare("SELECT * FROM "+tableName+" WHERE "+searchId+" = (:search)");
-        query.bindValue(":art",  color.name() );
+        query.bindValue(":art",  color);
         query.bindValue(":location", this->model()->data(this->model()->index(row, LOCATION)).toString());
 
         if(query.exec())
         {
-            qDebug()<<"Art[color] inserted into DB"<< color.name();
+            qDebug()<<"Art[color] inserted into DB"<< color;
             emit moodIt_clicked(color);
 
         }else

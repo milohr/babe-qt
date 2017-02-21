@@ -9,6 +9,8 @@
 #include <QMouseEvent>
 #include <QMenu>
 #include <QFileInfo>
+#include <QVector>
+#include "album.h"
 
 namespace Ui {
 class BabeTable;
@@ -31,6 +33,7 @@ public:
         DESCENDING, ASCENDING
     };
     CollectionDB *connection;
+
     void populateTableView(QString indication);
     void setRating(int rate);
     void passCollectionConnection(CollectionDB *con);
@@ -62,8 +65,9 @@ private slots:
     void setUpContextMenu(QPoint pos);
     void addToPlaylist(QAction* action);
     void babeIt_action();
-    void moodIt_action();
+    void moodIt_action(QString color);
     void queueIt_action();
+    void moodTrack(QStringList color);
 
 public slots:
     QStringList getPlaylistMenus();
@@ -90,7 +94,7 @@ signals:
     void babeIt_clicked(QStringList list);
     void createPlaylist_clicked();
     void refreshPlaylistsMenu(QStringList list);
-    void moodIt_clicked(QColor color);
+    void moodIt_clicked(QString color);
     void queueIt_clicked(QString url);
 
 };

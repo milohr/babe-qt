@@ -9,7 +9,7 @@
 #include <QPainter>
 #include <QImage>
 
-Album::Album(QString imagePath, int widgetSize, int widgetRadius, bool isDraggable, QWidget *parent) : QLabel(parent)
+Album::Album(QString imagePath, int widgetSize, int widgetRadius, bool isDraggable,bool plain, QWidget *parent) : QLabel(parent)
 {
     //this->setMaximumSize(100,100);
     //this->set
@@ -21,71 +21,75 @@ Album::Album(QString imagePath, int widgetSize, int widgetRadius, bool isDraggab
     this->border_radius=widgetRadius;
     this->setFixedSize(size,size);
     this->draggable=isDraggable;
-    image.load(imagePath);
-    //image.scaled(120,120,Qt::KeepAspectRatio);
-    //this->setPixmap(image.scaled(size,size,Qt::KeepAspectRatio));
-    //this->setToolTip(getTitle());
-    widget = new QWidget(this);
-    auto layout = new QHBoxLayout();
-    widget->setLayout(layout);
+this->isPlain=plain;
+    this->imagePath=imagePath;
+
+
+    if(!plain)
+    {
+
+        if (!imagePath.isEmpty()) image.load(imagePath);
+        //image.scaled(120,120,Qt::KeepAspectRatio);
+        //this->setPixmap(image.scaled(size,size,Qt::KeepAspectRatio));
+        //this->setToolTip(getTitle());
+        widget = new QWidget(this);
+        auto layout = new QHBoxLayout();
+        widget->setLayout(layout);
+
+
+        //widget->setGeometry(0,size-30,size,30);
+        // widget->setMinimumWidth(size);
+        //title->setMaximumWidth(size);
+        //title->setFixedWidth(size);
+        //widget->setMaximumWidth(size);
+
+        auto contextMenu = new QMenu(this);
+        this->setContextMenuPolicy(Qt::ActionsContextMenu);
+
+        auto babeIt = new QAction("Babe it \xe2\x99\xa1",contextMenu);
+        this->addAction(babeIt);
+
+        auto removeIt = new QAction("Remove",contextMenu);
+        this->addAction(removeIt);
+
+        //connect(this,SIGNAL(clicked(QModelIndex)),this,SLOT(setUpContextMenu()));
+
+        //connect(babeIt, SIGNAL(triggered()), this, SLOT(uninstallAppletClickedSlot()));
 
 
 
+        title = new ScrollText(this);
+        title->setMaxSize(size);
+        //title->setMaxSize(size);
+        //title->hide();
+        auto *left_spacer = new QWidget(this);
+        left_spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
+        auto *right_spacer = new QWidget(this);
+        right_spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    //widget->setGeometry(0,size-30,size,30);
-    // widget->setMinimumWidth(size);
-    //title->setMaximumWidth(size);
-    //title->setFixedWidth(size);
-    //widget->setMaximumWidth(size);
+        playBtn = new QToolButton(this);
+        playBtn->setIcon(QIcon(":Data/data/playBtn.svg"));
+        playBtn->setIconSize(QSize(48,48));
+        playBtn->setGeometry((size/2)-24,(size/2)-24,48,48);
+        playBtn->setStyleSheet("QToolButton{border-radius:2px;} QToolButton:hover{background: url(':Data/data/playBtn_hover.svg') top center no-repeat;} ");
+        playBtn->setAutoRaise(true);
+        QObject::connect(playBtn,SIGNAL(clicked()),this,SLOT(playBtn_clicked()));
+        playBtn->hide();
 
-    auto contextMenu = new QMenu(this);
-    this->setContextMenuPolicy(Qt::ActionsContextMenu);
+        layout->addWidget(left_spacer);
+        layout->addWidget(title);
+        layout->addWidget(right_spacer);
+        widget->setMinimumWidth(size);
+        //this->setStyleSheet("border:none");
+        widget->setGeometry(0,size-30,size,30);
+        //widget->setStyleSheet("background-color: rgba(0,0,0,150)");
+        widget->setStyleSheet( QString("background-color: rgba(0,0,0,150); border: 1px solid #333; border-top-left-radius:0; border-top-right-radius:0; border-bottom-right-radius:%1px; border-bottom-left-radius:%2px;").arg( QString::number(border_radius),QString::number(border_radius)));
 
-    auto babeIt = new QAction("Babe it \xe2\x99\xa1",contextMenu);
-    this->addAction(babeIt);
-
-    auto removeIt = new QAction("Remove",contextMenu);
-    this->addAction(removeIt);
-
-    //connect(this,SIGNAL(clicked(QModelIndex)),this,SLOT(setUpContextMenu()));
-
-    //connect(babeIt, SIGNAL(triggered()), this, SLOT(uninstallAppletClickedSlot()));
-
-
-
-    title = new ScrollText(this);
-    title->setMaxSize(size);
-    //title->setMaxSize(size);
-    //title->hide();
-    auto *left_spacer = new QWidget(this);
-    left_spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-
-    auto *right_spacer = new QWidget(this);
-    right_spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-
-    playBtn = new QToolButton(this);
-    playBtn->setIcon(QIcon(":Data/data/playBtn.svg"));
-    playBtn->setIconSize(QSize(48,48));
-    playBtn->setGeometry((size/2)-24,(size/2)-24,48,48);
-    playBtn->setStyleSheet("QToolButton{border-radius:2px;} QToolButton:hover{background: url(':Data/data/playBtn_hover.svg') top center no-repeat;} ");
-    playBtn->setAutoRaise(true);
-    QObject::connect(playBtn,SIGNAL(clicked()),this,SLOT(playBtn_clicked()));
-    playBtn->hide();
-
-    layout->addWidget(left_spacer);
-    layout->addWidget(title);
-    layout->addWidget(right_spacer);
-    widget->setMinimumWidth(size);
-    //this->setStyleSheet("border:none");
-    widget->setGeometry(0,size-30,size,30);
-    //widget->setStyleSheet("background-color: rgba(0,0,0,150)");
-    widget->setStyleSheet( QString("background-color: rgba(0,0,0,150); border: 1px solid #333; border-top-left-radius:0; border-top-right-radius:0; border-bottom-right-radius:%1px; border-bottom-left-radius:%2px;").arg( QString::number(border_radius),QString::number(border_radius)));
-
-    title->setStyleSheet("background:transparent; color:white; border:none;");
-    right_spacer->setStyleSheet("background:transparent;  border:none;");
-    left_spacer->setStyleSheet("background:transparent;  border:none;");
-
+        title->setStyleSheet("background:transparent; color:white; border:none;");
+        right_spacer->setStyleSheet("background:transparent;  border:none;");
+        left_spacer->setStyleSheet("background:transparent;  border:none;");
+    }
 
 }
 
@@ -98,8 +102,22 @@ void Album::paintEvent(QPaintEvent *e)
 {
     Q_UNUSED(e)
 
+    QBrush brush(Qt::yellow);
 
-    QBrush brush(image.scaled(size,size,Qt::KeepAspectRatio));
+    if(imagePath.at(0)=="#")
+    {
+        QColor color;
+        color.setNamedColor(bgColor);
+        image.fill(color);
+        brush.setColor(color);
+    }else
+    {
+
+        if(!image.isNull())
+            brush.setTexture(image.scaled(size,size,Qt::KeepAspectRatio));
+
+    }
+
     // brush.setStyle(Qt::no);
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
@@ -140,12 +158,18 @@ QString Album::getTitle()
 
 QString Album::getArtist()
 {
-    return artist;
+    return this->artist;
 }
 
 QString Album::getAlbum()
 {
-    return album;
+    return this->album;
+}
+
+
+QString Album::getBGcolor()
+{
+    return this->bgColor;
 }
 
 void Album::setArtist(QString artist)
@@ -156,6 +180,20 @@ void Album::setArtist(QString artist)
 void Album::setAlbum(QString album)
 {
     this->album=album;
+}
+
+
+void Album::setBGcolor(QString bgColor)
+{
+    this->bgColor=bgColor;
+
+        QColor color;
+        color.setNamedColor(bgColor);
+        image.fill(color);
+
+this->setPixmap(image);
+
+
 }
 
 void Album::setTitle()
@@ -191,7 +229,7 @@ void Album::mousePressEvent ( QMouseEvent * evt)
     if(evt->button()==Qt::LeftButton && !draggable)
     {
 
-        emit albumCoverClicked({artist,album});
+        emit albumCoverClicked({artist,album,bgColor});
     }else
     {
         QLabel::mousePressEvent(evt);
@@ -213,8 +251,11 @@ void Album::enterEvent(QEvent *event)
     //  widget->setStyleSheet("background:rgba(180, 225, 230, 150)");
     //  this->setStyleSheet("border:1px solid #f85b79");
     // qDebug()<<"entered the album cover";
-    playBtn->show();
+    if(!isPlain)
+    {
+        playBtn->show();
     playBtn->setToolTip("Play all - "+artist+" "+album);
+    }
 
     emit albumCoverEnter();
 }
@@ -228,6 +269,9 @@ void Album::leaveEvent(QEvent *event)
     // widget->setStyleSheet("background-color: rgba(0,0,0,150);");
     // this->setStyleSheet("border:1px solid #333");
     //  qDebug()<<"left the album cover";
+    if(!isPlain)
+    {
     playBtn->hide();
     emit albumCoverLeft();
+    }
 }

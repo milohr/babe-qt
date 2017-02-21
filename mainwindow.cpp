@@ -101,7 +101,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(playlistTable->table,SIGNAL( babeIt_clicked(QStringList)),this,SLOT(babeIt(QStringList)));
     connect(playlistTable->table,SIGNAL(createPlaylist_clicked()),this,SLOT(playlistsView()));
     connect(playlistTable->table,SIGNAL(queueIt_clicked(QString)),this,SLOT(addToQueue(QString)));
-    connect(playlistTable->table,SIGNAL(moodIt_clicked(QColor)),playlistTable,SLOT(createMoodPlaylist(QColor)));
+    connect(playlistTable->table,SIGNAL(moodIt_clicked(QString)),playlistTable,SLOT(createMoodPlaylist(QString)));
 
 
     collectionTable = new BabeTable(this);
@@ -112,7 +112,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(collectionTable,SIGNAL(finishedPopulating()),this,SLOT(orderTables()));
     connect(collectionTable,SIGNAL( babeIt_clicked(QStringList)),this,SLOT(babeIt(QStringList)));
     connect(collectionTable,SIGNAL(queueIt_clicked(QString)),this,SLOT(addToQueue(QString)));
-    connect(collectionTable,SIGNAL(moodIt_clicked(QColor)),playlistTable,SLOT(createMoodPlaylist(QColor)));
+    connect(collectionTable,SIGNAL(moodIt_clicked(QString)),playlistTable,SLOT(createMoodPlaylist(QString)));
 
 
     resultsTable=new BabeTable(this);
@@ -124,7 +124,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(resultsTable,SIGNAL(leftTable()),this,SLOT(showControls()));
     connect(resultsTable,SIGNAL( babeIt_clicked(QStringList)),this,SLOT(babeIt(QStringList)));
     connect(resultsTable,SIGNAL(queueIt_clicked(QString)),this,SLOT(addToQueue(QString)));
-    connect(resultsTable,SIGNAL(moodIt_clicked(QColor)),playlistTable,SLOT(createMoodPlaylist(QColor)));
+    connect(resultsTable,SIGNAL(moodIt_clicked(QString)),playlistTable,SLOT(createMoodPlaylist(QString)));
 
 
     albumsTable = new AlbumsView(false,this);
@@ -133,7 +133,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(albumsTable->albumTable,SIGNAL( babeIt_clicked(QStringList)),this,SLOT(babeIt(QStringList)));
     connect(albumsTable,SIGNAL(playAlbum(QString, QString)),this,SLOT(putOnPlay(QString, QString)));
     connect(albumsTable->albumTable,SIGNAL(queueIt_clicked(QString)),this,SLOT(addToQueue(QString)));
-    connect(albumsTable->albumTable,SIGNAL(moodIt_clicked(QColor)),playlistTable,SLOT(createMoodPlaylist(QColor)));
+    connect(albumsTable->albumTable,SIGNAL(moodIt_clicked(QString)),playlistTable,SLOT(createMoodPlaylist(QString)));
 
 
     artistsTable = new AlbumsView(true,this);
@@ -144,7 +144,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(artistsTable,SIGNAL(playAlbum(QString, QString)),this,SLOT(putOnPlay(QString, QString)));
     connect(artistsTable->albumTable,SIGNAL(queueIt_clicked(QString)),this,SLOT(addToQueue(QString)));
 
-    connect(artistsTable->albumTable,SIGNAL(moodIt_clicked(QColor)),playlistTable,SLOT(createMoodPlaylist(QColor)));
+    connect(artistsTable->albumTable,SIGNAL(moodIt_clicked(QString)),playlistTable,SLOT(createMoodPlaylist(QString)));
 
 
 
@@ -334,7 +334,7 @@ MainWindow::MainWindow(QWidget *parent) :
     album_art_frame->setFrameShadow(QFrame::Raised);
     album_art_frame->setFrameShape(QFrame::StyledPanel);
 
-    album_art = new Album(":Data/data/babe.png",200,0,true,album_art_frame);
+    album_art = new Album(":Data/data/babe.png",200,0,true,false,album_art_frame);
 
     connect(album_art,SIGNAL(playAlbum(QString , QString)),this,SLOT(putOnPlay(QString, QString)));
 
