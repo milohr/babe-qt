@@ -469,6 +469,24 @@ bool CollectionDB::check_existance(QString tableName, QString searchId, QString 
 
 }
 
+bool CollectionDB::execQuery(QString queryTxt)
+{
+
+    QSqlQuery query;
+    query.prepare(queryTxt);
+    //query.prepare("SELECT * FROM "+tableName+" WHERE "+searchId+" = (:search)");
+
+    if(query.exec())
+    {
+        qDebug()<<"executing query: "<<queryTxt;
+
+        return true;
+    }else
+    {
+        return false;
+    }
+
+}
 
 bool CollectionDB::insertInto(QString tableName, QString column, QString location, int value)
 {

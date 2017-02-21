@@ -281,15 +281,16 @@ void AlbumsView::populateTableView(QSqlQuery query)
 
     while (query.next())
     {
-        Album *album= new Album(":Data/data/cover.svg",albumSize,4,false, this);
+        QString art=":Data/data/cover.jpg";
+        if(!query.value(ART).toString().isEmpty()&&query.value(ART).toString()!="NULL")
+            art =query.value(ART).toString();
 
+        Album *album= new Album(art,albumSize,4);
         //albumsList.push_back(album);
         album->borderColor=true;
         album->setArtist(query.value(ARTIST).toString());
         album->setAlbum(query.value(TITLE).toString());
         album->setTitle();
-        if(!query.value(ART).toString().isEmpty()&&query.value(ART).toString()!="NULL")
-            album->putPixmap(query.value(ART).toString());
 
         // album->setTitle(query.value(1).toString(),query.value(2).toString());
         //album->setToolTip(query.value(2).toString());

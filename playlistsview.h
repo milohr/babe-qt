@@ -47,6 +47,7 @@ private:
 public slots:
 
     void createPlaylist();
+    void removePlaylist();
     void playlistName(QListWidgetItem *item);
     void on_removeBtn_clicked();
     void populatePlaylist(QModelIndex index);

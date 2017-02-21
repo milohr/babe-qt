@@ -31,7 +31,7 @@
 #include <QDirIterator>
 #include <QStringList>
 #include "collectionDB.h"
-#include<QSqlQuery>
+#include <QSqlQuery>
 #include <QFileInfo>
 #include <QMimeDatabase>
 #include <QMimeType>
@@ -39,7 +39,7 @@
 #include <QMenu>
 #include <QWidgetAction>
 #include <QButtonGroup>
-#include<QCheckBox>
+#include <QCheckBox>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QEvent>
@@ -1802,7 +1802,7 @@ void MainWindow::addToPlaylist(QStringList list, bool notRepeated)
         }
 
         playlist.add(newList);
-        currentList=newList;
+        currentList+=newList;
 
 
     }else
@@ -2032,7 +2032,7 @@ void MainWindow::on_filter_textChanged(const QString &arg1)
          playlist.removeAll();
          ui->listWidget->clear();
 
-        addToPlaylist(currentList,true);
+        addToPlaylist(currentList);
     }else
     {
     QRegExp filter(arg1,Qt::CaseInsensitive, QRegExp::Wildcard);

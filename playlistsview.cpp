@@ -47,6 +47,7 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent) {
     removeBtn = new QToolButton();
     // addBtn->setGeometry(50,50,16,16);
     connect(addBtn, SIGNAL(clicked()), this, SLOT(createPlaylist()));
+    connect(removeBtn, SIGNAL(clicked()), this, SLOT(removePlaylist()));
     addBtn->setAutoRaise(true);
     removeBtn->setAutoRaise(true);
     addBtn->setMaximumSize(16, 16);
@@ -139,28 +140,33 @@ void PlaylistsView::populatePlaylist(QModelIndex index) {
     emit playlistClicked(currentPlaylist);
     table->flushTable();
     if (currentPlaylist == "Most Played") {
+        removeBtn->setEnabled(false);
         table->showColumn(BabeTable::PLAYED);
         table->populateTableView(
                     "SELECT * FROM tracks WHERE played > \"1\" ORDER  by played desc");
     } else if (currentPlaylist == "Favorites") {
+        removeBtn->setEnabled(true);
         table->showColumn(BabeTable::STARS);
         table->populateTableView(
                     "SELECT * FROM tracks WHERE stars > \"0\" ORDER  by stars desc");
 
     } else if (currentPlaylist == "Babes") {
         // table->showColumn(BabeTable::PLAYED);
+        removeBtn->setEnabled(true);
         table->populateTableView(
                     "SELECT * FROM tracks WHERE babe = \"1\" ORDER  by played desc");
     }else if (currentPlaylist == "Online") {
         // table->showColumn(BabeTable::PLAYED);
+        removeBtn->setEnabled(false);
         table->populateTableView("SELECT * FROM tracks WHERE location LIKE \"%" +
                                  youtubeCachePath + "%\"");
     } else if(!currentPlaylist.isEmpty()&&!currentPlaylist.contains("#")) {
-
+        removeBtn->setEnabled(true);
         table->hideColumn(BabeTable::PLAYED);
         table->populateTableView("SELECT * FROM tracks WHERE playlist LIKE \"%" +
                                  currentPlaylist + "%\"");
     }else if (currentPlaylist.contains("#")) {
+        removeBtn->setEnabled(true);
         table->hideColumn(BabeTable::PLAYED);
         table->populateTableView("SELECT * FROM tracks WHERE art = \"" +
                                  currentPlaylist + "\"");
@@ -177,6 +183,38 @@ void PlaylistsView::createPlaylist() {
 
     // item->setFlags (item->flags () & Qt::ItemIsEditable);
 }
+
+void PlaylistsView::removePlaylist()
+{
+    if (currentPlaylist == "Most Played") {
+
+    } else if (currentPlaylist == "Favorites") {
+        table->connection->execQuery("UPDATE tracks SET stars = \"0\" WHERE stars > \"0\"");
+        table->flushTable();
+        table->populateTableView(
+                    "SELECT * FROM tracks WHERE stars > \"0\" ORDER  by stars desc");
+
+    } else if (currentPlaylist == "Babes") {
+        table->connection->execQuery("UPDATE tracks SET babe = \"0\" WHERE babe > \"0\"");
+        table->flushTable();
+        table->populateTableView(
+                    "SELECT * FROM tracks WHERE babe = \"1\" ORDER  by played desc");
+    }else if (currentPlaylist == "Online") {
+        // table->showColumn(BabeTable::PLAYED);
+       /* table->populateTableView("SELECT * FROM tracks WHERE location LIKE \"%" +
+                                 youtubeCachePath + "%\"");*/
+    } else if(!currentPlaylist.isEmpty()&&!currentPlaylist.contains("#")) {
+
+       /* table->hideColumn(BabeTable::PLAYED);
+        table->populateTableView("SELECT * FROM tracks WHERE playlist LIKE \"%" +
+                                 currentPlaylist + "%\"");*/
+    }else if (currentPlaylist.contains("#")) {
+        /*table->hideColumn(BabeTable::PLAYED);
+        table->populateTableView("SELECT * FROM tracks WHERE art = \"" +
+                                 currentPlaylist + "\"");*/
+    }
+}
+
 
 void PlaylistsView::createMoodPlaylist(QColor color) {
 

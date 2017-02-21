@@ -30,7 +30,7 @@ public:
     {
         DESCENDING, ASCENDING
     };
-
+    CollectionDB *connection;
     void populateTableView(QString indication);
     void setRating(int rate);
     void passCollectionConnection(CollectionDB *con);
@@ -43,14 +43,14 @@ public:
     QStringList getTableContent(int column);
     void passPlaylists();
     void  populatePlaylist(QStringList urls, QString playlist);
-      QMenu* playlistsMenu;
-       QMenu* moodMenu;
-      QStringList playlistsMenus;
+    QMenu* playlistsMenu;
+    QMenu* moodMenu;
+    QStringList playlistsMenus;
 
 protected:
     virtual void enterEvent(QEvent *event);
     virtual void leaveEvent(QEvent *event);
-  //  virtual void mouseReleaseEvent(QMouseEvent* evt);
+    //  virtual void mouseReleaseEvent(QMouseEvent* evt);
     virtual void mousePressEvent(QMouseEvent* evt);
     virtual void keyPressEvent(QKeyEvent *event);
 
@@ -63,14 +63,14 @@ private slots:
     void addToPlaylist(QAction* action);
     void babeIt_action();
     void moodIt_action();
-     void queueIt_action();
+    void queueIt_action();
 
 public slots:
-     QStringList getPlaylistMenus();
+    QStringList getPlaylistMenus();
 
 private:
 
-    CollectionDB *connection;
+
     QToolButton *fav1;
     QToolButton *fav2;
     QToolButton *fav3;
