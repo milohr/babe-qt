@@ -168,11 +168,13 @@ private:
     void go_mini();
     QFrame *frame;
     QFrame *line;
-    QVBoxLayout *frame_layout;
+    QFrame *lineV;
+    QGridLayout *frame_layout;
     QStackedWidget *views;
     QToolBar *playback;
     QToolBar *utilsBar;
     QTimer *timer;
+
     QWidget *main_widget;
     QGridLayout * layout;
     QLabel *info;

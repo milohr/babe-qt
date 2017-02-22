@@ -221,7 +221,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //this->setToolButtonStyle(Qt::ToolButtonIconOnly);
 
     //this->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-
+    ui->mainToolBar->setOrientation(Qt::Vertical);
     ui->mainToolBar->addWidget(left_spacer);
 
     ui->tracks_view->setToolTip("Collection");
@@ -246,12 +246,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->youtube_view->setToolTip("YouTube");
     ui->mainToolBar->addWidget(ui->youtube_view);
 
+    ui->mainToolBar->addWidget(right_spacer);
     ui->settings_view->setToolTip("Setings");
     ui->mainToolBar->addWidget(ui->settings_view);
-
-
-
-    ui->mainToolBar->addWidget(right_spacer);
 
     ui->search->setClearButtonEnabled(true);
 
@@ -280,10 +277,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->filterBtn->setChecked(false);
 
-   // ui->saveResults->setEnabled(true);
+    // ui->saveResults->setEnabled(true);
 
 
-    this->addToolBar(Qt::BottomToolBarArea, ui->mainToolBar);
+    //this->addToolBar(Qt::LeftToolBarArea, ui->mainToolBar);
 
     ui->search->setPlaceholderText("Search...");
 
@@ -315,7 +312,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     /*MAIN WINDOW*/
-    frame_layout = new QVBoxLayout();
+    frame_layout = new QGridLayout();
     frame_layout->setContentsMargins(0,0,0,0);
     layout = new QGridLayout();
     layout->setContentsMargins(6,0,6,0);
@@ -333,16 +330,7 @@ MainWindow::MainWindow(QWidget *parent) :
     album_art_frame=new QFrame(this);
     const QString stylePath= QStandardPaths::writableLocation(QStandardPaths::ConfigLocation)+"/babe/";
 
-    QFile styleFile( stylePath+"style.qss" );
 
-    if(styleFile.exists())
-    {
-        qDebug()<<"A Babe style file exists";
-        styleFile.open( QFile::ReadOnly );
-        // Apply the loaded stylesheet
-        QString style( styleFile.readAll() );
-        album_art_frame->setStyleSheet( style );
-    }
 
 
 
@@ -414,11 +402,20 @@ MainWindow::MainWindow(QWidget *parent) :
     line->setFrameShadow(QFrame::Plain);
     line->setMaximumHeight(1);
 
+    lineV = new QFrame(this);
+    lineV->setFrameShape(QFrame::VLine);
+    lineV->setFrameShadow(QFrame::Plain);
+    lineV->setMaximumWidth(1);
+
     frame_layout->setSpacing(0);
-    frame_layout->addWidget(views);
-    frame_layout->addWidget(line);
-    frame_layout->addWidget(utilsBar);
+    frame_layout->addWidget(ui->mainToolBar,0,0,3,1);
+    frame_layout->addWidget(lineV,0,1,3,1);
+    frame_layout->addWidget(views,0,2);
+    frame_layout->addWidget(line,1,2);
+    frame_layout->addWidget(utilsBar,2,2);
     frame->setLayout(frame_layout);
+
+
 
     layout->addWidget(frame, 0,0 );
     layout->addWidget(album_art_frame,0,1, Qt::AlignRight);
@@ -428,6 +425,20 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->saveResults->setMenu(saveResults_menu);
     ui->saveResults->setStyleSheet("QToolButton::menu-indicator { image: none; }");
     connect(saveResults_menu, SIGNAL(triggered(QAction*)), this, SLOT(saveResultsTo(QAction*)));
+
+
+
+    /*LOAD THE STYLE*/
+    QFile styleFile( stylePath+"style.qss" );
+
+    if(styleFile.exists())
+    {
+        qDebug()<<"A Babe style file exists";
+        styleFile.open( QFile::ReadOnly );
+        // Apply the loaded stylesheet
+        QString style( styleFile.readAll() );
+        this->setStyleSheet( style );
+    }
 
 
     ui->listWidget->setCurrentRow(0);
@@ -1031,7 +1042,7 @@ void MainWindow::on_hide_sidebar_btn_clicked()
         //album_widget.
         layout->setContentsMargins(0,0,0,0);
 
-       // this->setWindowFlags(Qt::Tool | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+        // this->setWindowFlags(Qt::Tool | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
         this->show();
         ui->hide_sidebar_btn->setToolTip("Expand");
 
@@ -1039,7 +1050,7 @@ void MainWindow::on_hide_sidebar_btn_clicked()
 
     }else if(mini_mode==2)
     {
-       // this->setWindowFlags(Qt::Window| Qt::WindowTitleHint | Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint);
+        // this->setWindowFlags(Qt::Window| Qt::WindowTitleHint | Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint);
         this->show();
         // ui->mainToolBar->show();
         ui->listWidget->show();
@@ -1915,7 +1926,7 @@ void MainWindow::on_search_textChanged(const QString &arg1)
         if(views->currentIndex()==ALBUMS) showAlbumViewUtils();
         if(views->currentIndex()==PLAYLISTS) {utilsBar->actions().at(PLAYLISTS_UB)->setVisible(true); ui->frame_3->show();}
         resultsTable->flushTable();
-       // ui->saveResults->setEnabled(false);
+        // ui->saveResults->setEnabled(false);
         ui->refreshAll->setEnabled(true);
     }
 
@@ -2044,20 +2055,20 @@ void MainWindow::on_filter_textChanged(const QString &arg1)
 
     if(arg1.isEmpty())
     {
-         playlist.removeAll();
-         ui->listWidget->clear();
+        playlist.removeAll();
+        ui->listWidget->clear();
 
         addToPlaylist(currentList,true);
     }else
     {
-    QRegExp filter(arg1,Qt::CaseInsensitive, QRegExp::Wildcard);
-    QStringList old = playlist.getList().filter(filter);
-    playlist.removeAll();
-   playlist.add(old);
+        QRegExp filter(arg1,Qt::CaseInsensitive, QRegExp::Wildcard);
+        QStringList old = playlist.getList().filter(filter);
+        playlist.removeAll();
+        playlist.add(old);
 
-    ui->listWidget->clear();
-    ui->listWidget->addItems(playlist.getTracksNameList().filter(filter));
-}
+        ui->listWidget->clear();
+        ui->listWidget->addItems(playlist.getTracksNameList().filter(filter));
+    }
 
 
 
