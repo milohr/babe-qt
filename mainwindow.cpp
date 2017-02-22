@@ -331,6 +331,21 @@ MainWindow::MainWindow(QWidget *parent) :
 
     auto *album_view = new QGridLayout();
     album_art_frame=new QFrame(this);
+    const QString stylePath= QStandardPaths::writableLocation(QStandardPaths::ConfigLocation)+"/babe/";
+
+    QFile styleFile( stylePath+"style.qss" );
+
+    if(styleFile.exists())
+    {
+        qDebug()<<"A Babe style file exists";
+        styleFile.open( QFile::ReadOnly );
+        // Apply the loaded stylesheet
+        QString style( styleFile.readAll() );
+        album_art_frame->setStyleSheet( style );
+    }
+
+
+
     album_art_frame->setFrameShadow(QFrame::Raised);
     album_art_frame->setFrameShape(QFrame::StyledPanel);
 

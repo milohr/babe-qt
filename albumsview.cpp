@@ -46,7 +46,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     grid->setGridSize(QSize(albumSize+10,albumSize+10));
     //grid->setAlignment(Qt::AlignLeading);
 
-    utilsFrame = new QFrame(this);
+    utilsFrame = new QFrame();
     // utilsFrame->setFrameShape(QFrame::StyledPanel);
     utilsFrame->setFrameShadow(QFrame::Plain);
     utilsFrame->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Minimum);
@@ -64,7 +64,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
 
 
 
-    order = new QComboBox(this);
+    order = new QComboBox();
     order->setFrame(false);
     order->setMaximumWidth(70);
     order->setMaximumHeight(22);
