@@ -242,6 +242,7 @@ cover->setTitle();
 
 void AlbumsView::albumsSize(int value)
 {
+    Q_UNUSED(value);
    /* albumSize=value;
     //slider->setToo
     slider->setToolTip(QString::number(value));

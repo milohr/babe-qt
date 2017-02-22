@@ -39,12 +39,12 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent) {
     table->setFrameShape(QFrame::NoFrame);
     // table->setSizePolicy(QSizePolicy::Expanding);
 
-    frame = new QFrame(this);
+    frame = new QFrame();
     frame->setFrameShadow(QFrame::Raised);
     frame->setFrameShape(QFrame::NoFrame);
 
-    addBtn = new QToolButton(this);
-    removeBtn = new QToolButton(this);
+    addBtn = new QToolButton();
+    removeBtn = new QToolButton();
     // addBtn->setGeometry(50,50,16,16);
     connect(addBtn, SIGNAL(clicked()), this, SLOT(createPlaylist()));
     connect(removeBtn, SIGNAL(clicked()), this, SLOT(removePlaylist()));
@@ -55,15 +55,15 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent) {
     addBtn->setIcon(QIcon::fromTheme("list-add"));
     removeBtn->setIcon(QIcon::fromTheme("entry-delete"));
 
-    auto line = new QFrame(this);
+    auto line = new QFrame();
     line->setFrameShape(QFrame::VLine);
     line->setFrameShadow(QFrame::Plain);
     line->setMaximumWidth(1);
 
-    btnContainer = new QWidget(this);
+    btnContainer = new QWidget();
     btnContainer->setFixedWidth(120);
     // btnContainer->setGeometry(0,150,150,30);
-    auto *left_spacer = new QWidget(this);
+    auto *left_spacer = new QWidget();
     left_spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     auto btnLayout = new QHBoxLayout();
     btnLayout->setSpacing(0);
@@ -74,7 +74,7 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent) {
     btnLayout->addWidget(removeBtn);
     // btnLayout->addWidget(line);
 
-    line_v = new QFrame(this);
+    line_v = new QFrame();
     line_v->setFrameShape(QFrame::VLine);
     line_v->setFrameShadow(QFrame::Plain);
     line_v->setMaximumWidth(1);
@@ -103,6 +103,10 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent) {
 void PlaylistsView::dummy() { qDebug() << "signal was recived"; }
 
 void PlaylistsView::setDefaultPlaylists() {
+    auto title = new QListWidgetItem("PLAYLISTS");
+    title->setTextAlignment(Qt::AlignCenter);
+    list->addItem(title);
+
     auto mostPlayed = new QListWidgetItem();
     mostPlayed->setIcon(QIcon::fromTheme("favorite-genres-amarok"));
     mostPlayed->setText("Most Played");

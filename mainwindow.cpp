@@ -221,6 +221,8 @@ MainWindow::MainWindow(QWidget *parent) :
     //this->setToolButtonStyle(Qt::ToolButtonIconOnly);
 
     //this->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    //ui->mainToolBar->setToolButtonStyle( Qt::ToolButtonTextUnderIcon );
+
     ui->mainToolBar->setOrientation(Qt::Vertical);
     ui->mainToolBar->addWidget(left_spacer);
 
@@ -408,8 +410,8 @@ MainWindow::MainWindow(QWidget *parent) :
     lineV->setMaximumWidth(1);
 
     frame_layout->setSpacing(0);
-    frame_layout->addWidget(ui->mainToolBar,0,0,3,1);
-    frame_layout->addWidget(lineV,0,1,3,1);
+    frame_layout->addWidget(ui->mainToolBar,0,0,3,1,Qt::AlignLeft);
+    frame_layout->addWidget(lineV,0,1,3,1,Qt::AlignLeft);
     frame_layout->addWidget(views,0,2);
     frame_layout->addWidget(line,1,2);
     frame_layout->addWidget(utilsBar,2,2);
@@ -417,7 +419,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
 
-    layout->addWidget(frame, 0,0 );
+    layout->addWidget(frame, 0,0);
     layout->addWidget(album_art_frame,0,1, Qt::AlignRight);
 
 
@@ -1340,12 +1342,15 @@ void MainWindow::loadMood()
          mood = mood.lighter(120);*/
         seekBar->setStyleSheet(QString("QSlider\n{\nbackground:transparent;}\nQSlider::groove:horizontal {border: none; background: transparent; height: 5px; border-radius: 0; } QSlider::sub-page:horizontal {\nbackground: %1 ;border: none; height: 5px;border-radius: 0;} QSlider::add-page:horizontal {\nbackground: transparent; border: none; height: 5px; border-radius: 0; } QSlider::handle:horizontal {background: %1; width: 8px; } QSlider::handle:horizontal:hover {background: qlineargradient(x1:0, y1:0, x2:1, y2:1,stop:0 #fff, stop:1 #ddd);border: 1px solid #444;border-radius: 4px;}QSlider::sub-page:horizontal:disabled {background: #bbb;border-color: #999;}QSlider::add-page:horizontal:disabled {background: #eee;border-color: #999;}QSlider::handle:horizontal:disabled {background: #eee;border: 1px solid #aaa;border-radius: 4px;}").arg(color));
         ui->listWidget->setStyleSheet(QString("QListWidget::item:selected {background:rgba( %1, %2, %3, 40); color: %4}").arg(QString::number(QColor(color).toRgb().red()),QString::number(QColor(color).toRgb().green()),QString::number(QColor(color).toRgb().blue()),ui->listWidget->palette().color(QPalette::WindowText).name()));
+        ui->mainToolBar->setStyleSheet(QString("QToolBar {background-color:rgba( %1, %2, %3, 15);}").arg(QString::number(QColor(color).toRgb().red()),QString::number(QColor(color).toRgb().green()),QString::number(QColor(color).toRgb().blue())));
+
     }else
     {
         //ui->listWidget->setBackgroundRole(QPalette::Highlight);
         //ui->listWidget->setpa
         seekBar->setStyleSheet("QSlider\n{\nbackground:transparent;}\nQSlider::groove:horizontal {border: none; background: transparent; height: 5px; border-radius: 0; } QSlider::sub-page:horizontal {\nbackground: #f85b79;border: none; height: 5px;border-radius: 0;} QSlider::add-page:horizontal {\nbackground: transparent; border: none; height: 5px; border-radius: 0; } QSlider::handle:horizontal {background: #f85b79; width: 8px; } QSlider::handle:horizontal:hover {background: qlineargradient(x1:0, y1:0, x2:1, y2:1,stop:0 #fff, stop:1 #ddd);border: 1px solid #444;border-radius: 4px;}QSlider::sub-page:horizontal:disabled {background: #bbb;border-color: #999;}QSlider::add-page:horizontal:disabled {background: #eee;border-color: #999;}QSlider::handle:horizontal:disabled {background: #eee;border: 1px solid #aaa;border-radius: 4px;}");
         ui->listWidget->setStyleSheet(QString("QListWidget::item:selected {background:%1; color: %2}").arg("rgba(0,0,0,150)","white"));
+        ui->mainToolBar->setStyleSheet("QToolBar {background-color:transparent;}");
 
     }
 }

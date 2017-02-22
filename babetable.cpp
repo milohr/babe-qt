@@ -118,30 +118,23 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
    // connect(moodIt, SIGNAL(triggered()), this, SLOT(moodIt_action()));
     connect(queueIt, SIGNAL(triggered()), this, SLOT(queueIt_action()));
 
-    QStringList colors = {"#F44336","#E91E63","#9C27B0","#2196F3","#CDDC39"};
-
-    QVector<Album*> colorsTags(5);
-    for(int i=0; i<5; i++)
-    {
-         Album *colorTag = new Album(colors.at(i),13,100,false,true,this);
-         connect(colorTag, SIGNAL(albumCoverClicked(QStringList)),this,SLOT(moodTrack(QStringList)));
-
-         colorTag->borderColor=true;
-         colorTag->setBGcolor(colors.at(i));
-         //colorTag->setStyleSheet(QString("QLabel { background-color: %1;}").arg(colors.at(i)));
-        colorsTags[i] = colorTag;
-    }
 
     auto moods = new QWidget();
     auto moodsLayout = new QHBoxLayout();
-/*moodsLayout->setMargin(0);
-moodsLayout->setSpacing(0);*/
-    for(auto mood : colorsTags)
+    QButtonGroup *moodGroup = new QButtonGroup(contextMenu);
+    connect(moodGroup, SIGNAL(buttonClicked(int)), this, SLOT(moodTrack(int)));
+    for(int i=0; i<5; i++)
     {
-        moodsLayout->addWidget(mood);
-
+        auto  *colorTag = new QToolButton();
+        colorTag->setIconSize(QSize(10,10));
+        colorTag->setFixedSize(16,16);
+       // colorTag->setAutoRaise(true);
+       colorTag->setStyleSheet(QString("QToolButton { background-color: %1;}").arg(colors.at(i)));
+        moodGroup->addButton(colorTag,i);
+        moodsLayout->addWidget(colorTag);
     }
     moods->setLayout(moodsLayout);
+
     QWidgetAction *moodsAction = new QWidgetAction(contextMenu);
     moodsAction->setDefaultWidget(moods);
 
@@ -174,12 +167,10 @@ moodsLayout->setSpacing(0);*/
 }
 
 
-void BabeTable::moodTrack(QStringList color)
+void BabeTable::moodTrack(int color)
 {
-    qDebug()<<color.at(2);
-    /*QColor color_mood;
-    color_mood.setNamedColor(color.at(2));*/
-    moodIt_action(color.at(2));
+
+    moodIt_action(colors.at(color));
 }
 
 void BabeTable::addToPlaylist(QAction *action) {

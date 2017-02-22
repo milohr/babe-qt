@@ -49,6 +49,8 @@ public:
     QMenu* playlistsMenu;
     QMenu* moodMenu;
     QStringList playlistsMenus;
+    QStringList colors = {"#F44336","#E91E63","#9C27B0","#2196F3","#CDDC39"};
+
 
 protected:
     virtual void enterEvent(QEvent *event);
@@ -67,7 +69,7 @@ private slots:
     void babeIt_action();
     void moodIt_action(QString color);
     void queueIt_action();
-    void moodTrack(QStringList color);
+    void moodTrack(int color);
 
 public slots:
     QStringList getPlaylistMenus();
