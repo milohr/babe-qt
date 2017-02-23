@@ -97,7 +97,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     playlistTable = new PlaylistsView(this);
     connect(playlistTable,SIGNAL(playlistCreated(QString, QString)),&settings_widget->getCollectionDB(),SLOT(insertPlaylist(QString, QString)));
-    connect(playlistTable->table,SIGNAL(tableWidget_doubleClicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
+    connect(playlistTable->table,SIGNAL(tableWidget_doubleClicked(QList<QStringList>)),this,SLOT(addToPlaylist(QList<QStringList>)));
     connect(playlistTable->table,SIGNAL( babeIt_clicked(QStringList)),this,SLOT(babeIt(QStringList)));
     connect(playlistTable->table,SIGNAL(createPlaylist_clicked()),this,SLOT(playlistsView()));
     connect(playlistTable->table,SIGNAL(queueIt_clicked(QString)),this,SLOT(addToQueue(QString)));
@@ -106,7 +106,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     collectionTable = new BabeTable(this);
     collectionTable->passCollectionConnection(&settings_widget->getCollectionDB());
-    connect(collectionTable,SIGNAL(tableWidget_doubleClicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
+    connect(collectionTable,SIGNAL(tableWidget_doubleClicked(QList<QStringList>)),this,SLOT(addToPlaylist(QList<QStringList>)));
     connect(collectionTable,SIGNAL(enteredTable()),this,SLOT(hideControls()));
     connect(collectionTable,SIGNAL(leftTable()),this,SLOT(showControls()));
     connect(collectionTable,SIGNAL(finishedPopulating()),this,SLOT(orderTables()));
@@ -115,11 +115,26 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(collectionTable,SIGNAL(moodIt_clicked(QString)),playlistTable,SLOT(createMoodPlaylist(QString)));
 
 
+
+    mainList = new BabeTable(this);
+    mainList->hideColumn(BabeTable::ALBUM);
+    mainList->hideColumn(BabeTable::ARTIST);
+    mainList->horizontalHeader()->setVisible(false);
+    mainList->setFixedWidth(200);
+    mainList->setMinimumHeight(200);
+    connect(mainList,SIGNAL(tableWidget_doubleClicked(QList<QStringList>)),this,SLOT(on_mainList_clicked(QList<QStringList>)));
+    connect(mainList,SIGNAL( removeIt_clicked(int)),this,SLOT(removeSong(int)));
+    connect(mainList,SIGNAL( babeIt_clicked(QStringList)),this,SLOT(babeIt(QStringList)));
+    connect(mainList,SIGNAL(queueIt_clicked(QString)),this,SLOT(addToQueue(QString)));
+    connect(mainList,SIGNAL(moodIt_clicked(QString)),playlistTable,SLOT(createMoodPlaylist(QString)));
+
+
+
     resultsTable=new BabeTable(this);
     //resultsTable->passStyle("QHeaderView::section { background-color:#474747; }");
     resultsTable->setVisibleColumn(BabeTable::STARS);
     resultsTable->showColumn(BabeTable::GENRE);
-    connect(resultsTable,SIGNAL(tableWidget_doubleClicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
+    connect(resultsTable,SIGNAL(tableWidget_doubleClicked(QList<QStringList>)),this,SLOT(addToPlaylist(QList<QStringList>)));
     connect(resultsTable,SIGNAL(enteredTable()),this,SLOT(hideControls()));
     connect(resultsTable,SIGNAL(leftTable()),this,SLOT(showControls()));
     connect(resultsTable,SIGNAL( babeIt_clicked(QStringList)),this,SLOT(babeIt(QStringList)));
@@ -129,7 +144,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     albumsTable = new AlbumsView(false,this);
     connect(albumsTable,SIGNAL(albumOrderChanged(QString)),this,SLOT(AlbumsViewOrder(QString)));
-    connect(albumsTable->albumTable,SIGNAL(tableWidget_doubleClicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
+    connect(albumsTable->albumTable,SIGNAL(tableWidget_doubleClicked(QList<QStringList>)),this,SLOT(addToPlaylist(QList<QStringList>)));
     connect(albumsTable->albumTable,SIGNAL( babeIt_clicked(QStringList)),this,SLOT(babeIt(QStringList)));
     connect(albumsTable,SIGNAL(playAlbum(QString, QString)),this,SLOT(putOnPlay(QString, QString)));
     connect(albumsTable->albumTable,SIGNAL(queueIt_clicked(QString)),this,SLOT(addToQueue(QString)));
@@ -139,7 +154,7 @@ MainWindow::MainWindow(QWidget *parent) :
     artistsTable = new AlbumsView(true,this);
     artistsTable->albumTable->showColumn(BabeTable::ALBUM);
     //artistsTable->albumTable->setMaximumHeight(200);
-    connect(artistsTable->albumTable,SIGNAL(tableWidget_doubleClicked(QStringList)),this,SLOT(addToPlaylist(QStringList)));
+    connect(artistsTable->albumTable,SIGNAL(tableWidget_doubleClicked(QList<QStringList>)),this,SLOT(addToPlaylist(QList<QStringList>)));
     connect(artistsTable->albumTable,SIGNAL( babeIt_clicked(QStringList)),this,SLOT(babeIt(QStringList)));
     connect(artistsTable,SIGNAL(playAlbum(QString, QString)),this,SLOT(putOnPlay(QString, QString)));
     connect(artistsTable->albumTable,SIGNAL(queueIt_clicked(QString)),this,SLOT(addToQueue(QString)));
@@ -194,20 +209,20 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(updater, SIGNAL(timeout()), this, SLOT(update()));
     //connect(player, SIGNAL(stateChanged(QMediaPlayer::State)),this,SLOT(update()));
     player->setVolume(100);
-    addMusicImg = new QLabel(ui->listWidget);
+    addMusicImg = new QLabel(mainList);
     addMusicImg->setPixmap(QPixmap(":Data/data/add.png").scaled(120,120,Qt::KeepAspectRatio));
     addMusicImg->setGeometry(45,40,120,120);
-    connect(ui->listWidget->model() ,SIGNAL(rowsInserted(QModelIndex,int,int)),this,SLOT(on_rowInserted(QModelIndex,int,int)));
+    connect(mainList->model() ,SIGNAL(rowsInserted(QModelIndex,int,int)),this,SLOT(on_rowInserted(QModelIndex,int,int)));
     addMusicImg->hide();
 
 
     //MAIN PLAYLIST CONTEXT MENU
-    QAction *babe, *remove;
+    /*QAction *babe, *remove;
     babe = new QAction("Babe it",this);
     remove = new QAction("Remove from list",this);
     ui->listWidget->setContextMenuPolicy(Qt::ActionsContextMenu);
     ui->listWidget->addAction(babe);
-    ui->listWidget->addAction(remove);
+    ui->listWidget->addAction(remove);*/
 
 
     /*SETUP MAIN TOOLBAR*/
@@ -380,7 +395,7 @@ MainWindow::MainWindow(QWidget *parent) :
     album_view->addWidget(ui->frame_6,1,0);
     album_view->addWidget(seekBar,2,0);
     album_view->addWidget(ui->frame_4,3,0);
-    album_view->addWidget(ui->listWidget,4,0);
+    album_view->addWidget(mainList,4,0);
     album_view->addWidget(ui->frame_5,5,0);
     album_view->addWidget(ui->playlistUtils,6,0);
 
@@ -442,14 +457,12 @@ MainWindow::MainWindow(QWidget *parent) :
         this->setStyleSheet( style );
     }
 
+    mainList->setCurrentCell(0,0);
+    /*ui->listWidget->setCurrentRow(0);*/
 
-    ui->listWidget->setCurrentRow(0);
-    if(ui->listWidget->count() != 0)
+    if(mainList->rowCount()!=0)
     {
         loadTrack();
-        //player->pause();
-        //updater->start();
-
         collectionView();
         go_mini();
 
@@ -481,7 +494,8 @@ void MainWindow::putOnPlay(QString artist, QString album)
 
 
         QSqlQuery query;
-        QStringList list;
+
+        QList<QStringList> list;
         if(album.isEmpty())
             query = settings_widget->collection_db.getQuery("SELECT * FROM tracks WHERE artist = \""+artist+"\" ORDER by album asc, track asc");
         else if(!album.isEmpty()&&!artist.isEmpty())
@@ -490,23 +504,37 @@ void MainWindow::putOnPlay(QString artist, QString album)
         if(query.exec())
         {
             qDebug()<<"put on play<<2";
+
             while(query.next())
             {
-                list<<query.value(BabeTable::LOCATION).toString();
+                QStringList track;
+                track<<query.value(BabeTable::TRACK).toString();
+                track<<query.value(BabeTable::TITLE).toString();
+                track<<query.value(BabeTable::ARTIST).toString();
+                track<<query.value(BabeTable::ALBUM).toString();
+                track<<query.value(BabeTable::GENRE).toString();
+                track<<query.value(BabeTable::LOCATION).toString();
+                track<<query.value(BabeTable::STARS).toString();
+                track<<query.value(BabeTable::BABE).toString();
+                track<<query.value(BabeTable::ART).toString();
+                track<<query.value(BabeTable::PLAYED).toString();
+                track<<query.value(BabeTable::PLAYLIST).toString();
+
+                list<<track;
+
             }
             qDebug()<<"put on play<<3";
             if(!list.isEmpty())
             {
-                ui->listWidget->clear();
+                mainList->flushTable();
                 currentList.clear();
-                playlist.removeAll();
 
                 addToPlaylist(list);
 
-                if(ui->listWidget->count() != 0)
+                if(mainList->rowCount() != 0)
                 {
                     qDebug()<<"put on play<<3";
-                    ui->listWidget->setCurrentRow(0);
+                    mainList->setCurrentCell(0,0);
                     lCounter=0;
                     loadTrack();
                     //player->pause();
@@ -595,7 +623,7 @@ void MainWindow::AlbumsViewOrder(QString order)
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
-    switch (event->key())
+    /*switch (event->key())
     {
     case Qt::Key_Return :
     {
@@ -628,7 +656,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
         qDebug()<<"trying to focus the serachbar";
         break;
     }
-    }
+    }*/
 }
 
 
@@ -712,7 +740,7 @@ void	MainWindow::dropEvent(QDropEvent *event)
         }
     }
 
-    addToPlaylist(list);
+    // addToPlaylist(list);
 
 }
 
@@ -765,7 +793,7 @@ void MainWindow::addToFavorites(QStringList list)
 
 void MainWindow::addToCollection(QStringList list)
 {
-    collectionTable->addRow(list.at(0),list.at(1),list.at(2),list.at(3),list.at(4),list.at(5));
+    collectionTable->addRow(list);
     qDebug()<<list.at(0)<<list.at(1)<<list.at(2)<<list.at(3)<<list.at(4)<<list.at(5);
 }
 
@@ -1026,7 +1054,7 @@ void MainWindow::on_hide_sidebar_btn_clicked()
     }else if(mini_mode==1)
     {
 
-        ui->listWidget->hide();
+        mainList->hide();
         ui->mainToolBar->hide();
         ui->frame_4->hide();
         ui->playlistUtils->hide();
@@ -1055,7 +1083,7 @@ void MainWindow::on_hide_sidebar_btn_clicked()
         // this->setWindowFlags(Qt::Window| Qt::WindowTitleHint | Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint);
         this->show();
         // ui->mainToolBar->show();
-        ui->listWidget->show();
+        mainList->show();
         ui->frame_4->show();
         ui->playlistUtils->show();
 
@@ -1141,7 +1169,7 @@ void MainWindow::on_open_btn_clicked()
     QStringList files = QFileDialog::getOpenFileNames(this, tr("Select Music Files"),QDir().homePath()+"/Music/", tr("Audio (*.mp3 *.wav *.mp4 *.flac *.ogg *.m4a)"));
     if(!files.empty())
     {
-        addToPlaylist(files);
+        //addToPlaylist(files);
     }
 }
 
@@ -1149,44 +1177,26 @@ void MainWindow::on_open_btn_clicked()
 
 void MainWindow::populateMainList()
 {
-    QSqlQuery query= settings_widget->getCollectionDB().getQuery("SELECT * FROM tracks WHERE babe = 1 ORDER by played desc");
-
-
-    QStringList files;
-    while (query.next())
-    {
-        QString file =  query.value(BabeTable::LOCATION).toString();
-        files << file;
-        //currentList<<file;
-
-    }
-
-    addToPlaylist(files,true);
-
+    mainList->populateTableView("SELECT * FROM tracks WHERE babe = 1 ORDER by played desc");
+    currentList=mainList->getAllTableContent();
 }
 
 void MainWindow::updateList()
 {
-    ui->listWidget->clear();
-    ui->listWidget->addItems(playlist.getTracksNameList());
-    /*for(auto str : playlist.getTracksNameList())
-    {
-        auto label =new ScrollText();
-        label->setText(str);
-        //label->setFixedHeight(40);
-        label->setMaxSize(200);
-       // label->setStyleSheet("color:red;");
-        auto item =new QListWidgetItem();
+    mainList->flushTable();
 
-        ui->listWidget->addItem(item);
-        ui->listWidget->setItemWidget(item,label);
-    }*/
+    for(auto list: currentList)
+    {
+        mainList->addRow(list);
+    }
 
 }
 
-void MainWindow::on_listWidget_doubleClicked(const QModelIndex &index)
+
+
+void MainWindow::on_mainList_clicked(QList<QStringList> list)
 {
-    Q_UNUSED(index);
+    Q_UNUSED(list);
     lCounter = getIndex();
 
     //ui->play_btn->setChecked(false);
@@ -1203,9 +1213,21 @@ void MainWindow::removeSong(int index)
 {
     if(index != -1)
     {
-        playlist.remove(index);
-        updateList();
-        ui->listWidget->setCurrentRow(index);
+        mainList->removeRow(index);
+
+        qDebug()<<"ehat was in current list:";
+        for(auto a: currentList)
+        {
+            qDebug()<<a.at(1);
+        }
+        currentList.removeAt(index);
+        qDebug()<<"ehats in current list:";
+        for(auto a: currentList)
+        {
+            qDebug()<<a.at(1);
+        }
+        //updateList();
+        // mainList->setCurrentCell(index,0);
 
         if(shuffle) shufflePlaylist();
     }
@@ -1216,15 +1238,16 @@ void MainWindow::loadTrack()
 
     if(queue_list.isEmpty())
     {
-
-        current_song_url = QString::fromStdString(playlist.tracks[getIndex()].getLocation());
-
+        int row= mainList->currentIndex().row();
+        current_song_url=mainList->model()->data(mainList->model()->index(row, BabeTable::LOCATION)).toString();
+        //current_song_url = QString::fromStdString(playlist.tracks[getIndex()].getLocation());
+        qDebug()<<"in mainlist="<<current_song_url;
 
         if(fileExists(current_song_url))
         {
-            current_artist=QString::fromStdString(playlist.tracks[getIndex()].getArtist());
-            current_album=QString::fromStdString(playlist.tracks[getIndex()].getAlbum());
-            current_title=QString::fromStdString(playlist.tracks[getIndex()].getTitle());
+            current_artist=mainList->model()->data(mainList->model()->index(row, BabeTable::ARTIST)).toString();
+            current_album=mainList->model()->data(mainList->model()->index(row, BabeTable::ALBUM)).toString();
+            current_title=mainList->model()->data(mainList->model()->index(row, BabeTable::TITLE)).toString();
 
             timer->start(3000);
 
@@ -1337,11 +1360,11 @@ void MainWindow::loadMood()
 
     if(!color.isEmpty())
     {
-        /*QColor mood;
+        /*QColor mood;::item:selected
          mood.setNamedColor(color);
          mood = mood.lighter(120);*/
         seekBar->setStyleSheet(QString("QSlider\n{\nbackground:transparent;}\nQSlider::groove:horizontal {border: none; background: transparent; height: 5px; border-radius: 0; } QSlider::sub-page:horizontal {\nbackground: %1 ;border: none; height: 5px;border-radius: 0;} QSlider::add-page:horizontal {\nbackground: transparent; border: none; height: 5px; border-radius: 0; } QSlider::handle:horizontal {background: %1; width: 8px; } QSlider::handle:horizontal:hover {background: qlineargradient(x1:0, y1:0, x2:1, y2:1,stop:0 #fff, stop:1 #ddd);border: 1px solid #444;border-radius: 4px;}QSlider::sub-page:horizontal:disabled {background: #bbb;border-color: #999;}QSlider::add-page:horizontal:disabled {background: #eee;border-color: #999;}QSlider::handle:horizontal:disabled {background: #eee;border: 1px solid #aaa;border-radius: 4px;}").arg(color));
-        ui->listWidget->setStyleSheet(QString("QListWidget::item:selected {background:rgba( %1, %2, %3, 40); color: %4}").arg(QString::number(QColor(color).toRgb().red()),QString::number(QColor(color).toRgb().green()),QString::number(QColor(color).toRgb().blue()),ui->listWidget->palette().color(QPalette::WindowText).name()));
+        mainList->setStyleSheet(QString("QTableWidget::item:selected {background:rgba( %1, %2, %3, 40); color: %4}").arg(QString::number(QColor(color).toRgb().red()),QString::number(QColor(color).toRgb().green()),QString::number(QColor(color).toRgb().blue()),mainList->palette().color(QPalette::WindowText).name()));
         ui->mainToolBar->setStyleSheet(QString("QToolBar {background-color:rgba( %1, %2, %3, 15);}").arg(QString::number(QColor(color).toRgb().red()),QString::number(QColor(color).toRgb().green()),QString::number(QColor(color).toRgb().blue())));
 
     }else
@@ -1349,7 +1372,7 @@ void MainWindow::loadMood()
         //ui->listWidget->setBackgroundRole(QPalette::Highlight);
         //ui->listWidget->setpa
         seekBar->setStyleSheet("QSlider\n{\nbackground:transparent;}\nQSlider::groove:horizontal {border: none; background: transparent; height: 5px; border-radius: 0; } QSlider::sub-page:horizontal {\nbackground: #f85b79;border: none; height: 5px;border-radius: 0;} QSlider::add-page:horizontal {\nbackground: transparent; border: none; height: 5px; border-radius: 0; } QSlider::handle:horizontal {background: #f85b79; width: 8px; } QSlider::handle:horizontal:hover {background: qlineargradient(x1:0, y1:0, x2:1, y2:1,stop:0 #fff, stop:1 #ddd);border: 1px solid #444;border-radius: 4px;}QSlider::sub-page:horizontal:disabled {background: #bbb;border-color: #999;}QSlider::add-page:horizontal:disabled {background: #eee;border-color: #999;}QSlider::handle:horizontal:disabled {background: #eee;border: 1px solid #aaa;border-radius: 4px;}");
-        ui->listWidget->setStyleSheet(QString("QListWidget::item:selected {background:%1; color: %2}").arg("rgba(0,0,0,150)","white"));
+       mainList->setStyleSheet(QString("QTableWidget::item:selected {background:%1; color: %2}").arg("rgba(0,0,0,150)","white"));
         ui->mainToolBar->setStyleSheet("QToolBar {background-color:transparent;}");
 
     }
@@ -1496,7 +1519,8 @@ void MainWindow::getTrackInfo()
 
 int MainWindow::getIndex()
 {
-    return ui->listWidget->currentIndex().row();
+
+    return mainList->currentIndex().row();
 }
 
 
@@ -1513,7 +1537,7 @@ void MainWindow::on_seekBar_sliderMoved(int position)
 
 void MainWindow::update()
 {
-    if(ui->listWidget->count()!=0)
+    if(mainList->rowCount()!=0)
     {
         if(!seekBar->isSliderDown())
             seekBar->setValue((double)player->position()/player->duration() * 1000);
@@ -1540,10 +1564,10 @@ void MainWindow::next()
             lCounter--;
         }
 
-        if(lCounter >= ui->listWidget->count())
+        if(lCounter >= mainList->rowCount())
             lCounter = 0;
 
-        (!shuffle or repeat) ? ui->listWidget->setCurrentRow(lCounter) : ui->listWidget->setCurrentRow(shuffledPlaylist[lCounter]);
+        (!shuffle or repeat) ? mainList->setCurrentCell(lCounter,0) : mainList->setCurrentCell(shuffledPlaylist[lCounter],0);
 
         //ui->play->setChecked(false);
         //ui->searchBar->clear();
@@ -1562,10 +1586,10 @@ void MainWindow::back()
     lCounter--;
 
     if(lCounter < 0)
-        lCounter = ui->listWidget->count() - 1;
+        lCounter = mainList->rowCount() - 1;
 
 
-    (!shuffle) ? ui->listWidget->setCurrentRow(lCounter) : ui->listWidget->setCurrentRow(shuffledPlaylist[lCounter]);
+    (!shuffle) ? mainList->setCurrentCell(lCounter,0) : mainList->setCurrentCell(shuffledPlaylist[lCounter],0);
 
     //ui->play->setChecked(false);
     //ui->searchBar->clear();
@@ -1578,7 +1602,7 @@ void MainWindow::shufflePlaylist()
 {
     shuffledPlaylist.resize(0);
 
-    for(int i = 0; i < ui->listWidget->count(); i++)
+    for(int i = 0; i < mainList->rowCount(); i++)
     {
         shuffledPlaylist.push_back(i);
     }
@@ -1588,7 +1612,7 @@ void MainWindow::shufflePlaylist()
 
 void MainWindow::on_play_btn_clicked()
 {
-    if(ui->listWidget->count() != 0)
+    if(mainList->rowCount() != 0)
     {
         if(player->state() == QMediaPlayer::PlayingState)
         {
@@ -1606,7 +1630,7 @@ void MainWindow::on_play_btn_clicked()
 
 void MainWindow::on_backward_btn_clicked()
 {
-    if(ui->listWidget->count() != 0)
+    if(mainList->rowCount() != 0)
     {
         if(player->position() > 3000)
         {
@@ -1623,7 +1647,7 @@ void MainWindow::on_backward_btn_clicked()
 
 void MainWindow::on_foward_btn_clicked()
 {
-    if(ui->listWidget->count() != 0)
+    if(mainList->rowCount() != 0)
     {
         if(repeat)
         {
@@ -1707,7 +1731,7 @@ void MainWindow::babeIt(QStringList urls)
                     ui->fav_btn->setIcon(QIcon(":Data/data/loved.svg"));
                     auto *nof = new Notify();
                     nof->notify("Song Babe'd it",url);
-                    addToPlaylist({url},true);
+                    //addToPlaylist({url},true);
 
                 }
                 qDebug()<<"trying to babe sth";
@@ -1804,7 +1828,7 @@ bool MainWindow::addToCollectionDB_t(QStringList url, QString babe)
     {
         if(babe.contains("1"))
         {
-            addToPlaylist(url,true);
+            //addToPlaylist(url,true);
 
         }
         return true;
@@ -1817,36 +1841,51 @@ bool MainWindow::addToCollectionDB_t(QStringList url, QString babe)
 }
 
 
-void MainWindow::addToPlaylist(QStringList list, bool notRepeated)
+void MainWindow::addToPlaylist(QList<QStringList> list, bool notRepeated)
 {
+    //currentList.clear();
     qDebug()<<"Adding lists to mainPlaylist";
+    for(auto a: list)
+    {
+        qDebug()<<a.at(BabeTable::TITLE);
+    }
+
+    //currentList=mainList->getAllTableContent();
+
     if(notRepeated)
     {
-        QStringList alreadyInList=playlist.getList();
-        QStringList newList;
-
-
-        for(auto file: list)
+        QList<QStringList> newList;
+        QStringList alreadyInList=mainList->getTableContent(BabeTable::LOCATION);
+        for(auto track: list)
         {
 
-            if(!alreadyInList.contains(file)) newList<<file;
+            if(!alreadyInList.contains(track.at(BabeTable::LOCATION)))
+            {
+                newList<<track;
+                // mainList->addRow(list);
+            }
+
         }
 
-        playlist.add(newList);
         currentList=newList;
-
-
     }else
     {
 
-        playlist.add(list);
         currentList+=list;
 
     }
 
+
     updateList();
     if(shuffle) shufflePlaylist();
-    ui->listWidget->scrollToBottom();
+    mainList->scrollToBottom();
+}
+
+
+void  MainWindow::clearCurrentList()
+{
+    currentList.clear();
+    mainList->flushTable();
 }
 
 void MainWindow::on_search_returnPressed()
@@ -1968,18 +2007,15 @@ void MainWindow::on_rowInserted(QModelIndex model ,int x,int y)
 
 void MainWindow::on_refreshBtn_clicked()
 {
-    //player->stop();
+    mainList->flushTable();
 
-    playlist.removeAll();
-
-    //addToPlaylist({current_song_url});
-    //ui->listWidget->setCurrentRow(0);
-
-    // lCounter=-1;
-
-    //QStringList
+    clearCurrentList();
     populateMainList();
-    ui->listWidget->scrollToTop();
+    qDebug()<<"ehat was in current list:"<<currentList;
+
+    qDebug()<<"ehats in current list:"<<currentList;
+    currentList=mainList->getAllTableContent();
+    mainList->scrollToTop();
 }
 
 void MainWindow::on_tracks_view_2_clicked()
@@ -1994,16 +2030,23 @@ void MainWindow::on_refreshAll_clicked()
 
 void MainWindow::on_addAll_clicked()
 {
+
     switch(views->currentIndex())
     {
-    case COLLECTION: addToPlaylist(collectionTable->getTableContent(BabeTable::LOCATION)); break;
-    case ALBUMS: addToPlaylist(albumsTable->albumTable->getTableContent(BabeTable::LOCATION)); break;
-    case ARTISTS: addToPlaylist(artistsTable->albumTable->getTableContent(BabeTable::LOCATION)); break;
-    case PLAYLISTS: addToPlaylist(playlistTable->table->getTableContent(BabeTable::LOCATION)); break;
-    case QUEUE: addToPlaylist(queueTable->getTableContent(BabeTable::LOCATION)); break;
+    case COLLECTION:
+        addToPlaylist( collectionTable->getAllTableContent()); break;
+    case ALBUMS:
+        addToPlaylist(albumsTable->albumTable->getAllTableContent()); break;
+    case ARTISTS:
+        addToPlaylist(artistsTable->albumTable->getAllTableContent()); break;
+    case PLAYLISTS:
+        addToPlaylist(playlistTable->table->getAllTableContent()); break;
+    case QUEUE:
+        addToPlaylist(queueTable->getAllTableContent()); break;
         //case INFO: addToPlaylist(collectionTable->getTableContent(BabeTable::LOCATION)); break;
         // case SETTINGS:  addToPlaylist(collectionTable->getTableContent(BabeTable::LOCATION)); break;
-    case RESULTS: addToPlaylist(resultsTable->getTableContent(BabeTable::LOCATION)); break;
+    case RESULTS:
+        addToPlaylist(resultsTable->getAllTableContent()); break;
 
     }
 }
@@ -2058,23 +2101,77 @@ void MainWindow::on_filterBtn_clicked()
 void MainWindow::on_filter_textChanged(const QString &arg1)
 {
 
-    if(arg1.isEmpty())
-    {
-        playlist.removeAll();
-        ui->listWidget->clear();
+    QString search=arg1;
+    QStringList keys = {"location:","artist:","album:","title:","genre:" };
+    QString key;
 
-        addToPlaylist(currentList,true);
-    }else
-    {
-        QRegExp filter(arg1,Qt::CaseInsensitive, QRegExp::Wildcard);
-        QStringList old = playlist.getList().filter(filter);
-        playlist.removeAll();
-        playlist.add(old);
 
-        ui->listWidget->clear();
-        ui->listWidget->addItems(playlist.getTracksNameList().filter(filter));
+    for(auto k : keys)
+    {
+
+        if(search.contains(k))
+        {
+
+            key=k;
+            qDebug()<<"search contains key: "<<key;
+            search.replace(k,"");
+        }
     }
 
 
+    qDebug()<<"Searching for: "<<search;
+    //int oldIndex = views->currentIndex();
+    //qDebug()<<oldIndex;
+    //hideAlbumViewUtils();
+
+
+    if(!search.isEmpty())
+    {
+        //views->setCurrentIndex(RESULTS);
+        if(prevIndex==PLAYLISTS) {utilsBar->actions().at(PLAYLISTS_UB)->setVisible(false); ui->frame_3->hide();}
+
+        mainList->flushTable();
+
+        if(key=="location:")
+        {
+            mainList->populateTableView("SELECT * FROM tracks WHERE location LIKE \"%"+search+"%\"");
+            //ui->search->setBackgroundRole(QPalette :: Dark);
+        }else if(key== "artist:")
+        {
+            mainList->populateTableView("SELECT * FROM tracks WHERE artist LIKE \"%"+search+"%\"");
+            //ui->search->setBackgroundRole(QPalette :: Dark);
+        }else if(key== "album:")
+        {
+            mainList->populateTableView("SELECT * FROM tracks WHERE album LIKE \"%"+search+"%\"");
+            //ui->search->setBackgroundRole(QPalette :: Dark);
+
+        }else if(key=="title:")
+        {
+            mainList->populateTableView("SELECT * FROM tracks WHERE title LIKE \"%"+search+"%\"");
+            ui->search->setBackgroundRole(QPalette :: Dark);
+        }else if(key==  "genre:")
+        {
+            mainList->populateTableView("SELECT * FROM tracks WHERE genre LIKE \"%"+search+"%\"");
+            //ui->search->setStyleSheet("background-color:#e3f4d7;");
+            ui->search->setBackgroundRole(QPalette :: Dark);
+        }else
+        {
+
+            mainList->populateTableView("SELECT * FROM tracks WHERE title LIKE \"%"+search+"%\" OR artist LIKE \"%"+search+"%\" OR album LIKE \"%"+search+"%\"OR genre LIKE \"%"+search+"%\"");
+            //ui->search->setStyleSheet("background-color:transparent;");
+            //ui->search->setBackgroundRole(QPalette :: Light);
+        }
+
+        //ui->saveResults->setEnabled(true);
+        //ui->refreshAll->setEnabled(false);
+        // prevIndex= views->currentIndex();
+
+    }else
+    {
+        mainList->flushTable();
+        auto old = currentList;
+        currentList.clear();
+        addToPlaylist(old);
+    }
 
 }

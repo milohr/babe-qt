@@ -97,8 +97,8 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
     playlistsMenu = new QMenu("...");
     addEntry->setMenu(playlistsMenu);
 
-   // auto moodIt = new QAction("Mood..", contextMenu);
-   // this->addAction(moodIt);
+    // auto moodIt = new QAction("Mood..", contextMenu);
+    // this->addAction(moodIt);
 
     /*QAction *moodEntry = contextMenu->addAction("Mood...");
   this->addAction(moodEntry);
@@ -114,8 +114,8 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
 
 
     connect(babeIt, SIGNAL(triggered()), this, SLOT(babeIt_action()));
-    connect(removeIt, SIGNAL(triggered()), this, SLOT(babeIt_action()));
-   // connect(moodIt, SIGNAL(triggered()), this, SLOT(moodIt_action()));
+    connect(removeIt, SIGNAL(triggered()), this, SLOT(removeIt_action()));
+    // connect(moodIt, SIGNAL(triggered()), this, SLOT(moodIt_action()));
     connect(queueIt, SIGNAL(triggered()), this, SLOT(queueIt_action()));
 
 
@@ -128,8 +128,8 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
         auto  *colorTag = new QToolButton();
         colorTag->setIconSize(QSize(10,10));
         colorTag->setFixedSize(16,16);
-       // colorTag->setAutoRaise(true);
-       colorTag->setStyleSheet(QString("QToolButton { background-color: %1;}").arg(colors.at(i)));
+        // colorTag->setAutoRaise(true);
+        colorTag->setStyleSheet(QString("QToolButton { background-color: %1;}").arg(colors.at(i)));
         moodGroup->addButton(colorTag,i);
         moodsLayout->addWidget(colorTag);
     }
@@ -220,27 +220,45 @@ void BabeTable::passPlaylists() {}
 void BabeTable::enterEvent(QEvent *event) {
     // qDebug()<<"entered the playlist";
     Q_UNUSED(event);
-   // emit enteredTable();
+    // emit enteredTable();
 }
 
 void BabeTable::leaveEvent(QEvent *event) {
     // qDebug()<<"left the playlist";
     Q_UNUSED(event);
-  //  emit leftTable();
+    //  emit leftTable();
 }
 
 void BabeTable::passStyle(QString style) { this->setStyleSheet(style); }
 
-void BabeTable::addRow(QString title, QString artist, QString album,
-                       QString location, QString stars, QString babe) {
+void BabeTable::addRow(QStringList list) {
+    QString track,title,artist,album,genre,location,stars,babe,art,played,playlist;
+
+    track= list.at(TRACK);
+    title=list.at(TITLE);
+    artist=list.at(ARTIST);
+    album=list.at(ALBUM);
+    genre=list.at(GENRE);
+    location=list.at(LOCATION);
+    stars=list.at(STARS);
+    babe=list.at(BABE);
+    art=list.at(ART);
+    played=list.at(PLAYED);
+    playlist=list.at(PLAYLIST);
+
     this->insertRow(this->rowCount());
-    qDebug() << title << artist << album << location << stars << babe;
+
+    this->setItem(this->rowCount() - 1, TRACK, new QTableWidgetItem(track));
     this->setItem(this->rowCount() - 1, TITLE, new QTableWidgetItem(title));
     this->setItem(this->rowCount() - 1, ARTIST, new QTableWidgetItem(artist));
     this->setItem(this->rowCount() - 1, ALBUM, new QTableWidgetItem(album));
+    this->setItem(this->rowCount() - 1, GENRE, new QTableWidgetItem(genre));
     this->setItem(this->rowCount() - 1, LOCATION, new QTableWidgetItem(location));
     this->setItem(this->rowCount() - 1, STARS, new QTableWidgetItem(stars));
     this->setItem(this->rowCount() - 1, BABE, new QTableWidgetItem(babe));
+    this->setItem(this->rowCount() - 1, ART, new QTableWidgetItem(art));
+    this->setItem(this->rowCount() - 1, PLAYED, new QTableWidgetItem(played));
+    this->setItem(this->rowCount() - 1, PLAYLIST, new QTableWidgetItem(playlist));
 }
 
 void BabeTable::populateTableView(QString indication) {
@@ -347,15 +365,15 @@ void BabeTable::populateTableView(QString indication) {
             {
                 parentDir=QFileInfo(QFileInfo(file_r)).dir().path();
                 if (!QFileInfo(parentDir).exists())
-                 {
-                     connection->removePath(parentDir);
-                     qDebug()<<"the parent file doesn't exists"<<parentDir;
-                 }else
+                {
+                    connection->removePath(parentDir);
+                    qDebug()<<"the parent file doesn't exists"<<parentDir;
+                }else
                 {
 
-                connection->removePath(file_r);
+                    connection->removePath(file_r);
 
-                qDebug() << "deleted from db: " << file_r;
+                    qDebug() << "deleted from db: " << file_r;
                 }
 
 
@@ -515,17 +533,50 @@ void BabeTable::keyPressEvent(QKeyEvent *event) {
     switch (event->key()) {
     case Qt::Key_Return: {
         QStringList files;
+    QList<QStringList> list;
+
+        files<< this->model()
+                ->data(
+                    this->model()->index(this->currentIndex().row(), TRACK)).toString();
+        files<< this->model()
+                ->data(
+                    this->model()->index(this->currentIndex().row(), TITLE)).toString();
+        files<< this->model()
+                ->data(
+                    this->model()->index(this->currentIndex().row(), ARTIST)).toString();
+        files<< this->model()
+                ->data(
+                    this->model()->index(this->currentIndex().row(), ALBUM)).toString();
+        files<< this->model()
+                ->data(
+                    this->model()->index(this->currentIndex().row(), GENRE)).toString();
         files << this->model()
                  ->data(
                      this->model()->index(this->currentIndex().row(), LOCATION))
                  .toString();
+        files<< this->model()
+                ->data(
+                    this->model()->index(this->currentIndex().row(), STARS)).toString();
+        files<< this->model()
+                ->data(
+                    this->model()->index(this->currentIndex().row(), BABE)).toString();
+        files<< this->model()
+                ->data(
+                    this->model()->index(this->currentIndex().row(), ART)).toString();
+        files<< this->model()
+                ->data(
+                    this->model()->index(this->currentIndex().row(), PLAYED)).toString();
+        files<< this->model()
+                ->data(
+                    this->model()->index(this->currentIndex().row(), PLAYLIST)).toString();
 
         qDebug() << this->model()
                     ->data(this->model()->index(this->currentIndex().row(),
                                                 LOCATION))
                     .toString();
 
-        emit tableWidget_doubleClicked(files);
+        list<<files;
+        emit tableWidget_doubleClicked(list);
 
         break;
     }
@@ -625,24 +676,28 @@ void BabeTable::rateGroup(int id) {
 }
 
 void BabeTable::on_tableWidget_doubleClicked(const QModelIndex &index) {
-    // QMessageBox::information(NULL,"QTableView Item Double
-    // Clicked",index.sibling(this->currentIndex().row(),LOCATION).data().toString());
 
-    /*
- player->setMedia(QUrl::fromLocalFile(index.sibling(this->currentIndex().row(),LOCATION).data().toString()));
- player->play();
- updater->start();
- this->setWindowTitle(index.sibling(this->currentIndex().row(),TITLE).data().toString()
- +" \xe2\x99\xa1 "
- +index.sibling(this->currentIndex().row(),ARTIST).data().toString());
- */
+    QList<QStringList> list;
     qDebug()
             << "BabeTable doubleClicked item<<"
             << index.sibling(this->currentIndex().row(), LOCATION).data().toString();
-    QStringList files;
-    files
-            << index.sibling(this->currentIndex().row(), LOCATION).data().toString();
-    emit tableWidget_doubleClicked(files);
+    QStringList file;
+
+    file<< index.sibling(this->currentIndex().row(), TRACK).data().toString();
+    file<< index.sibling(this->currentIndex().row(), TITLE).data().toString();
+    file<< index.sibling(this->currentIndex().row(), ARTIST).data().toString();
+    file<< index.sibling(this->currentIndex().row(), ALBUM).data().toString();
+    file<< index.sibling(this->currentIndex().row(), GENRE).data().toString();
+    file<< index.sibling(this->currentIndex().row(), LOCATION).data().toString();
+    file<< index.sibling(this->currentIndex().row(), STARS).data().toString();
+    file<< index.sibling(this->currentIndex().row(), BABE).data().toString();
+    file<< index.sibling(this->currentIndex().row(), ART).data().toString();
+    file<< index.sibling(this->currentIndex().row(), PLAYED).data().toString();
+    file<< index.sibling(this->currentIndex().row(), PLAYLIST).data().toString();
+    list<<file;
+
+    emit tableWidget_doubleClicked(list);
+    //emit tableWidget_doubleClicked(index);
 
     /* playlist.add(files);
   updateList();
@@ -659,13 +714,22 @@ void BabeTable::babeIt_action() {
     {this->model()->data(this->model()->index(row, LOCATION)).toString()});
 }
 
+void BabeTable::removeIt_action()
+{
+    qDebug() << "removeIt/right clicked!";
+  // int row= this->currentIndex().row();
+    qDebug()
+            << this->model()->data(this->model()->index(row, LOCATION)).toString();
+    emit removeIt_clicked(row);
+}
+
 void BabeTable::moodIt_action(QString color) {
     qDebug() << "right clicked!";
     // int row= this->currentIndex().row();
     qDebug()
             << this->model()->data(this->model()->index(row, LOCATION)).toString();
 
-   // QColor color = QColorDialog::getColor(Qt::black, this, "Pick a Mood",  QColorDialog::DontUseNativeDialog);
+    // QColor color = QColorDialog::getColor(Qt::black, this, "Pick a Mood",  QColorDialog::DontUseNativeDialog);
     qDebug()<< color;
 
     if(!color.isEmpty())
@@ -717,6 +781,30 @@ QStringList BabeTable::getTableContent(int column) {
     QStringList result;
     for (int i = 0; i < this->rowCount(); i++) {
         result << this->model()->data(this->model()->index(i, column)).toString();
+    }
+
+    return result;
+}
+
+
+QList<QStringList> BabeTable::getAllTableContent() {
+    QList<QStringList> result;
+
+
+    for (int i = 0; i < this->rowCount(); i++) {
+        QStringList track;
+        track << this->model()->data(this->model()->index(i, TRACK)).toString();
+        track << this->model()->data(this->model()->index(i, TITLE)).toString();
+        track << this->model()->data(this->model()->index(i, ARTIST)).toString();
+        track << this->model()->data(this->model()->index(i, ALBUM)).toString();
+        track << this->model()->data(this->model()->index(i, GENRE)).toString();
+        track << this->model()->data(this->model()->index(i, LOCATION)).toString();
+        track << this->model()->data(this->model()->index(i, STARS)).toString();
+        track << this->model()->data(this->model()->index(i, BABE)).toString();
+        track << this->model()->data(this->model()->index(i, ART)).toString();
+        track << this->model()->data(this->model()->index(i, PLAYED)).toString();
+        track << this->model()->data(this->model()->index(i, PLAYLIST)).toString();
+        result<<track;
     }
 
     return result;

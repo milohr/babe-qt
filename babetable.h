@@ -39,11 +39,12 @@ public:
     void passCollectionConnection(CollectionDB *con);
     void setTableOrder(int column, int order);
     void setVisibleColumn(int column);
-    void addRow(QString title, QString artist, QString album,QString location, QString stars,QString babe);
-    void removeRow(int row);
+    void addRow(QStringList list);
+    //void removeRow(int row);
     void flushTable();
     void passStyle(QString style);
     QStringList getTableContent(int column);
+    QList<QStringList> getAllTableContent();
     void passPlaylists();
     void  populatePlaylist(QStringList urls, QString playlist);
     QMenu* playlistsMenu;
@@ -67,6 +68,7 @@ private slots:
     void setUpContextMenu(QPoint pos);
     void addToPlaylist(QAction* action);
     void babeIt_action();
+    void removeIt_action();
     void moodIt_action(QString color);
     void queueIt_action();
     void moodTrack(int color);
@@ -87,13 +89,15 @@ private:
 
 
 signals:
-    void tableWidget_doubleClicked(QStringList url);
+    void tableWidget_doubleClicked(QList<QStringList> list);
+
     void songRated(QStringList list);
     void enteredTable();
     void leftTable();
     void finishedPopulating();
     void rightClicked(QPoint evt);
     void babeIt_clicked(QStringList list);
+    void removeIt_clicked(int index);
     void createPlaylist_clicked();
     void refreshPlaylistsMenu(QStringList list);
     void moodIt_clicked(QString color);

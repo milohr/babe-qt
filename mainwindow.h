@@ -41,7 +41,7 @@ public:
     void updateList();
     void populateMainList();
     bool fileExists(QString url);
-
+void clearCurrentList();
 
     enum views
     {
@@ -65,7 +65,7 @@ protected:
 
 public slots:
 
-    void addToPlaylist(QStringList list, bool notRepeated=false);
+    void addToPlaylist(QList<QStringList> list, bool notRepeated=false);
     void putPixmap(QByteArray array);
     void dummy();
 private slots:
@@ -73,12 +73,14 @@ private slots:
     void on_hide_sidebar_btn_clicked();
     void on_shuffle_btn_clicked();
     void on_open_btn_clicked();
-    void on_listWidget_doubleClicked(const QModelIndex &index);
+
+    void on_mainList_clicked(QList<QStringList> list);
     void update();
     void on_seekBar_sliderMoved(int position);
     void on_play_btn_clicked();
     void on_backward_btn_clicked();
     void on_foward_btn_clicked();
+
 
     /*the main views*/
     void collectionView();
@@ -186,6 +188,7 @@ private:
 
     settings *settings_widget;
     BabeTable *collectionTable;
+    BabeTable *mainList;
     BabeTable *favoritesTable;
     BabeTable *resultsTable;
     AlbumsView* albumsTable;
@@ -197,7 +200,7 @@ private:
     /*the streaming */
     Playlist playlist;
     Playlist queueList;
-    QStringList currentList;
+    QList<QStringList> currentList;
     QStringList queue_list;
     QMediaPlayer *player = new QMediaPlayer();
    QTimer *updater = new QTimer(this);

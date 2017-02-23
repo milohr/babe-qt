@@ -33,7 +33,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     grid->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
     //grid->setStyleSheet("QListWidget {background:#2E2F30; border:1px solid black; border-radius: 2px; }");
 
-    grid->setStyleSheet("QListWidget {background:transparent; padding-top:15px; padding-left:15px; }");
+    grid->setStyleSheet("QListWidget {background:transparent; padding-left:15px; }");
 
     //grid->setMovement(QListView::Static);
     //grid->setMaximumWidth(128);
