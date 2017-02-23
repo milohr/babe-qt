@@ -15,7 +15,7 @@ public:
     void addClean(QStringList files);
     void remove(int index);
     void removeAll();
-    void save();
+
     bool isMusic(QString file);
     QStringList getTracksNameList();
     QStringList getTracksNameListSimple();

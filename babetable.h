@@ -91,7 +91,6 @@ private:
 
 signals:
     void tableWidget_doubleClicked(QList<QStringList> list);
-
     void songRated(QStringList list);
     void enteredTable();
     void leftTable();

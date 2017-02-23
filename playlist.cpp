@@ -166,12 +166,7 @@ void Playlist::remove(int index) { tracks.erase(tracks.begin() + index); }
 
 void Playlist::removeAll() { tracks.clear(); }
 
-void Playlist::save() {
-    std::ofstream write("playlist");
-    for (int i = 0; i < tracks.size(); i++) {
-        write << tracks[i].getLocation() << std::endl;
-    }
-}
+
 
 QStringList Playlist::getTracksNameList() {
     QStringList list;

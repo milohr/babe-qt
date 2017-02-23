@@ -718,7 +718,8 @@ void BabeTable::removeIt_action()
   // int row= this->currentIndex().row();
     qDebug()
             << this->model()->data(this->model()->index(row, LOCATION)).toString();
-    emit removeIt_clicked(row);
+    this->removeRow(row);
+   emit removeIt_clicked(row);
 }
 
 void BabeTable::moodIt_action(QString color) {

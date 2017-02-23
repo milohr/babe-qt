@@ -98,6 +98,7 @@ MainWindow::MainWindow(QWidget *parent) :
     playlistTable = new PlaylistsView(this);
     connect(playlistTable,SIGNAL(playlistCreated(QString, QString)),&settings_widget->getCollectionDB(),SLOT(insertPlaylist(QString, QString)));
     connect(playlistTable->table,SIGNAL(tableWidget_doubleClicked(QList<QStringList>)),this,SLOT(addToPlaylist(QList<QStringList>)));
+    connect(playlistTable->table,SIGNAL(removeIt_clicked(int)),this,SLOT(removeSong(int)));
     connect(playlistTable->table,SIGNAL( babeIt_clicked(QList<QStringList>)),this,SLOT(babeIt(QList<QStringList>)));
     connect(playlistTable->table,SIGNAL(createPlaylist_clicked()),this,SLOT(playlistsView()));
     connect(playlistTable->table,SIGNAL(queueIt_clicked(QString)),this,SLOT(addToQueue(QString)));
@@ -110,7 +111,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(collectionTable,SIGNAL(enteredTable()),this,SLOT(hideControls()));
     connect(collectionTable,SIGNAL(leftTable()),this,SLOT(showControls()));
     connect(collectionTable,SIGNAL(finishedPopulating()),this,SLOT(orderTables()));
-    connect(collectionTable,SIGNAL( babeIt_clicked(QList<QStringList>)),this,SLOT(babeIt(QList<QStringList>)));
+    connect(collectionTable,SIGNAL(removeIt_clicked(int)),this,SLOT(removeSong(int)));
+    connect(collectionTable,SIGNAL(babeIt_clicked(QList<QStringList>)),this,SLOT(babeIt(QList<QStringList>)));
     connect(collectionTable,SIGNAL(queueIt_clicked(QString)),this,SLOT(addToQueue(QString)));
     connect(collectionTable,SIGNAL(moodIt_clicked(QString)),playlistTable,SLOT(createMoodPlaylist(QString)));
 
@@ -137,6 +139,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(resultsTable,SIGNAL(tableWidget_doubleClicked(QList<QStringList>)),this,SLOT(addToPlaylist(QList<QStringList>)));
     connect(resultsTable,SIGNAL(enteredTable()),this,SLOT(hideControls()));
     connect(resultsTable,SIGNAL(leftTable()),this,SLOT(showControls()));
+    connect(resultsTable,SIGNAL(removeIt_clicked(int)),this,SLOT(removeSong(int)));
     connect(resultsTable,SIGNAL( babeIt_clicked(QList<QStringList>)),this,SLOT(babeIt(QList<QStringList>)));
     connect(resultsTable,SIGNAL(queueIt_clicked(QString)),this,SLOT(addToQueue(QString)));
     connect(resultsTable,SIGNAL(moodIt_clicked(QString)),playlistTable,SLOT(createMoodPlaylist(QString)));
@@ -145,7 +148,8 @@ MainWindow::MainWindow(QWidget *parent) :
     albumsTable = new AlbumsView(false,this);
     connect(albumsTable,SIGNAL(albumOrderChanged(QString)),this,SLOT(AlbumsViewOrder(QString)));
     connect(albumsTable->albumTable,SIGNAL(tableWidget_doubleClicked(QList<QStringList>)),this,SLOT(addToPlaylist(QList<QStringList>)));
-    connect(albumsTable->albumTable,SIGNAL( babeIt_clicked(QList<QStringList>)),this,SLOT(babeIt(QList<QStringList>)));
+    connect(resultsTable,SIGNAL(removeIt_clicked(int)),this,SLOT(removeSong(int)));
+    connect(resultsTable,SIGNAL( babeIt_clicked(QList<QStringList>)),this,SLOT(babeIt(QList<QStringList>)));
     connect(albumsTable,SIGNAL(playAlbum(QString, QString)),this,SLOT(putOnPlay(QString, QString)));
     connect(albumsTable->albumTable,SIGNAL(queueIt_clicked(QString)),this,SLOT(addToQueue(QString)));
     connect(albumsTable->albumTable,SIGNAL(moodIt_clicked(QString)),playlistTable,SLOT(createMoodPlaylist(QString)));
@@ -155,6 +159,7 @@ MainWindow::MainWindow(QWidget *parent) :
     artistsTable->albumTable->showColumn(BabeTable::ALBUM);
     //artistsTable->albumTable->setMaximumHeight(200);
     connect(artistsTable->albumTable,SIGNAL(tableWidget_doubleClicked(QList<QStringList>)),this,SLOT(addToPlaylist(QList<QStringList>)));
+    connect(artistsTable->albumTable,SIGNAL(removeIt_clicked(int)),this,SLOT(removeSong(int)));
     connect(artistsTable->albumTable,SIGNAL( babeIt_clicked(QList<QStringList>)),this,SLOT(babeIt(QList<QStringList>)));
     connect(artistsTable,SIGNAL(playAlbum(QString, QString)),this,SLOT(putOnPlay(QString, QString)));
     connect(artistsTable->albumTable,SIGNAL(queueIt_clicked(QString)),this,SLOT(addToQueue(QString)));
@@ -363,7 +368,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // connect(album_art,SIGNAL(albumCoverEnter()),this,SLOT(show ui->controls()));
 
 
-   // album_art->setTitleGeometry(0,30,200,30);
+    album_art->setTitleGeometry(0,0,200,30);
     //album_art->widget->setGeometry(0,0,200,30);
     //album_art->widget->setStyleSheet( QString("background-color: rgba(0,0,0,150); border: none;"));
 
@@ -623,6 +628,8 @@ void MainWindow::AlbumsViewOrder(QString order)
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
+
+    QMainWindow::keyPressEvent(event);
     /*switch (event->key())
     {
     case Qt::Key_Return :
@@ -689,7 +696,7 @@ void MainWindow::hideControls()
 {
     //qDebug()<<"ime is up";
     ui->controls->hide();
-   // album_art->titleVisible(false);
+   album_art->titleVisible(false);
     // timer->stop();*/
 }
 
@@ -697,7 +704,7 @@ void MainWindow::showControls()
 {
     //qDebug()<<"ime is up";
     ui->controls->show();
-   //  album_art->titleVisible(true);
+   album_art->titleVisible(true);
     // if (mini_mode==2)album_art->titleVisible(true);
     // timer->stop();*/
 }
@@ -1218,16 +1225,18 @@ void MainWindow::on_mainList_clicked(QList<QStringList> list)
 
 void MainWindow::removeSong(int index)
 {
+
+    QObject* obj = sender();
+
     if(index != -1)
     {
-        mainList->removeRow(index);
 
         qDebug()<<"ehat was in current list:";
         for(auto a: currentList)
         {
             qDebug()<<a.at(1);
         }
-        currentList.removeAt(index);
+        if(obj == mainList) currentList.removeAt(index);
         qDebug()<<"ehats in current list:";
         for(auto a: currentList)
         {
