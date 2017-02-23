@@ -74,6 +74,39 @@ void CollectionDB::removePath(QString path)
 
 }
 
+
+QList<QStringList> CollectionDB::getTrackData(QStringList urls)
+{
+    QList<QStringList> list;
+    for(auto url:urls)
+    {
+          QSqlQuery query("SELECT * FROM tracks WHERE location =\""+url+"\"");
+          if(query.exec())
+          {
+              while(query.next())
+              {
+                  QStringList track;
+                  track<< query.value(TRACK).toString();
+                  track<< query.value(TITLE).toString();
+                  track<< query.value(ARTIST).toString();
+                  track<< query.value(ALBUM).toString();
+                  track<< query.value(GENRE).toString();
+                  track<< query.value(LOCATION).toString();
+                  track<< query.value(STARS).toString();
+                  track<< query.value(BABE).toString();
+                  track<< query.value(ART).toString();
+                  track<< query.value(PLAYED).toString();
+                  track<< query.value(PLAYLIST).toString();
+                  list<<track;
+              }
+
+          }
+
+    }
+
+    return list;
+}
+
 void CollectionDB::cleanCollectionLists()
 {
 

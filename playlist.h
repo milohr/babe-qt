@@ -19,6 +19,7 @@ public:
     bool isMusic(QString file);
     QStringList getTracksNameList();
     QStringList getTracksNameListSimple();
+    QList<QStringList> getTracksData();
 
     std::vector<Track> tracks;
 

@@ -213,7 +213,7 @@ MainWindow::MainWindow(QWidget *parent) :
     addMusicImg->setPixmap(QPixmap(":Data/data/add.png").scaled(120,120,Qt::KeepAspectRatio));
     addMusicImg->setGeometry(45,40,120,120);
     connect(mainList->model() ,SIGNAL(rowsInserted(QModelIndex,int,int)),this,SLOT(on_rowInserted(QModelIndex,int,int)));
-    addMusicImg->hide();
+    addMusicImg->setVisible(false);
 
 
     //MAIN PLAYLIST CONTEXT MENU
@@ -362,8 +362,8 @@ MainWindow::MainWindow(QWidget *parent) :
     //connect(album_art,SIGNAL(albumCoverLeft()),this,SLOT(hide ui->controls()));
     // connect(album_art,SIGNAL(albumCoverEnter()),this,SLOT(show ui->controls()));
 
-    album_art->titleVisible(false);
-    //album_art->setTitleGeometry(0,0,200,30);
+
+   // album_art->setTitleGeometry(0,30,200,30);
     //album_art->widget->setGeometry(0,0,200,30);
     //album_art->widget->setStyleSheet( QString("background-color: rgba(0,0,0,150); border: none;"));
 
@@ -468,7 +468,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     }else
     {
-        addMusicImg->show();
+        addMusicImg->setVisible(true);
         collectionView();
     }
     updater->start(1000);
@@ -689,7 +689,7 @@ void MainWindow::hideControls()
 {
     //qDebug()<<"ime is up";
     ui->controls->hide();
-    album_art->titleVisible(false);
+   // album_art->titleVisible(false);
     // timer->stop();*/
 }
 
@@ -697,6 +697,7 @@ void MainWindow::showControls()
 {
     //qDebug()<<"ime is up";
     ui->controls->show();
+   //  album_art->titleVisible(true);
     // if (mini_mode==2)album_art->titleVisible(true);
     // timer->stop();*/
 }
@@ -740,7 +741,10 @@ void	MainWindow::dropEvent(QDropEvent *event)
         }
     }
 
-    // addToPlaylist(list);
+    auto tracks = new Playlist();
+    tracks->add(list);
+
+    addToPlaylist(tracks->getTracksData());
 
 }
 
@@ -1089,7 +1093,7 @@ void MainWindow::on_hide_sidebar_btn_clicked()
 
         ui->hide_sidebar_btn->setToolTip("Full View");
         //layout->setContentsMargins(6,0,6,0);
-        album_art->titleVisible(false);
+       // album_art->titleVisible(false);
         // album_art->border_radius=2;
         album_art->borderColor=false;
         //album_art->setStyleSheet("QLabel{border: none}");
@@ -1169,7 +1173,10 @@ void MainWindow::on_open_btn_clicked()
     QStringList files = QFileDialog::getOpenFileNames(this, tr("Select Music Files"),QDir().homePath()+"/Music/", tr("Audio (*.mp3 *.wav *.mp4 *.flac *.ogg *.m4a)"));
     if(!files.empty())
     {
-        //addToPlaylist(files);
+        auto tracks = new Playlist();
+        tracks->add(files);
+
+        addToPlaylist(tracks->getTracksData());
     }
 }
 
@@ -1539,6 +1546,8 @@ void MainWindow::update()
 {
     if(mainList->rowCount()!=0)
     {
+        if(!seekBar->isEnabled()) seekBar->setEnabled(true);
+        if(addMusicImg->isVisible()) addMusicImg->setVisible(false);
         if(!seekBar->isSliderDown())
             seekBar->setValue((double)player->position()/player->duration() * 1000);
 
@@ -1549,6 +1558,11 @@ void MainWindow::update()
             next();
             emit finishedPlayingSong(prevSong);
         }
+    }else
+    {
+        seekBar->setValue(0);
+        seekBar->setEnabled(false);
+        addMusicImg->setVisible(true);
     }
 }
 
@@ -1746,6 +1760,8 @@ void MainWindow::babeIt(QList<QStringList> list)
 
                 ui->fav_btn->setIcon(QIcon(":Data/data/loved.svg"));
                 ui->fav_btn->setEnabled(false);
+
+
                 if(addToCollectionDB_t({url},"1"))
                 {
 
@@ -1830,7 +1846,12 @@ bool MainWindow::addToCollectionDB_t(QStringList url, QString babe)
     {
         if(babe.contains("1"))
         {
-            //addToPlaylist(url,true);
+            for(auto track: url)
+            {
+
+                addToPlaylist(settings_widget->getCollectionDB().getTrackData(url),true);
+            }
+
 
         }
         return true;
@@ -2004,7 +2025,7 @@ void MainWindow::on_rowInserted(QModelIndex model ,int x,int y)
 {
     Q_UNUSED(model);Q_UNUSED(x);Q_UNUSED(y);
     qDebug()<<"indexes moved";
-    addMusicImg->hide();
+    addMusicImg->setVisible(false);
 }
 
 void MainWindow::on_refreshBtn_clicked()

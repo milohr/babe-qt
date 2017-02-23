@@ -198,7 +198,6 @@ private:
     BabeTable *queueTable;
     YouTube *youtubeTable;
     /*the streaming */
-    Playlist playlist;
     Playlist queueList;
     QList<QStringList> currentList;
     QStringList queue_list;

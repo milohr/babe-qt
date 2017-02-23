@@ -51,6 +51,32 @@ bool Playlist::isMusic(QString file) {
         return false;
 }
 
+
+QList<QStringList> Playlist::getTracksData()
+{
+    QList<QStringList> tracks;
+
+    for(auto file : getTracks())
+    {
+        QStringList track;
+        track<<QString::number(file.getTrack());
+        track<<QString::fromStdString(file.getTitle());
+        track<<QString::fromStdString(file.getArtist());
+        track<<QString::fromStdString(file.getAlbum());
+        track<<QString::fromStdString(file.getGenre());
+        track<<QString::fromStdString(file.getLocation());
+        track<<"";
+        track<<"";
+        track<<"";
+        track<<"";
+        track<<"";
+        tracks<<track;
+
+    }
+
+    return tracks;
+}
+
 void Playlist::add(QStringList files) {
 
     for (int i = 0; i < files.size(); i++) {
