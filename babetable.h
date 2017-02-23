@@ -40,6 +40,7 @@ public:
     void setTableOrder(int column, int order);
     void setVisibleColumn(int column);
     void addRow(QStringList list);
+    QStringList getRowData(int row);
     //void removeRow(int row);
     void flushTable();
     void passStyle(QString style);
@@ -96,7 +97,7 @@ signals:
     void leftTable();
     void finishedPopulating();
     void rightClicked(QPoint evt);
-    void babeIt_clicked(QStringList list);
+    void babeIt_clicked(QList<QStringList> list);
     void removeIt_clicked(int index);
     void createPlaylist_clicked();
     void refreshPlaylistsMenu(QStringList list);

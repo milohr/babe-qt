@@ -532,50 +532,12 @@ QStringList BabeTable::getPlaylistMenus() {
 void BabeTable::keyPressEvent(QKeyEvent *event) {
     switch (event->key()) {
     case Qt::Key_Return: {
-        QStringList files;
+
     QList<QStringList> list;
 
-        files<< this->model()
-                ->data(
-                    this->model()->index(this->currentIndex().row(), TRACK)).toString();
-        files<< this->model()
-                ->data(
-                    this->model()->index(this->currentIndex().row(), TITLE)).toString();
-        files<< this->model()
-                ->data(
-                    this->model()->index(this->currentIndex().row(), ARTIST)).toString();
-        files<< this->model()
-                ->data(
-                    this->model()->index(this->currentIndex().row(), ALBUM)).toString();
-        files<< this->model()
-                ->data(
-                    this->model()->index(this->currentIndex().row(), GENRE)).toString();
-        files << this->model()
-                 ->data(
-                     this->model()->index(this->currentIndex().row(), LOCATION))
-                 .toString();
-        files<< this->model()
-                ->data(
-                    this->model()->index(this->currentIndex().row(), STARS)).toString();
-        files<< this->model()
-                ->data(
-                    this->model()->index(this->currentIndex().row(), BABE)).toString();
-        files<< this->model()
-                ->data(
-                    this->model()->index(this->currentIndex().row(), ART)).toString();
-        files<< this->model()
-                ->data(
-                    this->model()->index(this->currentIndex().row(), PLAYED)).toString();
-        files<< this->model()
-                ->data(
-                    this->model()->index(this->currentIndex().row(), PLAYLIST)).toString();
 
-        qDebug() << this->model()
-                    ->data(this->model()->index(this->currentIndex().row(),
-                                                LOCATION))
-                    .toString();
 
-        list<<files;
+        list<<getRowData(this->currentIndex().row());
         emit tableWidget_doubleClicked(list);
 
         break;
@@ -675,26 +637,61 @@ void BabeTable::rateGroup(int id) {
     }
 }
 
+QStringList BabeTable::getRowData(int row)
+{
+    QStringList file;
+
+    file<< this->model()
+            ->data(
+                this->model()->index(row, TRACK)).toString();
+    file<< this->model()
+            ->data(
+                this->model()->index(row, TITLE)).toString();
+    file<< this->model()
+            ->data(
+                this->model()->index(row, ARTIST)).toString();
+    file<< this->model()
+            ->data(
+                this->model()->index(row, ALBUM)).toString();
+    file<< this->model()
+            ->data(
+                this->model()->index(row, GENRE)).toString();
+    file<< this->model()
+             ->data(
+                 this->model()->index(row, LOCATION))
+             .toString();
+    file<< this->model()
+            ->data(
+                this->model()->index(row, STARS)).toString();
+    file<< this->model()
+            ->data(
+                this->model()->index(row, BABE)).toString();
+    file<< this->model()
+            ->data(
+                this->model()->index(row, ART)).toString();
+    file<< this->model()
+            ->data(
+                this->model()->index(row, PLAYED)).toString();
+    file<< this->model()
+            ->data(
+                this->model()->index(row, PLAYLIST)).toString();
+
+    qDebug() << this->model()
+                ->data(this->model()->index(this->currentIndex().row(),
+                                            LOCATION))
+                .toString();
+
+    return file;
+}
+
 void BabeTable::on_tableWidget_doubleClicked(const QModelIndex &index) {
 
     QList<QStringList> list;
     qDebug()
             << "BabeTable doubleClicked item<<"
             << index.sibling(this->currentIndex().row(), LOCATION).data().toString();
-    QStringList file;
 
-    file<< index.sibling(this->currentIndex().row(), TRACK).data().toString();
-    file<< index.sibling(this->currentIndex().row(), TITLE).data().toString();
-    file<< index.sibling(this->currentIndex().row(), ARTIST).data().toString();
-    file<< index.sibling(this->currentIndex().row(), ALBUM).data().toString();
-    file<< index.sibling(this->currentIndex().row(), GENRE).data().toString();
-    file<< index.sibling(this->currentIndex().row(), LOCATION).data().toString();
-    file<< index.sibling(this->currentIndex().row(), STARS).data().toString();
-    file<< index.sibling(this->currentIndex().row(), BABE).data().toString();
-    file<< index.sibling(this->currentIndex().row(), ART).data().toString();
-    file<< index.sibling(this->currentIndex().row(), PLAYED).data().toString();
-    file<< index.sibling(this->currentIndex().row(), PLAYLIST).data().toString();
-    list<<file;
+    list<<getRowData(this->currentIndex().row());
 
     emit tableWidget_doubleClicked(list);
     //emit tableWidget_doubleClicked(index);
@@ -710,8 +707,9 @@ void BabeTable::babeIt_action() {
     // int row= this->currentIndex().row();
     qDebug()
             << this->model()->data(this->model()->index(row, LOCATION)).toString();
-    emit babeIt_clicked(
-    {this->model()->data(this->model()->index(row, LOCATION)).toString()});
+    QList<QStringList> list;
+    list<<getRowData(row);
+    emit babeIt_clicked(list);
 }
 
 void BabeTable::removeIt_action()
@@ -792,19 +790,8 @@ QList<QStringList> BabeTable::getAllTableContent() {
 
 
     for (int i = 0; i < this->rowCount(); i++) {
-        QStringList track;
-        track << this->model()->data(this->model()->index(i, TRACK)).toString();
-        track << this->model()->data(this->model()->index(i, TITLE)).toString();
-        track << this->model()->data(this->model()->index(i, ARTIST)).toString();
-        track << this->model()->data(this->model()->index(i, ALBUM)).toString();
-        track << this->model()->data(this->model()->index(i, GENRE)).toString();
-        track << this->model()->data(this->model()->index(i, LOCATION)).toString();
-        track << this->model()->data(this->model()->index(i, STARS)).toString();
-        track << this->model()->data(this->model()->index(i, BABE)).toString();
-        track << this->model()->data(this->model()->index(i, ART)).toString();
-        track << this->model()->data(this->model()->index(i, PLAYED)).toString();
-        track << this->model()->data(this->model()->index(i, PLAYLIST)).toString();
-        result<<track;
+
+        result<<getRowData(i);
     }
 
     return result;
