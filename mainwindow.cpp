@@ -1389,7 +1389,7 @@ void MainWindow::loadMood()
         //ui->listWidget->setpa
         seekBar->setStyleSheet("QSlider\n{\nbackground:transparent;}\nQSlider::groove:horizontal {border: none; background: transparent; height: 5px; border-radius: 0; } QSlider::sub-page:horizontal {\nbackground: #f85b79;border: none; height: 5px;border-radius: 0;} QSlider::add-page:horizontal {\nbackground: transparent; border: none; height: 5px; border-radius: 0; } QSlider::handle:horizontal {background: #f85b79; width: 8px; } QSlider::handle:horizontal:hover {background: qlineargradient(x1:0, y1:0, x2:1, y2:1,stop:0 #fff, stop:1 #ddd);border: 1px solid #444;border-radius: 4px;}QSlider::sub-page:horizontal:disabled {background: #bbb;border-color: #999;}QSlider::add-page:horizontal:disabled {background: #eee;border-color: #999;}QSlider::handle:horizontal:disabled {background: #eee;border: 1px solid #aaa;border-radius: 4px;}");
        mainList->setStyleSheet(QString("QTableWidget::item:selected {background:%1; color: %2}").arg("rgba(0,0,0,150)","white"));
-        ui->mainToolBar->setStyleSheet("QToolBar {background-color:transparent;}");
+        ui->mainToolBar->setStyleSheet("QToolBar {background-color:#dedede;}");
 
     }
 }

@@ -119,28 +119,6 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
     connect(queueIt, SIGNAL(triggered()), this, SLOT(queueIt_action()));
 
 
-    auto moods = new QWidget();
-    auto moodsLayout = new QHBoxLayout();
-    QButtonGroup *moodGroup = new QButtonGroup(contextMenu);
-    connect(moodGroup, SIGNAL(buttonClicked(int)), this, SLOT(moodTrack(int)));
-    for(int i=0; i<5; i++)
-    {
-        auto  *colorTag = new QToolButton();
-        colorTag->setIconSize(QSize(10,10));
-        colorTag->setFixedSize(16,16);
-        // colorTag->setAutoRaise(true);
-        colorTag->setStyleSheet(QString("QToolButton { background-color: %1;}").arg(colors.at(i)));
-        moodGroup->addButton(colorTag,i);
-        moodsLayout->addWidget(colorTag);
-    }
-    moods->setLayout(moodsLayout);
-
-    QWidgetAction *moodsAction = new QWidgetAction(contextMenu);
-    moodsAction->setDefaultWidget(moods);
-
-    this->addAction(moodsAction);
-
-
 
     QButtonGroup *bg = new QButtonGroup(contextMenu);
     bg->addButton(fav1, 1);
@@ -164,6 +142,27 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
     chkBoxAction->setDefaultWidget(gr);
 
     this->addAction(chkBoxAction);
+
+    auto moods = new QWidget();
+    auto moodsLayout = new QHBoxLayout();
+    QButtonGroup *moodGroup = new QButtonGroup(contextMenu);
+    connect(moodGroup, SIGNAL(buttonClicked(int)), this, SLOT(moodTrack(int)));
+    for(int i=0; i<5; i++)
+    {
+        auto  *colorTag = new QToolButton();
+        colorTag->setIconSize(QSize(10,10));
+        colorTag->setFixedSize(16,16);
+        // colorTag->setAutoRaise(true);
+        colorTag->setStyleSheet(QString("QToolButton { background-color: %1;}").arg(colors.at(i)));
+        moodGroup->addButton(colorTag,i);
+        moodsLayout->addWidget(colorTag);
+    }
+    moods->setLayout(moodsLayout);
+
+    QWidgetAction *moodsAction = new QWidgetAction(contextMenu);
+    moodsAction->setDefaultWidget(moods);
+
+    this->addAction(moodsAction);
 }
 
 
