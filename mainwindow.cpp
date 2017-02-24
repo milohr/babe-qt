@@ -369,6 +369,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     album_art->setTitleGeometry(0,0,200,30);
+    album_art->titleVisible(false);
     //album_art->widget->setGeometry(0,0,200,30);
     //album_art->widget->setStyleSheet( QString("background-color: rgba(0,0,0,150); border: none;"));
 
@@ -704,7 +705,7 @@ void MainWindow::showControls()
 {
     //qDebug()<<"ime is up";
     ui->controls->show();
-   album_art->titleVisible(true);
+   if(mini_mode==2)  album_art->titleVisible(true);
     // if (mini_mode==2)album_art->titleVisible(true);
     // timer->stop();*/
 }
@@ -1075,7 +1076,7 @@ void MainWindow::on_hide_sidebar_btn_clicked()
 
         this->setFixedSize(200,200);
         //album_art->border_radius=5;
-        //album_art->borderColor=true;
+        album_art->borderColor=true;
 
         // album_art->setStyleSheet("QLabel{background-color:transparent;}");
         // album_art_frame->setStyleSheet("QFrame{border: 1px solid red;border-radius:5px;}");
@@ -1083,7 +1084,7 @@ void MainWindow::on_hide_sidebar_btn_clicked()
         //album_widget.
         layout->setContentsMargins(0,0,0,0);
 
-        // this->setWindowFlags(Qt::Tool | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+        this->setWindowFlags(this->windowFlags() | Qt::Tool | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
         this->show();
         ui->hide_sidebar_btn->setToolTip("Expand");
 
@@ -1091,7 +1092,8 @@ void MainWindow::on_hide_sidebar_btn_clicked()
 
     }else if(mini_mode==2)
     {
-        // this->setWindowFlags(Qt::Window| Qt::WindowTitleHint | Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint);
+
+        this->setWindowFlags(this->windowFlags() & ~Qt::WindowStaysOnTopHint & ~Qt::Tool & ~Qt::FramelessWindowHint);
         this->show();
         // ui->mainToolBar->show();
         mainList->show();
@@ -1711,10 +1713,7 @@ void MainWindow::orderTables()
 
 void MainWindow::on_fav_btn_clicked()
 {
-    QList<QStringList> list;
-    QStringList track = mainList->getRowData(mainList->currentIndex().row());
-    list<<track;
-    babeIt(list);
+   babeIt(settings_widget->collection_db.getTrackData({current_song_url}));
 
 }
 

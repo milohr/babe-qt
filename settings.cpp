@@ -155,7 +155,7 @@ void settings::handleDirectoryChanged_extension()
 
     if (!urls.isEmpty())
     {
-        auto ytFetch = new YouTube(this);
+        auto ytFetch = new YouTube();
         connect(ytFetch,SIGNAL(youtubeTrackReady(bool)),this,SLOT(youtubeTrackReady(bool)));
 
         ytFetch->fetch(ids);
