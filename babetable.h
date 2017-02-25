@@ -41,6 +41,7 @@ public:
     void setVisibleColumn(int column);
     void addRow(QStringList list);
     QStringList getRowData(int row);
+    void allowDrag();
     //void removeRow(int row);
     void flushTable();
     void passStyle(QString style);

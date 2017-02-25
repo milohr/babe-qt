@@ -682,6 +682,10 @@ QStringList BabeTable::getRowData(int row)
 
     return file;
 }
+void BabeTable::allowDrag()
+{
+
+}
 
 void BabeTable::on_tableWidget_doubleClicked(const QModelIndex &index) {
 

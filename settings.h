@@ -30,6 +30,12 @@ public:
 
     explicit settings(QWidget *parent = 0);
     ~settings();
+
+    const QString settingPath= QStandardPaths::writableLocation(QStandardPaths::ConfigLocation)+"/babe/";
+    const QString collectionDBPath=QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation)+"/babe/";
+    const QString cachePath=QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation)+"/babe/";
+    const  QString youtubeCachePath=QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation)+"/babe/youtube/";
+    QString extensionFetchingPath=QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
     bool checkCollection();
     CollectionDB &getCollectionDB();
     int getToolbarIconSize()  {return iconSize;}
@@ -77,11 +83,7 @@ public slots:
 
 private:
     Ui::settings *ui;
-    const QString settingPath= QStandardPaths::writableLocation(QStandardPaths::ConfigLocation)+"/babe/";
-    const QString collectionDBPath=QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation)+"/babe/";
-    const QString cachePath=QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation)+"/babe/";
-    const QString youtubeCachePath=QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation)+"/babe/youtube/";
-    QString extensionFetchingPath=QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
+
 
     const QString notifyDir= QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
     const QString collectionDBName = "collection.db";

@@ -6,6 +6,7 @@
 #include <QProcess>
 #include<QByteArray>
 #include <QMovie>
+#include <settings.h>
 
 namespace Ui {
 class YouTube;
@@ -19,6 +20,7 @@ public:
     explicit YouTube(QWidget *parent = 0);
     void fetch(QStringList ids);
     ~YouTube();
+    void searchPendingFiles();
 
 private slots:
     void on_goBtn_clicked();

@@ -3,6 +3,7 @@
 
 #include <QDebug>
 #include <QStandardPaths>
+#include <QDirIterator>
 YouTube::YouTube(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::YouTube)
@@ -13,12 +14,39 @@ YouTube::YouTube(QWidget *parent) :
     ui->textBrowser->hide(); ui->frame_3->hide();
     movie = new QMovie(":Data/data/ajax-loader.gif");
     ui->label->setMovie(movie);
+    searchPendingFiles();
 }
 
 YouTube::~YouTube()
 {
     delete ui;
 
+}
+
+void YouTube::searchPendingFiles()
+{
+    QStringList urls,ids;
+    QString url = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
+
+    QDirIterator it(url, QStringList() << "*.babe", QDir::Files);
+    while (it.hasNext())
+    {
+        QString song = it.next();
+
+        urls<<song;
+        QFileInfo fileInfo(QFile(song).fileName());
+        QString id=fileInfo.fileName().section(".",0,-2);
+         ids<<id;
+
+    }
+
+    if (!urls.isEmpty())
+    {
+
+        fetch(ids);
+        for(auto url:urls) if(QFile::remove(url)) qDebug()<<"the urls are going to be cleaned up"<< url;
+        qDebug()<<ids;
+    }
 }
 
 void YouTube::on_goBtn_clicked()
