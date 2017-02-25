@@ -85,7 +85,8 @@ HEADERS  += mainwindow.h \
     lyrics.h \
     mpris2.h \
     notify.h \
-    youtube.h
+    youtube.h \
+    baeUtils.h
 
 FORMS    += mainwindow.ui \
     settings.ui \

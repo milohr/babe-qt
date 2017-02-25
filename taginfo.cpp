@@ -1,11 +1,12 @@
 #include "taginfo.h"
-#include "utils.h"
+#include "baeUtils.h"
 #include <taglib/fileref.h>
 #include <taglib/tag.h>
 #include <taglib/taglib.h>
 #include <taglib/id3v2tag.h>
 #include <taglib/id3v2header.h>
 #include <artwork.h>
+
 
 TagInfo::TagInfo(QString file)  {
     this->file = TagLib::FileRef(file.toUtf8());

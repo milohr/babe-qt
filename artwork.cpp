@@ -8,6 +8,7 @@
 #include <QUrl>
 #include <QJsonDocument>
 #include <QVariantMap>
+#include <baeUtils.h>
 
 ArtWork::ArtWork(QObject *parent) : QObject(parent) {
     url = "http://ws.audioscrobbler.com/2.0/";
@@ -86,30 +87,6 @@ void ArtWork::setDataCover_spotify(QString artist, QString album,QString title)
     }
 
 }
-
-QString ArtWork::fixString(QString title)
-{
-
-    //title.remove(QRegExp(QString::fromUtf8("[·-`~!@#$%^&*()_—+=|:;<>«»,.?/{}\'\"\\\[\\\]\\\\]")));
-
-
-    title=title.contains("(")?fixTitle(title,"(",")"):title;
-    title=title.contains("[")?fixTitle(title,"[","]"):title;
-    title=title.contains("{")?fixTitle(title,"{","}"):title;
-    title=title.contains("ft")?removeSubstring(title, "ft"):title;
-    title=title.contains("ft.")?removeSubstring(title, "ft."):title;
-    title=title.contains("featuring")?removeSubstring(title, "featuring"):title;
-    title=title.contains("feat")?removeSubstring(title, "feat"):title;
-    title=title.contains("official video")?removeSubstring(title, "official video"):title;
-    title=title.contains("live")?removeSubstring(title, "live"):title;
-    title=title.contains("...")?title.replace("...",""):title;
-    title=title.contains("|")?title.replace("|",""):title;
-    title=title.contains('"')?title.replace('"',""):title;
-    qDebug()<<"fixing the title string in order to get album title:"<<title;
-
-    return title;
-}
-
 
 
 QString ArtWork::getAlbumTitle_Spotify(QString artist, QString title)
@@ -307,53 +284,10 @@ QString ArtWork::getAlbumTitle(QString artist, QString title) {
 
 
 
-QString ArtWork::fixTitle(QString title,QString s,QString e)
-{
-    QString newTitle;
-    for(int i=0; i<title.size();i++)
-    {
-
-        if(title.at(i)==s)
-        {
-            while(title.at(i)!=e) i++;
-        }else
-        {
-            newTitle+=title.at(i);
-        }
-    }
 
 
 
 
-    return newTitle.simplified();
-}
-
-QString ArtWork::removeSubstring(QString newTitle, QString subString)
-{
-    const int indexFt = newTitle.indexOf(subString, 0, Qt::CaseInsensitive);
-
-    if (indexFt != -1) {
-        return newTitle.left(indexFt).simplified();
-    }else
-    {
-        return newTitle;
-    }
-}
-
-QString ArtWork::removeSubstring_old(QString newTitle,QString subString)
-{
-    QString result;
-    newTitle=newTitle.toLower();
-    subString=subString.toLower();
-    if(newTitle.contains(subString))
-    {
-        qDebug()<<"new title still constains unfixed string: "<< subString;
-
-        result=newTitle.section(subString,0,-2);
-
-    }
-    return result.simplified();
-}
 
 void ArtWork::setDataCover_title(QString artist, QString title) {
     qDebug()<<"Going to try and get the art cover from title: "<< title <<"by"<<artist;
