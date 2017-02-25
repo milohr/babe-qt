@@ -36,6 +36,9 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
     this->setSortingEnabled(true);
     this->horizontalHeader()->setHighlightSections(false);
     this->horizontalHeader()->setStretchLastSection(true);
+
+    this->verticalHeader()->resizeSections(QHeaderView::ResizeToContents);
+
     // this->setGridStyle(Qt::PenStyle);
     this->setShowGrid(false);
 
@@ -247,6 +250,7 @@ void BabeTable::addRow(QStringList list) {
 
     this->insertRow(this->rowCount());
 
+
     this->setItem(this->rowCount() - 1, TRACK, new QTableWidgetItem(track));
     this->setItem(this->rowCount() - 1, TITLE, new QTableWidgetItem(title));
     this->setItem(this->rowCount() - 1, ARTIST, new QTableWidgetItem(artist));
@@ -258,9 +262,10 @@ void BabeTable::addRow(QStringList list) {
     this->setItem(this->rowCount() - 1, ART, new QTableWidgetItem(art));
     this->setItem(this->rowCount() - 1, PLAYED, new QTableWidgetItem(played));
     this->setItem(this->rowCount() - 1, PLAYLIST, new QTableWidgetItem(playlist));
+    this->item(this->rowCount()-1,1)->setToolTip( "by "+artist);
 }
 
-void BabeTable::populateTableView(QString indication) {
+void BabeTable::populateTableView(QString indication, bool descriptiveTitle) {
     // this->clearContents();
     this->setSortingEnabled(false);
     QSqlQuery query = connection->getQuery(indication);
@@ -285,8 +290,13 @@ void BabeTable::populateTableView(QString indication) {
                 this->setItem(this->rowCount() - 1, TRACK, track);
 
                 auto *title = new QTableWidgetItem(query.value(TITLE).toString());
-                // title->setFlags(title->flags() & ~Qt::ItemIsEditable);
                 this->setItem(this->rowCount() - 1, TITLE, title);
+
+                if(descriptiveTitle) title->setToolTip("by "+query.value(ARTIST).toString());
+
+
+                // title->setFlags(title->flags() & ~Qt::ItemIsEditable);
+
 
                 auto *artist = new QTableWidgetItem(query.value(ARTIST).toString());
                 this->setItem(this->rowCount() - 1, ARTIST, artist);

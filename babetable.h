@@ -34,7 +34,7 @@ public:
     };
     CollectionDB *connection;
 
-    void populateTableView(QString indication);
+    void populateTableView(QString indication, bool descriptiveTitle=false);
     void setRating(int rate);
     void passCollectionConnection(CollectionDB *con);
     void setTableOrder(int column, int order);

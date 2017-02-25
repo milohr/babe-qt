@@ -1193,7 +1193,8 @@ void MainWindow::on_open_btn_clicked()
 
 void MainWindow::populateMainList()
 {
-    mainList->populateTableView("SELECT * FROM tracks WHERE babe = 1 ORDER by played desc");
+    mainList->populateTableView("SELECT * FROM tracks WHERE babe = 1 ORDER by played desc",true);
+    mainList->resizeRowsToContents();
     currentList=mainList->getAllTableContent();
 }
 
@@ -1893,7 +1894,7 @@ void MainWindow::addToPlaylist(QList<QStringList> list, bool notRepeated)
             if(!alreadyInList.contains(track.at(BabeTable::LOCATION)))
             {
                 newList<<track;
-                // mainList->addRow(list);
+                mainList->addRow(track);
             }
 
         }
@@ -1903,11 +1904,12 @@ void MainWindow::addToPlaylist(QList<QStringList> list, bool notRepeated)
     {
 
         currentList+=list;
+        for(auto track:list)  mainList->addRow(track);
 
     }
 
 
-    updateList();
+    //updateList();
     if(shuffle) shufflePlaylist();
     mainList->scrollToBottom();
 }
