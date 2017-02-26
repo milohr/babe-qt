@@ -67,6 +67,7 @@ public slots:
 
     void addToPlaylist(QList<QStringList> list, bool notRepeated=false);
     void putPixmap(QByteArray array);
+    void changedArt(QString path, QString artist, QString album);
     void dummy();
 private slots:
 

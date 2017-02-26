@@ -364,6 +364,7 @@ MainWindow::MainWindow(QWidget *parent) :
     album_art = new Album(":Data/data/babe.png",200,0,true,false,album_art_frame);
 
     connect(album_art,SIGNAL(playAlbum(QString , QString)),this,SLOT(putOnPlay(QString, QString)));
+    connect(album_art,SIGNAL(changedArt(QString, QString , QString)),this,SLOT(changedArt(QString, QString, QString)));
 
     album_art->setFixedSize(200,200);
     //connect(album_art,SIGNAL(albumCoverLeft()),this,SLOT(hide ui->controls()));
@@ -489,6 +490,13 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+
+void MainWindow::changedArt(QString path, QString artist, QString album)
+{
+   settings_widget->collection_db.execQuery(QString("UPDATE albums SET art = \"%1\" WHERE title = \"%2\" AND artist = \"%3\"").arg(path,album,artist) );
+
 }
 
 

@@ -148,8 +148,10 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
 
     layout->addWidget(line_h,1,0,Qt::AlignBottom);
     layout->addWidget(albumBox_frame,2,0,Qt::AlignBottom);
-    cover= new Album(":Data/data/cover.svg",120,0,false,false,this);
+    cover = new Album(":Data/data/cover.svg",120,0,false,false,this);
     connect(cover,SIGNAL(playAlbum(QString , QString)),this,SLOT(playAlbum_clicked(QString, QString)));
+    connect(cover,SIGNAL(changedArt(QString, QString , QString)),this,SLOT(changedArt_cover(QString, QString, QString)));
+
 
 
     closeBtn = new QToolButton(cover);
@@ -297,6 +299,8 @@ void AlbumsView::populateTableView(QSqlQuery query)
         //album->setToolTip(query.value(2).toString());
         connect(album, SIGNAL(albumCoverClicked(QStringList)),this,SLOT(getAlbumInfo(QStringList)));
         connect(album,SIGNAL(playAlbum(QString , QString)),this,SLOT(playAlbum_clicked(QString, QString)));
+        connect(album,SIGNAL(changedArt(QString, QString , QString)),this,SLOT(changedArt_cover(QString, QString, QString)));
+
 
         //album->setStyleSheet(":hover {background:#3daee9; }");
         auto item =new QListWidgetItem();
@@ -340,6 +344,8 @@ void AlbumsView::populateTableViewHeads(QSqlQuery query)
         //album->setToolTip(query.value(2).toString());
         connect(album, SIGNAL(albumCoverClicked(QStringList)),this,SLOT(getArtistInfo(QStringList)));
         connect(album,SIGNAL(playAlbum(QString , QString)),this,SLOT(playAlbum_clicked(QString, QString)));
+        connect(album,SIGNAL(changedArt(QString, QString , QString)),this,SLOT(changedArt_head(QString, QString, QString)));
+
         //album->setStyleSheet(":hover {background:#3daee9; }");
         auto item =new QListWidgetItem();
         item->setSizeHint( QSize( albumSize, albumSize) );
@@ -376,6 +382,18 @@ void AlbumsView::playAlbum_clicked(QString artist, QString album)
     emit playAlbum(artist,album);
 }
 
+void AlbumsView::changedArt_cover(QString path, QString artist, QString album)
+{
+   connection->execQuery(QString("UPDATE albums SET art = \"%1\" WHERE title = \"%2\" AND artist = \"%3\"").arg(path,album,artist) );
+
+}
+
+void AlbumsView::changedArt_head(QString path, QString artist, QString album)
+{
+    Q_UNUSED(album);
+    connection->execQuery(QString("UPDATE artists SET art = \"%1\" WHERE title = \"%2\" ").arg(path,artist) );
+
+}
 void AlbumsView::passConnection(CollectionDB *con)
 {
     this->connection=con;

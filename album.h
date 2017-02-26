@@ -54,6 +54,7 @@ signals:
     void albumCoverEnter();
      void albumCoverLeft();
      void playAlbum(QString artist, QString album);
+     void changedArt(QString path,QString artist, QString album);
 
 public slots:
       void putPixmap(QByteArray pix);

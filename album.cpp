@@ -116,6 +116,7 @@ void Album::artIt_action()
     if(!path.isEmpty())
     {
        putPixmap(path);
+       emit changedArt(path,artist, album);
 
     }
 

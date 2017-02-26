@@ -389,7 +389,7 @@ void CollectionDB::insertCoverArt(QString path,QStringList info)
         if(query.exec())
         {
             qDebug()<<"Artwork[cover] inserted into DB"<<info.at(0)<<info.at(1);
-            albums<<info.at(1)+" "+info.at(0);
+            if(!albums.contains(info.at(0))) albums<<info.at(1)+" "+info.at(0);
             //qDebug()<<"insertInto<<"<<"UPDATE "+tableName+" SET "+column+" = "+ value + " WHERE location = "+location;
         }else
         {
@@ -411,7 +411,7 @@ void CollectionDB::insertHeadArt(QString path, QStringList info)
         if(query.exec())
         {
             qDebug()<<"Artwork[head] inerted into DB"<<info.at(0);
-            artists<<info.at(0);
+            if(!artists.contains(info.at(0)))artists<<info.at(0);
             //qDebug()<<"insertInto<<"<<"UPDATE "+tableName+" SET "+column+" = "+ value + " WHERE location = "+location;
         }
     }
