@@ -229,9 +229,11 @@ void Album::mousePressEvent ( QMouseEvent * evt)
     if(evt->button()==Qt::LeftButton && !draggable)
     {
 
+
         emit albumCoverClicked({artist,album,bgColor});
     }else
     {
+        evt->accept();
         QLabel::mousePressEvent(evt);
     }
 
@@ -257,12 +259,13 @@ void Album::enterEvent(QEvent *event)
     playBtn->setToolTip("Play all - "+artist+" "+album);
     }
 
+    event->accept();
     emit albumCoverEnter();
 }
 
 void Album::leaveEvent(QEvent *event)
 {
-    Q_UNUSED(event);
+    //Q_UNUSED(event);
     //title->hide();
     //title->setSpeed(0);
     // title->reset();
@@ -272,6 +275,7 @@ void Album::leaveEvent(QEvent *event)
     if(!isPlain)
     {
     playBtn->hide();
+    event->accept();
     emit albumCoverLeft();
     }
 }

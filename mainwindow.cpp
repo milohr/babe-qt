@@ -579,7 +579,7 @@ void MainWindow::addToPlayed(QString url)
 
 void MainWindow::resizeEvent(QResizeEvent* event)
 {
-    QMainWindow::resizeEvent(event);
+
     //qDebug()<<event->size().width()<<"x"<<event->size().height();
     if(mini_mode==0 && event->size().width()<this->minimumSize().width()+20)
     {
@@ -587,13 +587,16 @@ void MainWindow::resizeEvent(QResizeEvent* event)
         // this->setFixedWidth(200);
         //int oldHeight = this->size().height();
         //this->resize(200,oldHeight);
+        event->accept();
         go_mini();
     }else if(mini_mode!=0 && event->size().width()!=200)
     {
         int oldHeight = this->size().height();
         this->resize(700,oldHeight);
+         event->accept();
         expand();
     }
+     QMainWindow::resizeEvent(event);
 }
 
 void MainWindow::refreshTables()
@@ -671,7 +674,8 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 void MainWindow::enterEvent(QEvent *event)
 {
     //qDebug()<<"entered the window";
-    Q_UNUSED(event);
+    //Q_UNUSED(event);
+    event->accept();
     showControls();
     //if (mini_mode==2) this->setWindowState(Qt::WindowActive);
 }
@@ -680,7 +684,8 @@ void MainWindow::enterEvent(QEvent *event)
 void MainWindow::leaveEvent(QEvent *event)
 {
     //qDebug()<<"left the window";
-    Q_UNUSED(event);
+   // Q_UNUSED(event);
+    event->accept();
     hideControls();
     //timer = new QTimer(this);
     /*connect(timer, SIGNAL(timeout()), this, SLOT(hide ui->controls()));
@@ -725,6 +730,8 @@ void	MainWindow::dragMoveEvent(QDragMoveEvent *event)
 
 void	MainWindow::dropEvent(QDropEvent *event)
 {
+    event->accept();
+
     QList<QUrl> urls;
     urls = event->mimeData()->urls();
     QStringList list;
@@ -753,6 +760,7 @@ void	MainWindow::dropEvent(QDropEvent *event)
     tracks->add(list);
 
     addToPlaylist(tracks->getTracksData());
+
 
 }
 
@@ -1908,6 +1916,8 @@ void MainWindow::addToPlaylist(QList<QStringList> list, bool notRepeated)
 
     }
 
+
+    mainList->resizeRowsToContents();
 
     //updateList();
     if(shuffle) shufflePlaylist();

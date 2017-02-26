@@ -590,6 +590,7 @@ void BabeTable::mousePressEvent(QMouseEvent *evt) {
 
     if (evt->button() == Qt::RightButton) {
         qDebug() << "table right clicked";
+        evt->accept();
         emit rightClicked(evt->pos());
     } else {
         QTableWidget::mousePressEvent(evt);
