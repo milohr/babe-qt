@@ -59,6 +59,9 @@ public slots:
       void putPixmap(QByteArray pix);
       void putPixmap(QString path);
       void playBtn_clicked();
+      void babeIt_action();
+      void artIt_action();
+      void removeIt_action();
 
 protected:
 

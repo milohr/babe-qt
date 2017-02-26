@@ -43,8 +43,11 @@ this->isPlain=plain;
         //title->setFixedWidth(size);
         //widget->setMaximumWidth(size);
 
+
+
         auto contextMenu = new QMenu(this);
         this->setContextMenuPolicy(Qt::ActionsContextMenu);
+
 
         auto babeIt = new QAction("Babe it \xe2\x99\xa1",contextMenu);
         this->addAction(babeIt);
@@ -52,6 +55,12 @@ this->isPlain=plain;
         auto removeIt = new QAction("Remove",contextMenu);
         this->addAction(removeIt);
 
+        auto artIt = new QAction("Change art...",contextMenu);
+        this->addAction(artIt);
+
+        connect(babeIt, SIGNAL(triggered()), this, SLOT(babeIt_action()));
+        connect(removeIt, SIGNAL(triggered()), this, SLOT(removeIt_action()));
+        connect(artIt, SIGNAL(triggered()), this, SLOT(artIt_action()));
         //connect(this,SIGNAL(clicked(QModelIndex)),this,SLOT(setUpContextMenu()));
 
         //connect(babeIt, SIGNAL(triggered()), this, SLOT(uninstallAppletClickedSlot()));
@@ -90,6 +99,24 @@ this->isPlain=plain;
         right_spacer->setStyleSheet("background:transparent;  border:none;");
         left_spacer->setStyleSheet("background:transparent;  border:none;");
     }
+
+}
+
+
+void Album::babeIt_action()
+{
+    qDebug()<<"Babe album"<<this->artist<<this->album;
+}
+
+void Album::artIt_action()
+{
+    qDebug()<<"Change art of album"<<this->artist<<this->album;
+
+}
+
+void Album::removeIt_action()
+{
+    qDebug()<<"Remove album"<<this->artist<<this->album;
 
 }
 
