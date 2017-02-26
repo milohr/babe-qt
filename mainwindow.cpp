@@ -1190,7 +1190,7 @@ void MainWindow::on_open_btn_clicked()
 
 
     QStringList files = QFileDialog::getOpenFileNames(this, tr("Select Music Files"),QDir().homePath()+"/Music/", tr("Audio (*.mp3 *.wav *.mp4 *.flac *.ogg *.m4a)"));
-    if(!files.empty())
+    if(!files.isEmpty())
     {
         auto tracks = new Playlist();
         tracks->add(files);
