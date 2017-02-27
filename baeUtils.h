@@ -89,9 +89,11 @@ static QString fixString(QString title)
     title=title.contains("...")?title.replace("...",""):title;
     title=title.contains("|")?title.replace("|",""):title;
     title=title.contains('"')?title.replace('"',""):title;
+    title=title.contains(":")?title.replace(":",""):title;
+    title=title.contains("&")? title.replace("&", "and"):title;
     qDebug()<<"fixed string:"<<title;
 
-    return title;
+    return title.simplified();
 }
 
 #endif // UTILS_H

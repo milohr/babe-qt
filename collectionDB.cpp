@@ -376,7 +376,7 @@ void CollectionDB::insertCoverArt(QString path,QStringList info)
 {
     //UPDATE albums SET art = "lalaltest" WHERE title = "Starboy" AND artist = "The Weeknd"
 
-    // qDebug()<<"the path:"<<path<<"the list:"<<info.at(0)<<info.at(1);
+    qDebug()<<"the path:"<<path<<"the list:"<<info.at(0)<<info.at(1);
     if(info.size()==2)
     {
 

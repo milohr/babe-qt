@@ -16,17 +16,17 @@ TagInfo::TagInfo(QString file)  {
 
 void TagInfo::writeData()
 {
-   // QString album_=this->getAlbum();
+    // QString album_=this->getAlbum();
     QString title_=this->getTitle();
     QString artist_=this->getArtist();
 
     if(!title_.isEmpty()&&!artist_.isEmpty())
     {
         auto info = new ArtWork ();
-std::string newTitle=info->getAlbumTitle(artist_,title_).toStdString();
+        std::string newTitle=info->getAlbumTitle(artist_,title_).toStdString();
 
-            this->file.tag()->setAlbum(newTitle.empty()?"UNKNOWN":newTitle);
-            this->file.save();
+        this->file.tag()->setAlbum(newTitle.empty()?"UNKNOWN":newTitle);
+        this->file.save();
 
 
     }
@@ -36,7 +36,7 @@ QString TagInfo::getAlbum() {
 
     QString albumName= QString::fromStdWString(file.tag()->album().toWString());
 
- /*if(albumName.isEmpty())
+    /*if(albumName.isEmpty())
  {
      writeData();
      albumName= QString::fromStdWString(file.tag()->album().toWString());

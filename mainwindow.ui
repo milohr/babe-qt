@@ -53,7 +53,7 @@
     </property>
     <property name="minimumSize">
      <size>
-      <width>32</width>
+      <width>24</width>
       <height>24</height>
      </size>
     </property>
@@ -94,7 +94,7 @@
     </property>
     <property name="minimumSize">
      <size>
-      <width>32</width>
+      <width>24</width>
       <height>24</height>
      </size>
     </property>
@@ -135,7 +135,7 @@
     </property>
     <property name="minimumSize">
      <size>
-      <width>32</width>
+      <width>24</width>
       <height>24</height>
      </size>
     </property>
@@ -176,7 +176,7 @@
     </property>
     <property name="minimumSize">
      <size>
-      <width>32</width>
+      <width>24</width>
       <height>24</height>
      </size>
     </property>
@@ -220,7 +220,7 @@
     </property>
     <property name="minimumSize">
      <size>
-      <width>32</width>
+      <width>24</width>
       <height>24</height>
      </size>
     </property>
@@ -264,7 +264,7 @@
     </property>
     <property name="minimumSize">
      <size>
-      <width>32</width>
+      <width>24</width>
       <height>24</height>
      </size>
     </property>
@@ -305,7 +305,7 @@
     </property>
     <property name="minimumSize">
      <size>
-      <width>32</width>
+      <width>24</width>
       <height>24</height>
      </size>
     </property>
@@ -1005,7 +1005,7 @@ border-top: 1px solid #333;
     </property>
     <property name="minimumSize">
      <size>
-      <width>32</width>
+      <width>24</width>
       <height>24</height>
      </size>
     </property>

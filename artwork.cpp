@@ -15,24 +15,24 @@ ArtWork::ArtWork(QObject *parent) : QObject(parent) {
 } //
 
 void ArtWork::setDataCover(QString artist, QString album,QString title, QString path) {
-    this->artist = artist;
-    this->album = album;
-    this->title=title;
+    this->artist = fixString(artist);
+    this->album = fixString(album);
+    this->title=fixString(title);
     this->path = path;
 
-    title = fixString(title);
-    qDebug()<<"Going to try and get the art cover for: "<< album <<"by"<<artist<<title;
+
+    qDebug()<<"Going to try and get the art cover for: "<< this->album <<"by"<<this->artist<<this->title;
 
 
-    if(!album.contains("UNKNOWN"))
+    if(!this->album.contains("UNKNOWN"))
     {
 
-        if (!artist.isEmpty() && !album.isEmpty()) {
+        if (!this->artist.isEmpty() && !this->album.isEmpty()) {
             url.append("?method=album.getinfo");
             url.append("&api_key=ba6f0bd3c887da9101c10a50cf2af133");
-            QUrl q_artist(artist.replace("&", "and"));
+            QUrl q_artist(this->artist);
             q_artist.toEncoded(QUrl::FullyEncoded);
-            QUrl q_album(album.replace("&", "and"));
+            QUrl q_album(this->album);
             q_album.toEncoded(QUrl::FullyEncoded);
 
             if (!q_artist.isEmpty())
@@ -43,13 +43,13 @@ void ArtWork::setDataCover(QString artist, QString album,QString title, QString 
             qDebug()<<"thealbum name is:"<<q_album.toString();
             qDebug()<<"on setDataCover:"<<url;
             startConnection();
-        }else if(!title.isEmpty()&&!artist.isEmpty())
+        }else if(!this->title.isEmpty()&&!this->artist.isEmpty())
         {
-            setDataCover_title(artist,title);
+            setDataCover_title(this->artist,this->title);
         }
-    }else if(!title.isEmpty()&&!artist.isEmpty())
+    }else if(!this->title.isEmpty()&&!this->artist.isEmpty())
     {
-        setDataCover_title(artist,title);
+        setDataCover_title(this->artist,this->title);
     }
 }
 
@@ -57,21 +57,24 @@ void ArtWork::setDataCover(QString artist, QString album,QString title, QString 
 void ArtWork::setDataCover_spotify(QString artist, QString album,QString title)
 {
 
-    qDebug()<<"Going to try and get the art cover from title by spotify service: "<< title <<"by"<<artist;
+    this->title=fixString(title);
+    this->artist=fixString(artist);
+    this->album=fixString(album);
+    qDebug()<<"Going to try and get the art cover from title by spotify service: "<< this->title <<"by"<<this->artist;
     url = "https://api.spotify.com/v1/search?q=";
 
-    title=fixString(title);
 
-    if (!artist.isEmpty() && !title.isEmpty()) {
+
+    if (!this->artist.isEmpty() && !this->title.isEmpty()) {
         url.append("track:");
-        QUrl q_title(title.replace("&", "and"));
+        QUrl q_title(this->title);
         q_title.toEncoded(QUrl::FullyEncoded);
         if (!q_title.isEmpty())
             url.append(q_title.toString());
 
 
         url.append("%20artist:");
-        QUrl q_artist(artist.replace("&", "and"));
+        QUrl q_artist(this->artist);
         q_artist.toEncoded(QUrl::FullyEncoded);
 
         if (!q_artist.isEmpty())
@@ -92,25 +95,24 @@ void ArtWork::setDataCover_spotify(QString artist, QString album,QString title)
 QString ArtWork::getAlbumTitle_Spotify(QString artist, QString title)
 {
     QString title_album;
-    this->artist = artist;
+    this->artist = fixString(artist);
 
-    this->title=title;
+    this->title=fixString(title);
 
     qDebug()<<"Going to try and get the albumt title from spotify service: "<< title <<"by"<<artist;
     url = "https://api.spotify.com/v1/search?q=";
 
-    title=fixString(title);
 
-    if (!artist.isEmpty() && !title.isEmpty()) {
+    if (!this->artist.isEmpty() && !this->title.isEmpty()) {
         url.append("track:");
-        QUrl q_title(title.replace("&", "and"));
+        QUrl q_title(this->title);
         q_title.toEncoded(QUrl::FullyEncoded);
         if (!q_title.isEmpty())
             url.append(q_title.toString());
 
 
         url.append("%20artist:");
-        QUrl q_artist(artist.replace("&", "and"));
+        QUrl q_artist(this->artist);
         q_artist.toEncoded(QUrl::FullyEncoded);
 
         if (!q_artist.isEmpty())
@@ -192,23 +194,21 @@ QString ArtWork::getAlbumTitle_Spotify(QString artist, QString title)
 QString ArtWork::getAlbumTitle(QString artist, QString title) {
 
     QString title_album;
-    this->artist = artist;
+    this->artist = fixString(artist);
 
-    this->title=title;
+    this->title=fixString(title);
 
-    qDebug()<<"Going to try and get the album name for: "<< artist <<"as"<<title;
+    qDebug()<<"Going to try and get the album name for: "<<this->artist <<"as"<<this->title;
 
     url = "http://ws.audioscrobbler.com/2.0/";
 
-    title=fixString(title);
 
-
-    if (!artist.isEmpty() && !title.isEmpty()) {
+    if (!this->artist.isEmpty() && !this->title.isEmpty()) {
         url.append("?method=track.getinfo");
         url.append("&api_key=ba6f0bd3c887da9101c10a50cf2af133");
-        QUrl q_artist(artist.replace("&", "and"));
+        QUrl q_artist(this->artist);
         q_artist.toEncoded(QUrl::FullyEncoded);
-        QUrl q_title(title.replace("&", "and"));
+        QUrl q_title(this->title);
         q_title.toEncoded(QUrl::FullyEncoded);
 
         if (!q_artist.isEmpty())
@@ -279,7 +279,7 @@ QString ArtWork::getAlbumTitle(QString artist, QString title) {
     }
 
     qDebug()<<"the ALBUM TITLE FOR THE TRACK FINAL IS:"<<title_album;
-    return title_album;
+    return fixString(title_album);
 }
 
 
@@ -293,14 +293,15 @@ void ArtWork::setDataCover_title(QString artist, QString title) {
     qDebug()<<"Going to try and get the art cover from title: "<< title <<"by"<<artist;
     url = "http://ws.audioscrobbler.com/2.0/";
 
-    title=fixString(title);
+    this->title=fixString(title);
+    this->artist=fixString(artist);
 
-    if (!artist.isEmpty() && !title.isEmpty()) {
+    if (!this->artist.isEmpty() && !this->title.isEmpty()) {
         url.append("?method=track.getinfo");
         url.append("&api_key=ba6f0bd3c887da9101c10a50cf2af133");
-        QUrl q_artist(artist.replace("&", "and"));
+        QUrl q_artist(this->artist);
         q_artist.toEncoded(QUrl::FullyEncoded);
-        QUrl q_title(title.replace("&", "and"));
+        QUrl q_title(this->title);
         q_title.toEncoded(QUrl::FullyEncoded);
 
         if (!q_artist.isEmpty())
@@ -317,11 +318,11 @@ void ArtWork::setDataHead_asCover(QString artist) {
     this->artist = artist;
 
     url = "http://ws.audioscrobbler.com/2.0/";
-    if (artist.size() != 0) {
+    if (this->artist.size() != 0) {
         url.append("?method=artist.getinfo");
         url.append("&api_key=ba6f0bd3c887da9101c10a50cf2af133");
 
-        QUrl q_artist(artist);
+        QUrl q_artist(this->artist);
         q_artist.toEncoded(QUrl::FullyEncoded);
 
         if (!q_artist.isEmpty())
@@ -337,11 +338,11 @@ void ArtWork::setDataHead(QString artist, QString path) {
     this->artist = artist;
     this->path = path;
 
-    if (artist.size() != 0) {
+    if (this->artist.size() != 0) {
         url.append("?method=artist.getinfo");
         url.append("&api_key=ba6f0bd3c887da9101c10a50cf2af133");
 
-        QUrl q_artist(artist);
+        QUrl q_artist(this->artist);
         q_artist.toEncoded(QUrl::FullyEncoded);
 
         if (!q_artist.isEmpty())
@@ -355,12 +356,12 @@ void ArtWork::setDataCoverInfo(QString artist, QString album) {
     this->artist = artist;
     this->album = album;
 
-    if (artist.size() != 0 && album.size() != 0) {
+    if (this->artist.size() != 0 && this->album.size() != 0) {
         url.append("?method=album.getinfo");
         url.append("&api_key=ba6f0bd3c887da9101c10a50cf2af133");
-        QUrl q_artist(artist.replace("&", "and"));
+        QUrl q_artist(this->artist);
         q_artist.toEncoded(QUrl::FullyEncoded);
-        QUrl q_album(album.replace("&", "and"));
+        QUrl q_album(this->album);
         q_album.toEncoded(QUrl::FullyEncoded);
 
         if (!q_artist.isEmpty())
@@ -375,11 +376,11 @@ void ArtWork::setDataCoverInfo(QString artist, QString album) {
 void ArtWork::setDataHeadInfo(QString artist) {
     this->artist = artist;
 
-    if (artist.size() != 0) {
+    if (this->artist.size() != 0) {
         url.append("?method=artist.getinfo");
         url.append("&api_key=ba6f0bd3c887da9101c10a50cf2af133");
 
-        QUrl q_artist(artist);
+        QUrl q_artist(this->artist);
         q_artist.toEncoded(QUrl::FullyEncoded);
 
         if (!q_artist.isEmpty())
@@ -438,22 +439,22 @@ void ArtWork::saveArt(QByteArray array) {
     {
         QImage img;
         img.loadFromData(array);
-        QString name = album.size() > 0 ? artist + "_" + album : artist;
+        QString name = this->album.size() > 0 ? this->artist + "_" + this->album : this->artist;
         name.replace("/", "-");
         name.replace("&", "-");
         QString format = "JPEG";
-        if (img.save(path + name + ".jpg", format.toLatin1(), 100)) {
-            if (album.isEmpty())
-                emit artSaved(path + name + ".jpg", {artist});
+        if (img.save(this->path + name + ".jpg", format.toLatin1(), 100)) {
+            if (this->album.isEmpty())
+                emit artSaved(this->path + name + ".jpg", {this->artist});
             else
-                emit artSaved(path + name + ".jpg", {album, artist});
+                emit artSaved(this->path + name + ".jpg", {this->album, this->artist});
         } else {
             qDebug() << "couldn't save artwork";
 
             if (album.isEmpty())
-                emit artSaved("", {artist});
+                emit artSaved("", {this->artist});
             else
-                emit artSaved("", {album, artist});
+                emit artSaved("", {this->album, this->artist});
         }
     }
 }
@@ -753,7 +754,7 @@ void ArtWork::xmlInfo(QNetworkReply *reply) {
 }
 
 QByteArray ArtWork::selectCover(QString url) {
-    // qDebug()<<"trying to get the cover"<<url;
+    qDebug()<<"trying to get the cover [selectCover]"<<url;
     QNetworkAccessManager manager;
 
     QNetworkReply *reply = manager.get(QNetworkRequest(QUrl(url)));
