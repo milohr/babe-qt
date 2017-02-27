@@ -23,7 +23,7 @@ Album::Album(QString imagePath, int widgetSize, int widgetRadius, bool isDraggab
     this->border_radius=widgetRadius;
     this->setFixedSize(size,size);
     this->draggable=isDraggable;
-this->isPlain=plain;
+    this->isPlain=plain;
     this->imagePath=imagePath;
 
 
@@ -116,8 +116,8 @@ void Album::artIt_action()
     QString path = QFileDialog::getOpenFileName(this, tr("Select Music Files"),getCachePath(), tr("Image Files (*.png *.jpg *.bmp)"));
     if(!path.isEmpty())
     {
-       putPixmap(path);
-       emit changedArt(path,artist, album);
+        putPixmap(path);
+        emit changedArt(path,artist, album);
 
     }
 
@@ -140,19 +140,11 @@ void Album::paintEvent(QPaintEvent *e)
 
     QBrush brush(Qt::yellow);
 
-    if(imagePath.at(0)=="#")
-    {
-        QColor color;
-        color.setNamedColor(bgColor);
-        image.fill(color);
-        brush.setColor(color);
-    }else
-    {
 
-        if(!image.isNull())
-            brush.setTexture(image.scaled(size,size,Qt::KeepAspectRatio));
+    if(!image.isNull())
+        brush.setTexture(image.scaled(size,size,Qt::KeepAspectRatio));
 
-    }
+
 
     // brush.setStyle(Qt::no);
     QPainter painter(this);
@@ -223,11 +215,11 @@ void Album::setBGcolor(QString bgColor)
 {
     this->bgColor=bgColor;
 
-        QColor color;
-        color.setNamedColor(bgColor);
-        image.fill(color);
+    QColor color;
+    color.setNamedColor(bgColor);
+    image.fill(color);
 
-this->setPixmap(image);
+    this->setPixmap(image);
 
 
 }
@@ -292,7 +284,7 @@ void Album::enterEvent(QEvent *event)
     if(!isPlain)
     {
         playBtn->show();
-    playBtn->setToolTip("Play all - "+artist+" "+album);
+        playBtn->setToolTip("Play all - "+artist+" "+album);
     }
 
     event->accept();
@@ -310,8 +302,8 @@ void Album::leaveEvent(QEvent *event)
     //  qDebug()<<"left the album cover";
     if(!isPlain)
     {
-    playBtn->hide();
-    event->accept();
-    emit albumCoverLeft();
+        playBtn->hide();
+        event->accept();
+        emit albumCoverLeft();
     }
 }
