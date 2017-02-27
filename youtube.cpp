@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QStandardPaths>
 #include <QDirIterator>
+
 YouTube::YouTube(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::YouTube)
@@ -25,26 +26,22 @@ YouTube::~YouTube()
 
 void YouTube::searchPendingFiles()
 {
-    QStringList urls,ids;
-    QString url = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
-
-    QDirIterator it(url, QStringList() << "*.babe", QDir::Files);
+    QDirIterator it(extensionFetchingPath, QStringList() << "*.babe", QDir::Files);
     while (it.hasNext())
     {
         QString song = it.next();
 
-        urls<<song;
+        this->urls<<song;
         QFileInfo fileInfo(QFile(song).fileName());
         QString id=fileInfo.fileName().section(".",0,-2);
-         ids<<id;
+        this->ids<<id;
 
     }
 
     if (!urls.isEmpty())
     {
 
-        fetch(ids);
-        for(auto url:urls) if(QFile::remove(url)) qDebug()<<"the urls are going to be cleaned up"<< url;
+        fetch(ids,urls);
         qDebug()<<ids;
     }
 }
@@ -53,12 +50,16 @@ void YouTube::on_goBtn_clicked()
 {
     if(!ui->lineEdit->text().isEmpty())
     {
-        fetch({ui->lineEdit->text()});
+        fetch({ui->lineEdit->text()},{});
     }
 }
 
-void YouTube::fetch(QStringList ids)
+void YouTube::fetch(QStringList ids,QStringList urls)
 {
+    this->urls=urls;
+    this->ids=ids;
+    //cont=ids.size();
+    //qDebug()<<"fetching list size: "<<cont;
     for(auto id: ids)
     {
         process = new QProcess(this);
@@ -70,12 +71,15 @@ void YouTube::fetch(QStringList ids)
         ui->label->show();
         movie->start();
         ui->lineEdit->setEnabled(false);
+
     }
+     for(auto url:urls) if(QFile::remove(url)) qDebug()<<"the urls are going to be cleaned up"<< url;
 
 }
 
 void YouTube::processFinished_totally(int state)
 {
+    ids.removeAt(cont++);
     qDebug()<<"process finished totally"<<state;
     ui->lineEdit->clear();
     movie->stop();
@@ -83,7 +87,14 @@ void YouTube::processFinished_totally(int state)
     ui->goBtn->show();
     ui->textBrowser->hide(); ui->frame_3->hide();
     ui->lineEdit->setEnabled(true);
-    emit youtubeTrackReady(true);
+    qDebug()<<"ids still to process: "<<ids;
+    //qDebug()<<ids.size();
+    if(ids.isEmpty())
+    {
+
+        emit youtubeTrackReady(true);
+    }
+
 }
 
 
@@ -95,6 +106,7 @@ void YouTube::processFinished()
     processOutput = process->readAllStandardOutput();
     ui->textBrowser->clear();
     ui->textBrowser->append(QString(processOutput));
-    qDebug() << "Output was " << QString(processOutput);
+    if (!QString(processOutput).isEmpty())
+        qDebug() << "Output: " << QString(processOutput);
 
 }

@@ -142,25 +142,27 @@ void settings::handleDirectoryChanged_extension()
     while (it.hasNext())
     {
         QString song = it.next();
-
         urls<<song;
-        QFileInfo fileInfo(QFile(song).fileName());
+    }
+
+    for(auto url:urls)
+    {
+        QFileInfo fileInfo(QFile(url).fileName());
         QString id=fileInfo.fileName().section(".",0,-2);
         ids<<id;
-        Notify nof;
-        nof.notify("Song recived!","wait a sec while the track ["+id+"] is added to your collection :)");
-
-
     }
 
     if (!urls.isEmpty())
     {
+        Notify nof;
+        nof.notify("Song recived!","wait a sec while the track ["+ids.join("\n")+"] is added to your collection :)");
+
         auto ytFetch = new YouTube();
         connect(ytFetch,SIGNAL(youtubeTrackReady(bool)),this,SLOT(youtubeTrackReady(bool)));
 
-        ytFetch->fetch(ids);
-        for(auto url:urls) if(QFile::remove(url)) qDebug()<<"the urls are going to be cleaned up"<< url;
-        qDebug()<<ids;
+        ytFetch->fetch(ids,urls);
+       // qDebug()<<ids;
+        qDebug()<<urls;
     }
 }
 

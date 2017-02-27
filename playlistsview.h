@@ -7,6 +7,7 @@
 #include <QToolButton>
 #include <QGridLayout>
 #include <QStandardPaths>
+#include "baeUtils.h"
 namespace Ui {
 class PlaylistsView;
 }
@@ -32,7 +33,7 @@ public:
     QString currentPlaylist;
     QStringList playlists;
     QStringList moods;
-    QString youtubeCachePath=QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation)+"/babe/youtube/";
+    QString youtubeCachePath=getYoutubeCachePath();
 
    // QToolButton *removeBtn;
 

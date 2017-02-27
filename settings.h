@@ -17,6 +17,7 @@
 #include <QFileSystemWatcher>
 #include <QStandardPaths>
 #include <QTimer>
+#include "baeUtils.h"
 
 namespace Ui {
 class settings;
@@ -31,11 +32,11 @@ public:
     explicit settings(QWidget *parent = 0);
     ~settings();
 
-    const QString settingPath= QStandardPaths::writableLocation(QStandardPaths::ConfigLocation)+"/babe/";
-    const QString collectionDBPath=QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation)+"/babe/";
-    const QString cachePath=QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation)+"/babe/";
-    const  QString youtubeCachePath=QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation)+"/babe/youtube/";
-    QString extensionFetchingPath=QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
+    const QString settingPath= getSettingPath();
+    const QString collectionDBPath=getCollectionDBPath();
+    const QString cachePath=getCachePath();
+    const  QString youtubeCachePath=getYoutubeCachePath();
+    QString extensionFetchingPath=getExtensionFetchingPath();
     bool checkCollection();
     CollectionDB &getCollectionDB();
     int getToolbarIconSize()  {return iconSize;}
@@ -85,7 +86,7 @@ private:
     Ui::settings *ui;
 
 
-    const QString notifyDir= QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
+    const QString notifyDir= getNotifyDir();
     const QString collectionDBName = "collection.db";
     const QString settingsName = "settings.conf";
 

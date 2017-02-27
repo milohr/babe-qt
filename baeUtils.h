@@ -4,7 +4,7 @@
 #include "string"
 #include <QString>
 #include <QDebug>
-
+#include <QStandardPaths>
 using namespace std;
 
 
@@ -30,7 +30,12 @@ static string getNameFromLocation(string str)
     return ret;
 }
 
-
+static QString getSettingPath() { return QStandardPaths::writableLocation(QStandardPaths::ConfigLocation)+"/babe/";}
+static QString getCollectionDBPath() { return QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation)+"/babe/";}
+static QString getCachePath() {return QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation)+"/babe/";}
+static QString getYoutubeCachePath() { return QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation)+"/babe/youtube/";}
+static QString getExtensionFetchingPath() { return QStandardPaths::writableLocation(QStandardPaths::DownloadLocation); }
+static QString getNotifyDir(){return QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);}
 
 static QString fixTitle(QString title,QString s,QString e)
 {

@@ -7,6 +7,7 @@
 #include<QByteArray>
 #include <QMovie>
 #include <settings.h>
+#include "baeUtils.h"
 
 namespace Ui {
 class YouTube;
@@ -18,9 +19,12 @@ class YouTube : public QWidget
 
 public:
     explicit YouTube(QWidget *parent = 0);
-    void fetch(QStringList ids);
+    void fetch(QStringList ids, QStringList urls);
     ~YouTube();
     void searchPendingFiles();
+    QStringList ids;
+    QStringList urls;
+
 
 private slots:
     void on_goBtn_clicked();
@@ -29,10 +33,12 @@ private slots:
 
 private:
     Ui::YouTube *ui;
+    int cont=-1;
     QProcess *process;
     QMovie *movie;
     const QString ydl="youtube-dl --metadata-from-title \"%(artist)s - %(title)s\"  --format m4a  --add-metadata";
-    const QString cachePath=QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation)+"/babe/youtube";
+    const QString cachePath=getYoutubeCachePath();
+    const QString extensionFetchingPath = getExtensionFetchingPath();
 
 signals:
    void  youtubeTrackReady(bool state);

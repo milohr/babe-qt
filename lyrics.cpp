@@ -7,7 +7,7 @@
 #include <QUrl>
 #include <QDomDocument>
 #include <QRegExp>
-#include <baeUtils.h>
+#include "baeUtils.h"
 
 
 Lyrics::Lyrics(QObject *parent) : QObject(parent)

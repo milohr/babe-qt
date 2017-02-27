@@ -9,6 +9,7 @@
 #include <QPainter>
 #include <QImage>
 #include <QFileDialog>
+#include "baeUtils.h"
 
 Album::Album(QString imagePath, int widgetSize, int widgetRadius, bool isDraggable,bool plain, QWidget *parent) : QLabel(parent)
 {
@@ -112,7 +113,7 @@ void Album::babeIt_action()
 void Album::artIt_action()
 {
     qDebug()<<"Change art of album"<<this->artist<<this->album;
-    QString path = QFileDialog::getOpenFileName(this, tr("Select Music Files"), tr("Image Files (*.png *.jpg *.bmp)"));
+    QString path = QFileDialog::getOpenFileName(this, tr("Select Music Files"),getCachePath(), tr("Image Files (*.png *.jpg *.bmp)"));
     if(!path.isEmpty())
     {
        putPixmap(path);
