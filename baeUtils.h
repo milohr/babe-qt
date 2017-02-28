@@ -45,7 +45,11 @@ static QString fixTitle(QString title,QString s,QString e)
 
         if(title.at(i)==s)
         {
-            while(title.at(i)!=e) i++;
+            while(title.at(i)!=e)
+            {
+                if(i==title.size()-1) break;
+                else i++;
+            }
         }else
         {
             newTitle+=title.at(i);
@@ -77,9 +81,9 @@ static QString fixString(QString title)
     //title.remove(QRegExp(QString::fromUtf8("[·-`~!@#$%^&*()_—+=|:;<>«»,.?/{}\'\"\\\[\\\]\\\\]")));
 
 
-    title=title.contains("(")?fixTitle(title,"(",")"):title;
-    title=title.contains("[")?fixTitle(title,"[","]"):title;
-    title=title.contains("{")?fixTitle(title,"{","}"):title;
+    title=title.contains("(")&&title.contains(")")?fixTitle(title,"(",")"):title;
+    title=title.contains("[")&&title.contains("]")?fixTitle(title,"[","]"):title;
+    title=title.contains("{")&&title.contains("}")?fixTitle(title,"{","}"):title;
     title=title.contains("ft")?removeSubstring(title, "ft"):title;
     title=title.contains("ft.")?removeSubstring(title, "ft."):title;
     title=title.contains("featuring")?removeSubstring(title, "featuring"):title;
