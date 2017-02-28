@@ -79,15 +79,19 @@ void YouTube::fetch(QStringList ids,QStringList urls)
 
 void YouTube::processFinished_totally(int state)
 {
-    ids.removeAt(cont++);
-    qDebug()<<"process finished totally"<<state;
+
+    qDebug()<<"process finished totally"<<state<<process->arguments();
+    QString doneId=process->arguments().at(process->arguments().size()-1);
+    ids.removeAll(doneId);
+    qDebug()<<"need to delete the id="<<doneId;
+      qDebug()<<"ids left to process: "<<ids;
     ui->lineEdit->clear();
     movie->stop();
     ui->label->hide();
     ui->goBtn->show();
     ui->textBrowser->hide(); ui->frame_3->hide();
     ui->lineEdit->setEnabled(true);
-    qDebug()<<"ids still to process: "<<ids;
+
     //qDebug()<<ids.size();
     if(ids.isEmpty())
     {
