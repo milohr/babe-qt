@@ -1,10 +1,15 @@
 #ifndef NOTIFY_H
 #define NOTIFY_H
-#include <QObject>
-#include<QByteArray>
-#include <knotification.h>
 
+#include <QObject>
+#include <QByteArray>
+#include <klocalizedstring.h>
+#include <KNotifyConfig>
+#include <KNotification>
+#include <QStandardPaths>
+#include <QPixmap>
 #include <QDebug>
+
 class Notify : public QObject
 {
     Q_OBJECT

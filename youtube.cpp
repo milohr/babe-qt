@@ -1,8 +1,6 @@
 #include "youtube.h"
 
-#include <QDebug>
-#include <QStandardPaths>
-#include <QDirIterator>
+
 
 YouTube::YouTube(QObject *parent) : QObject(parent)
 {
@@ -56,7 +54,7 @@ void YouTube::fetch(QStringList ids_,QStringList urls_)
         if(!this->ids.contains(id)) this->ids<<id;
         auto process = new QProcess(this);
         process->setWorkingDirectory(cachePath);
-        connect(process, SIGNAL(readyReadStandardOutput()), this, SLOT(processFinished()));
+        //connect(process, SIGNAL(readyReadStandardOutput()), this, SLOT(processFinished()));
         //connect(process, SIGNAL(finished(int)), this, SLOT(processFinished_totally(int)));
         connect(process, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
             [=](int exitCode, QProcess::ExitStatus exitStatus){

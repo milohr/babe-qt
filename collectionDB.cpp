@@ -1,13 +1,5 @@
 #include "collectionDB.h"
-#include <QSqlQuery>
-#include <QSqlError>
-#include <QSqlRecord>
-#include <QDebug>
-#include <track.h>
-#include <QSqlDriver>
-#include <taginfo.h>
-#include <QFileInfo>
-#include <QDir>
+
 
 CollectionDB::CollectionDB()
 {

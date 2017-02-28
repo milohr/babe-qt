@@ -1,8 +1,7 @@
 #include "infoview.h"
 #include "ui_infoview.h"
-#include <QDebug>
-#include <QHBoxLayout>
-#include <QToolButton>
+
+
 InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView) {
     ui->setupUi(this);
     artist = new Album(":Data/data/cover.png", 120, 100,false,false,this);

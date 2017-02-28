@@ -17,41 +17,7 @@
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include <QWidget>
-#include <QToolBar>
-#include <QVBoxLayout>
-#include <QLabel>
-#include <QPixmap>
-#include <QPushButton>
-#include <QStatusBar>
-#include <QStringList>
-#include <QTableWidgetItem>
-#include <QMessageBox>
-#include <QDir>
-#include <QDirIterator>
-#include <QStringList>
-#include "collectionDB.h"
-#include <QSqlQuery>
-#include <QFileInfo>
-#include <QMimeDatabase>
-#include <QMimeType>
-#include <QMimeData>
-#include <QMenu>
-#include <QWidgetAction>
-#include <QButtonGroup>
-#include <QCheckBox>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QEvent>
-#include <QDragMoveEvent>
-#include <QDropEvent>
-#include <QTimer>
-#include <scrolltext.h>
-#include <QBitmap>
-#include <QPainter>
-#include <album.h>
-#include "artwork.h"
-#include "notify.h"
+
 
 
 
@@ -730,12 +696,12 @@ void	MainWindow::dragLeaveEvent(QDragLeaveEvent *event){
     event->accept();
 }
 
-void	MainWindow::dragMoveEvent(QDragMoveEvent *event)
+void MainWindow::dragMoveEvent(QDragMoveEvent *event)
 {
     event->accept();
 }
 
-void	MainWindow::dropEvent(QDropEvent *event)
+void MainWindow::dropEvent(QDropEvent *event)
 {
     event->accept();
 
@@ -1420,9 +1386,9 @@ void MainWindow::loadCover(QString artist, QString album, QString title)
 
                     QPixmap pix;
                     if (!queryCover.value(2).toString().isEmpty())  pix.load(queryCover.value(2).toString());
-                    auto *nof = new Notify();
+
                     //connect(nof,SIGNAL(babeSong(QStringList)),this,SLOT(babeIt(QStringList)));
-                    nof->notifySong(title,artist,album,current_song_url,pix);
+                    nof.notifySong(title,artist,album,current_song_url,pix);
                 }
 
             }else
@@ -1469,8 +1435,8 @@ void MainWindow::loadCover(QString artist, QString album, QString title)
                         infoTable->artist->putPixmap(queryCover.value(2).toString());
                         QPixmap pix;
                         pix.load(queryCover.value(2).toString());
-                        auto *nof = new Notify();
-                        nof->notifySong(title,artist,album,current_song_url,pix);
+
+                        nof.notifySong(title,artist,album,current_song_url,pix);
                     }else
                     {
                         album_art->putPixmap( QString(":Data/data/cover.svg"));
@@ -1482,8 +1448,8 @@ void MainWindow::loadCover(QString artist, QString album, QString title)
             }else
             {
                 QPixmap pix;
-                auto *nof = new Notify();
-                nof->notifySong(title,artist,album,current_song_url, pix);
+
+                nof.notifySong(title,artist,album,current_song_url, pix);
                 emit getCover(artist,album,title);
             }
         }
@@ -1500,8 +1466,8 @@ void MainWindow::addToQueue(QString url)
     queueList.add({url});
     queueTable->flushTable();
 
-    auto *nof = new Notify();
-    nof->notify("Song added to Queue",url);
+
+    nof.notify("Song added to Queue",url);
 
     for(auto a:queue_list)queueTable->populateTableView("SELECT * FROM tracks WHERE location = \""+a+"\"");
     queueTable->setSortingEnabled(false);
@@ -1697,8 +1663,7 @@ void MainWindow::collectionDBFinishedAdding(bool state)
         qDebug()<<"now it i time to put the tracks in the table ;)";
         //settings_widget->getCollectionDB().closeConnection();
         refreshTables();
-        auto *nof = new Notify();
-        nof->notify("Songs added to collection","finished writting new songs to the collection :)");
+
     }
 }
 
@@ -1741,10 +1706,7 @@ void MainWindow::babeIt(QList<QStringList> list)
 
             unbabeIt(url);
 
-
-
-            auto *nof = new Notify();
-            nof->notify("Song unBabe'd it",url);
+            nof.notify("Song unBabe'd it",url);
         }else
         {
 
@@ -1753,8 +1715,8 @@ void MainWindow::babeIt(QList<QStringList> list)
                 if(settings_widget->getCollectionDB().insertInto("tracks","babe",url,1))
                 {
                     ui->fav_btn->setIcon(QIcon(":Data/data/loved.svg"));
-                    auto *nof = new Notify();
-                    nof->notify("Song Babe'd it",url);
+
+                    nof.notify("Song Babe'd it",url);
                     QList<QStringList> item;
                     item<<track;
                     addToPlaylist(item,true);
@@ -1774,9 +1736,7 @@ void MainWindow::babeIt(QList<QStringList> list)
 
                 if(addToCollectionDB_t({url},"1"))
                 {
-
-                    auto *nof = new Notify();
-                    nof->notify("Song Babe'd it",url);
+                    nof.notify("Song Babe'd it",url);
                 }
 
                 //ui->tableWidget->insertRow(ui->tableWidget->rowCount());
@@ -1826,8 +1786,8 @@ void MainWindow::scanNewDir(QString url,QString babe)
 
         if(addToCollectionDB_t(list,babe))
         {
-            auto *nof = new Notify();
-            nof->notify("New music added to collection",listToString(list));
+
+            nof.notify("New music added to collection",listToString(list));
         }
 
     }

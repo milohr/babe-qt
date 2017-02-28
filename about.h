@@ -2,6 +2,10 @@
 #define ABOUT_H
 
 #include <QDialog>
+#include <QDebug>
+#include <QMessageBox>
+#include <QDesktopServices>
+#include <QFont>
 
 namespace Ui {
 class About;

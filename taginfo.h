@@ -1,10 +1,11 @@
 #ifndef TAGINFO_H
 #define TAGINFO_H
-#include<taglib/taglib.h>
-#include<taglib/tag.h>
-#include<taglib/fileref.h>
+#include <taglib/taglib.h>
+#include <taglib/tag.h>
+#include <taglib/fileref.h>
 #include <QString>
-
+#include "artwork.h"
+#include "baeUtils.h"
 
 class TagInfo
 {

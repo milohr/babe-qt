@@ -1,9 +1,17 @@
 #ifndef PLAYLIST_H
 #define PLAYLIST_H
 
-#include "QStringList"
 #include "vector"
 #include "track.h"
+#include <fstream>
+#include <QDebug>
+#include <QStringList>
+#include <QFileInfo>
+#include <QMimeDatabase>
+#include <QMimeType>
+#include <QString>
+#include <taginfo.h>
+
 //#include <QtMultimedia/QMediaPlayer>
 
 class Playlist

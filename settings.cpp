@@ -1,23 +1,6 @@
 #include "settings.h"
-#include "QDebug"
 #include "ui_settings.h"
-#include <QDebug>
-#include <QDirIterator>
-#include <QFileDialog>
-#include <QFrame>
-#include <QGridLayout>
-#include <QMessageBox>
-#include <QStringList>
-#include <QThread>
-#include <artwork.h>
-#include <collectionDB.h>
-#include <fstream>
-#include <iostream>
-#include <QFileDialog>
-#include "notify.h"
-#include <QFile>
-#include "youtube.h"
-#include <QDirIterator>
+
 
 settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
     ui->setupUi(this);
@@ -101,7 +84,7 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
     movie = new QMovie(":Data/data/ajax-loader.gif");
     ui->label->setMovie(movie);
     ui->label->hide();
-    ui->label2->hide();
+
     watcher = new QFileSystemWatcher(this);
     // watcher->addPath(youtubeCachePath);
 
@@ -157,7 +140,7 @@ void settings::handleDirectoryChanged_extension()
 
     if (!urls.isEmpty())
     {
-        Notify nof;
+
         nof.notify("Song recived!","wait a sec while the track ["+ids.join("\n")+"] is added to your collection :)");
 
         ytFetch->fetch(ids,urls);
@@ -528,17 +511,12 @@ void settings::finishedAddingTracks(bool state) {
         ui->progressBar->hide();
         ui->progressBar->setValue(0);
 
-        ui->label2->show();
-        movie->start();
-
+        nof.notify("Songs added to collection","finished writting new songs to the collection :)");
         emit collectionDBFinishedAdding(true);
+
 
         qDebug() << "good to hear it finished yay! now going to fetch artwork";
         fetchArt();
-
-        movie->stop();
-        ui->label->hide();
-        ui->label->hide();
 
         collectionWatcher();
         // collection_db.closeConnection();
@@ -558,7 +536,12 @@ void settings::finishedAddingTracks(bool state) {
 
 void settings::fetchArt() {
 
+
+    nof.notify("Fetching art","this might take some time depending on your collection size and internet connection speed...");
+
+
     ui->label->show();
+     movie->start();
     QSqlQuery query_Covers =
             collection_db.getQuery("SELECT * FROM albums WHERE art = ''");
     QSqlQuery query_Heads =
@@ -606,8 +589,10 @@ void settings::fetchArt() {
 
         artistHead.setDataHead(artist, cachePath);
     }
-    Notify nof;
-    nof.notify("Finished fetching art","the artwork for your collection is ready :)");
+
+    nof.notify("Finished fetching art","the artwork for your collection is now ready :)");
+    movie->stop();
+    ui->label->hide();
 
     // emit collectionDBFinishedAdding(true);
 }
@@ -630,4 +615,13 @@ void settings::on_debugBtn_clicked()
 void settings::on_ytBtn_clicked()
 {
 
+}
+
+void settings::on_fetchBtn_clicked()
+{
+    if(!ui->fetch->text().isEmpty())
+    {
+        ytFetch->fetch({ui->fetch->text()});
+        ui->fetch->clear();
+    }
 }

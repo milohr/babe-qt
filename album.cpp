@@ -1,15 +1,5 @@
 #include "album.h"
-#include <QEvent>
-#include <QMouseEvent>
-#include <QDebug>
-#include <QPixmap>
-#include <QHBoxLayout>
-#include <scrolltext.h>
-#include <QMenu>
-#include <QPainter>
-#include <QImage>
-#include <QFileDialog>
-#include "baeUtils.h"
+
 
 Album::Album(QString imagePath, int widgetSize, int widgetRadius, bool isDraggable,bool plain, QWidget *parent) : QLabel(parent)
 {

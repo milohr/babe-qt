@@ -1,6 +1,5 @@
 #include "playlistsview.h"
-#include "colortag.h"
-#include <mainwindow.h>
+
 
 PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent) {
     layout = new QGridLayout();

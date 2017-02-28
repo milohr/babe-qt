@@ -2,10 +2,18 @@
 #define ALBUM_H
 #include <QLabel>
 #include <QString>
-#include <scrolltext.h>
 #include <QPixmap>
 #include <QToolButton>
 #include <QObject>
+#include <QEvent>
+#include <QMouseEvent>
+#include <QDebug>
+#include <QHBoxLayout>
+#include <QMenu>
+#include <QPainter>
+#include <QFileDialog>
+#include "baeUtils.h"
+#include "scrolltext.h"
 
 class Album : public QLabel
 {

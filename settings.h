@@ -5,21 +5,29 @@
 #include <QString>
 #include <QStringList>
 #include <QDebug>
-#include <QThread>
 #include <QDir>
+#include <QDirIterator>
+#include <QFile>
+#include <QFileDialog>
 #include <QFileSystemWatcher>
 #include <QLabel>
 #include <QMovie>
-#include <QStringList>
 #include <QFileSystemWatcher>
-#include <QStandardPaths>
 #include <QTimer>
+#include <QGridLayout>
+#include <fstream>
+#include <iostream>
 
+#include "notify.h"
 #include "baeUtils.h"
 #include "youtube.h"
 #include "playlist.h"
 #include "about.h"
 #include "collectionDB.h"
+#include "artwork.h"
+
+
+
 
 namespace Ui {
 class settings;
@@ -58,7 +66,7 @@ public:
         s16,s22,s24
     };
     //enum albums { ALBUM_TITLE, ARTIST, ART};
-   // enum artists { ARTIST_TITLE, ART};
+    // enum artists { ARTIST_TITLE, ART};
 
 private slots:
 
@@ -74,6 +82,8 @@ private slots:
     void on_debugBtn_clicked();
 
     void on_ytBtn_clicked();
+
+    void on_fetchBtn_clicked();
 
 public slots:
 
@@ -93,15 +103,16 @@ private:
     const QString collectionDBName = "collection.db";
     const QString settingsName = "settings.conf";
 
+    Notify nof;
     YouTube *ytFetch;
-     YouTube *youtubeTable;
+
     int iconSize = 16;
     QStringList collectionPaths={};
     QLabel *artFetcherNotice;
     QMovie *movie;
     QString pathToRemove;
-   // QFileSystemWatcher watcher;
-    QThread* thread;
+    // QFileSystemWatcher watcher;
+    //QThread* thread;
     About *about_ui;
     QStringList files;
     QStringList dirs;

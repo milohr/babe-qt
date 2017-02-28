@@ -1,11 +1,5 @@
 #include "notify.h"
 
-#include <klocalizedstring.h>
-#include <KNotifyConfig>
-#include <KNotification>
-#include <kconfig.h>
-#include <QStandardPaths>
-#include <QPixmap>
 Notify::Notify(QObject *parent) : QObject(parent)
 {
     //qDebug()<<QStandardPaths::GenericConfigLocation;

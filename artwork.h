@@ -9,6 +9,12 @@
 #include <QWidget>
 #include <QObject>
 #include <QNetworkAccessManager>
+#include <QDomDocument>
+#include <QNetworkReply>
+#include <QNetworkRequest>
+#include <QJsonDocument>
+#include <QVariantMap>
+#include "baeUtils.h"
 
 class ArtWork : public QObject
 {

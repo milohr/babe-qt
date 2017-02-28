@@ -4,13 +4,18 @@
 #include <QWidget>
 #include <QSqlQuery>
 #include <QGridLayout>
-#include <album.h>
 #include <QFrame>
-#include <collectionDB.h>
-#include <playlist.h>
+#include <QListWidgetItem>
 #include <QListWidget>
-#include <babetable.h>
 #include <QComboBox>
+#include <QHeaderView>
+#include <QToolTip>
+#include <QDebug>
+#include "scrolltext.h"
+#include "album.h"
+#include "babetable.h"
+#include "collectionDB.h"
+
 namespace Ui {
 class AlbumsView;
 }

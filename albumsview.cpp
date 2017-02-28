@@ -1,16 +1,7 @@
 #include "albumsview.h"
-#include <QHeaderView>
-#include <QGridLayout>
-#include <album.h>
-#include <QFrame>
-#include <QScrollArea>
-#include <QSqlQuery>
-#include <QDebug>
-#include <playlist.h>
-#include <scrolltext.h>
-#include <QListWidgetItem>
-#include "mainwindow.h"
-#include <QToolTip>
+
+
+
 AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     QWidget(parent)
 {

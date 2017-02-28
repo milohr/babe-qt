@@ -1,14 +1,5 @@
 #include "artwork.h"
-#include <QApplication>
-#include <QDomDocument>
-#include <QNetworkAccessManager>
-#include <QNetworkReply>
-#include <QNetworkRequest>
-#include <QNetworkRequest>
-#include <QUrl>
-#include <QJsonDocument>
-#include <QVariantMap>
-#include "baeUtils.h"
+
 
 ArtWork::ArtWork(QObject *parent) : QObject(parent) {
     url = "http://ws.audioscrobbler.com/2.0/";

@@ -1,15 +1,5 @@
 #include "playlist.h"
-#include <fstream>
-// include "utils.h"
 
-#include <QDebug>
-
-#include "track.h"
-#include <QFileInfo>
-#include <QMimeDatabase>
-#include <QMimeType>
-#include <QString>
-#include <taginfo.h>
 
 Playlist::Playlist() {}
 

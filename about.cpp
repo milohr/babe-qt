@@ -1,9 +1,6 @@
 #include "about.h"
 #include "ui_about.h"
-#include <QDebug>
-#include <QMessageBox>
-#include <QDesktopServices>
-#include <QFont>
+
 
 About::About(QWidget *parent) :
     QDialog(parent),

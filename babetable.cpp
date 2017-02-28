@@ -1,18 +1,5 @@
 #include "babetable.h"
-#include <QButtonGroup>
-#include <QEvent>
-#include <QFileInfo>
-#include <QHBoxLayout>
-#include <QHeaderView>
-#include <QMenu>
-#include <QMessageBox>
-#include <QMouseEvent>
-#include <QTableWidget>
-#include <QTableWidgetItem>
-#include <QWidgetAction>
-#include <settings.h>
-#include <QColorDialog>
-#include <notify.h>
+
 
 BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
 
@@ -367,8 +354,8 @@ void BabeTable::populateTableView(QString indication, bool descriptiveTitle) {
             // QMessageBox::about(this,"Removing missing
             // files",missingFiles.join("\n"));
 
-            auto *nof = new Notify();
-            nof->notifyUrgent("Removing missing files...",missingFiles.join("\n"));
+           Notify nof;
+            nof.notifyUrgent("Removing missing files...",missingFiles.join("\n"));
 
             for (auto file_r : missingFiles)
             {

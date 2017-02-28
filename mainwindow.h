@@ -4,25 +4,41 @@
 #include <QMainWindow>
 #include <QGridLayout>
 #include <QtMultimedia/QMediaPlayer>
-#include "playlist.h"
-#include "QFileDialog"
+#include <QFileDialog>
 #include <QLabel>
 #include <QSlider>
-#include "QTimer"
+#include <QTimer>
 #include <QStackedWidget>
 #include <QToolBar>
+#include <QFileInfo>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QEvent>
+#include <QDragMoveEvent>
+#include <QDropEvent>
+#include <QWidget>
+#include <QStringList>
+#include <QMenu>
+
+#include <QPixmap>
+#include <QDir>
+#include <QDirIterator>
+#include <QSqlQuery>
+#include <QFileInfo>
+
+#include "albumsview.h"
+#include "babetable.h"
+#include "playlistsview.h"
+#include "artwork.h"
+#include "infoview.h"
+#include "lyrics.h"
+#include "album.h"
+#include "mpris2.h"
+#include "notify.h"
+#include "playlist.h"
 #include "settings.h"
 #include "collectionDB.h"
-#include <albumsview.h>
-#include <babetable.h>
-#include<QListWidgetItem>
-#include <album.h>
-#include <playlistsview.h>
-#include <artwork.h>
-#include <infoview.h>
-#include <lyrics.h>
-#include <QFileInfo>
-#include "mpris2.h"
+
 
 
 
@@ -155,6 +171,7 @@ private slots:
 private:
 
     Ui::MainWindow *ui;
+    Notify nof;
     ArtWork *coverArt;
     ArtWork *artistHead;
     Lyrics *lyrics;

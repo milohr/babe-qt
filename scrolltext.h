@@ -4,6 +4,7 @@
 #include "scrolltext.h"
 #include <QLabel>
 #include <QTimer>
+#include <QPainter>
 
 class ScrollText : public QLabel
 {

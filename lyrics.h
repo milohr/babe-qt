@@ -5,6 +5,11 @@
 #include <QWidget>
 #include <QObject>
 #include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QNetworkReply>
+#include <QDomDocument>
+#include <QRegExp>
+#include "baeUtils.h"
 
 class Lyrics : public QObject
 {

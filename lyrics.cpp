@@ -1,13 +1,5 @@
 #include "lyrics.h"
-#include <QNetworkRequest>
-#include <QNetworkReply>
-#include <QApplication>
-#include <QNetworkAccessManager>
-#include <QNetworkRequest>
-#include <QUrl>
-#include <QDomDocument>
-#include <QRegExp>
-#include "baeUtils.h"
+
 
 
 Lyrics::Lyrics(QObject *parent) : QObject(parent)

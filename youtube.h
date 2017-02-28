@@ -2,10 +2,11 @@
 #define YOUTUBE_H
 #include <QObject>
 #include <QWidget>
-#include <QStandardPaths>
 #include <QProcess>
-#include<QByteArray>
+#include <QByteArray>
 #include <QMovie>
+#include <QDebug>
+#include <QDirIterator>
 
 #include "baeUtils.h"
 
@@ -17,7 +18,7 @@ class YouTube : public QObject
 
 public:
     explicit YouTube(QObject *parent = 0);
-    void fetch(QStringList ids_, QStringList urls_);
+    void fetch(QStringList ids_, QStringList urls_={});
     ~YouTube();
     void searchPendingFiles();
     QStringList ids;

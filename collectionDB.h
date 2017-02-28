@@ -4,16 +4,17 @@
 #include <QStringList>
 #include <QList>
 #include <QSqlDatabase>
-#include <track.h>
-#include <QThread>
 #include <QWidget>
 #include <typeinfo>
-#include<QDebug>
+#include <QDebug>
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QSqlRecord>
 #include <QSqlDriver>
 #include <QFileInfo>
+#include <QDir>
+#include "track.h"
+#include "taginfo.h"
 
 class CollectionDB : public QObject
 {

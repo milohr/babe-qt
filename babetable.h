@@ -3,14 +3,26 @@
 
 #include <QWidget>
 #include <QStringList>
-#include <collectionDB.h>
 #include <QTableWidget>
+#include <QTableWidgetItem>
+#include <QWidgetAction>
 #include <QToolButton>
 #include <QMouseEvent>
+#include <QEvent>
+
 #include <QMenu>
 #include <QFileInfo>
 #include <QVector>
+#include <QButtonGroup>
+
+#include <QFileInfo>
+#include <QHBoxLayout>
+#include <QHeaderView>
+
+#include "settings.h"
+#include "notify.h"
 #include "album.h"
+#include "collectionDB.h"
 
 namespace Ui {
 class BabeTable;

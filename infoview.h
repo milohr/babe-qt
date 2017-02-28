@@ -2,8 +2,11 @@
 #define INFOVIEW_H
 
 #include <QWidget>
-#include <album.h>
 #include <QToolButton>
+#include <QDebug>
+#include <QHBoxLayout>
+#include <QToolButton>
+#include "album.h"
 
 namespace Ui {
 class InfoView;

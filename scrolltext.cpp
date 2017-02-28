@@ -1,5 +1,5 @@
 #include "scrolltext.h"
-#include <QPainter>
+
 ScrollText::ScrollText(QWidget *parent) {
 
     Q_UNUSED(parent);
