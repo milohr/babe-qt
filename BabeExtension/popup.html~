@@ -9,12 +9,10 @@
     <body>
         <div id="btns">
             <button class="btn" id="add">Add to collection</button>
-            <button class="btn" id="babe">Babe It!</button>      
-            
-             <div class="btn2" id="optionsBtn"><a href="options.html">Options</a></div>
+            <button class="btn" id="babe">Babe It!</button>            
         </div>
         
-       
+        <div class="btn2" id="optionsBtn"><a href="options.html">Options</a></div>
         
         
         <div ><p id="warning"> </p></div>

@@ -2,13 +2,10 @@
 #define SETTINGS_H
 
 #include <QWidget>
-#include<QString>
-#include<QStringList>
-#include "collectionDB.h"
-#include<QDebug>
+#include <QString>
+#include <QStringList>
+#include <QDebug>
 #include <QThread>
-#include "playlist.h"
-#include <about.h>
 #include <QDir>
 #include <QFileSystemWatcher>
 #include <QLabel>
@@ -17,7 +14,12 @@
 #include <QFileSystemWatcher>
 #include <QStandardPaths>
 #include <QTimer>
+
 #include "baeUtils.h"
+#include "youtube.h"
+#include "playlist.h"
+#include "about.h"
+#include "collectionDB.h"
 
 namespace Ui {
 class settings;
@@ -50,6 +52,7 @@ public:
     CollectionDB collection_db;
     bool fileExists(QString url);
     bool youtubeTrackDone=false;
+
     enum iconSizes
     {
         s16,s22,s24
@@ -90,6 +93,8 @@ private:
     const QString collectionDBName = "collection.db";
     const QString settingsName = "settings.conf";
 
+    YouTube *ytFetch;
+     YouTube *youtubeTable;
     int iconSize = 16;
     QStringList collectionPaths={};
     QLabel *artFetcherNotice;

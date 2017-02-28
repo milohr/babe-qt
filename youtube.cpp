@@ -1,26 +1,23 @@
 #include "youtube.h"
-#include "ui_youtube.h"
 
 #include <QDebug>
 #include <QStandardPaths>
 #include <QDirIterator>
 
-YouTube::YouTube(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::YouTube)
+YouTube::YouTube(QObject *parent) : QObject(parent)
 {
 
-    ui->setupUi(this);
+    /*    ui->setupUi(this);
     ui->label->hide();
     ui->textBrowser->hide(); ui->frame_3->hide();
     movie = new QMovie(":Data/data/ajax-loader.gif");
-    ui->label->setMovie(movie);
-    searchPendingFiles();
+    ui->label->setMovie(movie);*/
+
 }
 
 YouTube::~YouTube()
 {
-    delete ui;
+
 
 }
 
@@ -46,58 +43,60 @@ void YouTube::searchPendingFiles()
     }
 }
 
-void YouTube::on_goBtn_clicked()
-{
-    if(!ui->lineEdit->text().isEmpty())
-    {
-        fetch({ui->lineEdit->text()},{});
-    }
-}
 
-void YouTube::fetch(QStringList ids,QStringList urls)
+
+void YouTube::fetch(QStringList ids_,QStringList urls_)
 {
-    this->urls=urls;
-    this->ids=ids;
+    for(auto url: urls_) if(!this->urls.contains(url)) this->urls<<url;
+
     //cont=ids.size();
     //qDebug()<<"fetching list size: "<<cont;
-    for(auto id: ids)
+    for(auto id: ids_)
     {
-        process = new QProcess(this);
+        if(!this->ids.contains(id)) this->ids<<id;
+        auto process = new QProcess(this);
         process->setWorkingDirectory(cachePath);
         connect(process, SIGNAL(readyReadStandardOutput()), this, SLOT(processFinished()));
-        connect(process, SIGNAL(finished(int)), this, SLOT(processFinished_totally(int)));
+        //connect(process, SIGNAL(finished(int)), this, SLOT(processFinished_totally(int)));
+        connect(process, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
+            [=](int exitCode, QProcess::ExitStatus exitStatus){
+
+        qDebug()<<"processFinished_totally"<<exitCode<<exitStatus;
+        processFinished_totally(exitCode,process->arguments().at(process->arguments().size()-1),exitStatus);
+
+        });
+
+
         process->start(ydl+" "+id);
-        ui->goBtn->hide();
-        ui->label->show();
-        movie->start();
-        ui->lineEdit->setEnabled(false);
+
 
     }
-     for(auto url:urls) if(QFile::remove(url)) qDebug()<<"the urls are going to be cleaned up"<< url;
+
+    qDebug()<<"ids in queue:"<<this->ids;
+      for(auto url:urls) if(QFile::remove(url)) qDebug()<<"the urls are going to be cleaned up"<< url;
+
 
 }
 
-void YouTube::processFinished_totally(int state)
+void YouTube::processFinished_totally(int state,QString id,QProcess::ExitStatus exitStatus)
 {
 
-    qDebug()<<"process finished totally"<<state<<process->arguments();
-    QString doneId=process->arguments().at(process->arguments().size()-1);
-    ids.removeAll(doneId);
-    qDebug()<<"need to delete the id="<<doneId;
-      qDebug()<<"ids left to process: "<<ids;
-    ui->lineEdit->clear();
-    movie->stop();
-    ui->label->hide();
-    ui->goBtn->show();
-    ui->textBrowser->hide(); ui->frame_3->hide();
-    ui->lineEdit->setEnabled(true);
 
-    //qDebug()<<ids.size();
-    if(ids.isEmpty())
-    {
+        QString doneId=id;
+        qDebug()<<"process finished totally for"<<state<<doneId<<exitStatus;
 
-        emit youtubeTrackReady(true);
-    }
+        qDebug()<<"need to delete the id="<<doneId;
+        ids.removeAll(doneId);
+        qDebug()<<"ids left to process: "<<ids;
+
+        //qDebug()<<ids.size();
+        if(ids.isEmpty())
+        {
+
+            emit youtubeTrackReady(true);
+
+        }
+
 
 }
 
@@ -105,12 +104,11 @@ void YouTube::processFinished_totally(int state)
 void YouTube::processFinished()
 {
 
-    ui->textBrowser->show(); ui->frame_3->show();
-    QByteArray processOutput;
+
+    /* QByteArray processOutput;
     processOutput = process->readAllStandardOutput();
-    ui->textBrowser->clear();
-    ui->textBrowser->append(QString(processOutput));
+
     if (!QString(processOutput).isEmpty())
-        qDebug() << "Output: " << QString(processOutput);
+        qDebug() << "Output: " << QString(processOutput);*/
 
 }

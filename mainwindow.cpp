@@ -176,8 +176,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(lyrics,SIGNAL(lyricsReady(QString)),infoTable,SLOT(setLyrics(QString)));
 
 
-    youtubeTable = new YouTube(this);
-    connect(youtubeTable,SIGNAL(youtubeTrackReady(bool)),settings_widget,SLOT(youtubeTrackReady(bool)));
 
     //playback = new QToolBar();
 
@@ -267,8 +265,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->info_view->setToolTip("Info");
     ui->mainToolBar->addWidget(ui->info_view);
 
-    ui->youtube_view->setToolTip("YouTube");
-    ui->mainToolBar->addWidget(ui->youtube_view);
 
     ui->mainToolBar->addWidget(right_spacer);
     ui->settings_view->setToolTip("Setings");
@@ -320,7 +316,7 @@ MainWindow::MainWindow(QWidget *parent) :
     views->addWidget(playlistTable);
     views->addWidget(queueTable);
     views->addWidget(infoTable);
-    views->addWidget(youtubeTable);
+
     views->addWidget(settings_widget);
     views->addWidget(resultsTable);
 
@@ -331,7 +327,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->playlists_view, SIGNAL(clicked()), this, SLOT(playlistsView()));
     connect(ui->queue_view, SIGNAL(clicked()), this, SLOT(queueView()));
     connect(ui->info_view, SIGNAL(clicked()), this, SLOT(infoView()));
-    connect(ui->youtube_view, SIGNAL(clicked()), this, SLOT(youtubeView()));
+
     connect(ui->settings_view, SIGNAL(clicked()), this, SLOT(settingsView()));
 
 
@@ -944,20 +940,6 @@ qDebug()<<url;
     populateTableView();*/
 }
 
-void MainWindow::youtubeView()
-{
-    views->setCurrentIndex(YOUTUBE);
-    if(mini_mode!=0) expand();
-    //if(!hideSearch) utilsBar->hide(); line->hide();
-    hideAlbumViewUtils();
-    utilsBar->actions().at(COLLECTION_UB)->setVisible(true);
-    utilsBar->actions().at(PLAYLISTS_UB)->setVisible(false); ui->frame_3->hide();
-    utilsBar->actions().at(INFO_UB)->setVisible(false);
-
-
-    prevIndex=views->currentIndex();
-
-}
 
 void MainWindow::settingsView()
 {
@@ -1019,7 +1001,7 @@ this->show();*/
     case PLAYLISTS:  icon="amarok_lyrics"; break;
     case QUEUE:  icon="amarok_clock"; break;
     case INFO: icon="internet-amarok"; break;
-    case YOUTUBE: icon="kstars_constellationart"; break;
+
     case SETTINGS:  icon="games-config-options"; break;
     default:  icon="search";
     }

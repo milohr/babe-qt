@@ -23,7 +23,7 @@
 #include <lyrics.h>
 #include <QFileInfo>
 #include "mpris2.h"
-#include "youtube.h"
+
 
 
 namespace Ui {
@@ -45,7 +45,7 @@ void clearCurrentList();
 
     enum views
     {
-        COLLECTION,ALBUMS,ARTISTS,PLAYLISTS,QUEUE,INFO,YOUTUBE,SETTINGS,RESULTS
+        COLLECTION,ALBUMS,ARTISTS,PLAYLISTS,QUEUE,INFO,SETTINGS,RESULTS
     };
     enum utilsBar
     {
@@ -90,7 +90,7 @@ private slots:
     void queueView();
     void playlistsView();
     void infoView();
-    void youtubeView();
+
     void settingsView();
 
     /*the view stacked actions*/
@@ -197,7 +197,7 @@ private:
     PlaylistsView *playlistTable;
     InfoView *infoTable;
     BabeTable *queueTable;
-    YouTube *youtubeTable;
+
     /*the streaming */
     Playlist queueList;
     QList<QStringList> currentList;

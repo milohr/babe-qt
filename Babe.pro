@@ -91,8 +91,7 @@ HEADERS  += mainwindow.h \
 FORMS    += mainwindow.ui \
     settings.ui \
     about.ui \
-    infoview.ui \
-    youtube.ui
+    infoview.ui
 
 RESOURCES += \
     data.qrc

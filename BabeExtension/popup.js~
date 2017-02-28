@@ -43,7 +43,6 @@ document.addEventListener('DOMContentLoaded', function()
    optionsBtn.addEventListener('click', function() 
   {
 console.log("options btn clicked");
-document.getElementById("optionsBtn").style.visibility="show";
    
   }, false);
   

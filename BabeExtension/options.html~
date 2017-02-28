@@ -1,0 +1,30 @@
+    
+    <!doctype html>
+    <html>
+    <head>
+        <title>Babe-Qt</title>
+        <script src="popup.js"></script>
+        <link type="text/css" rel="stylesheet" href="style.css"/>
+    </head>
+    <body>
+       
+        
+
+        
+        <div id="options_div">
+            <form id="options">
+                First name:<br>
+                <input type="text" name="firstname"><br>
+                Last name:<br>
+                <input type="text" name="lastname">
+                First name:<br>
+                <input type="text" name="firstname"><br>
+            </form>
+        </div>
+         <div id="btns">
+            
+            <button class="btn" id="babe">Babe It!</button>            
+        </div>
+        <div ><p id="warning"> </p></div>
+    </body>
+    </html>

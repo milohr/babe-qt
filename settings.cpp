@@ -74,6 +74,9 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
     connect(cacheWatcher, SIGNAL(directoryChanged(QString)), this,
             SLOT(handleDirectoryChanged_cache(QString)));*/
 
+    ytFetch = new YouTube(this);
+    connect(ytFetch,SIGNAL(youtubeTrackReady(bool)),this,SLOT(youtubeTrackReady(bool)));
+    ytFetch->searchPendingFiles();
     extensionWatcher = new QFileSystemWatcher();
     extensionWatcher->addPath(extensionFetchingPath);
     connect(extensionWatcher, SIGNAL(directoryChanged(QString)), this,
@@ -157,12 +160,9 @@ void settings::handleDirectoryChanged_extension()
         Notify nof;
         nof.notify("Song recived!","wait a sec while the track ["+ids.join("\n")+"] is added to your collection :)");
 
-        auto ytFetch = new YouTube();
-        connect(ytFetch,SIGNAL(youtubeTrackReady(bool)),this,SLOT(youtubeTrackReady(bool)));
-
         ytFetch->fetch(ids,urls);
-       // qDebug()<<ids;
-        qDebug()<<urls;
+        // qDebug()<<ids;
+        //qDebug()<<urls;
     }
 }
 
