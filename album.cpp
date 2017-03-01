@@ -81,11 +81,14 @@ Album::Album(QString imagePath, int widgetSize, int widgetRadius, bool isDraggab
         layout->addWidget(left_spacer);
         layout->addWidget(title);
         layout->addWidget(right_spacer);
-        widget->setMinimumWidth(size);
+        widget->setMinimumWidth(size-2);
         //this->setStyleSheet("border:none");
-        widget->setGeometry(0,size-30,size,30);
+        widget->setGeometry(1,size-31,size-2,30);
         //widget->setStyleSheet("background-color: rgba(0,0,0,150)");
-        widget->setStyleSheet( QString("background-color: rgba(0,0,0,150); border: 1px solid #333; border-top-left-radius:0; border-top-right-radius:0; border-bottom-right-radius:%1px; border-bottom-left-radius:%2px;").arg( QString::number(border_radius),QString::number(border_radius)));
+        //widget->setStyleSheet( QString(" background: qlineargradient(x1:0, y1:0, x2:0, y2:1,stop:0 rgba(0, 0, 0, 200), stop: 0.4 rgba(0, 0, 0, 150), stop:1 rgb(0, 0, 0, 40)); border-top: 1px solid #333; border-top-left-radius:0; border-top-right-radius:0; border-bottom-right-radius:%1px; border-bottom-left-radius:%2px;").arg( QString::number(border_radius),QString::number(border_radius)));
+
+        widget->setStyleSheet( QString(" background: rgba(0,0,0,150); border-top: 1px solid rgba(%1,%1,%1,120); border-top-left-radius:0; border-top-right-radius:0; border-bottom-right-radius:%2px; border-bottom-left-radius:%3px;").arg( QString::number(this->palette().color(QPalette::WindowText).blue()), QString::number(border_radius),QString::number(border_radius)));
+        //widget->setStyleSheet("background-color: rgba(0,0,0,150); border-top: 1px solid #333;");
 
         title->setStyleSheet("background:transparent; color:white; border:none;");
         right_spacer->setStyleSheet("background:transparent;  border:none;");
@@ -226,7 +229,7 @@ void Album::setTitle()
 void Album::setSize(int value)
 {
     this->size=value;
-    widget->setGeometry(0,90,size,30);
+    //widget->setGeometry(0,90,size,30);
 
 
 }
