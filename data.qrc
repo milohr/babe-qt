@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/Data">
-        <file>data/cover.jpg</file>
         <file>data/cover_hover.svg</file>
         <file>data/cover.svg</file>
         <file>data/babe.svg</file>
@@ -22,12 +21,27 @@
         <file>data/babe_64.svg</file>
         <file>data/babe_48.svg</file>
         <file>data/banner.png</file>
-        <file>data/cover.png</file>
         <file>data/add.svg</file>
         <file>data/ajax-loader.gif</file>
         <file>data/playBtn.svg</file>
         <file>data/playBtn_hover.svg</file>
         <file>data/Babe.notifyrc</file>
         <file>data/babe_128.svg</file>
+        <file>data/icons/albums_selected.svg</file>
+        <file>data/icons/albums.svg</file>
+        <file>data/icons/artists_selected.svg</file>
+        <file>data/icons/artists.svg</file>
+        <file>data/icons/info_selected.svg</file>
+        <file>data/icons/info.svg</file>
+        <file>data/icons/playlists_selected.svg</file>
+        <file>data/icons/playlists.svg</file>
+        <file>data/icons/queue_selected.svg</file>
+        <file>data/icons/queue.svg</file>
+        <file>data/icons/settings_selected.svg</file>
+        <file>data/icons/settings.svg</file>
+        <file>data/icons/tracks_selected.svg</file>
+        <file>data/icons/tracks.svg</file>
+        <file>data/icons/youtube.svg</file>
+        <file>data/pattern.png</file>
     </qresource>
 </RCC>
