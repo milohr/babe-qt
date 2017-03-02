@@ -106,7 +106,7 @@ void Album::babeIt_action()
 void Album::artIt_action()
 {
     qDebug()<<"Change art of album"<<this->artist<<this->album;
-    QString path = QFileDialog::getOpenFileName(this, tr("Select Music Files"),getCachePath(), tr("Image Files (*.png *.jpg *.bmp)"));
+    QString path = QFileDialog::getOpenFileName(this, tr("Select Music Files"),BaeUtils::getCachePath(), tr("Image Files (*.png *.jpg *.bmp)"));
     if(!path.isEmpty())
     {
         putPixmap(path);

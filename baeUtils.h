@@ -5,12 +5,14 @@
 #include <QString>
 #include <QDebug>
 #include <QStandardPaths>
+#include <QFileInfo>
 using namespace std;
 
-
-static string getNameFromLocation(string str)
+namespace BaeUtils
 {
-    string ret;
+static inline QString getNameFromLocation(QString str)
+{
+    QString ret;
     int index;
 
     for(int i = str.size() - 1; i >= 0; i--)
@@ -30,14 +32,14 @@ static string getNameFromLocation(string str)
     return ret;
 }
 
-static QString getSettingPath() { return QStandardPaths::writableLocation(QStandardPaths::ConfigLocation)+"/babe/";}
-static QString getCollectionDBPath() { return QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation)+"/babe/";}
-static QString getCachePath() {return QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation)+"/babe/";}
-static QString getYoutubeCachePath() { return QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation)+"/babe/youtube/";}
-static QString getExtensionFetchingPath() { return QStandardPaths::writableLocation(QStandardPaths::DownloadLocation); }
-static QString getNotifyDir(){return QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);}
+static inline QString getSettingPath() { return QStandardPaths::writableLocation(QStandardPaths::ConfigLocation)+"/babe/";}
+static inline QString getCollectionDBPath() { return QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation)+"/babe/";}
+static inline QString getCachePath() {return QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation)+"/babe/";}
+static inline QString getYoutubeCachePath() { return QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation)+"/babe/youtube/";}
+static inline QString getExtensionFetchingPath() { return QStandardPaths::writableLocation(QStandardPaths::DownloadLocation); }
+static inline QString getNotifyDir(){return QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);}
 
-static QString fixTitle(QString title,QString s,QString e)
+static inline QString fixTitle(QString title,QString s,QString e)
 {
     QString newTitle;
     for(int i=0; i<title.size();i++)
@@ -63,7 +65,7 @@ static QString fixTitle(QString title,QString s,QString e)
 }
 
 
-static QString removeSubstring(QString newTitle, QString subString)
+static inline QString removeSubstring(QString newTitle, QString subString)
 {
     const int indexFt = newTitle.indexOf(subString, 0, Qt::CaseInsensitive);
 
@@ -75,7 +77,7 @@ static QString removeSubstring(QString newTitle, QString subString)
     }
 }
 
-static QString fixString(QString title)
+static inline QString fixString(QString title)
 {
 
     //title.remove(QRegExp(QString::fromUtf8("[·-`~!@#$%^&*()_—+=|:;<>«»,.?/{}\'\"\\\[\\\]\\\\]")));
@@ -98,6 +100,14 @@ static QString fixString(QString title)
     qDebug()<<"fixed string:"<<title;
 
     return title.simplified();
+}
+
+static inline bool fileExists(QString url)
+{
+    QFileInfo path(url);
+    if (path.exists()) return true;
+    else return false;
+}
 }
 
 #endif // UTILS_H

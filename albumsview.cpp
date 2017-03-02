@@ -76,7 +76,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     utilsFrame->setLayout(utilsLayout);
 
 
-   /* auto scroll= new QScrollArea(this);
+    /* auto scroll= new QScrollArea(this);
     scroll->setWidgetResizable(true);
     scroll->setAlignment(Qt::AlignCenter);
     //grid->setMinimumWidth(137*4);
@@ -117,7 +117,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     layout->setSpacing(0);
 
     //scroll->setMaximumSize(120*4,120*4);
-   // scroll->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding  );
+    // scroll->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding  );
 
     auto albumBox = new QGridLayout();
     albumBox_frame = new QFrame(this);
@@ -165,7 +165,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
         artistList=new QListWidget(this);
         connect(artistList,SIGNAL(clicked(QModelIndex)),this,SLOT(filterAlbum(QModelIndex)));
         artistList->setFrameShape(QFrame::NoFrame);
-    artistList->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        artistList->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         artistList->setMaximumWidth(120);
         artistList->setAlternatingRowColors(true);
 
@@ -190,23 +190,11 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     albumBox_frame->hide();
     line_h->hide();
     this->setLayout(layout);
-    /* for(int i =0; i<5; i++)
-    {
-        for(int j=0;j<5; j++)
-        {
 
-
-        }
-
-
-    }*/
 
 }
 
-AlbumsView::~AlbumsView()
-{
-
-}
+AlbumsView::~AlbumsView(){delete this;}
 
 void AlbumsView::hideAlbumFrame()
 {
@@ -221,8 +209,8 @@ void AlbumsView::filterAlbum(QModelIndex index) {
     qDebug()<<album;
     albumTable->flushTable();
     albumTable->populateTableView("SELECT * FROM tracks WHERE album = \""+album+"\" AND artist =\""+cover->getArtist()+"\" ORDER by album asc, track asc ");
-cover->setAlbum(album);
-cover->setTitle();
+    cover->setAlbum(album);
+    cover->setTitle();
 
     QSqlQuery queryCover = connection->getQuery("SELECT * FROM albums WHERE title = \""+album+"\" AND artist =\""+cover->getArtist()+"\"");
     while (queryCover.next())
@@ -236,7 +224,7 @@ cover->setTitle();
 void AlbumsView::albumsSize(int value)
 {
     Q_UNUSED(value);
-   /* albumSize=value;
+    /* albumSize=value;
     //slider->setToo
     slider->setToolTip(QString::number(value));
     QToolTip::showText( slider->mapToGlobal( QPoint( 0, 0 ) ), QString::number(value) );
@@ -258,7 +246,7 @@ void  AlbumsView::flushGrid()
 {
     albumTable->flushTable();
     grid->clear();
-   // albumsList.clear();
+    // albumsList.clear();
 
 
     // grid->setRowCount(0);
@@ -315,13 +303,13 @@ void AlbumsView::populateTableViewHeads(QSqlQuery query)
     {
 
 
-       // albumsList.push_back(album);
+        // albumsList.push_back(album);
 
 
         QString art=":Data/data/cover.svg";
 
         if(!query.value(1).toString().isEmpty()&&query.value(1).toString()!="NULL")
-           art=(query.value(1).toString());
+            art=(query.value(1).toString());
 
         Album *album= new Album(art,albumSize,4,false,false,this);
 
@@ -375,7 +363,7 @@ void AlbumsView::playAlbum_clicked(QString artist, QString album)
 
 void AlbumsView::changedArt_cover(QString path, QString artist, QString album)
 {
-   connection->execQuery(QString("UPDATE albums SET art = \"%1\" WHERE title = \"%2\" AND artist = \"%3\"").arg(path,album,artist) );
+    connection->execQuery(QString("UPDATE albums SET art = \"%1\" WHERE title = \"%2\" AND artist = \"%3\"").arg(path,album,artist) );
 
 }
 

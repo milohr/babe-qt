@@ -104,9 +104,10 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
 
 
     connect(babeIt, SIGNAL(triggered()), this, SLOT(babeIt_action()));
-    connect(removeIt, SIGNAL(triggered()), this, SLOT(removeIt_action()));
-    // connect(moodIt, SIGNAL(triggered()), this, SLOT(moodIt_action()));
     connect(queueIt, SIGNAL(triggered()), this, SLOT(queueIt_action()));
+    connect(infoIt, SIGNAL(triggered()), this, SLOT(infoIt_action()));
+    connect(editIt, SIGNAL(triggered()), this, SLOT(editIt_action()));
+    connect(removeIt, SIGNAL(triggered()), this, SLOT(removeIt_action()));
 
 
 
@@ -711,6 +712,18 @@ void BabeTable::babeIt_action() {
     QList<QStringList> list;
     list<<getRowData(row);
     emit babeIt_clicked(list);
+}
+
+
+
+void BabeTable::editIt_action() {}
+
+void BabeTable::infoIt_action()
+{
+    QString artist = this->model()->data(this->model()->index(row, ARTIST)).toString();
+    QString album = this->model()->data(this->model()->index(row, ALBUM)).toString();
+    QString title = this->model()->data(this->model()->index(row, TITLE)).toString();
+    emit infoIt_clicked(title, artist,album);
 }
 
 void BabeTable::removeIt_action()

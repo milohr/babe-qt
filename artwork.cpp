@@ -1,14 +1,16 @@
 #include "artwork.h"
-
+#include "baeUtils.h"
 
 ArtWork::ArtWork(QObject *parent) : QObject(parent) {
     url = "http://ws.audioscrobbler.com/2.0/";
 } //
 
+ArtWork::~ArtWork() {delete this;} //
+
 void ArtWork::setDataCover(QString artist, QString album,QString title, QString path) {
-    this->artist = fixString(artist);
-    this->album = fixString(album);
-    this->title=fixString(title);
+    this->artist = BaeUtils::fixString(artist);
+    this->album = BaeUtils::fixString(album);
+    this->title=BaeUtils::fixString(title);
     this->path = path;
 
 
@@ -48,9 +50,9 @@ void ArtWork::setDataCover(QString artist, QString album,QString title, QString 
 void ArtWork::setDataCover_spotify(QString artist, QString album,QString title)
 {
 
-    this->title=fixString(title);
-    this->artist=fixString(artist);
-    this->album=fixString(album);
+    this->title=BaeUtils::fixString(title);
+    this->artist=BaeUtils::fixString(artist);
+    this->album=BaeUtils::fixString(album);
     qDebug()<<"Going to try and get the art cover from title by spotify service: "<< this->title <<"by"<<this->artist;
     url = "https://api.spotify.com/v1/search?q=";
 
@@ -86,9 +88,9 @@ void ArtWork::setDataCover_spotify(QString artist, QString album,QString title)
 QString ArtWork::getAlbumTitle_Spotify(QString artist, QString title)
 {
     QString title_album;
-    this->artist = fixString(artist);
+    this->artist = BaeUtils::fixString(artist);
 
-    this->title=fixString(title);
+    this->title=BaeUtils::fixString(title);
 
     qDebug()<<"Going to try and get the albumt title from spotify service: "<< title <<"by"<<artist;
     url = "https://api.spotify.com/v1/search?q=";
@@ -185,9 +187,9 @@ QString ArtWork::getAlbumTitle_Spotify(QString artist, QString title)
 QString ArtWork::getAlbumTitle(QString artist, QString title) {
 
     QString title_album;
-    this->artist = fixString(artist);
+    this->artist = BaeUtils::fixString(artist);
 
-    this->title=fixString(title);
+    this->title=BaeUtils::fixString(title);
 
     qDebug()<<"Going to try and get the album name for: "<<this->artist <<"as"<<this->title;
 
@@ -270,7 +272,7 @@ QString ArtWork::getAlbumTitle(QString artist, QString title) {
     }
 
     qDebug()<<"the ALBUM TITLE FOR THE TRACK FINAL IS:"<<title_album;
-    return fixString(title_album);
+    return BaeUtils::fixString(title_album);
 }
 
 
@@ -284,8 +286,8 @@ void ArtWork::setDataCover_title(QString artist, QString title) {
     qDebug()<<"Going to try and get the art cover from title: "<< title <<"by"<<artist;
     url = "http://ws.audioscrobbler.com/2.0/";
 
-    this->title=fixString(title);
-    this->artist=fixString(artist);
+    this->title=BaeUtils::fixString(title);
+    this->artist=BaeUtils::fixString(artist);
 
     if (!this->artist.isEmpty() && !this->title.isEmpty()) {
         url.append("?method=track.getinfo");

@@ -61,5 +61,5 @@ QString TagInfo::getGenre() {
 }
 
 QString TagInfo::fileName() {
-    return QString::fromStdString(getNameFromLocation(path.toStdString()));
+    return BaeUtils::getNameFromLocation(path);
 }

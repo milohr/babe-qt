@@ -9,7 +9,7 @@
 #include <QNetworkReply>
 #include <QDomDocument>
 #include <QRegExp>
-#include "baeUtils.h"
+
 
 class Lyrics : public QObject
 {

@@ -1,5 +1,5 @@
 #include "lyrics.h"
-
+#include "baeUtils.h"
 
 
 Lyrics::Lyrics(QObject *parent) : QObject(parent)
@@ -14,8 +14,8 @@ void Lyrics::setData(QString artist, QString song)
 
 
 
-    this->artist=fixString(artist);
-    this->song = fixString(song);
+    this->artist= BaeUtils::fixString(artist);
+    this->song = BaeUtils::fixString(song);
     QUrl q_artist (artist);
     q_artist.toEncoded(QUrl::FullyEncoded);
     QUrl q_song (song);

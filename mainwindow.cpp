@@ -41,7 +41,7 @@ MainWindow::MainWindow(QWidget *parent) :
         // this->setLyrics(artist,title);
         timer->stop();
         //qDebug()<<"antonpirulilului";
-        this->getTrackInfo();
+        this->getTrackInfo(current_title,current_artist,current_album);
 
     });
 
@@ -65,10 +65,11 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(playlistTable,SIGNAL(playlistCreated(QString, QString)),&settings_widget->getCollectionDB(),SLOT(insertPlaylist(QString, QString)));
     connect(playlistTable->table,SIGNAL(tableWidget_doubleClicked(QList<QStringList>)),this,SLOT(addToPlaylist(QList<QStringList>)));
     connect(playlistTable->table,SIGNAL(removeIt_clicked(int)),this,SLOT(removeSong(int)));
-    connect(playlistTable->table,SIGNAL( babeIt_clicked(QList<QStringList>)),this,SLOT(babeIt(QList<QStringList>)));
+    connect(playlistTable->table,SIGNAL(babeIt_clicked(QList<QStringList>)),this,SLOT(babeIt(QList<QStringList>)));
     connect(playlistTable->table,SIGNAL(createPlaylist_clicked()),this,SLOT(playlistsView()));
     connect(playlistTable->table,SIGNAL(queueIt_clicked(QString)),this,SLOT(addToQueue(QString)));
     connect(playlistTable->table,SIGNAL(moodIt_clicked(QString)),playlistTable,SLOT(createMoodPlaylist(QString)));
+    connect(playlistTable->table,SIGNAL(infoIt_clicked(QString, QString, QString)),this,SLOT(infoIt(QString, QString, QString)));
 
 
     collectionTable = new BabeTable(this);
@@ -81,6 +82,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(collectionTable,SIGNAL(babeIt_clicked(QList<QStringList>)),this,SLOT(babeIt(QList<QStringList>)));
     connect(collectionTable,SIGNAL(queueIt_clicked(QString)),this,SLOT(addToQueue(QString)));
     connect(collectionTable,SIGNAL(moodIt_clicked(QString)),playlistTable,SLOT(createMoodPlaylist(QString)));
+    connect(collectionTable,SIGNAL(infoIt_clicked(QString, QString, QString)),this,SLOT(infoIt(QString, QString, QString)));
+
 
 
 
@@ -95,6 +98,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(mainList,SIGNAL( babeIt_clicked(QList<QStringList>)),this,SLOT(babeIt(QList<QStringList>)));
     connect(mainList,SIGNAL(queueIt_clicked(QString)),this,SLOT(addToQueue(QString)));
     connect(mainList,SIGNAL(moodIt_clicked(QString)),playlistTable,SLOT(createMoodPlaylist(QString)));
+    connect(mainList,SIGNAL(infoIt_clicked(QString, QString, QString)),this,SLOT(infoIt(QString, QString, QString)));
+
 
 
 
@@ -109,6 +114,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(resultsTable,SIGNAL( babeIt_clicked(QList<QStringList>)),this,SLOT(babeIt(QList<QStringList>)));
     connect(resultsTable,SIGNAL(queueIt_clicked(QString)),this,SLOT(addToQueue(QString)));
     connect(resultsTable,SIGNAL(moodIt_clicked(QString)),playlistTable,SLOT(createMoodPlaylist(QString)));
+    connect(resultsTable,SIGNAL(infoIt_clicked(QString, QString, QString)),this,SLOT(infoIt(QString, QString, QString)));
+
 
 
     albumsTable = new AlbumsView(false,this);
@@ -119,6 +126,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(albumsTable,SIGNAL(playAlbum(QString, QString)),this,SLOT(putOnPlay(QString, QString)));
     connect(albumsTable->albumTable,SIGNAL(queueIt_clicked(QString)),this,SLOT(addToQueue(QString)));
     connect(albumsTable->albumTable,SIGNAL(moodIt_clicked(QString)),playlistTable,SLOT(createMoodPlaylist(QString)));
+    connect(albumsTable->albumTable,SIGNAL(infoIt_clicked(QString, QString, QString)),this,SLOT(infoIt(QString, QString, QString)));
+
 
 
     artistsTable = new AlbumsView(true,this);
@@ -129,8 +138,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(artistsTable->albumTable,SIGNAL( babeIt_clicked(QList<QStringList>)),this,SLOT(babeIt(QList<QStringList>)));
     connect(artistsTable,SIGNAL(playAlbum(QString, QString)),this,SLOT(putOnPlay(QString, QString)));
     connect(artistsTable->albumTable,SIGNAL(queueIt_clicked(QString)),this,SLOT(addToQueue(QString)));
-
     connect(artistsTable->albumTable,SIGNAL(moodIt_clicked(QString)),playlistTable,SLOT(createMoodPlaylist(QString)));
+    connect(artistsTable->albumTable,SIGNAL(infoIt_clicked(QString, QString, QString)),this,SLOT(infoIt(QString, QString, QString)));
+
 
 
 
@@ -318,7 +328,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     auto *album_view = new QGridLayout();
     album_art_frame=new QFrame(this);
-    const QString stylePath= getSettingPath();
+    const QString stylePath= BaeUtils::getSettingPath();
 
 
 
@@ -1233,7 +1243,7 @@ void MainWindow::loadTrack()
         //current_song_url = QString::fromStdString(playlist.tracks[getIndex()].getLocation());
         qDebug()<<"in mainlist="<<current_song_url;
 
-        if(fileExists(current_song_url))
+        if(BaeUtils::fileExists(current_song_url))
         {
             current_artist=mainList->model()->data(mainList->model()->index(row, BabeTable::ARTIST)).toString();
             current_album=mainList->model()->data(mainList->model()->index(row, BabeTable::ALBUM)).toString();
@@ -1290,7 +1300,7 @@ void MainWindow::loadTrackOnQueue()
     current_song_url = QString::fromStdString(queueList.tracks[0].getLocation());
 
 
-    if(fileExists(current_song_url))
+    if(BaeUtils::fileExists(current_song_url))
     {
         current_artist=QString::fromStdString(queueList.tracks[0].getArtist());
         current_album=QString::fromStdString(queueList.tracks[0].getAlbum());
@@ -1491,7 +1501,7 @@ void MainWindow::removeFromQueue(QString url)
     // queueList.remove();
 }
 
-void MainWindow::getTrackInfo()
+void MainWindow::getTrackInfo(QString title, QString artist, QString album)
 {
     if(!current_album.isEmpty()&&!current_artist.isEmpty())
     {
@@ -1499,10 +1509,10 @@ void MainWindow::getTrackInfo()
         auto artistInfo = new ArtWork;
         connect(coverInfo, SIGNAL(infoReady(QString)), infoTable, SLOT(setAlbumInfo(QString)));
         connect(artistInfo, SIGNAL(bioReady(QString)), infoTable, SLOT(setArtistInfo(QString)));
-        coverInfo->setDataCoverInfo(current_artist,current_album);
-        artistInfo->setDataHeadInfo(current_artist);
+        coverInfo->setDataCoverInfo(artist,album);
+        artistInfo->setDataHeadInfo(artist);
 
-        setLyrics(current_artist,current_title);
+        setLyrics(artist,title);
     }
 }
 
@@ -1755,12 +1765,16 @@ void MainWindow::babeIt(QList<QStringList> list)
     }
 }
 
-bool MainWindow::fileExists(QString url)
+
+void  MainWindow::infoIt(QString title, QString artist, QString album)
 {
-    QFileInfo path(url);
-    if (path.exists()) return true;
-    else return false;
+    //views->setCurrentIndex(INFO);
+    getTrackInfo(title, artist,album);
+    infoView();
+
 }
+
+
 
 
 void MainWindow::scanNewDir(QString url,QString babe)

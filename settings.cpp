@@ -16,7 +16,7 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
     ui->frame_4->setEnabled(false);
 
 
-    if(!fileExists(notifyDir+"/Babe.notifyrc"))
+    if(!BaeUtils::fileExists(notifyDir+"/Babe.notifyrc"))
     {
         qDebug()<<"The Knotify file does not exists, going to create it";
         QFile knotify(":Data/data/Babe.notifyrc");
@@ -93,8 +93,8 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
 }
 
 settings::~settings() {
-    delete ui;
-    collection_db.closeConnection();
+   collection_db.closeConnection();
+   delete this;
 }
 
 
@@ -375,12 +375,6 @@ void settings::collectionWatcher()
     // for(auto m: dirs) qDebug()<<m;
 }
 
-bool settings::fileExists(QString url)
-{
-    QFileInfo path(url);
-    if (path.exists()) return true;
-    else return false;
-}
 
 void settings::handleFileChanged(QString file) {
     qDebug() << "this file changed: " << file;

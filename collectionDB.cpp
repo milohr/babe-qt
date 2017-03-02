@@ -282,8 +282,8 @@ bool CollectionDB::addTrack(QStringList paths, int babe)
             QString  title, artist, album, genre;
             // you should check if args are ok first...
             track=info.getTrack();
-            title=fixString(info.getTitle());
-            artist=fixString(info.getArtist());
+            title=BaeUtils::fixString(info.getTitle());
+            artist=BaeUtils::fixString(info.getArtist());
             genre=info.getGenre();
 
             if(info.getAlbum().isEmpty())
@@ -297,7 +297,7 @@ bool CollectionDB::addTrack(QStringList paths, int babe)
                 album=info.getAlbum();
             }
 
-            album=fixString(album);
+            album=BaeUtils::fixString(album);
             query.prepare("INSERT INTO tracks (track, title, artist, album, genre, location, stars, babe, art, played)" "VALUES (:track, :title, :artist, :album, :genre, :location, :stars, :babe, :art, :played) ");
             query.bindValue(":track", track);
             query.bindValue(":title", title);

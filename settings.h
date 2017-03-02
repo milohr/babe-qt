@@ -42,11 +42,11 @@ public:
     explicit settings(QWidget *parent = 0);
     ~settings();
 
-    const QString settingPath= getSettingPath();
-    const QString collectionDBPath=getCollectionDBPath();
-    const QString cachePath=getCachePath();
-    const  QString youtubeCachePath=getYoutubeCachePath();
-    QString extensionFetchingPath=getExtensionFetchingPath();
+    const QString settingPath= BaeUtils::getSettingPath();
+    const QString collectionDBPath=BaeUtils::getCollectionDBPath();
+    const QString cachePath=BaeUtils::getCachePath();
+    const  QString youtubeCachePath=BaeUtils::getYoutubeCachePath();
+    QString extensionFetchingPath=BaeUtils::getExtensionFetchingPath();
     bool checkCollection();
     CollectionDB &getCollectionDB();
     int getToolbarIconSize()  {return iconSize;}
@@ -58,7 +58,6 @@ public:
     void collectionWatcher();
     void addToWatcher(QStringList paths);
     CollectionDB collection_db;
-    bool fileExists(QString url);
     bool youtubeTrackDone=false;
 
     enum iconSizes
@@ -99,7 +98,7 @@ private:
     Ui::settings *ui;
 
 
-    const QString notifyDir= getNotifyDir();
+    const QString notifyDir= BaeUtils::getNotifyDir();
     const QString collectionDBName = "collection.db";
     const QString settingsName = "settings.conf";
 

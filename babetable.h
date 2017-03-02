@@ -82,6 +82,8 @@ private slots:
     void setUpContextMenu(QPoint pos);
     void addToPlaylist(QAction* action);
     void babeIt_action();
+    void infoIt_action();
+    void editIt_action();
     void removeIt_action();
     void moodIt_action(QString color);
     void queueIt_action();
@@ -115,6 +117,7 @@ signals:
     void refreshPlaylistsMenu(QStringList list);
     void moodIt_clicked(QString color);
     void queueIt_clicked(QString url);
+    void infoIt_clicked(QString title, QString artist, QString album);
 
 };
 

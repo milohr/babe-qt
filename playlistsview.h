@@ -33,7 +33,7 @@ public:
     QString currentPlaylist;
     QStringList playlists;
     QStringList moods;
-    QString youtubeCachePath=getYoutubeCachePath();
+    QString youtubeCachePath=BaeUtils::getYoutubeCachePath();
 
    // QToolButton *removeBtn;
 

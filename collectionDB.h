@@ -21,9 +21,9 @@ class CollectionDB : public QObject
      Q_OBJECT
 public:
 
-    CollectionDB();
+    explicit CollectionDB();
     //CollectionDB(bool connect);
-    virtual ~CollectionDB(){}
+    ~CollectionDB(){delete this;}
     void openCollection(QString path);
     QSqlQuery getQuery(QString queryTxt);
     bool checkQuery(QString queryTxt);

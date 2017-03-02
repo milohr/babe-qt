@@ -14,7 +14,7 @@
 #include <QNetworkRequest>
 #include <QJsonDocument>
 #include <QVariantMap>
-#include "baeUtils.h"
+
 
 class ArtWork : public QObject
 {
@@ -22,6 +22,7 @@ class ArtWork : public QObject
 
 public:
     explicit ArtWork(QObject *parent = 0);
+    ~ArtWork();
     void setDataCover(QString artist, QString album,QString title, QString path="");
     void setDataHead(QString artist, QString path="");
      void setDataHead_asCover(QString artist);

@@ -56,7 +56,6 @@ public:
     void setStyle();
     void updateList();
     void populateMainList();
-    bool fileExists(QString url);
 void clearCurrentList();
 
     enum views
@@ -85,12 +84,12 @@ public slots:
     void putPixmap(QByteArray array);
     void changedArt(QString path, QString artist, QString album);
     void dummy();
+
 private slots:
 
     void on_hide_sidebar_btn_clicked();
     void on_shuffle_btn_clicked();
     void on_open_btn_clicked();
-
     void on_mainList_clicked(QList<QStringList> list);
     void update();
     void on_seekBar_sliderMoved(int position);
@@ -106,7 +105,6 @@ private slots:
     void queueView();
     void playlistsView();
     void infoView();
-
     void settingsView();
 
     /*the view stacked actions*/
@@ -115,46 +113,32 @@ private slots:
     void addToCollection(QStringList list);
     bool addToCollectionDB_t(QStringList url,QString babe=0);
     void scanNewDir(QString url,QString babe="0");
-
-
     void setToolbarIconSize(int iconSize);
     void collectionDBFinishedAdding(bool state);
-
     void on_fav_btn_clicked();
-
-
     void hideControls();
     void showControls();
-
     void on_search_returnPressed();
-
     void on_search_textChanged(const QString &arg1);
 
     //void on_resultsPLaylist_clicked();
     void setCoverArt(QString artist, QString album, QString title);
-
     void on_settings_view_clicked();
     void orderTables();
-
     void on_rowInserted(QModelIndex model ,int x,int y);
     void showAlbumViewUtils();
     void hideAlbumViewUtils();
     void AlbumsViewOrder(QString order);
     void refreshTables();
     void addToPlayed(QString url);
-
-
     void on_refreshBtn_clicked();
-
     void on_tracks_view_2_clicked();
-
     void on_refreshAll_clicked();
-
     void on_addAll_clicked();
     void saveResultsTo(QAction *action);
     void on_saveResults_clicked();
     void setLyrics(QString artist,QString title);
-    void getTrackInfo();
+    void getTrackInfo(QString title, QString artist, QString album);
     void removeSong(int index);
     void putOnPlay(QString artist, QString album);
     void loadCover(QString artist, QString album, QString title);
@@ -163,10 +147,9 @@ private slots:
     void loadMood();
     void addToQueue(QString url);
     void removeFromQueue(QString url);
-
     void on_filterBtn_clicked();
-
     void on_filter_textChanged(const QString &arg1);
+    void infoIt(QString title, QString artist, QString album);
 
 private:
 
