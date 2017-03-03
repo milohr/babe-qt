@@ -506,17 +506,18 @@ void settings::finishedAddingTracks(bool state) {
         ui->progressBar->setValue(0);
 
         nof.notify("Songs added to collection","finished writting new songs to the collection :)");
-        emit collectionDBFinishedAdding(true);
+        //emit collectionDBFinishedAdding(true);
 
 
         qDebug() << "good to hear it finished yay! now going to fetch artwork";
-        fetchArt();
+
 
         collectionWatcher();
+         fetchArt();
         // collection_db.closeConnection();
         // thread->terminate();
 
-        emit collectionDBFinishedAdding(true);
+
     }else
     {
         emit collectionDBFinishedAdding(true);
@@ -551,16 +552,16 @@ void settings::fetchArt() {
         if(query_Title.next()) title=query_Title.value(CollectionDB::TITLE).toString();
 
 
-        ArtWork coverArt;
-        connect(&coverArt, SIGNAL(coverReady(QByteArray)), &coverArt,
-                SLOT(saveArt(QByteArray)));
-        connect(&coverArt, SIGNAL(artSaved(QString, QStringList)), &collection_db,
-                SLOT(insertCoverArt(QString, QStringList)));
+        auto coverArt = new ArtWork();
+        connect(coverArt, &ArtWork::coverReady, coverArt,
+                &ArtWork::saveArt);
+        connect(coverArt, &ArtWork::artSaved, &collection_db,
+                &CollectionDB::insertCoverArt);
 
         //  QString art = cachePath+artist+"_"+album+".jpg";
 
         qDebug() << artist << album;
-        coverArt.setDataCover(artist, album,title, cachePath);
+        coverArt->setDataCover(artist, album,title, cachePath);
 
 
     }
@@ -571,24 +572,24 @@ void settings::fetchArt() {
 
 
 
-        ArtWork artistHead;
+        auto artistHead = new ArtWork();
 
-        connect(&artistHead, SIGNAL(headReady(QByteArray)), &artistHead,
-                SLOT(saveArt(QByteArray)));
-        connect(&artistHead, SIGNAL(artSaved(QString, QStringList)), &collection_db,
-                SLOT(insertHeadArt(QString, QStringList)));
+        connect(artistHead, &ArtWork::headReady, artistHead,
+                &ArtWork::saveArt);
+        connect(artistHead, &ArtWork::artSaved, &collection_db,
+                &CollectionDB::insertHeadArt);
 
         QString artist = query_Heads.value(0).toString();
         // QString art = cachePath+artist+".jpg";
 
-        artistHead.setDataHead(artist, cachePath);
+        artistHead->setDataHead(artist, cachePath);
     }
 
     nof.notify("Finished fetching art","the artwork for your collection is now ready :)");
     movie->stop();
     ui->label->hide();
 
-    // emit collectionDBFinishedAdding(true);
+   emit refreshTables();
 }
 
 void settings::on_pushButton_clicked() {

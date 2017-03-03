@@ -63,7 +63,7 @@ private:
 
     //QNetworkReply reply;
 
-private slots:
+public slots:
 
     void xmlInfo(QNetworkReply* reply);
     void jsonInfo(QNetworkReply *reply);
