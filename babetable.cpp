@@ -203,7 +203,7 @@ void BabeTable::populatePlaylist(QStringList urls, QString playlist) {
     }
 }
 
-BabeTable::~BabeTable() { delete this; }
+BabeTable::~BabeTable() {  }
 
 void BabeTable::passPlaylists() {}
 

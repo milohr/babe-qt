@@ -45,7 +45,7 @@ void ScrollText::reset() {
     timer.stop();
 }
 
-ScrollText::~ScrollText() { delete this;}
+ScrollText::~ScrollText() { }
 
 void ScrollText::show() { QLabel::show(); }
 

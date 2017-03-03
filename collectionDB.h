@@ -23,7 +23,7 @@ public:
 
     explicit CollectionDB();
     //CollectionDB(bool connect);
-    ~CollectionDB(){delete this;}
+    ~CollectionDB(){}
     void openCollection(QString path);
     QSqlQuery getQuery(QString queryTxt);
     bool checkQuery(QString queryTxt);

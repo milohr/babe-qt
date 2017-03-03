@@ -13,7 +13,7 @@ YouTube::YouTube(QObject *parent) : QObject(parent)
 
 }
 
-YouTube::~YouTube(){ delete this; }
+YouTube::~YouTube(){  }
 
 void YouTube::searchPendingFiles()
 {

@@ -5,7 +5,7 @@ ArtWork::ArtWork(QObject *parent) : QObject(parent) {
     url = "http://ws.audioscrobbler.com/2.0/";
 } //
 
-ArtWork::~ArtWork() {delete this;} //
+ArtWork::~ArtWork() {} //
 
 void ArtWork::setDataCover(QString artist, QString album,QString title, QString path) {
     this->artist = BaeUtils::fixString(artist);

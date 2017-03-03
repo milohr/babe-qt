@@ -94,7 +94,7 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
 
 settings::~settings() {
    collection_db.closeConnection();
-   delete this;
+
 }
 
 

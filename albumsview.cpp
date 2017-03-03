@@ -245,6 +245,8 @@ void AlbumsView::albumHover()
 void  AlbumsView::flushGrid()
 {
     albumTable->flushTable();
+    albums.clear();
+    artists.clear();
     grid->clear();
     // albumsList.clear();
 
@@ -261,35 +263,44 @@ void AlbumsView::populateTableView(QSqlQuery query)
 {
     qDebug()<<"ON POPULATE ALBUM VIEW:";
 
+
     while (query.next())
     {
+
+        QString artist = query.value(ARTIST).toString();
+        QString album = query.value(TITLE).toString();
         QString art=":Data/data/cover.svg";
-        if(!query.value(ART).toString().isEmpty()&&query.value(ART).toString()!="NULL")
-            art =query.value(ART).toString();
 
-        Album *album= new Album(art,albumSize,4,false,false,this);
-        //albumsList.push_back(album);
-        album->borderColor=true;
-        album->setArtist(query.value(ARTIST).toString());
-        album->setAlbum(query.value(TITLE).toString());
-        album->setTitle();
+        if(!albums.contains(album+" "+artist))
+        {
+            albums<<album+" "+artist;
+            qDebug()<<"creating a new album[cover] for<<"<<album+" "+artist;
+            if(!query.value(ART).toString().isEmpty()&&query.value(ART).toString()!="NULL")
+                art =query.value(ART).toString();
 
-        // album->setTitle(query.value(1).toString(),query.value(2).toString());
-        //album->setToolTip(query.value(2).toString());
-        connect(album, SIGNAL(albumCoverClicked(QStringList)),this,SLOT(getAlbumInfo(QStringList)));
-        connect(album,SIGNAL(playAlbum(QString , QString)),this,SLOT(playAlbum_clicked(QString, QString)));
-        connect(album,SIGNAL(changedArt(QString, QString , QString)),this,SLOT(changedArt_cover(QString, QString, QString)));
+            Album *artwork= new Album(art,albumSize,4,false,false,this);
+            //albumsList.push_back(album);
+            artwork->borderColor=true;
+            artwork->setArtist(artist);
+            artwork->setAlbum(album);
+            artwork->setTitle();
+
+            // album->setTitle(query.value(1).toString(),query.value(2).toString());
+            //album->setToolTip(query.value(2).toString());
+            connect(artwork, SIGNAL(albumCoverClicked(QStringList)),this,SLOT(getAlbumInfo(QStringList)));
+            connect(artwork,SIGNAL(playAlbum(QString , QString)),this,SLOT(playAlbum_clicked(QString, QString)));
+            connect(artwork,SIGNAL(changedArt(QString, QString , QString)),this,SLOT(changedArt_cover(QString, QString, QString)));
 
 
-        //album->setStyleSheet(":hover {background:#3daee9; }");
-        auto item =new QListWidgetItem();
-        item->setSizeHint( QSize( albumSize, albumSize) );
+            //album->setStyleSheet(":hover {background:#3daee9; }");
+            auto item =new QListWidgetItem();
+            item->setSizeHint( QSize( albumSize, albumSize) );
 
-        //item->setTextAlignment(Qt::AlignCenter);
-        grid->addItem(item);
+            //item->setTextAlignment(Qt::AlignCenter);
+            grid->addItem(item);
 
-        grid->setItemWidget(item,album);
-
+            grid->setItemWidget(item,artwork);
+        }
 
     }
 
@@ -301,40 +312,43 @@ void AlbumsView::populateTableViewHeads(QSqlQuery query)
     qDebug()<<"ON POPULATE HEADS VIEW:";
     while (query.next())
     {
-
-
+        QString artist =query.value(TITLE).toString();
+        QString art=":Data/data/cover.svg";
         // albumsList.push_back(album);
 
+        if(!artists.contains(artist))
+        {
+            artists<<artist;
+             qDebug()<<"creating a new album[head] for<<"<<artist;
 
-        QString art=":Data/data/cover.svg";
+            if(!query.value(1).toString().isEmpty()&&query.value(1).toString()!="NULL")
+                art=(query.value(1).toString());
 
-        if(!query.value(1).toString().isEmpty()&&query.value(1).toString()!="NULL")
-            art=(query.value(1).toString());
-
-        Album *album= new Album(art,albumSize,4,false,false,this);
-
-
-        album->borderColor=true;
-        album->setArtist(query.value(TITLE).toString());
-        album->setTitle();
-        //album->titleVisible(false);
-
-        // album->setTitle(query.value(1).toString(),query.value(2).toString());
-        //album->setToolTip(query.value(2).toString());
-        connect(album, SIGNAL(albumCoverClicked(QStringList)),this,SLOT(getArtistInfo(QStringList)));
-        connect(album,SIGNAL(playAlbum(QString , QString)),this,SLOT(playAlbum_clicked(QString, QString)));
-        connect(album,SIGNAL(changedArt(QString, QString , QString)),this,SLOT(changedArt_head(QString, QString, QString)));
-
-        //album->setStyleSheet(":hover {background:#3daee9; }");
-        auto item =new QListWidgetItem();
-        item->setSizeHint( QSize( albumSize, albumSize) );
-
-        // item->setTextAlignment(Qt::AlignCenter);
-        grid->addItem(item);
-
-        grid->setItemWidget(item,album);
+            Album *album= new Album(art,albumSize,4,false,false,this);
 
 
+            album->borderColor=true;
+            album->setArtist(artist);
+            album->setTitle();
+            //album->titleVisible(false);
+
+            // album->setTitle(query.value(1).toString(),query.value(2).toString());
+            //album->setToolTip(query.value(2).toString());
+            connect(album, SIGNAL(albumCoverClicked(QStringList)),this,SLOT(getArtistInfo(QStringList)));
+            connect(album,SIGNAL(playAlbum(QString , QString)),this,SLOT(playAlbum_clicked(QString, QString)));
+            connect(album,SIGNAL(changedArt(QString, QString , QString)),this,SLOT(changedArt_head(QString, QString, QString)));
+
+            //album->setStyleSheet(":hover {background:#3daee9; }");
+            auto item =new QListWidgetItem();
+            item->setSizeHint( QSize( albumSize, albumSize) );
+
+            // item->setTextAlignment(Qt::AlignCenter);
+            grid->addItem(item);
+
+            grid->setItemWidget(item,album);
+
+
+        }
     }
 
 

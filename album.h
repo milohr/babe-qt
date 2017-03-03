@@ -21,7 +21,7 @@ class Album : public QLabel
 public:
 
     explicit Album(QString imagePath, int widgetSize, int widgetRadius=0, bool isDraggable=false, bool plain=false, QWidget *parent = 0);
-    ~Album(){delete this;}
+    ~Album(){}
     void setArtist(QString artist);
     void setAlbum(QString album);
     void setTitle();

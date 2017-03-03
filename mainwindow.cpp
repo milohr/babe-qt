@@ -592,10 +592,10 @@ void MainWindow::refreshTables()
     collectionTable->populateTableView("SELECT * FROM tracks");
     // favoritesTable->flushTable();
     //favoritesTable->populateTableView("SELECT * FROM tracks WHERE stars > \"0\" OR babe =  \"1\"");
-    albumsTable->flushGrid();
+    //albumsTable->flushGrid();
     albumsTable->populateTableView(settings_widget->getCollectionDB().getQuery("SELECT * FROM albums ORDER by title asc"));
     albumsTable->hideAlbumFrame();
-    artistsTable->flushGrid();
+    //artistsTable->flushGrid();
     artistsTable->populateTableViewHeads(settings_widget->getCollectionDB().getQuery("SELECT * FROM artists ORDER by title asc"));
     artistsTable->hideAlbumFrame();
 
