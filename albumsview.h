@@ -58,6 +58,7 @@ public slots:
     void playAlbum_clicked(QString artist, QString album);
     void changedArt_cover(QString path, QString artist, QString album);
     void changedArt_head(QString path, QString artist, QString album);
+    void babeAlbum(QString album, QString artist);
 
 
 private slots:
@@ -78,6 +79,7 @@ signals:
     void albumOrderChanged(QString order);
     void playAlbum(QString artist, QString album);
     void changedArt(QString artist, QString album);
+    void babeAlbum_clicked(QList<QStringList> tracks);
 
 };
 

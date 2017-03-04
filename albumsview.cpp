@@ -142,6 +142,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     cover = new Album(":Data/data/cover.svg",120,0,false,false,this);
     connect(cover,SIGNAL(playAlbum(QString , QString)),this,SLOT(playAlbum_clicked(QString, QString)));
     connect(cover,SIGNAL(changedArt(QString, QString , QString)),this,SLOT(changedArt_cover(QString, QString, QString)));
+    connect(cover,SIGNAL(babeAlbum_clicked(QString, QString)),this,SLOT(babeAlbum(QString, QString)));
 
 
 
@@ -290,6 +291,7 @@ void AlbumsView::populateTableView(QSqlQuery query)
             connect(artwork, SIGNAL(albumCoverClicked(QStringList)),this,SLOT(getAlbumInfo(QStringList)));
             connect(artwork,SIGNAL(playAlbum(QString , QString)),this,SLOT(playAlbum_clicked(QString, QString)));
             connect(artwork,SIGNAL(changedArt(QString, QString , QString)),this,SLOT(changedArt_cover(QString, QString, QString)));
+            connect(artwork,SIGNAL(babeAlbum_clicked(QString, QString)),this,SLOT(babeAlbum(QString, QString)));
 
 
             //album->setStyleSheet(":hover {background:#3daee9; }");
@@ -307,6 +309,29 @@ void AlbumsView::populateTableView(QSqlQuery query)
 
 }
 
+void AlbumsView::babeAlbum(QString album, QString artist)
+{
+
+    QSqlQuery query;
+    if(album.isEmpty())
+         query = connection->getQuery("SELECT * FROM tracks WHERE artist = \""+artist+"\" ORDER by album asc, track asc ");
+    else if(!artist.isEmpty())
+         query = connection->getQuery("SELECT * FROM tracks WHERE artist = \""+artist+"\" and album = \""+album+"\" ORDER by track asc ");
+
+    if(query.exec())
+    {
+        QStringList urls;
+        while(query.next())
+        {
+            urls<<query.value(CollectionDB::LOCATION).toString();
+        }
+
+    auto tracks = connection->getTrackData(urls);
+
+    emit babeAlbum_clicked(tracks);
+    }
+}
+
 void AlbumsView::populateTableViewHeads(QSqlQuery query)
 {
     qDebug()<<"ON POPULATE HEADS VIEW:";
@@ -319,7 +344,7 @@ void AlbumsView::populateTableViewHeads(QSqlQuery query)
         if(!artists.contains(artist))
         {
             artists<<artist;
-             qDebug()<<"creating a new album[head] for<<"<<artist;
+            qDebug()<<"creating a new album[head] for<<"<<artist;
 
             if(!query.value(1).toString().isEmpty()&&query.value(1).toString()!="NULL")
                 art=(query.value(1).toString());
@@ -337,6 +362,7 @@ void AlbumsView::populateTableViewHeads(QSqlQuery query)
             connect(album, SIGNAL(albumCoverClicked(QStringList)),this,SLOT(getArtistInfo(QStringList)));
             connect(album,SIGNAL(playAlbum(QString , QString)),this,SLOT(playAlbum_clicked(QString, QString)));
             connect(album,SIGNAL(changedArt(QString, QString , QString)),this,SLOT(changedArt_head(QString, QString, QString)));
+            connect(album,SIGNAL(babeAlbum_clicked(QString, QString)),this,SLOT(babeAlbum(QString, QString)));
 
             //album->setStyleSheet(":hover {background:#3daee9; }");
             auto item =new QListWidgetItem();

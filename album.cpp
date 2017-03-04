@@ -101,6 +101,7 @@ Album::Album(QString imagePath, int widgetSize, int widgetRadius, bool isDraggab
 void Album::babeIt_action()
 {
     qDebug()<<"Babe album"<<this->artist<<this->album;
+    emit babeAlbum_clicked(this->album, this->artist);
 }
 
 void Album::artIt_action()

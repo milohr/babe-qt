@@ -124,9 +124,12 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(albumsTable->albumTable,SIGNAL(removeIt_clicked(int)),this,SLOT(removeSong(int)));
     connect(albumsTable->albumTable,SIGNAL( babeIt_clicked(QList<QStringList>)),this,SLOT(babeIt(QList<QStringList>)));
     connect(albumsTable,SIGNAL(playAlbum(QString, QString)),this,SLOT(putOnPlay(QString, QString)));
+    connect(albumsTable,SIGNAL(babeAlbum_clicked(QList<QStringList>)),this,SLOT(babeIt(QList<QStringList>)));
+
     connect(albumsTable->albumTable,SIGNAL(queueIt_clicked(QString)),this,SLOT(addToQueue(QString)));
     connect(albumsTable->albumTable,SIGNAL(moodIt_clicked(QString)),playlistTable,SLOT(createMoodPlaylist(QString)));
     connect(albumsTable->albumTable,SIGNAL(infoIt_clicked(QString, QString, QString)),this,SLOT(infoIt(QString, QString, QString)));
+
 
 
 
@@ -137,6 +140,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(artistsTable->albumTable,SIGNAL(removeIt_clicked(int)),this,SLOT(removeSong(int)));
     connect(artistsTable->albumTable,SIGNAL( babeIt_clicked(QList<QStringList>)),this,SLOT(babeIt(QList<QStringList>)));
     connect(artistsTable,SIGNAL(playAlbum(QString, QString)),this,SLOT(putOnPlay(QString, QString)));
+    connect(artistsTable,SIGNAL(babeAlbum_clicked(QList<QStringList>)),this,SLOT(babeIt(QList<QStringList>)));
+
     connect(artistsTable->albumTable,SIGNAL(queueIt_clicked(QString)),this,SLOT(addToQueue(QString)));
     connect(artistsTable->albumTable,SIGNAL(moodIt_clicked(QString)),playlistTable,SLOT(createMoodPlaylist(QString)));
     connect(artistsTable->albumTable,SIGNAL(infoIt_clicked(QString, QString, QString)),this,SLOT(infoIt(QString, QString, QString)));
@@ -342,6 +347,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(album_art,SIGNAL(playAlbum(QString , QString)),this,SLOT(putOnPlay(QString, QString)));
     connect(album_art,SIGNAL(changedArt(QString, QString , QString)),this,SLOT(changedArt(QString, QString, QString)));
+    connect(album_art,SIGNAL(babeAlbum_clicked(QString, QString)),this,SLOT(babeAlbum(QString, QString)));
 
     album_art->setFixedSize(200,200);
     //connect(album_art,SIGNAL(albumCoverLeft()),this,SLOT(hide ui->controls()));
@@ -1696,6 +1702,29 @@ void MainWindow::on_fav_btn_clicked()
 {
    babeIt(settings_widget->collection_db.getTrackData({current_song_url}));
 
+}
+
+
+void MainWindow::babeAlbum(QString album, QString artist)
+{
+    QSqlQuery query;
+    if(album.isEmpty())
+         query = settings_widget->getCollectionDB().getQuery("SELECT * FROM tracks WHERE artist = \""+artist+"\" ORDER by album asc, track asc ");
+    else if(!artist.isEmpty())
+         query = settings_widget->getCollectionDB().getQuery("SELECT * FROM tracks WHERE artist = \""+artist+"\" and album = \""+album+"\" ORDER by track asc ");
+
+    if(query.exec())
+    {
+        QStringList urls;
+        while(query.next())
+        {
+            urls<<query.value(CollectionDB::LOCATION).toString();
+        }
+
+    babeIt(settings_widget->getCollectionDB().getTrackData(urls));
+
+
+    }
 }
 
 void MainWindow::unbabeIt(QString url)

@@ -47,8 +47,8 @@ public:
 private:
 
     bool draggable;
-     bool isPlain=false;
-QString imagePath;
+    bool isPlain=false;
+    QString imagePath;
     QString artist="";
     QString album="";
     QString bgColor="";
@@ -60,17 +60,18 @@ QString imagePath;
 signals:
     void albumCoverClicked(QStringList info);
     void albumCoverEnter();
-     void albumCoverLeft();
-     void playAlbum(QString artist, QString album);
-     void changedArt(QString path,QString artist, QString album);
+    void albumCoverLeft();
+    void playAlbum(QString artist, QString album);
+    void changedArt(QString path,QString artist, QString album);
+    void babeAlbum_clicked(QString album, QString artist);
 
 public slots:
-      void putPixmap(QByteArray pix);
-      void putPixmap(QString path);
-      void playBtn_clicked();
-      void babeIt_action();
-      void artIt_action();
-      void removeIt_action();
+    void putPixmap(QByteArray pix);
+    void putPixmap(QString path);
+    void playBtn_clicked();
+    void babeIt_action();
+    void artIt_action();
+    void removeIt_action();
 
 protected:
 
