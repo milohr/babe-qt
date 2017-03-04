@@ -514,19 +514,12 @@ void settings::finishedAddingTracks(bool state) {
 
         collectionWatcher();
          fetchArt();
-        // collection_db.closeConnection();
-        // thread->terminate();
-
 
     }else
     {
         emit collectionDBFinishedAdding(true);
 
     }
-
-
-
-    // qDebug()<<"good to hear it g¿finished yay!!!!!!";
 }
 
 void settings::fetchArt() {

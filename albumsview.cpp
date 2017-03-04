@@ -194,7 +194,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
 
 }
 
-AlbumsView::~AlbumsView(){delete this;}
+AlbumsView::~AlbumsView(){}
 
 void AlbumsView::hideAlbumFrame()
 {
