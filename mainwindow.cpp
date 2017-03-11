@@ -41,7 +41,7 @@ MainWindow::MainWindow(QWidget *parent) :
         // this->setLyrics(artist,title);
         timer->stop();
         //qDebug()<<"antonpirulilului";
-        this->getTrackInfo(current_title,current_artist,current_album);
+        infoTable->getTrackInfo(current_title,current_artist,current_album);
 
     });
 
@@ -153,8 +153,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     infoTable = new InfoView(this);
     connect(infoTable,SIGNAL(playAlbum(QString, QString)),this,SLOT(putOnPlay(QString, QString)));
-    lyrics = new Lyrics();
-    connect(lyrics,SIGNAL(lyricsReady(QString)),infoTable,SLOT(setLyrics(QString)));
 
 
 
@@ -763,15 +761,6 @@ void MainWindow::dummy()
     qDebug()<<"TEST on DUMMYT";
 }
 
-void MainWindow::setLyrics(QString artist,QString title)
-{
-
-    if(!artist.isEmpty()&&!title.isEmpty())
-    {
-        //lyrics->clean();
-        lyrics->setData(artist,title);
-    }
-}
 
 
 void MainWindow::setCoverArt(QString artist, QString album,QString title)
@@ -1507,20 +1496,7 @@ void MainWindow::removeFromQueue(QString url)
     // queueList.remove();
 }
 
-void MainWindow::getTrackInfo(QString title, QString artist, QString album)
-{
-    if(!current_album.isEmpty()&&!current_artist.isEmpty())
-    {
-        ArtWork coverInfo;
-        ArtWork artistInfo;
-        connect(&coverInfo, SIGNAL(infoReady(QString)), infoTable, SLOT(setAlbumInfo(QString)));
-        connect(&artistInfo, SIGNAL(bioReady(QString)), infoTable, SLOT(setArtistInfo(QString)));
-        coverInfo.setDataCoverInfo(artist,album);
-        artistInfo.setDataHeadInfo(artist);
 
-        setLyrics(artist,title);
-    }
-}
 
 
 int MainWindow::getIndex()
@@ -1807,8 +1783,9 @@ void MainWindow::babeIt(QList<QStringList> list)
 void  MainWindow::infoIt(QString title, QString artist, QString album)
 {
     //views->setCurrentIndex(INFO);
-    getTrackInfo(title, artist,album);
-    infoView();
+     infoView();
+    infoTable->getTrackInfo(title, artist,album);
+
 
 }
 

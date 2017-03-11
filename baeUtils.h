@@ -108,6 +108,21 @@ static inline bool fileExists(QString url)
     if (path.exists()) return true;
     else return false;
 }
+
+static inline QString ucfirst(const QString str) {
+    if (str.size() < 1) {
+        return "";
+    }
+
+    QStringList tokens = str.split(" ");
+    QList<QString>::iterator tokItr = tokens.begin();
+
+    for (tokItr = tokens.begin(); tokItr != tokens.end(); ++tokItr) {
+        (*tokItr) = (*tokItr).at(0).toUpper() + (*tokItr).mid(1);
+    }
+
+    return tokens.join(" ");
+}
 }
 
 #endif // UTILS_H

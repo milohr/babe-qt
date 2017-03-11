@@ -31,7 +31,7 @@
 #include "playlistsview.h"
 #include "artwork.h"
 #include "infoview.h"
-#include "lyrics.h"
+
 #include "album.h"
 #include "mpris2.h"
 #include "notify.h"
@@ -138,8 +138,7 @@ private slots:
     void on_addAll_clicked();
     void saveResultsTo(QAction *action);
     void on_saveResults_clicked();
-    void setLyrics(QString artist,QString title);
-    void getTrackInfo(QString title, QString artist, QString album);
+
     void removeSong(int index);
     void putOnPlay(QString artist, QString album);
     void loadCover(QString artist, QString album, QString title);
@@ -158,7 +157,7 @@ private:
     Notify nof;
     ArtWork *coverArt;
     ArtWork *artistHead;
-    Lyrics *lyrics;
+
     Mpris *mpris;
     void keepOnTop(bool state);
     void setUpViews();

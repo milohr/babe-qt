@@ -7,6 +7,8 @@
 #include <QHBoxLayout>
 #include <QToolButton>
 #include "album.h"
+#include "lyrics.h"
+#include "artwork.h"
 
 namespace Ui {
 class InfoView;
@@ -29,11 +31,12 @@ public:
 
 private:
     Ui::InfoView *ui;
-
+Lyrics *lyrics;
     QToolButton *hideBtn;
     bool hide= false;
+    bool customsearch = false;
 
-private slots:
+public slots:
     void setAlbumArt(QByteArray array);
     void setAlbumInfo(QString info);
     void setArtistArt(QByteArray array);
@@ -42,9 +45,14 @@ private slots:
     void hideArtistInfo();
     void playAlbum_clicked(QString artist, QString album);
 
+    void getTrackInfo(QString title, QString artist, QString album);
+    void on_searchBtn_clicked();
+
 signals:
     void playAlbum(QString artist, QString album);
 
+private slots:
+    void on_toolButton_clicked();
 };
 
 #endif // INFOVIEW_H

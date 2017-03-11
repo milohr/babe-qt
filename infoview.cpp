@@ -11,6 +11,10 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView) {
     ui->lyricsText->setStyleSheet(
                 "QTextBrowser{background-color: #575757; color:white;}");
 
+    lyrics = new Lyrics();
+    connect(lyrics,SIGNAL(lyricsReady(QString)),this,SLOT(setLyrics(QString)));
+
+
     artist->titleVisible(false);
     artist->borderColor = true;
     auto artistContainer = new QWidget();
@@ -55,9 +59,17 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView) {
     infoUtils_layout->addWidget(moreBtn);
 
     infoUtils_layout->addWidget(hideBtn);
+    infoUtils_layout->addWidget(ui->searchBtn);
     infoUtils->setLayout(infoUtils_layout);
-    ui->artistFrame->hide();
+    ui->artistFrame->setVisible(false);
+    ui->frame_4->setVisible(false);
     infoUtils->hide();
+    ui->customsearch->setVisible(false);
+    ui->frame_2->setVisible(false);
+    //ui->searchBtn->setParent(ui->lyricsText);
+    // ui->searchBtn->setGeometry(5,5,22,22);
+
+    //ui->searchBtn->setVisible(false);
 
 }
 
@@ -73,15 +85,15 @@ void InfoView::playAlbum_clicked(QString artist, QString album)
 void InfoView::hideArtistInfo() {
     qDebug() << "hide artist info";
     if (hide) {
-        ui->artistFrame->hide();
-        infoUtils->hide();
+        ui->artistFrame->setVisible(false);
+        ui->frame_4->setVisible(false);
         hideBtn->setIcon(QIcon::fromTheme("show_table_column"));
-        hide = false;
+        hide = !hide;
     } else {
-        ui->artistFrame->show();
-        infoUtils->show();
+        ui->artistFrame->setVisible(true);
+        ui->frame_4->setVisible(true);
         hideBtn->setIcon(QIcon::fromTheme("hide_table_column"));
-        hide = true;
+        hide = !hide;
     }
 }
 
@@ -90,11 +102,11 @@ void InfoView::setAlbumInfo(QString info) {
     //qDebug() << info;
     if (info.isEmpty()) {
         ui->albumText->hide();
-        ui->frame_4->hide();
+
         ui->frame_5->hide();
     } else {
         ui->albumText->show();
-        ui->frame_4->show();
+
         ui->frame_5->show();
         ui->albumText->setHtml(info);
     }
@@ -110,4 +122,53 @@ void InfoView::setLyrics(QString lyrics) {
     ui->lyricsText->setHtml(lyrics);
     ui->lyricsLayout->setAlignment(Qt::AlignCenter);
     ui->lyricsFrame->show();
+}
+
+void InfoView::on_searchBtn_clicked()
+{
+    if(!customsearch)
+    {
+        ui->customsearch->setVisible(true);
+        ui->frame_2->setVisible(true);
+        customsearch=!customsearch;
+    }
+    else
+    {
+        ui->customsearch->setVisible(false);
+        ui->frame_2->setVisible(false);
+        customsearch=!customsearch;
+    }
+}
+
+
+void InfoView::getTrackInfo(QString title, QString artist, QString album)
+{
+    if(!album.isEmpty()&&!artist.isEmpty())
+    {
+        ArtWork coverInfo;
+        ArtWork artistInfo;
+        connect(&coverInfo, SIGNAL(infoReady(QString)), this, SLOT(setAlbumInfo(QString)));
+        connect(&artistInfo, SIGNAL(bioReady(QString)), this, SLOT(setArtistInfo(QString)));
+        coverInfo.setDataCoverInfo(artist,album);
+        artistInfo.setDataHeadInfo(artist);
+
+        if(!title.isEmpty())
+        {
+            lyrics->setData(artist,title);
+        }
+    }
+}
+
+
+
+void InfoView::on_toolButton_clicked()
+{
+    QString artist=ui->artistLine->text();
+    QString title=ui->titleLine->text();
+
+    if(!artist.isEmpty()&&!title.isEmpty())
+    {
+
+        lyrics->setData(artist,title);
+    }
 }
