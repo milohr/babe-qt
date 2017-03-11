@@ -77,6 +77,28 @@ static inline QString removeSubstring(QString newTitle, QString subString)
     }
 }
 
+static inline QString ucfirst(const QString str) {
+    if (str.size() < 1) {
+        return "";
+    }
+
+    QStringList tokens = str.split(" ");
+   QStringList result;
+
+    for(auto str : tokens)
+    {
+         if(!str.isEmpty())
+         {
+             str = str.toLower();
+             str[0] = str[0].toUpper();
+             result<<str;
+         }
+    }
+
+
+    return result.join(" ");
+}
+
 static inline QString fixString(QString title)
 {
 
@@ -99,7 +121,7 @@ static inline QString fixString(QString title)
     title=title.contains("&")? title.replace("&", "and"):title;
     qDebug()<<"fixed string:"<<title;
 
-    return title.simplified();
+    return ucfirst(title).simplified();
 }
 
 static inline bool fileExists(QString url)
@@ -109,20 +131,7 @@ static inline bool fileExists(QString url)
     else return false;
 }
 
-static inline QString ucfirst(const QString str) {
-    if (str.size() < 1) {
-        return "";
-    }
 
-    QStringList tokens = str.split(" ");
-    QList<QString>::iterator tokItr = tokens.begin();
-
-    for (tokItr = tokens.begin(); tokItr != tokens.end(); ++tokItr) {
-        (*tokItr) = (*tokItr).at(0).toUpper() + (*tokItr).mid(1);
-    }
-
-    return tokens.join(" ");
-}
 }
 
 #endif // UTILS_H

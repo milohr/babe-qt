@@ -170,5 +170,6 @@ void InfoView::on_toolButton_clicked()
     {
 
         lyrics->setData(artist,title);
+
     }
 }
