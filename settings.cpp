@@ -512,6 +512,7 @@ void settings::finishedAddingTracks(bool state) {
 
 
         collectionWatcher();
+         emit refreshTables();
          fetchArt();
 
     }else
@@ -581,7 +582,8 @@ void settings::fetchArt() {
     movie->stop();
     ui->label->hide();
 
-   emit refreshTables();
+
+    emit collectionDBFinishedAdding(true);
 }
 
 void settings::on_pushButton_clicked() {

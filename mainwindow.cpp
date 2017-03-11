@@ -478,7 +478,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::changedArt(QString path, QString artist, QString album)
 {
-   settings_widget->collection_db.execQuery(QString("UPDATE albums SET art = \"%1\" WHERE title = \"%2\" AND artist = \"%3\"").arg(path,album,artist) );
+    settings_widget->collection_db.execQuery(QString("UPDATE albums SET art = \"%1\" WHERE title = \"%2\" AND artist = \"%3\"").arg(path,album,artist) );
 
 }
 
@@ -586,10 +586,10 @@ void MainWindow::resizeEvent(QResizeEvent* event)
     {
         int oldHeight = this->size().height();
         this->resize(700,oldHeight);
-         event->accept();
+        event->accept();
         expand();
     }
-     QMainWindow::resizeEvent(event);
+    QMainWindow::resizeEvent(event);
 }
 
 void MainWindow::refreshTables()
@@ -677,7 +677,7 @@ void MainWindow::enterEvent(QEvent *event)
 void MainWindow::leaveEvent(QEvent *event)
 {
     //qDebug()<<"left the window";
-   // Q_UNUSED(event);
+    // Q_UNUSED(event);
     event->accept();
     hideControls();
     //timer = new QTimer(this);
@@ -695,7 +695,7 @@ void MainWindow::hideControls()
 {
     //qDebug()<<"ime is up";
     ui->controls->hide();
-   album_art->titleVisible(false);
+    album_art->titleVisible(false);
     // timer->stop();*/
 }
 
@@ -703,7 +703,7 @@ void MainWindow::showControls()
 {
     //qDebug()<<"ime is up";
     ui->controls->show();
-   if(mini_mode==2)  album_art->titleVisible(true);
+    if(mini_mode==2)  album_art->titleVisible(true);
     // if (mini_mode==2)album_art->titleVisible(true);
     // timer->stop();*/
 }
@@ -1089,7 +1089,7 @@ void MainWindow::on_hide_sidebar_btn_clicked()
 
         ui->hide_sidebar_btn->setToolTip("Full View");
         //layout->setContentsMargins(6,0,6,0);
-       // album_art->titleVisible(false);
+        // album_art->titleVisible(false);
         // album_art->border_radius=2;
         album_art->borderColor=false;
         //album_art->setStyleSheet("QLabel{border: none}");
@@ -1371,15 +1371,15 @@ void MainWindow::loadMood()
          mood = mood.lighter(120);*/
         seekBar->setStyleSheet(QString("QSlider\n{\nbackground:transparent;}\nQSlider::groove:horizontal {border: none; background: transparent; height: 5px; border-radius: 0; } QSlider::sub-page:horizontal {\nbackground: %1 ;border: none; height: 5px;border-radius: 0;} QSlider::add-page:horizontal {\nbackground: transparent; border: none; height: 5px; border-radius: 0; } QSlider::handle:horizontal {background: %1; width: 8px; } QSlider::handle:horizontal:hover {background: qlineargradient(x1:0, y1:0, x2:1, y2:1,stop:0 #fff, stop:1 #ddd);border: 1px solid #444;border-radius: 4px;}QSlider::sub-page:horizontal:disabled {background: #bbb;border-color: #999;}QSlider::add-page:horizontal:disabled {background: #eee;border-color: #999;}QSlider::handle:horizontal:disabled {background: #eee;border: 1px solid #aaa;border-radius: 4px;}").arg(color));
         mainList->setStyleSheet(QString("QTableWidget::item:selected {background:rgba( %1, %2, %3, 40); color: %4}").arg(QString::number(QColor(color).toRgb().red()),QString::number(QColor(color).toRgb().green()),QString::number(QColor(color).toRgb().blue()),mainList->palette().color(QPalette::WindowText).name()));
-       ui->mainToolBar->setStyleSheet(QString("QToolBar {margin:0; background-color:rgba( %1, %2, %3, 25); background-image:url('%4');} QToolButton{ border-radius:0;} QToolButton:checked{border-radius:0; background: rgba(0,0,0,50)}").arg(QString::number(QColor(color).toRgb().red()),QString::number(QColor(color).toRgb().green()),QString::number(QColor(color).toRgb().blue()),":Data/data/pattern.png"));
+        ui->mainToolBar->setStyleSheet(QString("QToolBar {margin:0; background-color:rgba( %1, %2, %3, 25); background-image:url('%4');} QToolButton{ border-radius:0;} QToolButton:checked{border-radius:0; background: rgba(0,0,0,50)}").arg(QString::number(QColor(color).toRgb().red()),QString::number(QColor(color).toRgb().green()),QString::number(QColor(color).toRgb().blue()),":Data/data/pattern.png"));
 
     }else
     {
         //ui->listWidget->setBackgroundRole(QPalette::Highlight);
         //ui->listWidget->setpa
         seekBar->setStyleSheet("QSlider\n{\nbackground:transparent;}\nQSlider::groove:horizontal {border: none; background: transparent; height: 5px; border-radius: 0; } QSlider::sub-page:horizontal {\nbackground: #f85b79;border: none; height: 5px;border-radius: 0;} QSlider::add-page:horizontal {\nbackground: transparent; border: none; height: 5px; border-radius: 0; } QSlider::handle:horizontal {background: #f85b79; width: 8px; } QSlider::handle:horizontal:hover {background: qlineargradient(x1:0, y1:0, x2:1, y2:1,stop:0 #fff, stop:1 #ddd);border: 1px solid #444;border-radius: 4px;}QSlider::sub-page:horizontal:disabled {background: #bbb;border-color: #999;}QSlider::add-page:horizontal:disabled {background: #eee;border-color: #999;}QSlider::handle:horizontal:disabled {background: #eee;border: 1px solid #aaa;border-radius: 4px;}");
-       mainList->setStyleSheet(QString("QTableWidget::item:selected {background:%1; color: %2}").arg("rgba(0,0,0,150)","white"));
-       ui->mainToolBar->setStyleSheet(QString("QToolBar {margin:0; background-color:rgba( %1, %2, %3, 0); background-image:url('%4');} QToolButton{ border-radius:0;} QToolButton:checked{border-radius:0; background: rgba(0,0,0,50)}").arg(QString::number(QColor(color).toRgb().red()),QString::number(QColor(color).toRgb().green()),QString::number(QColor(color).toRgb().blue()),":Data/data/pattern.png"));
+        mainList->setStyleSheet(QString("QTableWidget::item:selected {background:%1; color: %2}").arg("rgba(0,0,0,150)","white"));
+        ui->mainToolBar->setStyleSheet(QString("QToolBar {margin:0; background-color:rgba( %1, %2, %3, 0); background-image:url('%4');} QToolButton{ border-radius:0;} QToolButton:checked{border-radius:0; background: rgba(0,0,0,50)}").arg(QString::number(QColor(color).toRgb().red()),QString::number(QColor(color).toRgb().green()),QString::number(QColor(color).toRgb().blue()),":Data/data/pattern.png"));
 
     }
 }
@@ -1559,9 +1559,17 @@ void MainWindow::update()
         }
     }else
     {
-        seekBar->setValue(0);
-        seekBar->setEnabled(false);
         addMusicImg->setVisible(true);
+        if(player->state() != QMediaPlayer::PlayingState)
+        {
+            seekBar->setValue(0);
+            seekBar->setEnabled(false);
+        }else
+        {
+            if(!seekBar->isSliderDown())
+                seekBar->setValue((double)player->position()/player->duration() * 1000);
+        }
+
     }
 }
 
@@ -1682,8 +1690,9 @@ void MainWindow::collectionDBFinishedAdding(bool state)
         if(!ui->fav_btn->isEnabled()) ui->fav_btn->setEnabled(true);
         qDebug()<<"now it i time to put the tracks in the table ;)";
         //settings_widget->getCollectionDB().closeConnection();
+        albumsTable->flushGrid();
+        artistsTable->flushGrid();
         refreshTables();
-
     }
 }
 
@@ -1700,7 +1709,7 @@ void MainWindow::orderTables()
 
 void MainWindow::on_fav_btn_clicked()
 {
-   babeIt(settings_widget->collection_db.getTrackData({current_song_url}));
+    babeIt(settings_widget->collection_db.getTrackData({current_song_url}));
 
 }
 
@@ -1709,9 +1718,9 @@ void MainWindow::babeAlbum(QString album, QString artist)
 {
     QSqlQuery query;
     if(album.isEmpty())
-         query = settings_widget->getCollectionDB().getQuery("SELECT * FROM tracks WHERE artist = \""+artist+"\" ORDER by album asc, track asc ");
+        query = settings_widget->getCollectionDB().getQuery("SELECT * FROM tracks WHERE artist = \""+artist+"\" ORDER by album asc, track asc ");
     else if(!artist.isEmpty())
-         query = settings_widget->getCollectionDB().getQuery("SELECT * FROM tracks WHERE artist = \""+artist+"\" and album = \""+album+"\" ORDER by track asc ");
+        query = settings_widget->getCollectionDB().getQuery("SELECT * FROM tracks WHERE artist = \""+artist+"\" and album = \""+album+"\" ORDER by track asc ");
 
     if(query.exec())
     {
@@ -1721,7 +1730,7 @@ void MainWindow::babeAlbum(QString album, QString artist)
             urls<<query.value(CollectionDB::LOCATION).toString();
         }
 
-    babeIt(settings_widget->getCollectionDB().getTrackData(urls));
+        babeIt(settings_widget->getCollectionDB().getTrackData(urls));
 
 
     }
