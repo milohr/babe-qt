@@ -17,8 +17,8 @@ void TagInfo::writeData()
 
     if(!title_.isEmpty()&&!artist_.isEmpty())
     {
-        auto info = new ArtWork ();
-        std::string newTitle=info->getAlbumTitle(artist_,title_).toStdString();
+        ArtWork info;
+        std::string newTitle=info.getAlbumTitle(artist_,title_).toStdString();
 
         this->file.tag()->setAlbum(newTitle.empty()?"UNKNOWN":newTitle);
         this->file.save();

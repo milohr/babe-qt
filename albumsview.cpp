@@ -147,6 +147,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
 
 
     closeBtn = new QToolButton(cover);
+    //closeBtn->setStyleSheet("QToolButton{border: 1px solid red; border-radius:12px;}");
     closeBtn->setGeometry(2,2,16,16);
     closeBtn->setIcon(QIcon::fromTheme("tab-close"));
     closeBtn->setAutoRaise(true);

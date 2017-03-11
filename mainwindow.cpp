@@ -1511,12 +1511,12 @@ void MainWindow::getTrackInfo(QString title, QString artist, QString album)
 {
     if(!current_album.isEmpty()&&!current_artist.isEmpty())
     {
-        auto coverInfo = new ArtWork();
-        auto artistInfo = new ArtWork;
-        connect(coverInfo, SIGNAL(infoReady(QString)), infoTable, SLOT(setAlbumInfo(QString)));
-        connect(artistInfo, SIGNAL(bioReady(QString)), infoTable, SLOT(setArtistInfo(QString)));
-        coverInfo->setDataCoverInfo(artist,album);
-        artistInfo->setDataHeadInfo(artist);
+        ArtWork coverInfo;
+        ArtWork artistInfo;
+        connect(&coverInfo, SIGNAL(infoReady(QString)), infoTable, SLOT(setAlbumInfo(QString)));
+        connect(&artistInfo, SIGNAL(bioReady(QString)), infoTable, SLOT(setArtistInfo(QString)));
+        coverInfo.setDataCoverInfo(artist,album);
+        artistInfo.setDataHeadInfo(artist);
 
         setLyrics(artist,title);
     }

@@ -93,7 +93,7 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
 }
 
 settings::~settings() {
-   collection_db.closeConnection();
+   //collection_db.closeConnection();
 
 }
 
@@ -441,8 +441,7 @@ bool settings::checkCollection() {
     } else {
         qDebug() << "The CollectionDB doesn't exists. Going to create the database "
                     "and tables";
-        qDebug() << "opening collection with path: "
-                 << collectionDBPath + collectionDBName;
+
         collection_db.openCollection(collectionDBPath + collectionDBName);
         collection_db.prepareCollectionDB();
 
@@ -545,16 +544,16 @@ void settings::fetchArt() {
         if(query_Title.next()) title=query_Title.value(CollectionDB::TITLE).toString();
 
 
-        auto coverArt = new ArtWork();
-        connect(coverArt, &ArtWork::coverReady, coverArt,
+        ArtWork coverArt;
+        connect(&coverArt, &ArtWork::coverReady, &coverArt,
                 &ArtWork::saveArt);
-        connect(coverArt, &ArtWork::artSaved, &collection_db,
+        connect(&coverArt, &ArtWork::artSaved, &collection_db,
                 &CollectionDB::insertCoverArt);
 
         //  QString art = cachePath+artist+"_"+album+".jpg";
 
         qDebug() << artist << album;
-        coverArt->setDataCover(artist, album,title, cachePath);
+        coverArt.setDataCover(artist, album,title, cachePath);
 
 
     }
@@ -565,17 +564,17 @@ void settings::fetchArt() {
 
 
 
-        auto artistHead = new ArtWork();
+        ArtWork artistHead;
 
-        connect(artistHead, &ArtWork::headReady, artistHead,
+        connect(&artistHead, &ArtWork::headReady, &artistHead,
                 &ArtWork::saveArt);
-        connect(artistHead, &ArtWork::artSaved, &collection_db,
+        connect(&artistHead, &ArtWork::artSaved, &collection_db,
                 &CollectionDB::insertHeadArt);
 
         QString artist = query_Heads.value(0).toString();
         // QString art = cachePath+artist+".jpg";
 
-        artistHead->setDataHead(artist, cachePath);
+        artistHead.setDataHead(artist, cachePath);
     }
 
     nof.notify("Finished fetching art","the artwork for your collection is now ready :)");

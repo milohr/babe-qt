@@ -38,7 +38,7 @@ void CollectionDB::openCollection(QString path)
 
     if (!m_db.open())
     {
-        qDebug() << "Error: connection with database fail";
+        qDebug() << "Error: connection with database fail" <<m_db.lastError().text();
     }
     else
     {
