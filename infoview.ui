@@ -134,6 +134,12 @@
       </property>
       <item>
        <widget class="QWidget" name="customsearch" native="true">
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>22</height>
+         </size>
+        </property>
         <layout class="QHBoxLayout" name="horizontalLayout">
          <property name="spacing">
           <number>0</number>

@@ -8,12 +8,12 @@
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="120"
-   height="120"
+   width="240"
+   height="240"
    version="1.1"
    id="svg24"
    sodipodi:docname="cover.svg"
-   inkscape:version="0.92.0 r">
+   inkscape:version="0.92.1 r">
   <metadata
      id="metadata28">
     <rdf:RDF>
@@ -22,7 +22,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -36,14 +36,14 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:window-width="1366"
-     inkscape:window-height="689"
+     inkscape:window-height="685"
      id="namedview26"
      showgrid="false"
-     inkscape:zoom="3.6875"
-     inkscape:cx="27.029613"
-     inkscape:cy="24.379053"
+     inkscape:zoom="1.3037281"
+     inkscape:cx="40.521112"
+     inkscape:cy="84.379028"
      inkscape:window-x="0"
-     inkscape:window-y="28"
+     inkscape:window-y="30"
      inkscape:window-maximized="1"
      inkscape:current-layer="g4559"
      fit-margin-top="0"
@@ -75,49 +75,53 @@
        inkscape:connector-curvature="0" />
   </defs>
   <g
-     transform="matrix(4.2854832,0,0,4.2854832,-1648.9993,-2219.02)"
+     transform="matrix(4.2854832,0,0,4.2854832,-1588.9993,-2159.02)"
      id="g22">
     <g
        id="g4559">
       <g
-         transform="matrix(1.1459122,0,0,1.0000535,-58.188023,-0.02844434)"
-         id="g4550">
-        <use
-           xlink:href="#b"
-           id="use12"
-           style="fill:#aaaaaa"
-           x="0"
-           y="0"
-           width="100%"
-           height="100%" />
-        <rect
-           width="24.405001"
-           x="386.57001"
-           y="544.79999"
-           height="1"
-           id="rect16"
-           style="fill:#2e3132;fill-opacity:0.294" />
-        <rect
-           width="24.405001"
-           x="386.57001"
-           y="517.79999"
-           height="1"
-           id="rect18"
-           style="fill:#ffffff;fill-opacity:0.41199999" />
-        <use
-           xlink:href="#b"
-           id="use20"
-           style="fill:url(#a)"
-           x="0"
-           y="0"
-           width="100%"
-           height="100%" />
+         id="g4499"
+         transform="matrix(2,0,0,2,-398.78801,-531.8)">
+        <g
+           id="g4550"
+           transform="matrix(1.1459122,0,0,1.0000535,-58.188023,-0.02844434)">
+          <use
+             height="100%"
+             width="100%"
+             y="0"
+             x="0"
+             style="fill:#aaaaaa"
+             id="use12"
+             xlink:href="#b" />
+          <rect
+             style="fill:#2e3132;fill-opacity:0.294"
+             id="rect16"
+             height="1"
+             y="544.79999"
+             x="386.57001"
+             width="24.405001" />
+          <rect
+             style="fill:#ffffff;fill-opacity:0.41199999"
+             id="rect18"
+             height="1"
+             y="517.79999"
+             x="386.57001"
+             width="24.405001" />
+          <use
+             height="100%"
+             width="100%"
+             y="0"
+             x="0"
+             style="fill:url(#a)"
+             id="use20"
+             xlink:href="#b" />
+        </g>
+        <path
+           d="m 394.07451,526.51113 v 8.281 c -0.295,-0.171 -0.635,-0.281 -1,-0.281 -1.105,0 -2,0.895 -2,2 0,1.105 0.895,2 2,2 1.105,0 2,-0.895 2,-2 v -7 h 7 v 4.281 c -0.295,-0.171 -0.635,-0.281 -1,-0.281 -1.105,0 -2,0.895 -2,2 0,1.105 0.895,2 2,2 1.105,0 2,-0.895 2,-2 v -9 z m 1,1 h 7 v 1 h -7 z"
+           id="path14"
+           inkscape:connector-curvature="0"
+           style="opacity:0.75;fill:#ffffff;stroke-width:1" />
       </g>
-      <path
-         style="opacity:0.75;fill:#ffffff;stroke-width:1"
-         inkscape:connector-curvature="0"
-         id="path14"
-         d="m 394.07451,526.51113 v 8.281 c -0.295,-0.171 -0.635,-0.281 -1,-0.281 -1.105,0 -2,0.895 -2,2 0,1.105 0.895,2 2,2 1.105,0 2,-0.895 2,-2 v -7 h 7 v 4.281 c -0.295,-0.171 -0.635,-0.281 -1,-0.281 -1.105,0 -2,0.895 -2,2 0,1.105 0.895,2 2,2 1.105,0 2,-0.895 2,-2 v -9 z m 1,1 h 7 v 1 h -7 z" />
     </g>
   </g>
 </svg>
