@@ -8,6 +8,7 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
 
     connect(this, SIGNAL(doubleClicked(QModelIndex)), this,
             SLOT(on_tableWidget_doubleClicked(QModelIndex)));
+    connect(this,SIGNAL(cellChanged(int , int )),this,SLOT(itemEdited(int,int)));
     this->setFrameShape(QFrame::NoFrame);
     this->setColumnCount(10);
     this->setHorizontalHeaderLabels({"Track", "Tile", "Artist", "Album", "Genre",
@@ -167,7 +168,7 @@ void BabeTable::addToPlaylist(QAction *action) {
 
     QString playlist = action->text().replace("&", "");
     QString location =
-            this->model()->data(this->model()->index(row, LOCATION)).toString();
+            this->model()->data(this->model()->index(rRow, LOCATION)).toString();
 
     if (playlist.contains("Create new...")) {
         qDebug() << "trying to create a new playlistsssss" << playlist;
@@ -355,7 +356,7 @@ void BabeTable::populateTableView(QString indication, bool descriptiveTitle) {
             // QMessageBox::about(this,"Removing missing
             // files",missingFiles.join("\n"));
 
-           Notify nof;
+            Notify nof;
             nof.notifyUrgent("Removing missing files...",missingFiles.join("\n"));
 
             for (auto file_r : missingFiles)
@@ -492,12 +493,13 @@ void BabeTable::setUpContextMenu(QPoint pos)
     // playlistsMenu->addAction("Create new...");
     int rate = 0;
     bool babe = false;
-    row = this->indexAt(pos).row();
+    rRow = this->indexAt(pos).row();
+    rColumn= this->indexAt(pos).column();
 
     // row= this->currentIndex().row(), rate;
 
     QString url =
-            this->model()->data(this->model()->index(row, LOCATION)).toString();
+            this->model()->data(this->model()->index(rRow, LOCATION)).toString();
     //
     QSqlQuery query = connection->getQuery(
                 "SELECT * FROM tracks WHERE location = \"" + url + "\"");
@@ -530,7 +532,7 @@ void BabeTable::keyPressEvent(QKeyEvent *event) {
     switch (event->key()) {
     case Qt::Key_Return: {
 
-    QList<QStringList> list;
+        QList<QStringList> list;
 
 
 
@@ -589,7 +591,7 @@ void BabeTable::rateGroup(int id) {
     qDebug() << "rated with: " << id;
     // int row= this->currentIndex().row();
     QString location =
-            this->model()->data(this->model()->index(row, LOCATION)).toString();
+            this->model()->data(this->model()->index(rRow, LOCATION)).toString();
 
     QSqlQuery query = connection->getQuery(
                 "SELECT * FROM tracks WHERE location = \"" + location + "\"");
@@ -611,19 +613,19 @@ void BabeTable::rateGroup(int id) {
         for (int i = 0; i < id; i++) {
             stars += "\xe2\x98\x86 ";
         }
-        this->item(row, STARS)->setText(stars);
+        this->item(rRow, STARS)->setText(stars);
 
         if (id > 0 && rate < 5) {
             QString title =
-                    this->model()->data(this->model()->index(row, TITLE)).toString();
+                    this->model()->data(this->model()->index(rRow, TITLE)).toString();
             QString artist =
-                    this->model()->data(this->model()->index(row, ARTIST)).toString();
+                    this->model()->data(this->model()->index(rRow, ARTIST)).toString();
             QString album =
-                    this->model()->data(this->model()->index(row, ALBUM)).toString();
+                    this->model()->data(this->model()->index(rRow, ALBUM)).toString();
             QString star =
-                    this->model()->data(this->model()->index(row, STARS)).toString();
+                    this->model()->data(this->model()->index(rRow, STARS)).toString();
             QString babe =
-                    this->model()->data(this->model()->index(row, BABE)).toString();
+                    this->model()->data(this->model()->index(rRow, BABE)).toString();
 
             qDebug() << "rated and trying to add to favs";
             emit songRated({title, artist, album, location, star, babe});
@@ -639,48 +641,13 @@ QStringList BabeTable::getRowData(int row)
 {
     QStringList file;
 
-    file<< this->model()
-            ->data(
-                this->model()->index(row, TRACK)).toString();
-    file<< this->model()
-            ->data(
-                this->model()->index(row, TITLE)).toString();
-    file<< this->model()
-            ->data(
-                this->model()->index(row, ARTIST)).toString();
-    file<< this->model()
-            ->data(
-                this->model()->index(row, ALBUM)).toString();
-    file<< this->model()
-            ->data(
-                this->model()->index(row, GENRE)).toString();
-    file<< this->model()
-             ->data(
-                 this->model()->index(row, LOCATION))
-             .toString();
-    file<< this->model()
-            ->data(
-                this->model()->index(row, STARS)).toString();
-    file<< this->model()
-            ->data(
-                this->model()->index(row, BABE)).toString();
-    file<< this->model()
-            ->data(
-                this->model()->index(row, ART)).toString();
-    file<< this->model()
-            ->data(
-                this->model()->index(row, PLAYED)).toString();
-    file<< this->model()
-            ->data(
-                this->model()->index(row, PLAYLIST)).toString();
+    for(auto i=0; i<this->columnCount()+1;i++)
+        file<< this->model()->data(this->model()->index(row, i)).toString();
 
-    qDebug() << this->model()
-                ->data(this->model()->index(this->currentIndex().row(),
-                                            LOCATION))
-                .toString();
 
     return file;
 }
+
 void BabeTable::allowDrag()
 {
 
@@ -696,51 +663,57 @@ void BabeTable::on_tableWidget_doubleClicked(const QModelIndex &index) {
     list<<getRowData(this->currentIndex().row());
 
     emit tableWidget_doubleClicked(list);
-    //emit tableWidget_doubleClicked(index);
 
-    /* playlist.add(files);
-  updateList();
-
-  if(shuffle) shufflePlaylist();*/
 }
 
 void BabeTable::babeIt_action() {
     qDebug() << "right clicked!";
     // int row= this->currentIndex().row();
     qDebug()
-            << this->model()->data(this->model()->index(row, LOCATION)).toString();
+            << this->model()->data(this->model()->index(rRow, LOCATION)).toString();
     QList<QStringList> list;
-    list<<getRowData(row);
+    list<<getRowData(rRow);
     emit babeIt_clicked(list);
 }
 
 
 
-void BabeTable::editIt_action() {}
+void BabeTable::editIt_action()
+{
+
+    emit this->edit(this->model()->index(rRow,rColumn));
+
+}
+
+void BabeTable::itemEdited(int _row, int _column)
+{
+    qDebug()<<"item changed:"<<this->model()->index(_row,_column).data().toString();
+}
 
 void BabeTable::infoIt_action()
 {
-    QString artist = this->model()->data(this->model()->index(row, ARTIST)).toString();
-    QString album = this->model()->data(this->model()->index(row, ALBUM)).toString();
-    QString title = this->model()->data(this->model()->index(row, TITLE)).toString();
+    QString artist = this->model()->data(this->model()->index(rRow, ARTIST)).toString();
+    QString album = this->model()->data(this->model()->index(rRow, ALBUM)).toString();
+    QString title = this->model()->data(this->model()->index(rRow, TITLE)).toString();
     emit infoIt_clicked(title, artist,album);
 }
 
 void BabeTable::removeIt_action()
 {
     qDebug() << "removeIt/right clicked!";
-  // int row= this->currentIndex().row();
+    // int row= this->currentIndex().row();
     qDebug()
-            << this->model()->data(this->model()->index(row, LOCATION)).toString();
-    this->removeRow(row);
-   emit removeIt_clicked(row);
+            << this->model()->data(this->model()->index(rRow, LOCATION)).toString();
+    this->removeRow(rRow);
+    emit removeIt_clicked(rRow);
 }
 
-void BabeTable::moodIt_action(QString color) {
+void BabeTable::moodIt_action(QString color)
+{
     qDebug() << "right clicked!";
     // int row= this->currentIndex().row();
     qDebug()
-            << this->model()->data(this->model()->index(row, LOCATION)).toString();
+            << this->model()->data(this->model()->index(rRow, LOCATION)).toString();
 
     // QColor color = QColorDialog::getColor(Qt::black, this, "Pick a Mood",  QColorDialog::DontUseNativeDialog);
     qDebug()<< color;
@@ -751,7 +724,7 @@ void BabeTable::moodIt_action(QString color) {
         query.prepare("UPDATE tracks SET art = (:art) WHERE location = (:location)" );
         //query.prepare("SELECT * FROM "+tableName+" WHERE "+searchId+" = (:search)");
         query.bindValue(":art",  color);
-        query.bindValue(":location", this->model()->data(this->model()->index(row, LOCATION)).toString());
+        query.bindValue(":location", this->model()->data(this->model()->index(rRow, LOCATION)).toString());
 
         if(query.exec())
         {
@@ -775,24 +748,28 @@ void BabeTable::queueIt_action()
 {
     qDebug() << "queueIt clicked!";
     // int row= this->currentIndex().row();
-    QString url = this->model()->data(this->model()->index(row, LOCATION)).toString();
+    QString url = this->model()->data(this->model()->index(rRow, LOCATION)).toString();
     qDebug()<<url;
     emit queueIt_clicked(url);
 
 }
 
-void BabeTable::flushTable() {
+void BabeTable::flushTable()
+{
     this->clearContents();
     this->setRowCount(0);
 }
 
-void BabeTable::passCollectionConnection(CollectionDB *con) {
+void BabeTable::passCollectionConnection(CollectionDB *con)
+{
     connection = con;
 }
 
-QStringList BabeTable::getTableContent(int column) {
+QStringList BabeTable::getTableContent(int column)
+{
     QStringList result;
-    for (int i = 0; i < this->rowCount(); i++) {
+    for (int i = 0; i < this->rowCount(); i++)
+    {
         result << this->model()->data(this->model()->index(i, column)).toString();
     }
 
@@ -800,11 +777,13 @@ QStringList BabeTable::getTableContent(int column) {
 }
 
 
-QList<QStringList> BabeTable::getAllTableContent() {
+QList<QStringList> BabeTable::getAllTableContent()
+{
     QList<QStringList> result;
 
 
-    for (int i = 0; i < this->rowCount(); i++) {
+    for (int i = 0; i < this->rowCount(); i++)
+    {
 
         result<<getRowData(i);
     }

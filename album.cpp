@@ -11,7 +11,6 @@ Album::Album(QString imagePath, int widgetSize, int widgetRadius, bool isDraggab
     this->size=widgetSize;
     this->setFixedSize(size,size);
     this->border_radius=widgetRadius;
-    this->setFixedSize(size,size);
     this->draggable=isDraggable;
     this->isPlain=plain;
     this->imagePath=imagePath;
@@ -27,15 +26,12 @@ Album::Album(QString imagePath, int widgetSize, int widgetRadius, bool isDraggab
         widget = new QWidget(this);
         auto layout = new QHBoxLayout();
         widget->setLayout(layout);
-
-
-        //widget->setGeometry(0,size-30,size,30);
-        // widget->setMinimumWidth(size);
-        //title->setMaximumWidth(size);
-        //title->setFixedWidth(size);
-        //widget->setMaximumWidth(size);
-
-
+        widget->setMinimumWidth(size-2);
+        widget->setGeometry(1,size-31,size-2,30);
+        //widget->setStyleSheet("background-color: rgba(0,0,0,150)");
+        //widget->setStyleSheet( QString(" background: qlineargradient(x1:0, y1:0, x2:0, y2:1,stop:0 rgba(0, 0, 0, 200), stop: 0.4 rgba(0, 0, 0, 150), stop:1 rgb(0, 0, 0, 40)); border-top: 1px solid #333; border-top-left-radius:0; border-top-right-radius:0; border-bottom-right-radius:%1px; border-bottom-left-radius:%2px;").arg( QString::number(border_radius),QString::number(border_radius)));
+        widget->setStyleSheet( QString(" background: rgba(0,0,0,150); border-top: 1px solid rgba(%1,%1,%1,120); border-top-left-radius:0; border-top-right-radius:0; border-bottom-right-radius:%2px; border-bottom-left-radius:%3px;").arg( QString::number(this->palette().color(QPalette::WindowText).blue()), QString::number(border_radius-1),QString::number(border_radius-1)));
+        //widget->setStyleSheet("background-color: rgba(0,0,0,150); border-top: 1px solid #333;");
 
         auto contextMenu = new QMenu(this);
         this->setContextMenuPolicy(Qt::ActionsContextMenu);
@@ -53,16 +49,11 @@ Album::Album(QString imagePath, int widgetSize, int widgetRadius, bool isDraggab
         connect(babeIt, SIGNAL(triggered()), this, SLOT(babeIt_action()));
         connect(removeIt, SIGNAL(triggered()), this, SLOT(removeIt_action()));
         connect(artIt, SIGNAL(triggered()), this, SLOT(artIt_action()));
-        //connect(this,SIGNAL(clicked(QModelIndex)),this,SLOT(setUpContextMenu()));
-
-        //connect(babeIt, SIGNAL(triggered()), this, SLOT(uninstallAppletClickedSlot()));
-
 
 
         title = new ScrollText(this);
-        title->setMaxSize(size);
-        //title->setMaxSize(size);
-        //title->hide();
+        title->setMaxSize(size+10);
+
         auto *left_spacer = new QWidget(this);
         left_spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
@@ -70,27 +61,20 @@ Album::Album(QString imagePath, int widgetSize, int widgetRadius, bool isDraggab
         right_spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
         playBtn = new QToolButton(this);
+        connect(playBtn,SIGNAL(clicked()),this,SLOT(playBtn_clicked()));
         playBtn->setIcon(QIcon(":Data/data/playBtn.svg"));
         playBtn->setIconSize(QSize(48,48));
         playBtn->setGeometry((size/2)-24,(size/2)-24,48,48);
         playBtn->setStyleSheet("QToolButton{border-radius:2px;} QToolButton:hover{background: url(':Data/data/playBtn_hover.svg') top center no-repeat;} ");
-        playBtn->setAutoRaise(true);
-        QObject::connect(playBtn,SIGNAL(clicked()),this,SLOT(playBtn_clicked()));
+        playBtn->setAutoRaise(true);        
         playBtn->hide();
 
         layout->addWidget(left_spacer);
         layout->addWidget(title);
-        layout->addWidget(right_spacer);
-        widget->setMinimumWidth(size-2);
-        //this->setStyleSheet("border:none");
-        widget->setGeometry(1,size-31,size-2,30);
-        //widget->setStyleSheet("background-color: rgba(0,0,0,150)");
-        //widget->setStyleSheet( QString(" background: qlineargradient(x1:0, y1:0, x2:0, y2:1,stop:0 rgba(0, 0, 0, 200), stop: 0.4 rgba(0, 0, 0, 150), stop:1 rgb(0, 0, 0, 40)); border-top: 1px solid #333; border-top-left-radius:0; border-top-right-radius:0; border-bottom-right-radius:%1px; border-bottom-left-radius:%2px;").arg( QString::number(border_radius),QString::number(border_radius)));
+        layout->addWidget(right_spacer);        
 
-        widget->setStyleSheet( QString(" background: rgba(0,0,0,150); border-top: 1px solid rgba(%1,%1,%1,120); border-top-left-radius:0; border-top-right-radius:0; border-bottom-right-radius:%2px; border-bottom-left-radius:%3px;").arg( QString::number(this->palette().color(QPalette::WindowText).blue()), QString::number(border_radius-1),QString::number(border_radius-1)));
-        //widget->setStyleSheet("background-color: rgba(0,0,0,150); border-top: 1px solid #333;");
 
-        title->setStyleSheet("background:transparent; color:white; border:none;");
+        title->setStyleSheet("QLabel{background:transparent; color:white; border:none;}");
         right_spacer->setStyleSheet("background:transparent;  border:none;");
         left_spacer->setStyleSheet("background:transparent;  border:none;");
     }

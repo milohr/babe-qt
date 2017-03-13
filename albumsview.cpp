@@ -278,34 +278,29 @@ void AlbumsView::populateTableView(QSqlQuery query)
             albums<<album+" "+artist;
             qDebug()<<"creating a new album[cover] for<<"<<album+" "+artist;
             if(!query.value(ART).toString().isEmpty()&&query.value(ART).toString()!="NULL")
-                art =query.value(ART).toString();
+                art = query.value(ART).toString();
 
-            Album *artwork= new Album(art,albumSize,4,false,false,this);
-            //albumsList.push_back(album);
+            auto artwork= new Album(art,albumSize,4,false,false,this);
+
             artwork->borderColor=true;
             artwork->setArtist(artist);
             artwork->setAlbum(album);
             artwork->setTitle();
 
-            // album->setTitle(query.value(1).toString(),query.value(2).toString());
-            //album->setToolTip(query.value(2).toString());
             connect(artwork, SIGNAL(albumCoverClicked(QStringList)),this,SLOT(getAlbumInfo(QStringList)));
             connect(artwork,SIGNAL(playAlbum(QString , QString)),this,SLOT(playAlbum_clicked(QString, QString)));
             connect(artwork,SIGNAL(changedArt(QString, QString , QString)),this,SLOT(changedArt_cover(QString, QString, QString)));
             connect(artwork,SIGNAL(babeAlbum_clicked(QString, QString)),this,SLOT(babeAlbum(QString, QString)));
 
-
-            //album->setStyleSheet(":hover {background:#3daee9; }");
             auto item =new QListWidgetItem();
-            item->setSizeHint( QSize( albumSize, albumSize) );
-
-            //item->setTextAlignment(Qt::AlignCenter);
+            item->setSizeHint( QSize( albumSize, albumSize));
             grid->addItem(item);
-
             grid->setItemWidget(item,artwork);
         }
 
     }
+
+    emit populateCoversFinished();
 
 
 }
@@ -378,7 +373,7 @@ void AlbumsView::populateTableViewHeads(QSqlQuery query)
         }
     }
 
-
+    emit populateHeadsFinished();
 }
 
 void AlbumsView::populateExtraList(QSqlQuery query)

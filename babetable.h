@@ -64,7 +64,7 @@ public:
     QMenu* playlistsMenu;
     QMenu* moodMenu;
     QStringList playlistsMenus;
-    QStringList colors = {"#F44336","#E91E63","#9C27B0","#2196F3","#CDDC39"};
+    QStringList colors = {"#f0ff01","#01ff5b","#3daefd","#b401ff","#ed1515"};
 
 
 protected:
@@ -91,6 +91,7 @@ private slots:
 
 public slots:
     QStringList getPlaylistMenus();
+    void itemEdited(int _row, int _column);
 
 private:
 
@@ -100,7 +101,8 @@ private:
     QToolButton *fav3;
     QToolButton *fav4;
     QToolButton *fav5;
-    int row;
+    int rRow;
+    int rColumn;
     QMenu *contextMenu;
 
 

@@ -80,6 +80,8 @@ signals:
     void playAlbum(QString artist, QString album);
     void changedArt(QString artist, QString album);
     void babeAlbum_clicked(QList<QStringList> tracks);
+    void populateCoversFinished();
+    void populateHeadsFinished();
 
 };
 

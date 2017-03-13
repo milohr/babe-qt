@@ -148,22 +148,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
 
-
-
-
     infoTable = new InfoView(this);
     connect(infoTable,SIGNAL(playAlbum(QString, QString)),this,SLOT(putOnPlay(QString, QString)));
 
 
-
-    //playback = new QToolBar();
-
-
-    //queueTable->setEditTriggers(QAbstractItemView::EditTriggers(0));
-
-
     utilsBar = new QToolBar(this);
-
     settings_widget->readSettings();
     setToolbarIconSize(settings_widget->getToolbarIconSize());
     connect(settings_widget, SIGNAL(toolbarIconSizeChanged(int)), this, SLOT(setToolbarIconSize(int)));
