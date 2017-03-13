@@ -93,7 +93,7 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
 }
 
 settings::~settings() {
-   //collection_db.closeConnection();
+    //collection_db.closeConnection();
 
 }
 
@@ -512,8 +512,8 @@ void settings::finishedAddingTracks(bool state) {
 
 
         collectionWatcher();
-         emit refreshTables();
-         fetchArt();
+        emit refreshTables();
+        fetchArt();
 
     }else
     {
@@ -529,7 +529,7 @@ void settings::fetchArt() {
 
 
     ui->label->show();
-     movie->start();
+    movie->start();
     QSqlQuery query_Covers =
             collection_db.getQuery("SELECT * FROM albums WHERE art = ''");
     QSqlQuery query_Heads =
@@ -612,5 +612,16 @@ void settings::on_fetchBtn_clicked()
     {
         ytFetch->fetch({ui->fetch->text()});
         ui->fetch->clear();
+    }
+}
+
+void settings::on_checkBox_stateChanged(int arg1)
+{
+    if(arg1==0)
+    {
+        ui->frame_4->setEnabled(false);
+    }else
+    {
+        ui->frame_4->setEnabled(true);
     }
 }

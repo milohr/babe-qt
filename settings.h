@@ -84,6 +84,8 @@ private slots:
 
     void on_fetchBtn_clicked();
 
+    void on_checkBox_stateChanged(int arg1);
+
 public slots:
 
     void populateDB(QString path);

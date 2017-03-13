@@ -248,10 +248,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->info_view->setToolTip("Info");
     ui->mainToolBar->addWidget(ui->info_view);
 
-
-    ui->mainToolBar->addWidget(right_spacer);
     ui->settings_view->setToolTip("Setings");
     ui->mainToolBar->addWidget(ui->settings_view);
+
+    ui->mainToolBar->addWidget(right_spacer);
+
 
     ui->search->setClearButtonEnabled(true);
 
