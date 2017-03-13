@@ -8,7 +8,7 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
 
     connect(this, SIGNAL(doubleClicked(QModelIndex)), this,
             SLOT(on_tableWidget_doubleClicked(QModelIndex)));
-    connect(this,SIGNAL(cellChanged(int , int )),this,SLOT(itemEdited(int,int)));
+    connect(this->model(),SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)),this,SLOT(itemEdited(const QModelIndex&, const QModelIndex&)));
     this->setFrameShape(QFrame::NoFrame);
     this->setColumnCount(10);
     this->setHorizontalHeaderLabels({"Track", "Tile", "Artist", "Album", "Genre",
@@ -532,12 +532,14 @@ void BabeTable::keyPressEvent(QKeyEvent *event) {
     switch (event->key()) {
     case Qt::Key_Return: {
 
-        QList<QStringList> list;
+        if(!editing)
+        {
+            QList<QStringList> list;
 
 
-
-        list<<getRowData(this->currentIndex().row());
-        emit tableWidget_doubleClicked(list);
+            list<<getRowData(this->currentIndex().row());
+            emit tableWidget_doubleClicked(list);
+        }
 
         break;
     }
@@ -653,7 +655,8 @@ void BabeTable::allowDrag()
 
 }
 
-void BabeTable::on_tableWidget_doubleClicked(const QModelIndex &index) {
+void BabeTable::on_tableWidget_doubleClicked(const QModelIndex &index)
+{
 
     QList<QStringList> list;
     qDebug()
@@ -666,7 +669,8 @@ void BabeTable::on_tableWidget_doubleClicked(const QModelIndex &index) {
 
 }
 
-void BabeTable::babeIt_action() {
+void BabeTable::babeIt_action()
+{
     qDebug() << "right clicked!";
     // int row= this->currentIndex().row();
     qDebug()
@@ -680,14 +684,22 @@ void BabeTable::babeIt_action() {
 
 void BabeTable::editIt_action()
 {
-
+    editing=true;
     emit this->edit(this->model()->index(rRow,rColumn));
 
 }
 
-void BabeTable::itemEdited(int _row, int _column)
+void BabeTable::itemEdited(const QModelIndex &newIndex, const QModelIndex &oldIndex)
 {
-    qDebug()<<"item changed:"<<this->model()->index(_row,_column).data().toString();
+    if(editing)
+    {
+        qDebug()<<"item changed:"<<this<<newIndex.data().toString()<<oldIndex.data().toString();
+
+        QString column=columnsNames[newIndex.column()];
+        qDebug()<<column;
+        connection->insertInto("tracks",column,this->model()->index(newIndex.row(),LOCATION).data().toString(),newIndex.data().toString());
+        editing=false;
+    }
 }
 
 void BabeTable::infoIt_action()

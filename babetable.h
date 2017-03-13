@@ -45,7 +45,7 @@ public:
         DESCENDING, ASCENDING
     };
     CollectionDB *connection;
-
+    const QMap<int, QString> columnsNames{{TRACK, "track"}, {TITLE, "title"}, {ARTIST, "artist"},{ALBUM,"album"},{GENRE,"genre"},{LOCATION,"location"},{STARS,"stars"},{BABE,"babe"},{ART,"art"},{PLAYED,"played"},{PLAYLIST,"playlist"}};
     void populateTableView(QString indication, bool descriptiveTitle=false);
     void setRating(int rate);
     void passCollectionConnection(CollectionDB *con);
@@ -91,7 +91,7 @@ private slots:
 
 public slots:
     QStringList getPlaylistMenus();
-    void itemEdited(int _row, int _column);
+    void itemEdited(const QModelIndex& newIndex, const QModelIndex& oldIndex);
 
 private:
 
@@ -101,6 +101,7 @@ private:
     QToolButton *fav3;
     QToolButton *fav4;
     QToolButton *fav5;
+    bool editing=false;
     int rRow;
     int rColumn;
     QMenu *contextMenu;

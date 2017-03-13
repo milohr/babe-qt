@@ -539,8 +539,6 @@ bool CollectionDB::insertInto(QString tableName, QString column, QString locatio
 bool CollectionDB::insertInto(QString tableName, QString column, QString location, QString value)
 {
 
-
-
     QSqlQuery query;
     query.prepare("UPDATE "+tableName+" SET "+column+" = (:value) WHERE location = (:location)" );
     //query.prepare("SELECT * FROM "+tableName+" WHERE "+searchId+" = (:search)");
