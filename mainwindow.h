@@ -222,6 +222,7 @@ private:
     vector<unsigned short int> shuffledPlaylist;
     bool shuffle = false;
     QMenu *saveResults_menu;
+    QMenu *refreshBtn_menu;
     // void collectionWatcher();
     QString listToString(QStringList list);
 

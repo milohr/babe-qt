@@ -72,27 +72,27 @@ QList<QStringList> CollectionDB::getTrackData(QStringList urls)
     QList<QStringList> list;
     for(auto url:urls)
     {
-          QSqlQuery query("SELECT * FROM tracks WHERE location =\""+url+"\"");
-          if(query.exec())
-          {
-              while(query.next())
-              {
-                  QStringList track;
-                  track<< query.value(TRACK).toString();
-                  track<< query.value(TITLE).toString();
-                  track<< query.value(ARTIST).toString();
-                  track<< query.value(ALBUM).toString();
-                  track<< query.value(GENRE).toString();
-                  track<< query.value(LOCATION).toString();
-                  track<< query.value(STARS).toString();
-                  track<< query.value(BABE).toString();
-                  track<< query.value(ART).toString();
-                  track<< query.value(PLAYED).toString();
-                  track<< query.value(PLAYLIST).toString();
-                  list<<track;
-              }
+        QSqlQuery query("SELECT * FROM tracks WHERE location =\""+url+"\"");
+        if(query.exec())
+        {
+            while(query.next())
+            {
+                QStringList track;
+                track<< query.value(TRACK).toString();
+                track<< query.value(TITLE).toString();
+                track<< query.value(ARTIST).toString();
+                track<< query.value(ALBUM).toString();
+                track<< query.value(GENRE).toString();
+                track<< query.value(LOCATION).toString();
+                track<< query.value(STARS).toString();
+                track<< query.value(BABE).toString();
+                track<< query.value(ART).toString();
+                track<< query.value(PLAYED).toString();
+                track<< query.value(PLAYLIST).toString();
+                list<<track;
+            }
 
-          }
+        }
 
     }
 
@@ -357,7 +357,7 @@ bool CollectionDB::addTrack(QStringList paths, int babe)
     }
     else
     {
-       return false;
+        return false;
     }
 
 
@@ -519,19 +519,23 @@ bool CollectionDB::insertInto(QString tableName, QString column, QString locatio
 
 
     QSqlQuery query;
-    query.prepare("UPDATE "+tableName+" SET "+column+" = (:value) WHERE location = (:location)" );
-    //query.prepare("SELECT * FROM "+tableName+" WHERE "+searchId+" = (:search)");
 
-    query.bindValue(":value", value);
-    query.bindValue(":location", location);
-    if(query.exec())
+    if(query.exec("PRAGMA synchronous=OFF"))
     {
-        qDebug()<<"insertInto<<"<<"UPDATE "+tableName+" SET "+column+" = "+ value + " WHERE location = "+location;
+        query.prepare("UPDATE "+tableName+" SET "+column+" = (:value) WHERE location = (:location)" );
+        //query.prepare("SELECT * FROM "+tableName+" WHERE "+searchId+" = (:search)");
 
-        return true;
-    }else
-    {
-        return false;
+        query.bindValue(":value", value);
+        query.bindValue(":location", location);
+        if(query.exec())
+        {
+            qDebug()<<"insertInto<<"<<"UPDATE "+tableName+" SET "+column+" = "+ value + " WHERE location = "+location;
+
+            return true;
+        }else
+        {
+            return false;
+        }
     }
 
 }

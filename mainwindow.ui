@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>296</width>
+    <width>440</width>
     <height>307</height>
    </rect>
   </property>
@@ -627,29 +627,6 @@ margin:0;
        </layout>
       </widget>
      </item>
-     <item row="0" column="1">
-      <widget class="QToolButton" name="tracks_view_2">
-       <property name="toolTip">
-        <string>Back</string>
-       </property>
-       <property name="text">
-        <string>...</string>
-       </property>
-       <property name="icon">
-        <iconset theme="filename-filetype-amarok">
-         <normaloff>.</normaloff>.</iconset>
-       </property>
-       <property name="checkable">
-        <bool>false</bool>
-       </property>
-       <property name="autoExclusive">
-        <bool>true</bool>
-       </property>
-       <property name="autoRaise">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
      <item row="0" column="3">
       <widget class="QToolButton" name="filterBtn">
        <property name="text">
@@ -684,8 +661,37 @@ margin:0;
        </property>
       </widget>
      </item>
+     <item row="0" column="1">
+      <widget class="QToolButton" name="tracks_view_2">
+       <property name="toolTip">
+        <string>Back</string>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+       <property name="icon">
+        <iconset theme="filename-filetype-amarok">
+         <normaloff>.</normaloff>.</iconset>
+       </property>
+       <property name="checkable">
+        <bool>false</bool>
+       </property>
+       <property name="autoExclusive">
+        <bool>true</bool>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
      <item row="0" column="0">
       <widget class="QToolButton" name="refreshBtn">
+       <property name="minimumSize">
+        <size>
+         <width>36</width>
+         <height>0</height>
+        </size>
+       </property>
        <property name="toolTip">
         <string>Clear..</string>
        </property>
@@ -698,6 +704,9 @@ margin:0;
        <property name="icon">
         <iconset theme="filename-bpm-amarok">
          <normaloff>.</normaloff>.</iconset>
+       </property>
+       <property name="popupMode">
+        <enum>QToolButton::MenuButtonPopup</enum>
        </property>
        <property name="autoRaise">
         <bool>true</bool>

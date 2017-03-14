@@ -65,7 +65,8 @@ SOURCES += main.cpp\
     lyrics.cpp \
     mpris2.cpp \
     notify.cpp \
-    youtube.cpp
+    youtube.cpp \
+    form.cpp
 
 HEADERS  += mainwindow.h \
             playlist.h \
@@ -86,12 +87,14 @@ HEADERS  += mainwindow.h \
     mpris2.h \
     notify.h \
     youtube.h \
-    baeUtils.h
+    baeUtils.h \
+    form.h
 
 FORMS    += mainwindow.ui \
     settings.ui \
     about.ui \
-    infoview.ui
+    infoview.ui \
+    form.ui
 
 RESOURCES += \
     data.qrc

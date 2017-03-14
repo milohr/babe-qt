@@ -423,6 +423,21 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->saveResults->setStyleSheet("QToolButton::menu-indicator { image: none; }");
     connect(saveResults_menu, SIGNAL(triggered(QAction*)), this, SLOT(saveResultsTo(QAction*)));
 
+    refreshBtn_menu = new QMenu(this);
+    ui->refreshBtn->setMenu(refreshBtn_menu);
+    ui->refreshBtn->setPopupMode(QToolButton::MenuButtonPopup);
+    //ui->refreshBtn->setContextMenuPolicy(Qt::ActionsContextMenu);
+
+
+    //ui->refreshBtn->setStyleSheet("QToolButton::menu-indicator { image: none; }");
+    auto clearIt = new QAction("Clear list...");
+    refreshBtn_menu->addAction(clearIt);
+    auto unBabeItAll = new QAction("Un-Babe all...", refreshBtn_menu);
+    refreshBtn_menu->addAction(unBabeItAll);
+    auto changeIt = new QAction("Change Playlist...", refreshBtn_menu);
+    refreshBtn_menu->addAction(changeIt);
+
+    //connect(saveResults_menu, SIGNAL(triggered(QAction*)), this, SLOT(saveResultsTo(QAction*)));
 
 
     /*LOAD THE STYLE*/
