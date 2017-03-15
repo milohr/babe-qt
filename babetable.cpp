@@ -8,7 +8,7 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
 
     connect(this, SIGNAL(doubleClicked(QModelIndex)), this,
             SLOT(on_tableWidget_doubleClicked(QModelIndex)));
-    connect(this->model(),SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)),this,SLOT(itemEdited(const QModelIndex&, const QModelIndex&)));
+    //connect(this->model(),SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)),this,SLOT(itemEdited(const QModelIndex&, const QModelIndex&)));
     this->setFrameShape(QFrame::NoFrame);
     this->setColumnCount(10);
     this->setHorizontalHeaderLabels({"Track", "Tile", "Artist", "Album", "Genre",
@@ -532,14 +532,12 @@ void BabeTable::keyPressEvent(QKeyEvent *event) {
     switch (event->key()) {
     case Qt::Key_Return: {
 
-        if(!editing)
-        {
-            QList<QStringList> list;
+
+        QList<QStringList> list;
 
 
-            list<<getRowData(this->currentIndex().row());
-            emit tableWidget_doubleClicked(list);
-        }
+        list<<getRowData(this->currentIndex().row());
+        emit tableWidget_doubleClicked(list);
 
         break;
     }
@@ -684,22 +682,22 @@ void BabeTable::babeIt_action()
 
 void BabeTable::editIt_action()
 {
-    editing=true;
-    emit this->edit(this->model()->index(rRow,rColumn));
+    //editing=true;
+    // emit this->edit(this->model()->index(rRow,rColumn));
+
+    auto infoForm = new Form(getRowData(rRow),this);
+    connect(infoForm,SIGNAL(infoModified(QMap<int, QString>)),this,SLOT(itemEdited(QMap<int, QString>)));
+    infoForm->show();
 
 }
 
-void BabeTable::itemEdited(const QModelIndex &newIndex, const QModelIndex &oldIndex)
+void BabeTable::itemEdited(QMap<int, QString> map)
 {
-    if(editing)
-    {
-        qDebug()<<"item changed:"<<this<<newIndex.data().toString()<<oldIndex.data().toString();
+    qDebug()<<"item changed: " << map[TITLE];
+    //this->item(rRow,rColumn)->setText(map[TITLE]);
 
-        QString column=columnsNames[newIndex.column()];
-        qDebug()<<column;
-        connection->insertInto("tracks",column,this->model()->index(newIndex.row(),LOCATION).data().toString(),newIndex.data().toString());
-        editing=false;
-    }
+    //     connection->insertInto("tracks",column,this->model()->index(newIndex.row(),LOCATION).data().toString(),newIndex.data().toString());
+
 }
 
 void BabeTable::infoIt_action()

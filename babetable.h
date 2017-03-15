@@ -23,6 +23,7 @@
 #include "notify.h"
 #include "album.h"
 #include "collectionDB.h"
+#include "form.h"
 
 namespace Ui {
 class BabeTable;
@@ -91,7 +92,7 @@ private slots:
 
 public slots:
     QStringList getPlaylistMenus();
-    void itemEdited(const QModelIndex& newIndex, const QModelIndex& oldIndex);
+    void itemEdited(QMap<int, QString> map);
 
 private:
 
@@ -101,7 +102,7 @@ private:
     QToolButton *fav3;
     QToolButton *fav4;
     QToolButton *fav5;
-    bool editing=false;
+
     int rRow;
     int rColumn;
     QMenu *contextMenu;
