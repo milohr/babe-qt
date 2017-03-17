@@ -9,7 +9,7 @@
 #include <QToolButton>
 #include <QMouseEvent>
 #include <QEvent>
-
+#include <QMap>
 #include <QMenu>
 #include <QFileInfo>
 #include <QVector>
@@ -18,12 +18,14 @@
 #include <QFileInfo>
 #include <QHBoxLayout>
 #include <QHeaderView>
+#include <QProcess>
 
 #include "settings.h"
 #include "notify.h"
 #include "album.h"
 #include "collectionDB.h"
 #include "form.h"
+
 
 namespace Ui {
 class BabeTable;
@@ -56,16 +58,16 @@ public:
     QStringList getRowData(int row);
     void allowDrag();
     //void removeRow(int row);
-    void flushTable();
+
     void passStyle(QString style);
     QStringList getTableContent(int column);
     QList<QStringList> getAllTableContent();
     void passPlaylists();
     void  populatePlaylist(QStringList urls, QString playlist);
-    QMenu* playlistsMenu;
-    QMenu* moodMenu;
+
     QStringList playlistsMenus;
     QStringList colors = {"#f0ff01","#01ff5b","#3daefd","#b401ff","#ed1515"};
+    QMap<QString, QString> getKdeConnectDevices();
 
 
 protected:
@@ -83,6 +85,7 @@ private slots:
     void setUpContextMenu(QPoint pos);
     void addToPlaylist(QAction* action);
     void babeIt_action();
+    void sendIt_action(QAction *device);
     void infoIt_action();
     void editIt_action();
     void removeIt_action();
@@ -93,6 +96,7 @@ private slots:
 public slots:
     QStringList getPlaylistMenus();
     void itemEdited(QMap<int, QString> map);
+    void flushTable();
 
 private:
 
@@ -106,6 +110,10 @@ private:
     int rRow;
     int rColumn;
     QMenu *contextMenu;
+    QMenu* playlistsMenu;
+    QMenu* sendToMenu;
+    QMenu* moodMenu;
+    QMap<QString,QString> devices;
 
 
 signals:

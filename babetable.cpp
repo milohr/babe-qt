@@ -74,11 +74,23 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
     auto queueIt = new QAction("Queue", contextMenu);
     this->addAction(queueIt);
 
+    /*auto sendIt = new QAction("Send to phone... ", contextMenu);
+    this->addAction(sendIt);*/
+
+    QAction *sendEntry = contextMenu->addAction("Send to phone...");
+    this->addAction(sendEntry);
+    sendToMenu = new QMenu("...");
+    sendEntry->setMenu(sendToMenu);
+
+
     auto infoIt = new QAction("Info + ", contextMenu);
     this->addAction(infoIt);
 
     auto editIt = new QAction("Edit", contextMenu);
     this->addAction(editIt);
+
+    auto saveIt = new QAction("Save to... ", contextMenu);
+    this->addAction(saveIt);
 
     auto removeIt = new QAction("Remove", contextMenu);
     this->addAction(removeIt);
@@ -98,14 +110,17 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
     // passPlaylists();
     // playlistsMenu->addAction("hello rold");
 
-    connect(playlistsMenu, SIGNAL(triggered(QAction *)), this,
-            SLOT(addToPlaylist(QAction *)));
     connect(this, SIGNAL(rightClicked(QPoint)), this,
             SLOT(setUpContextMenu(QPoint)));
+    connect(playlistsMenu, SIGNAL(triggered(QAction *)), this,
+            SLOT(addToPlaylist(QAction *)));
+    connect(sendToMenu, SIGNAL(triggered(QAction *)), this,
+            SLOT(sendIt_action(QAction *)));
 
 
     connect(babeIt, SIGNAL(triggered()), this, SLOT(babeIt_action()));
     connect(queueIt, SIGNAL(triggered()), this, SLOT(queueIt_action()));
+    //connect(sendIt, SIGNAL(triggered()), this, SLOT(sendIt_action()));
     connect(infoIt, SIGNAL(triggered()), this, SLOT(infoIt_action()));
     connect(editIt, SIGNAL(triggered()), this, SLOT(editIt_action()));
     connect(removeIt, SIGNAL(triggered()), this, SLOT(removeIt_action()));
@@ -143,7 +158,7 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
     {
         auto  *colorTag = new QToolButton();
         colorTag->setIconSize(QSize(10,10));
-        colorTag->setFixedSize(16,16);
+        colorTag->setFixedSize(14,14);
         // colorTag->setAutoRaise(true);
         colorTag->setStyleSheet(QString("QToolButton { background-color: %1;}").arg(colors.at(i)));
         moodGroup->addButton(colorTag,i);
@@ -157,6 +172,7 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
     this->addAction(moodsAction);
 }
 
+BabeTable::~BabeTable() {  }
 
 void BabeTable::moodTrack(int color)
 {
@@ -204,7 +220,7 @@ void BabeTable::populatePlaylist(QStringList urls, QString playlist) {
     }
 }
 
-BabeTable::~BabeTable() {  }
+
 
 void BabeTable::passPlaylists() {}
 
@@ -481,14 +497,54 @@ void BabeTable::setVisibleColumn(int column) {
     }
 }
 
+
+QMap<QString,QString> BabeTable::getKdeConnectDevices()
+{
+    qDebug()<<"getting the kdeconnect devices avaliable";
+    QMap<QString,QString> _devices;
+    QProcess process;
+    process.start("kdeconnect-cli -a");
+    process.waitForFinished();
+    // auto output = process->readAllStandardOutput();
+
+    process.setReadChannel(QProcess::StandardOutput);
+
+    while (process.canReadLine()) {
+        QString line = QString::fromLocal8Bit(process.readLine());
+        qDebug()<<"line:"<<line;
+        if(line.contains("(paired and reachable)"))
+        {
+            QStringList items = line.split(" ");
+            auto key=QString(items.at(2));
+            auto name=QString(items.at(1)).replace(":","");
+
+            qDebug()<<"Founded devices: "<<key<<":"<<name;
+            _devices.insert(key,name);
+        }
+    }
+
+    this->devices=_devices;
+    return devices;
+
+}
+
 void BabeTable::setUpContextMenu(QPoint pos)
 
 {
     qDebug() << "setUpContextMenu";
     playlistsMenu->clear();
-
     for (auto playlist : connection->getPlaylists()) {
         playlistsMenu->addAction(playlist);
+    }
+
+    sendToMenu->clear();
+
+
+    QMapIterator<QString, QString> i(getKdeConnectDevices());
+    while (i.hasNext()) {
+        i.next();
+        qDebug()<<i.key();
+        sendToMenu->addAction(i.value());
     }
     // playlistsMenu->addAction("Create new...");
     int rate = 0;
@@ -678,7 +734,30 @@ void BabeTable::babeIt_action()
     emit babeIt_clicked(list);
 }
 
+void BabeTable::sendIt_action(QAction *device)
+{
+    QString url = this->model()->index(rRow,LOCATION).data().toString();
+    QString title = this->model()->index(rRow,TITLE).data().toString();
+    QString artist = this->model()->index(rRow,ARTIST).data().toString();
 
+    QString deviceName= device->text().replace("&","");
+    QString deviceKey=  devices.key(deviceName);
+
+    qDebug()<<"trying to send "<< url << "to : "<< deviceName;
+    auto process = new QProcess(this);
+
+    connect(process, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
+            [=](int exitCode, QProcess::ExitStatus exitStatus){
+
+        qDebug()<<"processFinished_totally"<<exitCode<<exitStatus;
+        Notify nof;
+        nof.notifyUrgent("Song send to " + deviceName,title +" by "+ artist);
+
+    });
+    qDebug()<<"kdeconnect-cli -d " +deviceKey+ " --share " + url;
+    process->start("kdeconnect-cli -d " +deviceKey+ " --share " +"\""+ url+"\"");
+
+}
 
 void BabeTable::editIt_action()
 {
@@ -694,7 +773,12 @@ void BabeTable::editIt_action()
 void BabeTable::itemEdited(QMap<int, QString> map)
 {
     qDebug()<<"item changed: " << map[TITLE];
-    //this->item(rRow,rColumn)->setText(map[TITLE]);
+    this->item(rRow,TRACK)->setText(map[TRACK]);
+    this->item(rRow,TITLE)->setText(map[TITLE]);
+    this->item(rRow,ARTIST)->setText(map[ARTIST]);
+    this->item(rRow,ALBUM)->setText(map[ALBUM]);
+    this->item(rRow,GENRE)->setText(map[GENRE]);
+
 
     //     connection->insertInto("tracks",column,this->model()->index(newIndex.row(),LOCATION).data().toString(),newIndex.data().toString());
 

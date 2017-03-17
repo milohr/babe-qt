@@ -12,7 +12,6 @@ unix:!macx: LIBS += -L$$PWD/3rdparty/taglib-1.9.1/taglib/ -ltag
 INCLUDEPATH += $$PWD/3rdparty/taglib-1.9.1/taglib/Headers
 DEPENDPATH += $$PWD/3rdparty/taglib-1.9.1/taglib/Headers
 
-
 QT       += core gui
 QT       += multimedia
 QT       += sql
@@ -22,6 +21,8 @@ QT       += dbus
 QT       += KConfigCore
 QT       += KNotifications
 QT       += KI18n
+
+
 
 
 

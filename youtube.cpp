@@ -63,7 +63,6 @@ void YouTube::fetch(QStringList ids_,QStringList urls_)
 
         process->start(ydl+" "+id);
 
-
     }
 
     qDebug()<<"ids in queue:"<<this->ids;
@@ -74,8 +73,6 @@ void YouTube::fetch(QStringList ids_,QStringList urls_)
 
 void YouTube::processFinished_totally(int state,QString id,QProcess::ExitStatus exitStatus)
 {
-
-
         QString doneId=id;
         qDebug()<<"process finished totally for"<<state<<doneId<<exitStatus;
 
@@ -90,8 +87,6 @@ void YouTube::processFinished_totally(int state,QString id,QProcess::ExitStatus 
             emit youtubeTrackReady(true);
 
         }
-
-
 }
 
 
