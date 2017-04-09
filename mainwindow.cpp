@@ -481,9 +481,7 @@ void MainWindow::addToPlayed(QString url)
 {
     if(settings_widget->getCollectionDB().checkQuery("SELECT * FROM tracks WHERE location = \""+url+"\""))
     {
-        //ui->fav_btn->setIcon(QIcon::fromTheme("face-in-love"));
-        qDebug()<<"Song totally played"<<url;
-
+       qDebug()<<"Song totally played"<<url;
 
         QSqlQuery query = settings_widget->getCollectionDB().getQuery("SELECT * FROM tracks WHERE location = \""+url+"\"");
 
@@ -492,11 +490,7 @@ void MainWindow::addToPlayed(QString url)
         qDebug()<<played;
 
         if(settings_widget->getCollectionDB().insertInto("tracks","played",url,played+1))
-        {
-            //ui->fav_btn->setIcon(QIcon(":Data/data/love-amarok.svg"));
-            qDebug()<<played;
-
-        }
+           qDebug()<<played;
 
     }
 }

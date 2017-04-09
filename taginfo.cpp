@@ -93,12 +93,24 @@ int TagInfo::getDuration()
 }
 
 
-
 QString TagInfo::getComment()
 {
     return QString::fromStdWString(file.tag()->comment().toWString()).size() > 0
             ? QString::fromStdWString(file.tag()->genre().toWString())
             : "UNKNOWN";
+}
+
+QByteArray TagInfo::getCover()
+{
+    QByteArray array;
+
+    return array;
+}
+
+void TagInfo::setCover(QByteArray array)
+{
+    Q_UNUSED(array);
+
 }
 
 void TagInfo::setComment(QString comment)

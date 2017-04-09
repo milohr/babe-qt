@@ -177,6 +177,7 @@ private:
     void shufflePlaylist();
     void expand();
     void go_mini();
+    void go_playlistMode();
 
     int getIndex();
 
@@ -197,11 +198,9 @@ private:
     QFrame *album_art_frame;
 
     /*the views*/
-
     settings *settings_widget;
     BabeTable *collectionTable;
     BabeTable *mainList;
-    BabeTable *favoritesTable;
     BabeTable *resultsTable;
     AlbumsView* albumsTable;
     AlbumsView* artistsTable;
