@@ -1,0 +1,47 @@
+<RCC>
+    <qresource prefix="/Data">
+        <file>data/cover_hover.svg</file>
+        <file>data/cover.svg</file>
+        <file>data/babe.svg</file>
+        <file>data/babe_backup.svg</file>
+        <file>data/add.png</file>
+        <file>data/babe.png</file>
+        <file>data/loved.svg</file>
+        <file>data/media-playback-start.svg</file>
+        <file>data/mini_mode.svg</file>
+        <file>data/view-media-playlist.svg</file>
+        <file>data/media-skip-forward.svg</file>
+        <file>data/media-skip-backward.svg</file>
+        <file>data/media-playlist-shuffle.svg</file>
+        <file>data/media-playlist-repeat.svg</file>
+        <file>data/love-amarok.svg</file>
+        <file>data/full_mode.svg</file>
+        <file>data/media-playback-pause.svg</file>
+        <file>data/banner.svg</file>
+        <file>data/babe_64.svg</file>
+        <file>data/babe_48.svg</file>
+        <file>data/banner.png</file>
+        <file>data/add.svg</file>
+        <file>data/ajax-loader.gif</file>
+        <file>data/playBtn.svg</file>
+        <file>data/playBtn_hover.svg</file>
+        <file>data/Babe.notifyrc</file>
+        <file>data/babe_128.svg</file>
+        <file>data/icons/albums_selected.svg</file>
+        <file>data/icons/albums.svg</file>
+        <file>data/icons/artists_selected.svg</file>
+        <file>data/icons/artists.svg</file>
+        <file>data/icons/info_selected.svg</file>
+        <file>data/icons/info.svg</file>
+        <file>data/icons/playlists_selected.svg</file>
+        <file>data/icons/playlists.svg</file>
+        <file>data/icons/queue_selected.svg</file>
+        <file>data/icons/queue.svg</file>
+        <file>data/icons/settings_selected.svg</file>
+        <file>data/icons/settings.svg</file>
+        <file>data/icons/tracks_selected.svg</file>
+        <file>data/icons/tracks.svg</file>
+        <file>data/icons/youtube.svg</file>
+        <file>data/pattern.png</file>
+    </qresource>
+</RCC>

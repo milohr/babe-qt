@@ -1,0 +1,49 @@
+QFrame
+{
+   border:1px solid black;
+   border-radius:2px;
+}
+
+QFrame#playlistUtils
+{
+    background-color:#333;
+    background-image:url("/home/camilo/.config/babe/pattern.png") repeat;
+    border:none;
+    border-radius:0;
+}
+
+
+
+QListWidget
+{
+
+    show-decoration-selected: 1;
+    background-color: #575757;
+    color:white;
+    border:none;
+    border-radius:0;
+  
+    
+}
+
+QListWidget::item:alternate {
+    background: #333;
+    color:white;
+}
+
+QListWidget::item:selected {
+       background: pink ;   
+}
+
+QListWidget::item:selected:!active {
+    background: yellow;
+}
+
+QListWidget::item:selected:active {
+    background:pink;
+}
+
+QListWidget::item:hover {
+    background: black;
+    
+}
