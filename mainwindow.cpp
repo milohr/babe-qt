@@ -1488,7 +1488,7 @@ void MainWindow::next()
         if(lCounter >= mainList->rowCount())
             lCounter = 0;
 
-        (!shuffle or repeat) ? mainList->setCurrentCell(lCounter,0) : mainList->setCurrentCell(shuffledPlaylist[lCounter],0);
+        mainList->setCurrentCell((!shuffle || repeat) ? lCounter : shuffledPlaylist[lCounter], 0);
 
         //ui->play->setChecked(false);
         //ui->searchBar->clear();

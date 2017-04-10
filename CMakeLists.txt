@@ -1,7 +1,6 @@
 cmake_minimum_required (VERSION 2.8.12)
 project (Babe)
 
-# Some boring cmake stuff
 find_package (ECM 0.0.11 REQUIRED NO_MODULE)
 set (
    CMAKE_MODULE_PATH
@@ -11,8 +10,8 @@ set (
    )
 
 include (KDEInstallDirs)
-# include (KDECMakeSettings)
-# include (KDECompilerSettings NO_POLICY_SCOPE)
+include (KDECMakeSettings)
+include (KDECompilerSettings NO_POLICY_SCOPE)
 # include (ECMInstallIcons)
 # include (ECMMarkAsTest)
 # include (ECMMarkNonGuiExecutable)
@@ -125,6 +124,8 @@ add_executable (
    babe
    ${babe_SRCS}
    )
+
+install(TARGETS babe ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
 
 target_link_libraries (
    babe

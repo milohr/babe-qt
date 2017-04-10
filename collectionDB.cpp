@@ -537,9 +537,6 @@ bool CollectionDB::execQuery(QString queryTxt)
 
 bool CollectionDB::insertInto(QString tableName, QString column, QString location, int value)
 {
-
-
-
     QSqlQuery query;
 
     if(query.exec("PRAGMA synchronous=OFF"))
@@ -560,6 +557,7 @@ bool CollectionDB::insertInto(QString tableName, QString column, QString locatio
         }
     }
 
+    return false;
 }
 
 bool CollectionDB::insertInto(QString tableName, QString column, QString location, QString value)
