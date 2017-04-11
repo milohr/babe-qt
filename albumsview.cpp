@@ -6,11 +6,6 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     QWidget(parent)
 {
 
-
-    //auto frame = new QFrame();
-    //frame->setFrameShadow(QFrame::Raised);
-    // frame->setFrameShape(QFrame::StyledPanel);
-    // grid = new QGridLayout();
     grid = new QListWidget(this);
     grid->setViewMode(QListWidget::IconMode);
     grid->setResizeMode(QListWidget::Adjust);
@@ -56,12 +51,13 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
 
 
     order = new QComboBox();
+    connect(order, SIGNAL(currentIndexChanged(QString)),this,SLOT(orderChanged(QString)));
+
     order->setFrame(false);
     order->setMaximumWidth(70);
     order->setMaximumHeight(22);
     order->setContentsMargins(0,0,0,0);
 
-    connect(order, SIGNAL(currentIndexChanged(QString)),this,SLOT(orderChanged(QString)));
     order->addItem("Artist");
     order->addItem("Title");
     order->setCurrentIndex(1);
@@ -99,18 +95,6 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     albumTable->setFrameShape(QFrame::NoFrame);
 
 
-
-    //  connect(albumTable,SIGNAL(tableWidget_doubleClicked(QStringList)),this,SLOT(albumTable_clicked(QStringList)));
-    //  connect(albumTable,SIGNAL( babeIt_clicked(QStringList)),this,SLOT(albumTable_babeIt(QStringList)));
-    // connect(albumTable,SIGNAL(songRated(QStringList)),this,SLOT(albumTable_rated(QStringList)));
-
-
-    //auto albumsFrame = new QGridLayout();
-    // albumsFrame->addWidget();
-    //grid->setSizeConstraint(QLayout::SetMaximumSize);
-
-
-    //frame->setLayout(albumsFrame);
     auto layout = new QGridLayout();
     layout->setMargin(0);
     layout->addWidget(grid,0,0);
@@ -139,6 +123,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
 
     layout->addWidget(line_h,1,0,Qt::AlignBottom);
     layout->addWidget(albumBox_frame,2,0,Qt::AlignBottom);
+
     cover = new Album(":Data/data/cover.svg",120,0,false,false,this);
     connect(cover,SIGNAL(playAlbum(QString , QString)),this,SLOT(playAlbum_clicked(QString, QString)));
     connect(cover,SIGNAL(changedArt(QString, QString , QString)),this,SLOT(changedArt_cover(QString, QString, QString)));
@@ -192,8 +177,6 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     albumBox_frame->hide();
     line_h->hide();
     this->setLayout(layout);
-
-
 }
 
 AlbumsView::~AlbumsView(){}
@@ -251,7 +234,6 @@ void  AlbumsView::flushGrid()
     artists.clear();
     grid->clear();
     // albumsList.clear();
-
 
     // grid->setRowCount(0);
 
