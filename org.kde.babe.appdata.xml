@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component type="desktop">
+  <id>org.kde.babe.desktop</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0</project_license>
+  <name>Babe</name>
+  <summary>Babe is a tiny music collection manager</summary>
+  <description>
+    <p> Babe will handle your whole music collection, letting you create custom playlists to organize your music. You can also filter your music by artist, title, album, genre, date and location. Babe let's you babe-mark your favorite YouTube music videos into your local collection by using the Chromium extension. Think of Babe as the playlist where all your favorite tracks at the moment are. And when needed you also have an integrated collection manager. </p>
+    <p>Use the Chrome extension to collect your favorite music videos from online streaming services like YouTube or Vimeo. Babe uses youtube-dl, so all the supported sites by it are also supported by Babe</p>
+    <p>Babe is built with a tight integration with the Plasma desktop, making use of native notifications, mpris controls, kde connect to send your music to your devices and also krunner action queries.</p>
+    <ul>
+      <li>this</li>
+      <li>that</li>
+    </ul>
+  </description>
+  <url type="homepage">https://babe.kde.org/</url>
+  <url type="bugtracker">https://bugs.kde.org/enter_bug.cgi?format=guided&amp;product=babe</url>
+  <url type="donation">https://www.kde.org/community/donations/?app=Babe</url>
+  <screenshots>
+    <screenshot type="default">
+      <image>
+        see https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-screenshots
+        Central hosting for uploading at https://phabricator.kde.org/source/websites-product-screenshots/
+        Central URL to use here https://cdn.kde.org/screenshots/...
+      </image>
+    </screenshot>
+  </screenshots>
+  <provides>
+    <binary>Babe</binary>
+  </provides>
+  <project_group>KDE</project_group>
+</component> 

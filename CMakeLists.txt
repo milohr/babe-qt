@@ -82,6 +82,8 @@ set (
    form.cpp
    )
 
+   
+install(FILES org.kde.babe.appdata.xml DESTINATION ${KDE_INSTALL_METAINFODIR})
 # install_it.path = $$OUT_PWD
 # install_it.files = data/*
 #
