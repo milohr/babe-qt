@@ -320,8 +320,8 @@ void BabeTable::addRow(QMap<int, QString> map,  bool descriptiveTooltip)
     this->setItem(this->rowCount() - 1, PLAYED, new QTableWidgetItem(map[PLAYED]));
     this->setItem(this->rowCount() - 1, PLAYLIST, new QTableWidgetItem(map[PLAYLIST]));
 
-    if(descriptiveTooltip)
-        this->item(this->rowCount()-1,TITLE)->setToolTip( "by "+map[ARTIST]);
+    //if(descriptiveTooltip)
+    this->item(this->rowCount()-1,TITLE)->setToolTip( "by "+map[ARTIST]);
 }
 
 void BabeTable::populateTableView(QString indication, bool descriptiveTitle)
