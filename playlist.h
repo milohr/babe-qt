@@ -11,6 +11,7 @@
 #include <QMimeType>
 #include <QString>
 #include <taginfo.h>
+#include <babetable.h>
 
 //#include <QtMultimedia/QMediaPlayer>
 
@@ -27,14 +28,14 @@ public:
     bool isMusic(QString file);
     QStringList getTracksNameList();
     QStringList getTracksNameListSimple();
-    QList<QStringList> getTracksData();
+    QList<QMap<int,QString>> getTracksData();
 
     std::vector<Track> tracks;
 
     QList<Track> getTracks();
 
 private:
-    //QMediaPlayer *p;
+
     void setMetaData(QString,QString,QString,QString);
 
 

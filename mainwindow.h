@@ -20,6 +20,7 @@
 #include <QStringList>
 #include <QMenu>
 
+
 #include <QPixmap>
 #include <QDir>
 #include <QDirIterator>
@@ -80,7 +81,7 @@ protected:
 
 public slots:
 
-    void addToPlaylist(QList<QStringList> list, bool notRepeated=false);
+    void addToPlaylist(QList<QMap<int,QString>> mapList, bool notRepeated=false);
     void putPixmap(QByteArray array);
     void changedArt(QString path, QString artist, QString album);
     void babeAlbum(QString album, QString artist);
@@ -91,7 +92,7 @@ private slots:
     void on_hide_sidebar_btn_clicked();
     void on_shuffle_btn_clicked();
     void on_open_btn_clicked();
-    void on_mainList_clicked(QList<QStringList> list);
+    void on_mainList_clicked(QList<QMap<int, QString>> list);
     void update();
     void on_seekBar_sliderMoved(int position);
     void on_play_btn_clicked();
@@ -141,7 +142,7 @@ private slots:
     void removeSong(int index);
     void putOnPlay(QString artist, QString album);
     void loadCover(QString artist, QString album, QString title);
-    void babeIt(QList<QStringList> list);
+    void babeIt(QList<QMap<int, QString> > mapList);
     void unbabeIt(QString url);
     void loadMood();
     void addToQueue(QString url);
@@ -210,7 +211,7 @@ private:
 
     /*the streaming */
     Playlist queueList;
-    QList<QStringList> currentList;
+    QList<QMap<int,QString>> currentList;
     QStringList queue_list;
     QMediaPlayer *player = new QMediaPlayer();
     QTimer *updater = new QTimer(this);

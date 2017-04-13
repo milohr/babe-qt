@@ -19,7 +19,7 @@
 #include "form.h"
 #include "ui_form.h"
 
-Form::Form(QStringList info, QWidget *parent) :
+Form::Form(QMap<int,QString> info, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Form)
 {
@@ -28,11 +28,11 @@ Form::Form(QStringList info, QWidget *parent) :
      setWindowFlags(flags);
      //mapFromParent(QPoint(100, 100));
 
-     track=info.at(BabeTable::TRACK);
-     title=info.at(BabeTable::TITLE);
-     artist=info.at(BabeTable::ARTIST);
-     album=info.at(BabeTable::ALBUM);
-     genre=info.at(BabeTable::GENRE);
+     track=info[BabeTable::TRACK];
+     title=info[BabeTable::TITLE];
+     artist=info[BabeTable::ARTIST];
+     album=info[BabeTable::ALBUM];
+     genre=info[BabeTable::GENRE];
 
      ui->trackLine->setText(track);
      ui->titleLine->setText(title);

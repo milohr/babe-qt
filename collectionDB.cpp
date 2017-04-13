@@ -97,9 +97,10 @@ void CollectionDB::removePath(QString path)
 }
 
 
-QList<QStringList> CollectionDB::getTrackData(QStringList urls)
+QList<QMap<int, QString>> CollectionDB::getTrackData(QStringList urls)
 {
-    QList<QStringList> list;
+    QList<QMap<int, QString>> mapList;
+
     for(auto url:urls)
     {
         QSqlQuery query("SELECT * FROM tracks WHERE location =\""+url+"\"");
@@ -107,26 +108,28 @@ QList<QStringList> CollectionDB::getTrackData(QStringList urls)
         {
             while(query.next())
             {
-                QStringList track;
-                track<< query.value(TRACK).toString();
-                track<< query.value(TITLE).toString();
-                track<< query.value(ARTIST).toString();
-                track<< query.value(ALBUM).toString();
-                track<< query.value(GENRE).toString();
-                track<< query.value(LOCATION).toString();
-                track<< query.value(STARS).toString();
-                track<< query.value(BABE).toString();
-                track<< query.value(ART).toString();
-                track<< query.value(PLAYED).toString();
-                track<< query.value(PLAYLIST).toString();
-                list<<track;
+                QString track = query.value(TRACK).toString();
+                QString title = query.value(TITLE).toString();
+                QString artist = query.value(ARTIST).toString();
+                QString album = query.value(ALBUM).toString();
+                QString genre = query.value(GENRE).toString();
+                QString location = query.value(LOCATION).toString();
+                QString stars = query.value(STARS).toString();
+                QString babe = query.value(BABE).toString();
+                QString art = query.value(ART).toString();
+                QString playlist = query.value(PLAYLIST).toString();
+                QString played = query.value(PLAYED).toString();
+
+                const QMap<int, QString> map{{TRACK,track}, {TITLE,title}, {ARTIST,artist},{ALBUM,album},{GENRE,genre},{LOCATION,location},{STARS,stars},{BABE,babe},{ART,art},{PLAYED,played},{PLAYLIST,playlist}};
+
+                mapList<<map;
             }
 
         }
 
     }
 
-    return list;
+    return mapList;
 }
 
 void CollectionDB::cleanCollectionLists()

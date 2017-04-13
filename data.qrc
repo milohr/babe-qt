@@ -43,5 +43,6 @@
         <file>data/icons/tracks.svg</file>
         <file>data/icons/youtube.svg</file>
         <file>data/pattern.png</file>
+        <file>data/LilyScriptOne-Regular.ttf</file>
     </qresource>
 </RCC>

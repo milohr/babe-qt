@@ -2,6 +2,8 @@
 #define FORM_H
 
 #include <QWidget>
+#include <QMap>
+
 #include "babetable.h"
 
 namespace Ui {
@@ -13,14 +15,11 @@ class Form : public QWidget
     Q_OBJECT
 
 public:
-    explicit Form(QStringList info, QWidget *parent = 0);
+    explicit Form(QMap<int, QString> info, QWidget *parent = 0);
     ~Form();
 
 private slots:
     void on_pushButton_2_clicked();
-
-
-
     void on_changebtn_clicked();
 
 private:

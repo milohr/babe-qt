@@ -14,11 +14,16 @@
 #include <QFileInfo>
 #include <QVector>
 #include <QButtonGroup>
-
+#include <QFontDatabase>
+#include <QFont>
 #include <QFileInfo>
 #include <QHBoxLayout>
 #include <QHeaderView>
 #include <QProcess>
+#include <QLabel>
+#include <QTimer>
+#include <QGraphicsEffect>
+#include <QGraphicsOpacityEffect>
 
 #include "settings.h"
 #include "notify.h"
@@ -41,7 +46,7 @@ public:
 
     enum columns
     {
-        TRACK,TITLE,ARTIST,ALBUM,GENRE,LOCATION,STARS,BABE,ART,PLAYED,PLAYLIST
+        TRACK,TITLE,ARTIST,ALBUM,GENRE,LOCATION,STARS,BABE,ART,PLAYED,PLAYLIST,columnsCOUNT
     };
     enum order
     {
@@ -54,14 +59,14 @@ public:
     void passCollectionConnection(CollectionDB *con);
     void setTableOrder(int column, int order);
     void setVisibleColumn(int column);
-    void addRow(QStringList list);
-    QStringList getRowData(int row);
+    void addRow(QMap<int, QString> map, bool descriptiveTooltip=false);
+    QMap<int,QString> getRowData(int row);
     void allowDrag();
     //void removeRow(int row);
 
     void passStyle(QString style);
     QStringList getTableContent(int column);
-    QList<QStringList> getAllTableContent();
+    QList<QMap<int, QString>> getAllTableContent();
     void passPlaylists();
     void  populatePlaylist(QStringList urls, QString playlist);
 
@@ -69,6 +74,9 @@ public:
     QStringList colors = {"#F0FF01","#01FF5B","#3DAEFD","#B401FF","#E91E63"};
 
     QMap<QString, QString> getKdeConnectDevices();
+    QLabel *addMusicTxt;
+    QString addMusicMsg = "oops... :(\nnothing here";
+    void setAddMusicMsg(QString msg);
 
 
 protected:
@@ -93,6 +101,7 @@ private slots:
     void moodIt_action(QString color);
     void queueIt_action();
     void moodTrack(int color);
+    void update();
 
 public slots:
     QStringList getPlaylistMenus();
@@ -101,6 +110,7 @@ public slots:
 
 private:
 
+    Notify nof;
 
     QToolButton *fav1;
     QToolButton *fav2;
@@ -115,16 +125,18 @@ private:
     QMenu* sendToMenu;
     QMenu* moodMenu;
     QMap<QString,QString> devices;
+    QTimer *updater = new QTimer(this);
+
 
 
 signals:
-    void tableWidget_doubleClicked(QList<QStringList> list);
+    void tableWidget_doubleClicked(QList<QMap<int,QString>> mapList);
     void songRated(QStringList list);
     void enteredTable();
     void leftTable();
     void finishedPopulating();
     void rightClicked(QPoint evt);
-    void babeIt_clicked(QList<QStringList> list);
+    void babeIt_clicked(QList<QMap<int,QString>> mapList);
     void removeIt_clicked(int index);
     void createPlaylist_clicked();
     void refreshPlaylistsMenu(QStringList list);

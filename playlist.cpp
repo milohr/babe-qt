@@ -60,29 +60,31 @@ bool Playlist::isMusic(QString file) {
 }
 
 
-QList<QStringList> Playlist::getTracksData()
+QList<QMap<int,QString>> Playlist::getTracksData()
 {
-    QList<QStringList> tracks;
+    QList<QMap<int,QString>> mapList;
 
     for(auto file : getTracks())
-    {
-        QStringList track;
-        track<<QString::number(file.getTrack());
-        track<<QString::fromStdString(file.getTitle());
-        track<<QString::fromStdString(file.getArtist());
-        track<<QString::fromStdString(file.getAlbum());
-        track<<QString::fromStdString(file.getGenre());
-        track<<QString::fromStdString(file.getLocation());
-        track<<"";
-        track<<"";
-        track<<"";
-        track<<"";
-        track<<"";
-        tracks<<track;
+    {       
+        QString track = QString::number(file.getTrack());
+        QString title = QString::fromStdString(file.getTitle());
+        QString artist = QString::fromStdString(file.getArtist());
+        QString album = QString::fromStdString(file.getAlbum());
+        QString genre = QString::fromStdString(file.getGenre());
+        QString location = QString::fromStdString(file.getLocation());
+        QString art = "";
+        QString stars = "";
+        QString babe = "";
+        QString played = "";
+        QString playlist = "";
+
+        const QMap<int, QString> map{{BabeTable::TRACK,track},{BabeTable::TITLE,title},{BabeTable::ARTIST,artist},{BabeTable::ALBUM,album},{BabeTable::GENRE,genre},{BabeTable::LOCATION,location},{BabeTable::STARS,stars},{BabeTable::BABE,babe},{BabeTable::ART,art},{BabeTable::PLAYED,played},{BabeTable::PLAYLIST,playlist}};
+
+        mapList<<map;
 
     }
 
-    return tracks;
+    return mapList;
 }
 
 void Playlist::add(QStringList files) {
