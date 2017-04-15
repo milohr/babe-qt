@@ -673,14 +673,21 @@ void BabeTable::mousePressEvent(QMouseEvent *evt) {
         if (row<0 || column<0)
         {
             for (auto action : contextMenu->actions())
-            {
                 action->setDisabled(true);
-            }
+
             for (auto action : this->actions())
-            {
                 action->setDisabled(true);
-            }
-        } else emit rightClicked(row, column);
+
+        } else
+        {
+            for (auto action : contextMenu->actions())
+                action->setDisabled(false);
+
+            for (auto action : this->actions())
+                action->setDisabled(false);
+
+            emit rightClicked(row, column);
+        }
 
     } else QTableWidget::mousePressEvent(evt);
 
