@@ -876,7 +876,9 @@ void BabeTable::queueIt_action()
     // int row= this->currentIndex().row();
     QString url = this->model()->data(this->model()->index(rRow, LOCATION)).toString();
     qDebug()<<url;
-    emit queueIt_clicked(url);
+    QList<QMap<int,QString>> listMap;
+    listMap<<getRowData(rRow);
+    emit queueIt_clicked(listMap);
 
 }
 

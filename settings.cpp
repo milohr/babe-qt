@@ -543,7 +543,8 @@ void settings::fetchArt() {
     QSqlQuery query_Heads =
             collection_db.getQuery("SELECT * FROM artists WHERE art = ''");
 
-    while (query_Covers.next()) {
+    while (query_Covers.next())
+    {
 
         QString artist = query_Covers.value(1).toString();
         QString album = query_Covers.value(0).toString();
@@ -567,10 +568,10 @@ void settings::fetchArt() {
 
     }
 
-    while (query_Heads.next()) {
+    while (query_Heads.next())
+    {
 
         //   QString artist = query_Heads.value(0).toString();
-
 
 
         ArtWork artistHead;
@@ -591,8 +592,8 @@ void settings::fetchArt() {
     ui->label->hide();
 
 
-    //emit collectionDBFinishedAdding(true);
-    emit refreshTables();
+    emit collectionDBFinishedAdding(true);
+   // emit refreshTables();
 }
 
 void settings::on_pushButton_clicked() {

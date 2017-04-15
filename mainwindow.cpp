@@ -113,7 +113,7 @@ void MainWindow::setUpViews()
     connect(playlistTable->table,SIGNAL(removeIt_clicked(int)),this,SLOT(removeSong(int)));
     connect(playlistTable->table,SIGNAL(babeIt_clicked(QList<QMap<int, QString>>)),this,SLOT(babeIt(QList<QMap<int, QString>>)));
     //connect(playlistTable->table,SIGNAL(createPlaylist_clicked()),this,SLOT(playlistsView()));
-    connect(playlistTable->table,SIGNAL(queueIt_clicked(QString)),this,SLOT(addToQueue(QString)));
+    connect(playlistTable->table,SIGNAL(queueIt_clicked(QList<QMap<int, QString>>)),this,SLOT(addToQueue(QList<QMap<int, QString>>)));
     connect(playlistTable->table,SIGNAL(moodIt_clicked(QString)),playlistTable,SLOT(createMoodPlaylist(QString)));
     connect(playlistTable->table,SIGNAL(infoIt_clicked(QString, QString, QString)),this,SLOT(infoIt(QString, QString, QString)));
 
@@ -126,7 +126,7 @@ void MainWindow::setUpViews()
     connect(collectionTable,SIGNAL(finishedPopulating()),this,SLOT(orderTables()));
     connect(collectionTable,SIGNAL(removeIt_clicked(int)),this,SLOT(removeSong(int)));
     connect(collectionTable,SIGNAL(babeIt_clicked(QList<QMap<int, QString>>)),this,SLOT(babeIt(QList<QMap<int, QString>>)));
-    connect(collectionTable,SIGNAL(queueIt_clicked(QString)),this,SLOT(addToQueue(QString)));
+    connect(collectionTable,SIGNAL(queueIt_clicked(QList<QMap<int,QString>>)),this,SLOT(addToQueue(QList<QMap<int,QString>>)));
     connect(collectionTable,SIGNAL(moodIt_clicked(QString)),playlistTable,SLOT(createMoodPlaylist(QString)));
     connect(collectionTable,SIGNAL(infoIt_clicked(QString, QString, QString)),this,SLOT(infoIt(QString, QString, QString)));
 
@@ -142,7 +142,7 @@ void MainWindow::setUpViews()
     connect(mainList,SIGNAL(tableWidget_doubleClicked(QList<QMap<int, QString>>)),this,SLOT(on_mainList_clicked(QList<QMap<int, QString>>)));
     connect(mainList,SIGNAL(removeIt_clicked(int)),this,SLOT(removeSong(int)));
     connect(mainList,SIGNAL(babeIt_clicked(QList<QMap<int, QString>>)),this,SLOT(babeIt(QList<QMap<int, QString>>)));
-    connect(mainList,SIGNAL(queueIt_clicked(QString)),this,SLOT(addToQueue(QString)));
+    connect(mainList,SIGNAL(queueIt_clicked(QList<QMap<int, QString>>)),this,SLOT(addToQueue(QList<QMap<int, QString>>)));
     connect(mainList,SIGNAL(moodIt_clicked(QString)),playlistTable,SLOT(createMoodPlaylist(QString)));
     connect(mainList,SIGNAL(infoIt_clicked(QString, QString, QString)),this,SLOT(infoIt(QString, QString, QString)));
     connect(mainList->model() ,SIGNAL(rowsInserted(QModelIndex,int,int)),this,SLOT(on_rowInserted(QModelIndex,int,int)));
@@ -157,7 +157,7 @@ void MainWindow::setUpViews()
     connect(resultsTable,SIGNAL(leftTable()),this,SLOT(showControls()));
     connect(resultsTable,SIGNAL(removeIt_clicked(int)),this,SLOT(removeSong(int)));
     connect(resultsTable,SIGNAL( babeIt_clicked(QList<QMap<int, QString>>)),this,SLOT(babeIt(QList<QMap<int, QString>>)));
-    connect(resultsTable,SIGNAL(queueIt_clicked(QString)),this,SLOT(addToQueue(QString)));
+    connect(resultsTable,SIGNAL(queueIt_clicked(QList<QMap<int, QString>>)),this,SLOT(addToQueue(QList<QMap<int, QString>>)));
     connect(resultsTable,SIGNAL(moodIt_clicked(QString)),playlistTable,SLOT(createMoodPlaylist(QString)));
     connect(resultsTable,SIGNAL(infoIt_clicked(QString, QString, QString)),this,SLOT(infoIt(QString, QString, QString)));
 
@@ -177,7 +177,7 @@ void MainWindow::setUpViews()
     connect(albumsTable->albumTable,SIGNAL( babeIt_clicked(QList<QMap<int, QString>>)),this,SLOT(babeIt(QList<QMap<int, QString>>)));
     connect(albumsTable,SIGNAL(playAlbum(QString, QString)),this,SLOT(putOnPlay(QString, QString)));
     connect(albumsTable,SIGNAL(babeAlbum_clicked(QList<QMap<int, QString>>)),this,SLOT(babeIt(QList<QMap<int, QString>>)));
-    connect(albumsTable->albumTable,SIGNAL(queueIt_clicked(QString)),this,SLOT(addToQueue(QString)));
+    connect(albumsTable->albumTable,SIGNAL(queueIt_clicked(QList<QMap<int, QString>>)),this,SLOT(addToQueue(QList<QMap<int, QString>>)));
     connect(albumsTable->albumTable,SIGNAL(moodIt_clicked(QString)),playlistTable,SLOT(createMoodPlaylist(QString)));
     connect(albumsTable->albumTable,SIGNAL(infoIt_clicked(QString, QString, QString)),this,SLOT(infoIt(QString, QString, QString)));
 
@@ -189,7 +189,7 @@ void MainWindow::setUpViews()
     connect(artistsTable->albumTable,SIGNAL( babeIt_clicked(QList<QMap<int, QString>>)),this,SLOT(babeIt(QList<QMap<int, QString>>)));
     connect(artistsTable,SIGNAL(playAlbum(QString, QString)),this,SLOT(putOnPlay(QString, QString)));
     connect(artistsTable,SIGNAL(babeAlbum_clicked(QList<QMap<int, QString>>)),this,SLOT(babeIt(QList<QMap<int, QString>>)));
-    connect(artistsTable->albumTable,SIGNAL(queueIt_clicked(QString)),this,SLOT(addToQueue(QString)));
+    connect(artistsTable->albumTable,SIGNAL(queueIt_clicked(QList<QMap<int, QString>>)),this,SLOT(addToQueue(QList<QMap<int, QString>>)));
     connect(artistsTable->albumTable,SIGNAL(moodIt_clicked(QString)),playlistTable,SLOT(createMoodPlaylist(QString)));
     connect(artistsTable->albumTable,SIGNAL(infoIt_clicked(QString, QString, QString)),this,SLOT(infoIt(QString, QString, QString)));
 
@@ -1221,15 +1221,14 @@ void MainWindow::loadTrack()
 
 void MainWindow::loadTrackOnQueue()
 {
-    current_song_url = QString::fromStdString(queueList.tracks[0].getLocation());
+    current_song_url = queueTable->getRowData(0)[BabeTable::LOCATION];
 
 
     if(BaeUtils::fileExists(current_song_url))
     {
-        current_artist=QString::fromStdString(queueList.tracks[0].getArtist());
-        current_album=QString::fromStdString(queueList.tracks[0].getAlbum());
-        current_title=QString::fromStdString(queueList.tracks[0].getTitle());
-
+        current_artist=queueTable->getRowData(0)[BabeTable::ARTIST];
+        current_album=queueTable->getRowData(0)[BabeTable::ALBUM];
+        current_title=queueTable->getRowData(0)[BabeTable::TITLE];
 
 
         player->setMedia(QUrl::fromLocalFile(current_song_url));
@@ -1243,7 +1242,7 @@ void MainWindow::loadTrackOnQueue()
         album_art->setAlbum(current_album);
         album_art->setTitle();
 
-        //CHECK IF THE SONG IS BABED IT OR IT ISN'T
+        //CHECK IF THE SONG IS BABE'D IT OR IT ISN'T
         if(settings_widget->getCollectionDB().checkQuery("SELECT * FROM tracks WHERE location = \""+current_song_url+"\" AND babe = \"1\""))
         {
             ui->fav_btn->setIcon(QIcon(":Data/data/loved.svg"));
@@ -1255,17 +1254,12 @@ void MainWindow::loadTrackOnQueue()
 
         loadMood();
 
-
-
         //AND WHETHER THE SONG EXISTS OR  DO NOT GET THE TRACK INFO
         loadCover(current_artist,current_album,current_title);
-
-        removeFromQueue(current_song_url);
+        removeFromQueue(queueTable->getRowData(0));
         //lCounter--;
         //if(player->position()>player->duration()/4)
-
         timer->start(2000);
-
 
     }else
     {
@@ -1397,42 +1391,30 @@ void MainWindow::loadCover(QString artist, QString album, QString title)
     }
 }
 
-void MainWindow::addToQueue(QString url)
+void MainWindow::addToQueue(QList<QMap<int,QString>> mapList)
 {
     qDebug()<<"SONGS IN QUEUE";
-    queue_list<<url;
-    queueList.add({url});
-    queueTable->flushTable();
-
-
-    nof.notify("Song added to Queue",url);
-
-    for(auto a:queue_list)queueTable->populateTableView("SELECT * FROM tracks WHERE location = \""+a+"\"");
+    for(auto track : mapList)
+    {
+        queue_list<<track;
+        queueTable->addRow(track);
+        nof.notify("Song added to Queue",track[BabeTable::TITLE]+" by "+track[BabeTable::ARTIST]);
+    }
     queueTable->setSortingEnabled(false);
 }
 
-void MainWindow::removeFromQueue(QString url)
+void MainWindow::removeFromQueue(QMap<int,QString> map)
 {
-    queue_list.removeAll(url);
-    queueList.removeAll();
-    queueList.add(queue_list);
-
-
+    queue_list.removeAll(map);
     queueTable->flushTable();
-
-    for(auto a:queue_list)queueTable->populateTableView("SELECT * FROM tracks WHERE location = \""+a+"\"");
+    for(auto track : queue_list) queueTable->addRow(track);
     queueTable->setSortingEnabled(false);
-    // queueList.remove();
 }
 
 
 
 
-int MainWindow::getIndex()
-{
-
-    return mainList->currentIndex().row();
-}
+int MainWindow::getIndex() { return mainList->currentIndex().row(); }
 
 
 
@@ -1599,6 +1581,9 @@ void MainWindow::collectionDBFinishedAdding(bool state)
         albumsTable->flushGrid();
         artistsTable->flushGrid();
         refreshTables();
+    }else
+    {
+        refreshTables();
     }
 }
 
@@ -1615,7 +1600,7 @@ void MainWindow::orderTables()
 
 void MainWindow::on_fav_btn_clicked()
 {
-    babeIt(settings_widget->collection_db.getTrackData({current_song_url}));
+    babeIt({mainList->getRowData(getIndex())});
 
 }
 
@@ -1662,7 +1647,7 @@ void MainWindow::babeIt(QList<QMap<int,QString>> mapList)
         {
             //ui->fav_btn->setIcon(QIcon::fromTheme("face-in-love"));
             unbabeIt(url);
-            nof.notify("Song unBabe'd it",url);
+            nof.notify("Song unBabe'd it",track[BabeTable::TITLE]+" by "+track[BabeTable::ARTIST]);
 
         }else
         {
@@ -1673,7 +1658,7 @@ void MainWindow::babeIt(QList<QMap<int,QString>> mapList)
                 {
                     ui->fav_btn->setIcon(QIcon(":Data/data/loved.svg"));
 
-                    nof.notify("Song Babe'd it",url);
+                    nof.notify("Song Babe'd it",track[BabeTable::TITLE]+" by "+track[BabeTable::ARTIST]);
                     QList<QMap<int,QString>> item;
                     item<<track;
                     addToPlaylist(item,true);
@@ -1683,28 +1668,18 @@ void MainWindow::babeIt(QList<QMap<int,QString>> mapList)
             }else
             {
 
-
                 qDebug()<<"Sorry but that song is not in the database";
-
 
                 ui->fav_btn->setIcon(QIcon(":Data/data/loved.svg"));
                 ui->fav_btn->setEnabled(false);
 
-
                 if(addToCollectionDB_t({url},"1"))
-                {
-                    nof.notify("Song Babe'd it",url);
-                }
+                    nof.notify("Song Babe'd it",track[BabeTable::TITLE]+" by "+track[BabeTable::ARTIST]);
 
-                //ui->tableWidget->insertRow(ui->tableWidget->rowCount());
-
-
-                //to-do: create a list and a tracks object and send it the new song and then write that track list into the database
+                ui->fav_btn->setEnabled(true);
             }
 
-
         }
-        // addToFavorites({QString::fromStdString(playlist.tracks[getIndex()].getTitle()),QString::fromStdString(playlist.tracks[getIndex()].getArtist()),QString::fromStdString(playlist.tracks[getIndex()].getAlbum()),QString::fromStdString(playlist.tracks[getIndex()].getLocation()),"\xe2\x99\xa1","1"});
     }
 }
 

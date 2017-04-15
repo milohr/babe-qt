@@ -145,8 +145,8 @@ private slots:
     void babeIt(QList<QMap<int, QString> > mapList);
     void unbabeIt(QString url);
     void loadMood();
-    void addToQueue(QString url);
-    void removeFromQueue(QString url);
+    void addToQueue(QList<QMap<int,QString>> mapList);
+    void removeFromQueue(QMap<int,QString> map);
     void on_filterBtn_clicked();
     void on_filter_textChanged(const QString &arg1);
     void infoIt(QString title, QString artist, QString album);
@@ -210,9 +210,8 @@ private:
     BabeTable *queueTable;
 
     /*the streaming */
-    Playlist queueList;
     QList<QMap<int,QString>> currentList;
-    QStringList queue_list;
+    QList<QMap<int,QString>> queue_list;
     QMediaPlayer *player = new QMediaPlayer();
     QTimer *updater = new QTimer(this);
     QString current_song_url;
