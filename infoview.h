@@ -25,33 +25,37 @@ public:
 
     Album *album;
     Album *artist;
-
     QWidget *infoUtils;
 
 
 private:
+
     Ui::InfoView *ui;
-Lyrics *lyrics;
+    Lyrics *lyrics;
     QToolButton *hideBtn;
     bool hide= false;
     bool customsearch = false;
 
 public slots:
+
     void setAlbumArt(QByteArray array);
     void setAlbumInfo(QString info);
     void setArtistArt(QByteArray array);
+    void setArtistArt(QString url);
     void setLyrics(QString lyrics);
     void setArtistInfo(QString info);
     void hideArtistInfo();
     void playAlbum_clicked(QString artist, QString album);
-
-    void getTrackInfo(QString title, QString artist, QString album);
+    void getTrackInfo(QString _title, QString _artist, QString _album);
+    void getTrackArt(QString artist, QString album);
     void on_searchBtn_clicked();
 
 signals:
+
     void playAlbum(QString artist, QString album);
 
 private slots:
+
     void on_toolButton_clicked();
 };
 

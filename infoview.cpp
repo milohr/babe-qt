@@ -90,6 +90,7 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView) {
 
     //ui->searchBtn->setVisible(false);
 
+
 }
 
 InfoView::~InfoView() { delete ui; }
@@ -135,7 +136,15 @@ void InfoView::setAlbumArt(QByteArray array) {Q_UNUSED(array)}
 
 void InfoView::setArtistInfo(QString info) { ui->artistText->setHtml(info); }
 
-void InfoView::setArtistArt(QByteArray array) { artist->putPixmap(array); }
+void InfoView::setArtistArt(QByteArray array)
+{
+    artist->putPixmap(array);
+
+}
+void InfoView::setArtistArt(QString url)
+{
+    artist->putPixmap(url);
+}
 
 void InfoView::setLyrics(QString lyrics) {
     ui->lyricsText->setHtml(lyrics);
@@ -160,24 +169,36 @@ void InfoView::on_searchBtn_clicked()
 }
 
 
-void InfoView::getTrackInfo(QString title, QString artist, QString album)
+void InfoView::getTrackInfo(QString _title, QString _artist, QString _album)
 {
-    if(!album.isEmpty()&&!artist.isEmpty())
+
+    if(!_album.isEmpty()&&!_artist.isEmpty())
     {
+        this->artist->setArtist(_artist);
+        //this->album->setAlbum(album);
+
         ArtWork coverInfo;
         ArtWork artistInfo;
         connect(&coverInfo, SIGNAL(infoReady(QString)), this, SLOT(setAlbumInfo(QString)));
         connect(&artistInfo, SIGNAL(bioReady(QString)), this, SLOT(setArtistInfo(QString)));
-        coverInfo.setDataCoverInfo(artist,album);
-        artistInfo.setDataHeadInfo(artist);
+        coverInfo.setDataCoverInfo(_artist,_album);
+        artistInfo.setDataHeadInfo(_artist);
 
-        if(!title.isEmpty())
+        if(!_title.isEmpty())
         {
-            lyrics->setData(artist,title);
-            ui->artistLine->setText(artist);
-            ui->titleLine->setText(title);
+            lyrics->setData(_artist,_title);
+            ui->artistLine->setText(_artist);
+            ui->titleLine->setText(_title);
         }
     }
+}
+
+void InfoView::getTrackArt(QString artist, QString album)
+{
+    Q_UNUSED(album);
+    ArtWork artistHead;
+    connect(&artistHead, SIGNAL(headReady(QByteArray)), this, SLOT(setArtistArt(QByteArray)));
+    artistHead.setDataHead(artist);
 }
 
 
@@ -188,9 +209,5 @@ void InfoView::on_toolButton_clicked()
     QString title=ui->titleLine->text();
 
     if(!artist.isEmpty()&&!title.isEmpty())
-    {
-
         lyrics->setData(artist,title);
-
-    }
 }

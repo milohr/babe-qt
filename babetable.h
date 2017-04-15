@@ -63,7 +63,6 @@ public:
     QMap<int,QString> getRowData(int row);
     void allowDrag();
     //void removeRow(int row);
-
     void passStyle(QString style);
     QStringList getTableContent(int column);
     QList<QMap<int, QString>> getAllTableContent();
@@ -77,6 +76,7 @@ public:
     QLabel *addMusicTxt;
     QString addMusicMsg = "oops... :(\nnothing here";
     void setAddMusicMsg(QString msg);
+    int getIndex();
 
 
 protected:

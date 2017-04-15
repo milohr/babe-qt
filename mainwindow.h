@@ -58,6 +58,7 @@ public:
     void updateList();
     void populateMainList();
     void clearCurrentList();
+    bool isBabed(QString url);
 
     enum views
     {
@@ -154,13 +155,10 @@ private slots:
 private:
 
     Ui::MainWindow *ui;
-    Notify nof;
     const QString stylePath = BaeUtils::getSettingPath()+"style.qss";
 
-
+    Notify nof;
     ArtWork *coverArt;
-    ArtWork *artistHead;
-
     Mpris *mpris;
 
     void keepOnTop(bool state);
@@ -179,8 +177,6 @@ private:
     void expand();
     void go_mini();
     void go_playlistMode();
-
-    int getIndex();
 
     QFrame *frame;
     QFrame *line;
@@ -227,20 +223,17 @@ private:
     int  shuffle_state=0;
     bool repeat = false;
     bool muted = false;
-    bool playing = false;
     bool showFilter= false;
-    vector<unsigned short int> shuffledPlaylist;
     bool shuffle = false;
+
+    vector<unsigned short int> shuffledPlaylist;
     QMenu *saveResults_menu;
     QMenu *refreshBtn_menu;
-    // void collectionWatcher();
-    QString listToString(QStringList list);
 
 signals:
     void finishedPlayingSong(QString url);
     void collectionChecked();
     void getCover(QString artist, QString album, QString title);
-
 
 };
 

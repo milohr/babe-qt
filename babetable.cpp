@@ -302,6 +302,7 @@ void BabeTable::leaveEvent(QEvent *event) {
 
 void BabeTable::passStyle(QString style) { this->setStyleSheet(style); }
 
+int BabeTable::getIndex() { return this->currentIndex().row(); }
 
 void BabeTable::addRow(QMap<int, QString> map,  bool descriptiveTooltip)
 {
@@ -611,11 +612,9 @@ void BabeTable::keyPressEvent(QKeyEvent *event) {
     switch (event->key()) {
     case Qt::Key_Return: {
 
-
         QList<QMap<int, QString>> list;
 
-
-        list<<getRowData(this->currentIndex().row());
+        list<<getRowData(this->getIndex());
         emit tableWidget_doubleClicked(list);
 
         break;
@@ -743,16 +742,16 @@ void BabeTable::allowDrag()
 
 void BabeTable::on_tableWidget_doubleClicked(const QModelIndex &index)
 {
+    Q_UNUSED(index);
 
     QList<QMap<int, QString>> list;
+    auto track = getRowData(this->getIndex());
+    list<<track;
     qDebug()
             << "BabeTable doubleClicked item<<"
-            << index.sibling(this->currentIndex().row(), LOCATION).data().toString();
-
-    list<<getRowData(this->currentIndex().row());
+            << track[LOCATION];
 
     emit tableWidget_doubleClicked(list);
-
 }
 
 void BabeTable::babeIt_action()
