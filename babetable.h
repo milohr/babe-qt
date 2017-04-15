@@ -41,6 +41,7 @@ class BabeTable : public QTableWidget
     Q_OBJECT
 
 public:
+
     explicit BabeTable(QWidget *parent = 0);
     ~BabeTable();
 
@@ -52,46 +53,54 @@ public:
     {
         DESCENDING, ASCENDING
     };
+    enum menuActions
+    {
+        BABEIT, QUEUEIT, INFOIT, EDITIT, SAVETO, REMOVEIT, RATEIT, MOODIT
+    };
+    enum subMenuActions
+    {
+        SENDIT, ADDTO
+    };
+
     CollectionDB *connection;
+
     const QMap<int, QString> columnsNames{{TRACK, "track"}, {TITLE, "title"}, {ARTIST, "artist"},{ALBUM,"album"},{GENRE,"genre"},{LOCATION,"location"},{STARS,"stars"},{BABE,"babe"},{ART,"art"},{PLAYED,"played"},{PLAYLIST,"playlist"}};
+    QStringList playlistsMenus;
+    QStringList colors = {"#F0FF01","#01FF5B","#3DAEFD","#B401FF","#E91E63"};
+
     void populateTableView(QString indication, bool descriptiveTitle=false);
     void setRating(int rate);
     void passCollectionConnection(CollectionDB *con);
     void setTableOrder(int column, int order);
     void setVisibleColumn(int column);
     void addRow(QMap<int, QString> map, bool descriptiveTooltip=false);
-    QMap<int,QString> getRowData(int row);
     void allowDrag();
-    //void removeRow(int row);
     void passStyle(QString style);
-    QStringList getTableContent(int column);
-    QList<QMap<int, QString>> getAllTableContent();
     void passPlaylists();
     void  populatePlaylist(QStringList urls, QString playlist);
-
-    QStringList playlistsMenus;
-    QStringList colors = {"#F0FF01","#01FF5B","#3DAEFD","#B401FF","#E91E63"};
-
-    QMap<QString, QString> getKdeConnectDevices();
-    QLabel *addMusicTxt;
-    QString addMusicMsg = "oops... :(\nnothing here";
     void setAddMusicMsg(QString msg);
     int getIndex();
+    //void removeRow(int row);
+
+    QMap<int,QString> getRowData(int row);
+    QMap<QString, QString> getKdeConnectDevices();
+    QStringList getTableContent(int column);
+    QList<QMap<int, QString>> getAllTableContent();
 
 
 protected:
+
     virtual void enterEvent(QEvent *event);
     virtual void leaveEvent(QEvent *event);
     //  virtual void mouseReleaseEvent(QMouseEvent* evt);
     virtual void mousePressEvent(QMouseEvent* evt);
     virtual void keyPressEvent(QKeyEvent *event);
 
-
 private slots:
 
     void on_tableWidget_doubleClicked(const QModelIndex &index);
     void rateGroup(int id);
-    void setUpContextMenu(QPoint pos);
+    void setUpContextMenu(const int row, const int column);
     void addToPlaylist(QAction* action);
     void babeIt_action();
     void sendIt_action(QAction *device);
@@ -118,8 +127,8 @@ private:
     QToolButton *fav4;
     QToolButton *fav5;
 
-    int rRow;
-    int rColumn;
+    int rRow=0;
+    int rColumn=0;
     QMenu *contextMenu;
     QMenu* playlistsMenu;
     QMenu* sendToMenu;
@@ -127,7 +136,8 @@ private:
     QMap<QString,QString> devices;
     QTimer *updater = new QTimer(this);
 
-
+    QLabel *addMusicTxt;
+    QString addMusicMsg = "oops... :(\nnothing here";
 
 signals:
     void tableWidget_doubleClicked(QList<QMap<int,QString>> mapList);
@@ -135,7 +145,7 @@ signals:
     void enteredTable();
     void leftTable();
     void finishedPopulating();
-    void rightClicked(QPoint evt);
+    void rightClicked(const int row, const int column);
     void babeIt_clicked(QList<QMap<int,QString>> mapList);
     void removeIt_clicked(int index);
     void createPlaylist_clicked();

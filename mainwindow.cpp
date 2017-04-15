@@ -690,8 +690,6 @@ void MainWindow::dropEvent(QDropEvent *event)
     tracks->add(list);
 
     addToPlaylist(tracks->getTracksData());
-
-
 }
 
 
@@ -777,6 +775,7 @@ void MainWindow::albumsView()
 
     prevIndex=views->currentIndex();
 }
+
 void MainWindow::playlistsView()
 {
     views->setCurrentIndex(PLAYLISTS);
@@ -1101,12 +1100,8 @@ void MainWindow::populateMainList()
 void MainWindow::updateList()
 {
     mainList->flushTable();
-
     for(auto list: currentList)
-    {
         mainList->addRow(list);
-    }
-
 }
 
 
@@ -1126,14 +1121,13 @@ void MainWindow::removeSong(int index)
 
     if(index != -1)
     {
-
         qDebug()<<"ehat was in current list:";
         for(auto a: currentList)
         {
             qDebug()<<a[BabeTable::TITLE];
         }
         if(obj == mainList) currentList.removeAt(index);
-        qDebug()<<"ehats in current list:";
+        qDebug()<<"in current list:";
         for(auto a: currentList)
         {
             qDebug()<<a[BabeTable::TITLE];
@@ -1180,52 +1174,36 @@ void MainWindow::loadTrack()
             else
                 ui->fav_btn->setIcon(QIcon(":Data/data/love-amarok.svg"));
 
-
             loadMood();
 
             //AND WHETHER THE SONG EXISTS OR  DO NOT GET THE TRACK INFO
             loadCover(current_artist,current_album,current_title);
             //if(player->position()>player->duration()/4)
 
+        }else removeSong(mainList->getIndex());
 
+    }else loadTrackOnQueue();
 
-
-        }else
-        {
-            removeSong(mainList->getIndex());
-            qDebug()<<"this song doesn't exists: "<< current_song_url;
-        }
-    }else
-    {
-        loadTrackOnQueue();
-    }
 }
 
 bool MainWindow::isBabed(QString url)
 {
     if(settings_widget->getCollectionDB().checkQuery("SELECT * FROM tracks WHERE location = \""+url+"\" AND babe = \"1\""))
-    {
         return true;
-    }else
-    {
-        return false;
-    }
+    else return false;
 
 }
 
 void MainWindow::loadTrackOnQueue()
 {
-
     auto track = queueTable->getRowData(0);
     current_song_url = track[BabeTable::LOCATION];
-
 
     if(BaeUtils::fileExists(current_song_url))
     {
         current_artist = track[BabeTable::ARTIST];
         current_album = track[BabeTable::ALBUM];
         current_title = track[BabeTable::TITLE];
-
 
         player->setMedia(QUrl::fromLocalFile(current_song_url));
         player->play();
@@ -1241,9 +1219,7 @@ void MainWindow::loadTrackOnQueue()
         //CHECK IF THE SONG IS BABE'D IT OR IT ISN'T
         if(isBabed(current_song_url))
             ui->fav_btn->setIcon(QIcon(":Data/data/loved.svg"));
-        else
-
-            ui->fav_btn->setIcon(QIcon(":Data/data/love-amarok.svg"));
+        else ui->fav_btn->setIcon(QIcon(":Data/data/love-amarok.svg"));
 
 
         loadMood();
@@ -1313,10 +1289,8 @@ void MainWindow::loadCover(QString artist, QString album, QString title)
                     nof.notifySong(title,artist,album,current_song_url,pix);
                 }
 
-            }else
-            {
-                album_art->putPixmap( QString(":Data/data/cover.svg"));
-            }
+            }else album_art->putPixmap( QString(":Data/data/cover.svg"));
+
 
         }
 
@@ -1327,10 +1301,8 @@ void MainWindow::loadCover(QString artist, QString album, QString title)
             {
                 infoTable->setArtistArt(queryHead.value(1).toString());
                 infoTable->artist->setArtist(artist);
-            }else
-            {
-                infoTable->setArtistArt( QString(":Data/data/cover.svg"));
-            }
+            }else infoTable->setArtistArt( QString(":Data/data/cover.svg"));
+
         }
 
 
@@ -1366,8 +1338,6 @@ void MainWindow::loadCover(QString artist, QString album, QString title)
                 emit getCover(artist,album,title);
             }
         }
-
-
 
     }
 }
@@ -1738,25 +1708,21 @@ void MainWindow::addToPlaylist(QList<QMap<int,QString>> mapList, bool notRepeate
     if(notRepeated)
     {
         QList<QMap<int,QString>> newList;
-        QStringList alreadyInList=mainList->getTableContent(BabeTable::LOCATION);
+        QStringList alreadyInList = mainList->getTableContent(BabeTable::LOCATION);
         for(auto track: mapList)
         {
-
             if(!alreadyInList.contains(track[BabeTable::LOCATION]))
             {
                 newList<<track;
                 mainList->addRow(track);
             }
-
         }
 
         currentList+=newList;
     }else
     {
-
         currentList+=mapList;
         for(auto track:mapList)  mainList->addRow(track);
-
     }
 
 
