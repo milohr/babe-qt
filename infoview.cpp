@@ -124,7 +124,7 @@ void InfoView::setArtistTagInfo(QStringList tags)
 
     for(auto tag : tags)
     {
-        htmlTags+= "<a href=\""+tag+"\"> "+tag+"</a> ";
+        htmlTags+= "<a href=\""+tag+"\"> "+tag+"</a> , ";
     }
 
      ui->tagsInfo->setHtml(htmlTags);
@@ -232,4 +232,5 @@ void InfoView::on_toolButton_clicked()
 void InfoView::on_tagsInfo_anchorClicked(const QUrl &arg1)
 {
     qDebug()<<arg1.toString();
+    emit tagClicked(arg1.toString());
 }

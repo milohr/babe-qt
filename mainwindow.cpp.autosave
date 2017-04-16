@@ -197,7 +197,7 @@ void MainWindow::setUpViews()
 
     infoTable = new InfoView(this);
     connect(infoTable,SIGNAL(playAlbum(QString, QString)),this,SLOT(putOnPlay(QString, QString)));
-    connect(infoTable,SIGNAL(tagClicked(QString)),this,SLOT(searchFor(QString)));
+    connect(infoTable,SIGNAL(tagClicked(QString)),this,SLOT(searchFor(QString))); //?
 
 
     settings_widget->readSettings();

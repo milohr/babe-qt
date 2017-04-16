@@ -66,7 +66,8 @@ SOURCES += main.cpp\
     mpris2.cpp \
     notify.cpp \
     youtube.cpp \
-    metadataForm.cpp
+    metadataForm.cpp \
+    onlineview.cpp
 
 HEADERS  += mainwindow.h \
             playlist.h \
@@ -87,13 +88,15 @@ HEADERS  += mainwindow.h \
     notify.h \
     youtube.h \
     baeUtils.h \
-    metadataForm.h
+    metadataForm.h \
+    onlineview.h
 
 FORMS    += mainwindow.ui \
     settings.ui \
     about.ui \
     infoview.ui \
-    metadataForm.ui
+    metadataForm.ui \
+    onlineview.ui
 
 RESOURCES += \
     data.qrc

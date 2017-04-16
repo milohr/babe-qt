@@ -86,6 +86,7 @@ public slots:
     void putPixmap(QByteArray array);
     void changedArt(QString path, QString artist, QString album);
     void babeAlbum(QString album, QString artist);
+    void searchFor(QString searchQuery);
     void dummy();
 
 private slots:
@@ -126,7 +127,6 @@ private slots:
 
     //void on_resultsPLaylist_clicked();
     void setCoverArt(QString artist, QString album, QString title);
-    void on_settings_view_clicked();
     void orderTables();
     void on_rowInserted(QModelIndex model ,int x,int y);
 

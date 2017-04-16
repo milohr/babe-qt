@@ -54,6 +54,7 @@ public slots:
 signals:
 
     void playAlbum(QString artist, QString album);
+    void tagClicked(QString tag);
 
 private slots:
 
