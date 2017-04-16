@@ -59,7 +59,6 @@ SOURCES += main.cpp\
     albumsview.cpp \
     scrolltext.cpp \
     playlistsview.cpp \
-    colortag.cpp \
     taginfo.cpp \
     artwork.cpp \
     infoview.cpp \
@@ -67,7 +66,7 @@ SOURCES += main.cpp\
     mpris2.cpp \
     notify.cpp \
     youtube.cpp \
-    form.cpp
+    metadataForm.cpp
 
 HEADERS  += mainwindow.h \
             playlist.h \
@@ -81,7 +80,6 @@ HEADERS  += mainwindow.h \
     scrolltext.h \
     playlistsview.h \
     taginfo.h \
-    colortag.h \
     artwork.h \
     infoview.h \
     lyrics.h \
@@ -89,13 +87,13 @@ HEADERS  += mainwindow.h \
     notify.h \
     youtube.h \
     baeUtils.h \
-    form.h
+    metadataForm.h
 
 FORMS    += mainwindow.ui \
     settings.ui \
     about.ui \
     infoview.ui \
-    form.ui
+    metadataForm.ui
 
 RESOURCES += \
     data.qrc

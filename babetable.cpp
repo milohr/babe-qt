@@ -279,7 +279,7 @@ void BabeTable::populatePlaylist(QStringList urls, QString playlist)  //this nee
             qDebug() << list;
 
     }
-     nof.notifyUrgent("Tracks added to playlist:",playlist);
+    nof.notifyUrgent("Tracks added to playlist:",playlist);
 }
 
 
@@ -795,24 +795,25 @@ void BabeTable::babeIt_action()
 
 void BabeTable::sendIt_action(QAction *device)
 {
-    QString url = this->model()->index(rRow,LOCATION).data().toString();
-    QString title = this->model()->index(rRow,TITLE).data().toString();
-    QString artist = this->model()->index(rRow,ARTIST).data().toString();
+    auto track = this->getRowData(rRow);
 
-    QString deviceName= device->text().replace("&","");
-    QString deviceKey=  devices.key(deviceName);
+    QString url =track[LOCATION];
+    QString title = track[TITLE];
+    QString artist = track[ARTIST];
+
+    QString deviceName = device->text().replace("&","");
+    QString deviceKey = devices.key(deviceName);
 
     qDebug()<<"trying to send "<< url << "to : "<< deviceName;
     auto process = new QProcess(this);
-
     connect(process, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
-            [=](int exitCode, QProcess::ExitStatus exitStatus){
-
+            [=](int exitCode, QProcess::ExitStatus exitStatus)
+    {
         qDebug()<<"processFinished_totally"<<exitCode<<exitStatus;
-
-        nof.notifyUrgent("Song send to " + deviceName,title +" by "+ artist);
+        nof.notifyUrgent("Song sent to " + deviceName,title +" by "+ artist);
 
     });
+
     qDebug()<<"kdeconnect-cli -d " +deviceKey+ " --share " + url;
     process->start("kdeconnect-cli -d " +deviceKey+ " --share " +"\""+ url+"\"");
 
@@ -823,7 +824,7 @@ void BabeTable::editIt_action()
     //editing=true;
     // emit this->edit(this->model()->index(rRow,rColumn));
 
-    auto infoForm = new Form(getRowData(rRow),this);
+    auto infoForm = new metadataForm(getRowData(rRow),this);
     connect(infoForm,SIGNAL(infoModified(QMap<int, QString>)),this,SLOT(itemEdited(QMap<int, QString>)));
     infoForm->show();
 
@@ -838,7 +839,7 @@ void BabeTable::itemEdited(QMap<int, QString> map)
     this->item(rRow,ALBUM)->setText(map[ALBUM]);
     this->item(rRow,GENRE)->setText(map[GENRE]);
 
-    //     connection->insertInto("tracks",column,this->model()->index(newIndex.row(),LOCATION).data().toString(),newIndex.data().toString());
+    //connection->insertInto("tracks",column,this->model()->index(newIndex.row(),LOCATION).data().toString(),newIndex.data().toString());
 
 }
 
@@ -923,9 +924,7 @@ QStringList BabeTable::getTableContent(int column)
 {
     QStringList result;
     for (int i = 0; i < this->rowCount(); i++)
-    {
         result << this->model()->data(this->model()->index(i, column)).toString();
-    }
 
     return result;
 }
@@ -933,14 +932,10 @@ QStringList BabeTable::getTableContent(int column)
 
 QList<QMap<int, QString>> BabeTable::getAllTableContent()
 {
-    QList<QMap<int,QString>> result;
+    QList<QMap<int,QString>> mapList;
 
+    for (int i = 0; i<this->rowCount(); i++)
+        mapList<<getRowData(i);
 
-    for (int i = 0; i < this->rowCount(); i++)
-    {
-
-        result<<getRowData(i);
-    }
-
-    return result;
+    return mapList;
 }

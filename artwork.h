@@ -27,17 +27,14 @@ public:
     void setDataHead(QString artist, QString path="");
      void setDataHead_asCover(QString artist);
     void setDataCoverInfo(QString artist, QString album);
-    void setDataHeadInfo(QString artist);
+    void setDataHeadInfo(QString _artist);
     void setDataCover_title(QString artist, QString title);
     void setDataCover_spotify(QString artist, QString album,QString title);
     void setDataCover_itunes(QString artist, QString album,QString title);
     QByteArray getCover();
-    QString getInfo();
     QByteArray selectCover(QString url);
     void selectHead(QString url);
-    void selectInfo(QString info);
-    QString info;
-    QString bio;
+
     QString getAlbumTitle_Spotify(QString artist, QString title);
     QString getAlbumTitle(QString artist, QString title);
 
@@ -74,7 +71,9 @@ signals:
     void coverReady(QByteArray array);
     void headReady(QByteArray array);
     void bioReady(QString bio);
+    void tagsReady(QStringList tags);
     void infoReady(QString info);
+    void tagsReady(QString list);
     void artSaved(QString path,QStringList info);
     void albumTitleReady(QString title);
 

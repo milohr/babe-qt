@@ -44,10 +44,11 @@ public slots:
     void setArtistArt(QString url);
     void setLyrics(QString lyrics);
     void setArtistInfo(QString info);
+    void setArtistTagInfo(QStringList tags);
     void hideArtistInfo();
     void playAlbum_clicked(QString artist, QString album);
     void getTrackInfo(QString _title, QString _artist, QString _album);
-    void getTrackArt(QString artist, QString album);
+    void getTrackArt(QString _artist, QString _album);
     void on_searchBtn_clicked();
 
 signals:
@@ -57,6 +58,7 @@ signals:
 private slots:
 
     void on_toolButton_clicked();
+    void on_tagsInfo_anchorClicked(const QUrl &arg1);
 };
 
 #endif // INFOVIEW_H

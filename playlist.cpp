@@ -21,7 +21,8 @@
 
 Playlist::Playlist() {}
 
-bool Playlist::isMusic(QString file) {
+bool Playlist::isMusic(QString file)
+{
     QMimeDatabase mimeDatabase;
     QMimeType mimeType;
 
@@ -39,24 +40,18 @@ bool Playlist::isMusic(QString file) {
     else if (mimeType.inherits("audio/MPEG-4"))
         return true;
     else if (mimeType.inherits("video/mpeg"))
-        return true;
+        return true;    
     else if (mimeType.inherits("audio/m4a"))
-        return true;
-
+        return true;    
     else if (mimeType.inherits("audio/mp3"))
         return false;
-
     else if (mimeType.inherits("audio/ogg"))
         return true;
-
     else if (mimeType.inherits("audio/wav"))
         return true;
-
     else if (mimeType.inherits("audio/flac"))
         return true;
-
-    else
-        return false;
+    else return false;
 }
 
 
@@ -87,7 +82,8 @@ QList<QMap<int,QString>> Playlist::getTracksData()
     return mapList;
 }
 
-void Playlist::add(QStringList files) {
+void Playlist::add(QStringList files)
+{
 
     for (int i = 0; i < files.size(); i++) {
         if (isMusic(files[i])) {
@@ -125,11 +121,11 @@ void Playlist::add(QStringList files) {
     }
 }
 
-void Playlist::addClean(QStringList files) {
+void Playlist::addClean(QStringList files)
+{
 
-    for (int i = 0; i < files.size(); i++) {
-
-
+    for (int i = 0; i < files.size(); i++)
+    {
         TagInfo info(files[i]);
 
         Track track;
@@ -159,8 +155,9 @@ void Playlist::addClean(QStringList files) {
         tracks.push_back(track);
     }
 }
-void Playlist::setMetaData(QString title, QString artist, QString album,
-                           QString location) {
+
+void Playlist::setMetaData(QString title, QString artist, QString album,QString location)
+{
     qDebug() << title + artist + album;
     Track track;
     track.setTitle(title.toStdString());
@@ -176,11 +173,11 @@ void Playlist::remove(int index) { tracks.erase(tracks.begin() + index); }
 
 void Playlist::removeAll() { tracks.clear(); }
 
-
-
-QStringList Playlist::getTracksNameList() {
+QStringList Playlist::getTracksNameList()
+{
     QStringList list;
-    for (int i = 0; i < tracks.size(); i++) {
+    for (unsigned int i = 0; i < tracks.size(); i++)
+    {
         QString qstr = QString::fromStdString(tracks[i].getTitle() + "\nby " +
                                               tracks[i].getArtist());
         list.push_back(qstr);
@@ -188,18 +185,22 @@ QStringList Playlist::getTracksNameList() {
     return list;
 }
 
-QStringList Playlist::getTracksNameListSimple() {
+QStringList Playlist::getTracksNameListSimple()
+{
     QStringList list;
-    for (int i = 0; i < tracks.size(); i++) {
+    for (unsigned int i = 0; i < tracks.size(); i++)
+    {
         QString qstr = QString::fromStdString(tracks[i].getTitle());
         list.push_back(qstr);
     }
     return list;
 }
 
-QList<Track> Playlist::getTracks() {
+QList<Track> Playlist::getTracks()
+{
     QList<Track> list;
-    for (int i = 0; i < tracks.size(); i++) {
+    for (unsigned int i = 0; i < tracks.size(); i++)
+    {
 
         list.push_back(tracks[i]);
     }

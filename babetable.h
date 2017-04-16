@@ -29,7 +29,7 @@
 #include "notify.h"
 #include "album.h"
 #include "collectionDB.h"
-#include "form.h"
+#include "metadataForm.h"
 
 
 namespace Ui {

@@ -16,12 +16,12 @@
    */
 
 
-#include "form.h"
-#include "ui_form.h"
+#include "metadataForm.h"
+#include "ui_metadataForm.h"
 
-Form::Form(QMap<int,QString> info, QWidget *parent) :
+metadataForm::metadataForm(QMap<int,QString> info, QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::Form)
+    ui(new Ui::metadataForm)
 {
     ui->setupUi(this);
     Qt::WindowFlags flags = Qt::Dialog;
@@ -42,19 +42,19 @@ Form::Form(QMap<int,QString> info, QWidget *parent) :
 
 }
 
-Form::~Form()
+metadataForm::~metadataForm()
 {
     delete ui;
 }
 
 
-void Form::on_pushButton_2_clicked()
+void metadataForm::on_pushButton_2_clicked()
 {
     this->close();
     this->destroy();
 }
 
-void Form::on_changebtn_clicked()
+void metadataForm::on_changebtn_clicked()
 {
     QString _track = ui->trackLine->text();
     QString _title = ui->titleLine->text();

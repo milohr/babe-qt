@@ -1,5 +1,5 @@
-#ifndef FORM_H
-#define FORM_H
+#ifndef METADATAFORM_H
+#define METADATAFORM_H
 
 #include <QWidget>
 #include <QMap>
@@ -7,23 +7,23 @@
 #include "babetable.h"
 
 namespace Ui {
-class Form;
+class metadataForm;
 }
 
-class Form : public QWidget
+class metadataForm : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit Form(QMap<int, QString> info, QWidget *parent = 0);
-    ~Form();
+    explicit metadataForm(QMap<int, QString> info, QWidget *parent = 0);
+    ~metadataForm();
 
 private slots:
     void on_pushButton_2_clicked();
     void on_changebtn_clicked();
 
 private:
-    Ui::Form *ui;
+    Ui::metadataForm *ui;
     QString track;
     QString title;
     QString artist;

@@ -32,7 +32,6 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView) {
     lyrics = new Lyrics();
     connect(lyrics,SIGNAL(lyricsReady(QString)),this,SLOT(setLyrics(QString)));
 
-
     artist->titleVisible(false);
     artist->borderColor = true;
 
@@ -90,6 +89,7 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView) {
 
     //ui->searchBtn->setVisible(false);
 
+    ui->tagsInfo->setOpenLinks(false);
 
 }
 
@@ -102,7 +102,8 @@ void InfoView::playAlbum_clicked(QString artist, QString album)
 
 }
 
-void InfoView::hideArtistInfo() {
+void InfoView::hideArtistInfo()
+{
     qDebug() << "hide artist info";
     if (hide) {
         ui->artistFrame->setVisible(false);
@@ -117,7 +118,20 @@ void InfoView::hideArtistInfo() {
     }
 }
 
-void InfoView::setAlbumInfo(QString info) {
+void InfoView::setArtistTagInfo(QStringList tags)
+{
+    QString htmlTags;
+
+    for(auto tag : tags)
+    {
+        htmlTags+= "<a href=\""+tag+"\"> "+tag+"</a> ";
+    }
+
+     ui->tagsInfo->setHtml(htmlTags);
+}
+
+void InfoView::setAlbumInfo(QString info)
+{
 
     //qDebug() << info;
     if (info.isEmpty()) {
@@ -141,12 +155,14 @@ void InfoView::setArtistArt(QByteArray array)
     artist->putPixmap(array);
 
 }
+
 void InfoView::setArtistArt(QString url)
 {
     artist->putPixmap(url);
 }
 
-void InfoView::setLyrics(QString lyrics) {
+void InfoView::setLyrics(QString lyrics)
+{
     ui->lyricsText->setHtml(lyrics);
     ui->lyricsLayout->setAlignment(Qt::AlignCenter);
     ui->lyricsFrame->show();
@@ -181,6 +197,7 @@ void InfoView::getTrackInfo(QString _title, QString _artist, QString _album)
         ArtWork artistInfo;
         connect(&coverInfo, SIGNAL(infoReady(QString)), this, SLOT(setAlbumInfo(QString)));
         connect(&artistInfo, SIGNAL(bioReady(QString)), this, SLOT(setArtistInfo(QString)));
+        connect(&artistInfo, SIGNAL(tagsReady(QStringList)), this, SLOT(setArtistTagInfo(QStringList)));
         coverInfo.setDataCoverInfo(_artist,_album);
         artistInfo.setDataHeadInfo(_artist);
 
@@ -193,12 +210,12 @@ void InfoView::getTrackInfo(QString _title, QString _artist, QString _album)
     }
 }
 
-void InfoView::getTrackArt(QString artist, QString album)
+void InfoView::getTrackArt(QString _artist, QString _album)
 {
-    Q_UNUSED(album);
+    Q_UNUSED(_album);
     ArtWork artistHead;
     connect(&artistHead, SIGNAL(headReady(QByteArray)), this, SLOT(setArtistArt(QByteArray)));
-    artistHead.setDataHead(artist);
+    artistHead.setDataHead(_artist);
 }
 
 
@@ -210,4 +227,9 @@ void InfoView::on_toolButton_clicked()
 
     if(!artist.isEmpty()&&!title.isEmpty())
         lyrics->setData(artist,title);
+}
+
+void InfoView::on_tagsInfo_anchorClicked(const QUrl &arg1)
+{
+    qDebug()<<arg1.toString();
 }

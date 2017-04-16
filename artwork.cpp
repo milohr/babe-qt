@@ -384,10 +384,12 @@ void ArtWork::setDataCoverInfo(QString artist, QString album) {
     }
 }
 
-void ArtWork::setDataHeadInfo(QString artist) {
-    this->artist = artist;
+void ArtWork::setDataHeadInfo(QString _artist)
+{
+    this->artist = _artist;
 
-    if (this->artist.size() != 0) {
+    if (this->artist.size() != 0)
+    {
         url.append("?method=artist.getinfo");
         url.append("&api_key=ba6f0bd3c887da9101c10a50cf2af133");
 
@@ -544,7 +546,8 @@ void ArtWork::jsonInfo(QNetworkReply *reply)
 
 
 void ArtWork::xmlInfo(QNetworkReply *reply) {
-    if (reply->error() == QNetworkReply::NoError) {
+    if (reply->error() == QNetworkReply::NoError)
+    {
         QByteArray bts = reply->readAll();
         QString xmlData(bts);
         // qDebug()<<xmlData;
@@ -643,7 +646,9 @@ void ArtWork::xmlInfo(QNetworkReply *reply) {
                 }
 
 
-            }else if (type == ALBUM_INFO) {
+            }else if (type == ALBUM_INFO)
+            {
+                QString info;
                 const QDomNodeList list2 =
                         doc.documentElement().namedItem("album").childNodes();
 
@@ -652,7 +657,7 @@ void ArtWork::xmlInfo(QNetworkReply *reply) {
                     if (n.isElement()) {
                         if (n.nodeName() == "wiki") {
                             // qDebug()<<n.nodeName();
-                            info = n.childNodes().item(1).toElement().text();
+                           info = n.childNodes().item(1).toElement().text();
                             // qDebug()<<n.firstChildElement().toElement().text();
                             // <<n.toElement().text();
                         }
@@ -723,29 +728,44 @@ void ArtWork::xmlInfo(QNetworkReply *reply) {
                 selectHead(artistHead);
 
 
-            } else if (type == ARTIST_INFO) {
-                const QDomNodeList list4 =
-                        doc.documentElement().namedItem("artist").childNodes();
+            } else if (type == ARTIST_INFO)
+            {
+                QString bio;
+                QStringList tags;
+                const QDomNodeList nodeList = doc.documentElement().namedItem("artist").childNodes();
 
-                for (int i = 0; i < list4.count(); i++) {
-                    QDomNode n = list4.item(i);
-                    if (n.isElement()) {
-                        if (n.nodeName() == "bio") {
+                for (int i = 0; i < nodeList.count(); i++)
+                {
+                    QDomNode n = nodeList.item(i);
+                    if (n.isElement())
+                    {
+                        if (n.nodeName() == "bio")
+                        {
                             // qDebug()<<n.nodeName();
-                            bio = n.childNodes().item(2).toElement().text();
+                             bio = n.childNodes().item(2).toElement().text();
                             // qDebug()<<n.firstChildElement().toElement().text();
                             // <<n.toElement().text();
+                        }
+
+                        if(n.nodeName() == "similar")
+                        {
+                            auto similarList = n.toElement().childNodes();
+
+                             for(int i=0; i<similarList.count(); i++)
+                             {
+                                 QDomNode m = similarList.item(i);
+                                 tags<<m.childNodes().item(0).toElement().text();
+                                 qDebug()<<m.childNodes().item(0).toElement().text();
+                             }
                         }
                     }
                 }
 
-                if (bio.isEmpty()) {
-                    qDebug() << "Could not find "
-                             << " head info "
-                                "for \""
-                             << artist << "\".";
-                }
+                if (bio.isEmpty()) qDebug()<<"Could not find head info for: "<<artist;
+                if (tags.isEmpty()) qDebug()<<"Could not find head tags for: "<<artist;
+
                 emit bioReady(bio);
+                emit tagsReady(tags);
                 // selectHead(artistHead);
             }
         }
@@ -801,7 +821,5 @@ void ArtWork::selectHead(QString url) {
     emit headReady(downloaded);
 }
 
-void ArtWork::selectInfo(QString info) { this->info = info; }
 
-QString ArtWork::getInfo() { return info; }
 

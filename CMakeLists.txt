@@ -70,7 +70,6 @@ set (
    albumsview.cpp
    scrolltext.cpp
    playlistsview.cpp
-   colortag.cpp
    taginfo.cpp
    artwork.cpp
    infoview.cpp
@@ -78,7 +77,7 @@ set (
    mpris2.cpp
    notify.cpp
    youtube.cpp
-   form.cpp
+   metadataForm.cpp
    )
 
    
@@ -112,7 +111,7 @@ ki18n_wrap_ui (
    settings.ui
    about.ui
    infoview.ui
-   form.ui
+   metadataForm.ui
    )
 
 qt5_add_resources (
