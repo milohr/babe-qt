@@ -130,6 +130,41 @@ QList<QMap<int, QString>> CollectionDB::getTrackData(QStringList urls)
     return mapList;
 }
 
+QList<QMap<int, QString>> CollectionDB::getTrackData(QString queryText)
+{
+    QList<QMap<int, QString>> mapList;
+    QSqlQuery query;
+    query.prepare(queryText);
+   // qDebug()<<queryText;
+    if(query.exec())
+    {
+        //qDebug()<<"getTrackData query passed";
+        while(query.next())
+        {
+            QString track = query.value(TRACK).toString();
+            QString title = query.value(TITLE).toString();
+            QString artist = query.value(ARTIST).toString();
+            QString album = query.value(ALBUM).toString();
+            QString genre = query.value(GENRE).toString();
+            QString location = query.value(LOCATION).toString();
+            QString stars = query.value(STARS).toString();
+            QString babe = query.value(BABE).toString();
+            QString art = query.value(ART).toString();
+            QString playlist = query.value(PLAYLIST).toString();
+            QString played = query.value(PLAYED).toString();
+
+           // qDebug()<<track<<title<<artist<<album;
+
+            const QMap<int, QString> map{{TRACK,track}, {TITLE,title}, {ARTIST,artist},{ALBUM,album},{GENRE,genre},{LOCATION,location},{STARS,stars},{BABE,babe},{ART,art},{PLAYED,played},{PLAYLIST,playlist}};
+
+            mapList<<map;
+        }
+    }
+
+    return mapList;
+}
+
+
 void CollectionDB::cleanCollectionLists()
 {
     QSqlQuery queryArtists("SELECT * FROM artists");

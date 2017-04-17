@@ -207,10 +207,8 @@ private:
     QList<QMap<int,QString>> queue_list;
     QMediaPlayer *player = new QMediaPlayer();
     QTimer *updater = new QTimer(this);
-    QString current_song_url;
-    QString current_title;
-    QString current_album;
-    QString current_artist;
+    QMap<int, QString> current_song;
+
     QSlider *seekBar;
     QLabel *addMusicImg;
     int mini_mode=0;

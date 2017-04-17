@@ -12,15 +12,18 @@
 #include <QMenu>
 #include <QPainter>
 #include <QFileDialog>
+#include <QDrag>
+#include <QMimeData>
+#include <QApplication>
 #include "baeUtils.h"
 #include "scrolltext.h"
 
 class Album : public QLabel
 {
     Q_OBJECT
-public:
 
-    explicit Album(QString imagePath, int widgetSize, int widgetRadius=0, bool isDraggable=false, bool plain=false, QWidget *parent = 0);
+public:
+    explicit Album(QString imagePath, int widgetSize, int widgetRadius=0, bool isDraggable=false, QWidget *parent = 0);
     ~Album(){}
     void setArtist(QString artist);
     void setAlbum(QString album);
@@ -42,12 +45,8 @@ public:
     QPixmap getPixmap();
     QToolButton *playBtn;
 
-
-
 private:
-
     bool draggable;
-    bool isPlain=false;
     QString imagePath;
     QString artist="";
     QString album="";
@@ -55,7 +54,8 @@ private:
     ScrollText *title;
 
     QPoint oldPos;
-
+    QPoint startPos;
+    void performDrag();
 
 signals:
     void albumCoverClicked(QStringList info);
@@ -76,11 +76,11 @@ public slots:
 
 protected:
 
-    virtual void mousePressEvent ( QMouseEvent * evt);
+    virtual void mousePressEvent (QMouseEvent * event);
+    virtual void mouseMoveEvent(QMouseEvent *event);
     virtual void enterEvent(QEvent *event);
     virtual void leaveEvent(QEvent *event);
-
-    virtual void paintEvent(QPaintEvent *e);
+    virtual void paintEvent(QPaintEvent *event);
 
     // virtual void  mouseMoveEvent(QMouseEvent *evt);
 };

@@ -45,7 +45,7 @@ public:
     const QString cachePath=BaeUtils::getCachePath();
     const QString youtubeCachePath=BaeUtils::getYoutubeCachePath();
     const QString extensionFetchingPath=BaeUtils::getExtensionFetchingPath();
-
+    const QStringList formats {"*.mp4","*.mp3","*.wav","*.flac","*.ogg","*.m4a"};
     bool checkCollection();
     void createCollectionDB();
     CollectionDB &getCollectionDB();

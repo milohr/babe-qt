@@ -124,7 +124,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     layout->addWidget(line_h,1,0,Qt::AlignBottom);
     layout->addWidget(albumBox_frame,2,0,Qt::AlignBottom);
 
-    cover = new Album(":Data/data/cover.svg",120,0,false,false,this);
+    cover = new Album(":Data/data/cover.svg",120,0,true,this);
     connect(cover,SIGNAL(playAlbum(QString , QString)),this,SLOT(playAlbum_clicked(QString, QString)));
     connect(cover,SIGNAL(changedArt(QString, QString , QString)),this,SLOT(changedArt_cover(QString, QString, QString)));
     connect(cover,SIGNAL(babeAlbum_clicked(QString, QString)),this,SLOT(babeAlbum(QString, QString)));
@@ -170,9 +170,6 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
         albumBox->addWidget(albumTable,0,2);
 
     }
-
-
-
 
     albumBox_frame->hide();
     line_h->hide();
@@ -262,7 +259,7 @@ void AlbumsView::populateTableView(QSqlQuery query)
             if(!query.value(ART).toString().isEmpty()&&query.value(ART).toString()!="NULL")
                 art = query.value(ART).toString();
 
-            auto artwork= new Album(art,albumSize,4,false,false,this);
+            auto artwork= new Album(art,albumSize,4,true,this);
 
             artwork->borderColor=true;
             artwork->setArtist(artist);
@@ -327,7 +324,7 @@ void AlbumsView::populateTableViewHeads(QSqlQuery query)
             if(!query.value(1).toString().isEmpty()&&query.value(1).toString()!="NULL")
                 art=(query.value(1).toString());
 
-            Album *album= new Album(art,albumSize,4,false,false,this);
+            Album *album= new Album(art,albumSize,4,true,this);
 
 
             album->borderColor=true;
@@ -450,7 +447,6 @@ void AlbumsView::getAlbumInfo(QStringList info)
         if(!queryCover.value(2).toString().isEmpty()&&queryCover.value(2).toString()!="NULL") cover->putPixmap( queryCover.value(2).toString());
 
     }
-
 }
 
 void AlbumsView::albumTable_clicked(QStringList list)

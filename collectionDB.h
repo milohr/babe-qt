@@ -36,6 +36,7 @@ public:
     bool check_existance(QString tableName, QString searchId, QString search);
     void createTable(QString tableName);
     QList<QMap<int, QString>> getTrackData(QStringList urls);
+    QList<QMap<int, QString>> getTrackData(QString queryText);
     QStringList getPlaylists();
     QStringList getPlaylistsMoods();
     QStringList albums;

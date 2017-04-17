@@ -22,7 +22,7 @@
 
 InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView) {
     ui->setupUi(this);
-    artist = new Album(":Data/data/cover.png", 120, 100,false,false,this);
+    artist = new Album(":Data/data/cover.png", 120, 100,false,this);
     connect(artist,SIGNAL(playAlbum(QString , QString)),this,SLOT(playAlbum_clicked(QString, QString)));
 
     ui->lyricsText->setLineWrapMode(QTextEdit::NoWrap);

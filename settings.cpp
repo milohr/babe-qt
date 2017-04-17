@@ -468,13 +468,7 @@ void settings::populateDB(QString path) {
     if (QFileInfo(path).isDir())
 
     {
-        QDirIterator it(path, QStringList() << "*.mp4"
-                        << "*.mp3"
-                        << "*.wav"
-                        << "*.flac"
-                        << "*.ogg"
-                        << "*.m4a",
-                        QDir::Files, QDirIterator::Subdirectories);
+        QDirIterator it(path, formats, QDir::Files, QDirIterator::Subdirectories);
 
         while (it.hasNext()) {
             urlCollection << it.next();
