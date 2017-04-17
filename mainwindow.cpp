@@ -370,11 +370,14 @@ void MainWindow::setUpPlaylist()
     ui->refreshBtn->setPopupMode(QToolButton::MenuButtonPopup);
 
     auto clearIt = new QAction("Clear list...");
-    connect(clearIt, &QAction::triggered, [this]() {
+    connect(clearIt, &QAction::triggered, [this]()
+    {
+        album_art->putPixmap(QString(":Data/data/cover.svg"));
         this->mainList->flushTable();
         lCounter=-1;
         player->stop();
-        album_art->putDefaultPixmap();
+
+        //album_art->putDefaultPixmap();
 
     });
     refreshBtn_menu->addAction(clearIt);

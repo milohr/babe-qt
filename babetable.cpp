@@ -877,17 +877,16 @@ void BabeTable::moodIt_action(QString color)
         query.prepare("UPDATE tracks SET art = (:art) WHERE location = (:location)" );
         //query.prepare("SELECT * FROM "+tableName+" WHERE "+searchId+" = (:search)");
         query.bindValue(":art",  color);
-        query.bindValue(":location", this->model()->data(this->model()->index(rRow, LOCATION)).toString());
+        query.bindValue(":location", this->getRowData(rRow)[LOCATION]);
 
         if(query.exec())
         {
             qDebug()<<"Art[color] inserted into DB"<< color;
+
             emit moodIt_clicked(color);
 
-        }else
-        {
-            qDebug()<<"COULDN'T insert art[color] into DB";
-        }
+        }else qDebug()<<"COULDN'T insert art[color] into DB";
+
     }
 
 
