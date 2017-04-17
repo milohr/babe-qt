@@ -124,9 +124,7 @@ QList<QMap<int, QString>> CollectionDB::getTrackData(QStringList urls)
 
                 mapList<<map;
             }
-
         }
-
     }
 
     return mapList;
@@ -134,8 +132,6 @@ QList<QMap<int, QString>> CollectionDB::getTrackData(QStringList urls)
 
 void CollectionDB::cleanCollectionLists()
 {
-
-
     QSqlQuery queryArtists("SELECT * FROM artists");
     if(queryArtists.exec())
     {
@@ -143,15 +139,13 @@ void CollectionDB::cleanCollectionLists()
         {
             QString  oldArtists = queryArtists.value(0).toString();
             if(artists.contains(oldArtists))
-            {
                 continue;
-            }else
+            else
             {
-                qDebug()<<"artists list does not longer contains"<<oldArtists;
+                qDebug()<<"artists list does not longer contains: "<<oldArtists;
                 QSqlQuery queryArtist_delete;
                 queryArtist_delete.prepare("DELETE FROM artists  WHERE title = \""+oldArtists+"\"");
-                if(queryArtist_delete.exec()) qDebug()<<"deleted gone album";
-
+                if(queryArtist_delete.exec()) qDebug()<<"deleted missing artist";
             }
         }
     }
@@ -163,19 +157,16 @@ void CollectionDB::cleanCollectionLists()
         {
             QString  oldAlbum = queryAlbums.value(1).toString()+" "+queryAlbums.value(0).toString();
             if(albums.contains(oldAlbum))
-            {
                 continue;
-            }else
+            else
             {
-                qDebug()<<"albums list does not longer contains"<<oldAlbum;
+                qDebug()<<"albums list does not longer contains: "<<oldAlbum;
                 QSqlQuery queryAlbum_delete;
                 queryAlbum_delete.prepare("DELETE FROM albums  WHERE title = \""+queryAlbums.value(0).toString()+"\"");
-                if(queryAlbum_delete.exec()) qDebug()<<"deleted gone album";
+                if(queryAlbum_delete.exec()) qDebug()<<"deleted missing album";
             }
         }
     }
-
-
 }
 
 
@@ -193,12 +184,9 @@ bool CollectionDB::removeQuery(QString queryTxt)
     QSqlQuery query;
     query.prepare(queryTxt);
 
-    bool success = query.exec();
-
-    if(!success)
+    if(!query.exec())
     {
-        qDebug() << "removePerson error: "
-                 << query.lastError();
+        qDebug() << "removeQuery error: "<< query.lastError();
         return false;
     }else return true;
 }
@@ -210,24 +198,9 @@ bool CollectionDB::checkQuery(QString queryTxt)
     qDebug()<<"The Query is: "<<queryTxt;
 
     if (query.exec())
-    {
-        if (query.next())
-        {
-            qDebug()<< "found the query";
-            return true;
-        }else
-        {
-            qDebug()<<"didn't find the query!";
-            return false;
-        }
-    }else
-    {
-        qDebug()<<"the query failed!";
-
-        return false;
-    }
-
-
+        if (query.next()) return true;
+        else return false;
+    else return false;
 }
 
 void CollectionDB::setCollectionLists()
@@ -254,10 +227,7 @@ void CollectionDB::refreshArtistsTable()
 {
     QSqlQuery query ("SELECT * FROM tracks");
 
-
     qDebug()<<"updating artists table";
-
-
 
     if(query.exec())
     {
@@ -275,11 +245,7 @@ void CollectionDB::refreshArtistsTable()
                 if(query.exec()) artists<<artist;
             }
         }
-
-
     }
-
-
 }
 
 bool CollectionDB::addTrack(QStringList paths, int babe)
@@ -288,21 +254,19 @@ bool CollectionDB::addTrack(QStringList paths, int babe)
 
     if(paths.isEmpty()) return false;
 
-
     QSqlQuery query;
-
 
     if(query.exec("PRAGMA synchronous=OFF"))
     {
         success=true;
 
         int i=0;
-        qDebug()<<"started wrrting to database...";
+        qDebug()<<"started writing to database...";
         for(auto file:paths)
         {
             qDebug()<<file;
-
             TagInfo info(file);
+
             int track;
             QString  title, artist, album, genre;
             // you should check if args are ok first...
@@ -313,16 +277,14 @@ bool CollectionDB::addTrack(QStringList paths, int babe)
 
             if(info.getAlbum().isEmpty())
             {
-                qDebug()<<"the album has not title, so i'm going to try and get it for you";
+                qDebug()<<"the album has not title, so i'm going to try and get it.";
                 info.writeData();
                 album=info.getAlbum();
-            }else
-            {
-                qDebug()<<"the album has a title";
-                album=info.getAlbum();
-            }
+
+            }else album=info.getAlbum();
 
             album=BaeUtils::fixString(album);
+
             query.prepare("INSERT INTO tracks (track, title, artist, album, genre, location, stars, babe, art, played)" "VALUES (:track, :title, :artist, :album, :genre, :location, :stars, :babe, :art, :played) ");
             query.bindValue(":track", track);
             query.bindValue(":title", title);
@@ -332,14 +294,13 @@ bool CollectionDB::addTrack(QStringList paths, int babe)
             query.bindValue(":location", file);
             query.bindValue(":stars", 0);
             query.bindValue(":babe", babe);
-            query.bindValue(":art", "");//here need to fecth the artwork
+            query.bindValue(":art", "");
             query.bindValue(":played", 0);
-
 
             if(query.exec())
             {
                 success = true;
-                qDebug()<< "writting to db: "<<info.getTitle();
+                qDebug()<< "writting to db: "<< title;
                 if(!albums.contains(artist+" "+album))
                 {
                     query.prepare("INSERT INTO albums (title, artist, art, location)" "VALUES (:title, :artist, :art, :location)");
@@ -350,7 +311,7 @@ bool CollectionDB::addTrack(QStringList paths, int babe)
                     if(query.exec())
                     {
                         albums<<artist+" "+album;
-                        success=true;
+                        success = true;
                     }else
                     {
                         return false;
@@ -380,11 +341,7 @@ bool CollectionDB::addTrack(QStringList paths, int babe)
         qDebug()<<"finished wrrting to database";
         emit DBactionFinished(true);
     }
-    else
-    {
-        return false;
-    }
-
+    else return false;
 
     return success;
 }
@@ -434,53 +391,8 @@ void CollectionDB::insertHeadArt(QString path, QStringList info)
     }
 }
 
-void CollectionDB::addSong(QStringList paths, int babe=0)//deprecared
-{
-    //bool success = false;
 
-
-    QSqlQuery query;
-
-
-    qDebug()<<"started wrrting to database...";
-    for(auto file:paths)
-    {
-        TagInfo info(file);
-
-        // you should check if args are ok first...
-
-        query.prepare("INSERT INTO tracks (track, title, artist, album, genre, location, stars, babe, art, played)" "VALUES (:track, :title, :artist, :album, :genre, :location, :stars, :babe, :art, :played) ");
-        query.bindValue(":track", info.getTrack());
-        query.bindValue(":title", info.getTitle());
-        query.bindValue(":artist", info.getArtist());
-        query.bindValue(":album", info.getAlbum());
-        query.bindValue(":genre", info.getGenre());
-        query.bindValue(":location", file);
-        query.bindValue(":stars", 0);
-        query.bindValue(":babe", babe);
-        query.bindValue(":art", "");//here need to fecth the artwork
-        query.bindValue(":played", 0);
-
-        if(query.exec())
-        {
-            //success = true;
-            qDebug()<< "writting to db: "<<info.getTitle();
-        }
-        else
-        {
-            qDebug() << "addPerson error:  "
-                     << query.lastError();
-        }
-
-
-    }
-
-    qDebug()<<"single song added to database";
-
-}
-
-
-void CollectionDB::setTrackList(QList <Track> trackList)
+void CollectionDB::setTrackList(QList<Track> trackList)
 {
     this->trackList=trackList;
 

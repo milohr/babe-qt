@@ -20,7 +20,6 @@
 #include <QStringList>
 #include <QMenu>
 
-
 #include <QPixmap>
 #include <QDir>
 #include <QDirIterator>
@@ -39,8 +38,6 @@
 #include "playlist.h"
 #include "settings.h"
 #include "collectionDB.h"
-
-
 
 
 namespace Ui {

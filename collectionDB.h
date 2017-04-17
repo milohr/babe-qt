@@ -34,7 +34,6 @@ public:
     bool removeQuery(QString queryTxt);
     bool execQuery(QString queryTxt);
     bool check_existance(QString tableName, QString searchId, QString search);
-    void addSong(QStringList paths, int babe);
     void createTable(QString tableName);
     QList<QMap<int, QString>> getTrackData(QStringList urls);
     QStringList getPlaylists();

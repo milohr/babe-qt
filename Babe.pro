@@ -67,7 +67,8 @@ SOURCES += main.cpp\
     notify.cpp \
     youtube.cpp \
     metadataForm.cpp \
-    onlineview.cpp
+    onlineview.cpp \
+    web_jgm90.cpp
 
 HEADERS  += mainwindow.h \
             playlist.h \
@@ -89,7 +90,8 @@ HEADERS  += mainwindow.h \
     youtube.h \
     baeUtils.h \
     metadataForm.h \
-    onlineview.h
+    onlineview.h \
+    web_jgm90.h
 
 FORMS    += mainwindow.ui \
     settings.ui \

@@ -48,7 +48,7 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView) {
     artistCLayout->addWidget(artist);
     artistCLayout->addWidget(right_spacer);
     artistContainer->setLayout(artistCLayout);
-    artistContainer->setMaximumSize(200, 130);
+    artistContainer->setMaximumSize(200, 128);
     ui->artistLayout->insertWidget(0, artistContainer);
 
     infoUtils = new QWidget();

@@ -374,7 +374,7 @@
             <property name="maximumSize">
              <size>
               <width>16777215</width>
-              <height>80</height>
+              <height>70</height>
              </size>
             </property>
             <property name="font">
@@ -385,6 +385,9 @@
             </property>
             <property name="autoFillBackground">
              <bool>true</bool>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QTextBrowser{ background:transparent;}</string>
             </property>
             <property name="frameShape">
              <enum>QFrame::NoFrame</enum>
