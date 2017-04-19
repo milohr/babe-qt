@@ -61,13 +61,32 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView) {
     auto infoUtils_layout = new QHBoxLayout();
     infoUtils_layout->setContentsMargins(0, 0, 0, 0);
     infoUtils_layout->setSpacing(0);
-    auto similarBtn = new QToolButton();
+
+    auto similarBtn = new QToolButton();    
+    connect(similarBtn, &QToolButton::clicked, [this]()
+    {
+        auto list = ui->similarArtistInfo->toPlainText().trimmed().split(",");
+        QStringList query;
+        for (auto tag : list) query << QString("artist:"+tag).trimmed();
+       emit similarBtnClicked(query);
+    });
+
     similarBtn->setAutoRaise(true);
     similarBtn->setIcon(QIcon::fromTheme("similarartists-amarok"));
+    similarBtn->setToolTip("Similar artists...");
 
     auto moreBtn = new QToolButton();
+    connect(moreBtn, &QToolButton::clicked, [this]()
+    {
+        auto list = ui->tagsInfo->toPlainText().split(",");
+        QStringList query;
+        for (auto tag : list) query <<tag.trimmed();
+       emit tagsBtnClicked(query);
+    });
+
     moreBtn->setAutoRaise(true);
     moreBtn->setIcon(QIcon::fromTheme("filename-discnumber-amarok"));
+    moreBtn->setToolTip("Similar tags...");
 
 
     hideBtn = new QToolButton();
@@ -93,6 +112,9 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView) {
     //ui->searchBtn->setVisible(false);
 
     ui->tagsInfo->setOpenLinks(false);
+    ui->tagsInfo->setStyleSheet("QTextBrowser{background: transparent;}");
+
+    ui->similarArtistInfo->setOpenLinks(false);
 
 }
 
@@ -130,8 +152,21 @@ void InfoView::setArtistTagInfo(QStringList tags)
         htmlTags+= "<a href=\""+tag+"\"> "+tag+"</a> , ";
     }
 
+     ui->similarArtistInfo->setHtml(htmlTags);
+}
+
+void InfoView::setTagsInfo(QStringList tags)
+{
+    QString htmlTags;
+
+    for(auto tag : tags)
+    {
+        htmlTags+= "<a href=\""+tag+"\"> "+tag+"</a> , ";
+    }
+
      ui->tagsInfo->setHtml(htmlTags);
 }
+
 
 void InfoView::setAlbumInfo(QString info)
 {
@@ -200,7 +235,9 @@ void InfoView::getTrackInfo(QString _title, QString _artist, QString _album)
         ArtWork artistInfo;
         connect(&coverInfo, SIGNAL(infoReady(QString)), this, SLOT(setAlbumInfo(QString)));
         connect(&artistInfo, SIGNAL(bioReady(QString)), this, SLOT(setArtistInfo(QString)));
-        connect(&artistInfo, SIGNAL(tagsReady(QStringList)), this, SLOT(setArtistTagInfo(QStringList)));
+        connect(&artistInfo, SIGNAL(similarArtistsReady(QStringList)), this, SLOT(setArtistTagInfo(QStringList)));
+        connect(&artistInfo, SIGNAL(tagsReady(QStringList)), this, SLOT(setTagsInfo(QStringList)));
+
         coverInfo.setDataCoverInfo(_artist,_album);
         artistInfo.setDataHeadInfo(_artist);
 
@@ -232,8 +269,15 @@ void InfoView::on_toolButton_clicked()
         lyrics->setData(artist,title);
 }
 
+
 void InfoView::on_tagsInfo_anchorClicked(const QUrl &arg1)
 {
-    qDebug()<<arg1.toString();
-    emit tagClicked(arg1.toString());
+    QString query = arg1.toString();
+    emit tagClicked(query);
+}
+
+void InfoView::on_similarArtistInfo_anchorClicked(const QUrl &arg1)
+{
+    QString query = "artist:"+arg1.toString();
+    emit similarArtistTagClicked(query);
 }

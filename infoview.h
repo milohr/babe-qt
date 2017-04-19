@@ -45,6 +45,7 @@ public slots:
     void setLyrics(QString lyrics);
     void setArtistInfo(QString info);
     void setArtistTagInfo(QStringList tags);
+    void setTagsInfo(QStringList);
     void hideArtistInfo();
     void playAlbum_clicked(QString artist, QString album);
     void getTrackInfo(QString _title, QString _artist, QString _album);
@@ -55,11 +56,16 @@ signals:
 
     void playAlbum(QString artist, QString album);
     void tagClicked(QString tag);
+    void similarArtistTagClicked(QString tag);
+    void similarBtnClicked(QStringList similar);
+    void tagsBtnClicked(QStringList similar);
+
 
 private slots:
 
     void on_toolButton_clicked();
     void on_tagsInfo_anchorClicked(const QUrl &arg1);
+    void on_similarArtistInfo_anchorClicked(const QUrl &arg1);
 };
 
 #endif // INFOVIEW_H

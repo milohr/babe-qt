@@ -57,6 +57,8 @@ public:
     void populateMainList();
     void clearCurrentList();
     bool isBabed(QString url);
+    QStringList searchKeys = {"location:","artist:","album:","title:","genre:" };
+
 
     enum views
     {
@@ -88,7 +90,8 @@ public slots:
     void putPixmap(QByteArray array);
     void changedArt(QString path, QString artist, QString album);
     void babeAlbum(QString album, QString artist);
-    void searchFor(QString searchQuery);
+    void populateResults(QList<QMap<int,QString>> mapList);
+    QList<QMap<int,QString>> searchFor(QStringList queries);
     void dummy();
 
 private slots:

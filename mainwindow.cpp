@@ -93,6 +93,8 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+
+//*HERE THE MAIN VIEWS GET SETUP WITH THEIR SIGNALS AND SLOTS**//
 void MainWindow::setUpViews()
 {
     settings_widget = new settings(this); //this needs to go first
@@ -136,7 +138,7 @@ void MainWindow::setUpViews()
     connect(mainList->model() ,SIGNAL(rowsInserted(QModelIndex,int,int)),this,SLOT(on_rowInserted(QModelIndex,int,int)));
     
     resultsTable=new BabeTable(this);
-    //resultsTable->passStyle("QHeaderView::section { background-color:#474747; }");
+    resultsTable->passStyle("QHeaderView::section { background-color:#575757; color:white; }");
     resultsTable->setVisibleColumn(BabeTable::STARS);
     resultsTable->showColumn(BabeTable::GENRE);
     connect(resultsTable,SIGNAL(tableWidget_doubleClicked(QList<QMap<int, QString>>)),this,SLOT(addToPlaylist(QList<QMap<int, QString>>)));
@@ -179,8 +181,11 @@ void MainWindow::setUpViews()
     
     infoTable = new InfoView(this);
     connect(infoTable,SIGNAL(playAlbum(QString, QString)),this,SLOT(putOnPlay(QString, QString)));
-    connect(infoTable,SIGNAL(tagClicked(QString)),this,SLOT(searchFor(QString))); //?
-    
+    connect(infoTable, &InfoView::similarBtnClicked,[this](QStringList queries) { this->ui->search->setText(queries.join(",")); });
+    connect(infoTable, &InfoView::tagsBtnClicked,[this](QStringList queries) { this->ui->search->setText(queries.join(",")); });
+    connect(infoTable, &InfoView::tagClicked,[this](QString query) { this->ui->search->setText(query);});
+    connect(infoTable, &InfoView::similarArtistTagClicked,[this](QString query) { this->ui->search->setText(query);});
+
     settings_widget->readSettings();
     setToolbarIconSize(settings_widget->getToolbarIconSize());
     connect(settings_widget, SIGNAL(toolbarIconSizeChanged(int)), this, SLOT(setToolbarIconSize(int)));
@@ -722,7 +727,7 @@ void MainWindow::setToolbarIconSize(int iconSize)
             //static_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
         }
     }*/
-            //playback->update();
+    //playback->update();
     // this->update();
 }
 
@@ -1588,83 +1593,7 @@ void  MainWindow::clearCurrentList()
 
 void MainWindow::on_search_returnPressed()
 {
-    if(!ui->search->text().isEmpty()) views->setCurrentIndex(RESULTS);
-    else views->setCurrentIndex(prevIndex);
-}
-
-void MainWindow::on_search_textChanged(const QString &arg1)
-{
-    QString search=arg1;
-    this->searchFor(search);
-}
-
-
-
-void MainWindow::searchFor(QString searchQuery)
-{
-    QStringList keys = {"location:","artist:","album:","title:","genre:" };
-    QString key;
-
-
-    for(auto k : keys)
-    {
-        
-        if(searchQuery.contains(k))
-        {
-            key=k;
-            qDebug()<<"search contains key: "<<key;
-            searchQuery.replace(k,"");
-        }
-    }
-    
-    
-    qDebug()<<"Searching for: "<<searchQuery;
-    //int oldIndex = views->currentIndex();
-    //qDebug()<<oldIndex;
-    utilsBar->actions().at(ALBUMS_UB)->setVisible(false);
-    
-
-    if(!searchQuery.isEmpty())
-    {
-        views->setCurrentIndex(RESULTS);
-        if(prevIndex==PLAYLISTS) {utilsBar->actions().at(PLAYLISTS_UB)->setVisible(false); ui->frame_3->setVisible(false);}
-        
-        resultsTable->flushTable();
-        
-        if(key=="location:")
-        {
-            resultsTable->populateTableView("SELECT * FROM tracks WHERE location LIKE \"%"+searchQuery+"%\"");
-            ui->search->setBackgroundRole(QPalette :: Dark);
-        }else if(key== "artist:")
-        {
-            resultsTable->populateTableView("SELECT * FROM tracks WHERE artist LIKE \"%"+searchQuery+"%\"");
-            ui->search->setBackgroundRole(QPalette :: Dark);
-        }else if(key== "album:")
-        {
-            resultsTable->populateTableView("SELECT * FROM tracks WHERE album LIKE \"%"+searchQuery+"%\"");
-            ui->search->setBackgroundRole(QPalette :: Dark);
-            
-        }else if(key=="title:")
-        {
-            resultsTable->populateTableView("SELECT * FROM tracks WHERE title LIKE \"%"+searchQuery+"%\"");
-            ui->search->setBackgroundRole(QPalette :: Dark);
-        }else if(key==  "genre:")
-        {
-            resultsTable->populateTableView("SELECT * FROM tracks WHERE genre LIKE \"%"+searchQuery+"%\"");
-            //ui->search->setStyleSheet("background-color:#e3f4d7;");
-            ui->search->setBackgroundRole(QPalette :: Dark);
-        }else
-        {
-            resultsTable->populateTableView("SELECT * FROM tracks WHERE title LIKE \"%"+searchQuery+"%\" OR artist LIKE \"%"+searchQuery+"%\" OR album LIKE \"%"+searchQuery+"%\"OR genre LIKE \"%"+searchQuery+"%\"");
-            //ui->search->setStyleSheet("background-color:transparent;");
-            ui->search->setBackgroundRole(QPalette :: Light);
-        }
-        
-        //ui->saveResults->setEnabled(true);
-        ui->refreshAll->setEnabled(false);
-        // prevIndex= views->currentIndex();
-        
-    }else
+    if(resultsTable->rowCount()<1)
     {
         views->setCurrentIndex(prevIndex);
         if(views->currentIndex()==ALBUMS)  utilsBar->actions().at(ALBUMS_UB)->setVisible(true);;
@@ -1672,7 +1601,76 @@ void MainWindow::searchFor(QString searchQuery)
         resultsTable->flushTable();
         // ui->saveResults->setEnabled(false);
         ui->refreshAll->setEnabled(true);
+    }else views->setCurrentIndex(RESULTS);
+}
+
+void MainWindow::on_search_textChanged(const QString &arg1)
+{
+
+    if(!ui->search->text().isEmpty())
+    {
+        QStringList searchList=arg1.split(",");
+
+        auto searchResults = searchFor(searchList);
+
+        if(!searchResults.isEmpty()) populateResults(searchResults);
+
+    }else views->setCurrentIndex(prevIndex);
+
+
+}
+
+void MainWindow::populateResults(QList<QMap<int,QString>> mapList)
+{
+    views->setCurrentIndex(RESULTS);
+    utilsBar->actions().at(ALBUMS_UB)->setVisible(false);
+    resultsTable->flushTable();
+    resultsTable->populateTableView(mapList,false);
+
+    ui->refreshAll->setEnabled(false);
+}
+
+QList<QMap<int, QString> > MainWindow::searchFor(QStringList queries)
+{
+    QList<QMap<int,QString>> mapList;
+
+    for(auto searchQuery : queries)
+    {
+
+        QString key;
+
+        for(auto k : this->searchKeys)
+            if(searchQuery.contains(k)) { key=k; searchQuery=searchQuery.replace(k,"").trimmed(); }
+
+        searchQuery=searchQuery.trimmed();
+        qDebug()<<"Searching for: "<<searchQuery;
+
+        if(!searchQuery.isEmpty())
+        {
+            if(prevIndex==PLAYLISTS) {utilsBar->actions().at(PLAYLISTS_UB)->setVisible(false); ui->frame_3->setVisible(false);}
+
+            if(key == "location:")
+                mapList += settings_widget->collection_db.getTrackData(QString("SELECT * FROM tracks WHERE location LIKE \"%"+searchQuery+"%\""));
+
+            else if(key == "artist:")
+                mapList += settings_widget->collection_db.getTrackData(QString("SELECT * FROM tracks WHERE artist LIKE \"%"+searchQuery+"%\""));
+
+            else if(key == "album:")
+                mapList += settings_widget->collection_db.getTrackData(QString("SELECT * FROM tracks WHERE album LIKE \"%"+searchQuery+"%\""));
+
+            else if(key == "title:")
+                mapList += settings_widget->collection_db.getTrackData(QString("SELECT * FROM tracks WHERE title LIKE \"%"+searchQuery+"%\""));
+
+            else if(key==  "genre:")
+                mapList += settings_widget->collection_db.getTrackData(QString("SELECT * FROM tracks WHERE genre LIKE \"%"+searchQuery+"%\""));
+
+            else
+                mapList += settings_widget->collection_db.getTrackData(QString("SELECT * FROM tracks WHERE title LIKE \"%"+searchQuery+"%\" OR artist LIKE \"%"+searchQuery+"%\" OR album LIKE \"%"+searchQuery+"%\"OR genre LIKE \"%"+searchQuery+"%\""));
+
+        }
     }
+
+    return mapList;
 }
 
 

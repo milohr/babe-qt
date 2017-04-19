@@ -732,6 +732,8 @@ void ArtWork::xmlInfo(QNetworkReply *reply) {
             {
                 QString bio;
                 QStringList tags;
+                QStringList similarArtists;
+
                 const QDomNodeList nodeList = doc.documentElement().namedItem("artist").childNodes();
 
                 for (int i = 0; i < nodeList.count(); i++)
@@ -754,6 +756,18 @@ void ArtWork::xmlInfo(QNetworkReply *reply) {
                              for(int i=0; i<similarList.count(); i++)
                              {
                                  QDomNode m = similarList.item(i);
+                                 similarArtists<<m.childNodes().item(0).toElement().text();
+                                 qDebug()<<m.childNodes().item(0).toElement().text();
+                             }
+                        }
+
+                        if(n.nodeName() == "tags")
+                        {
+                            auto tagsList = n.toElement().childNodes();
+
+                             for(int i=0; i<tagsList.count(); i++)
+                             {
+                                 QDomNode m = tagsList.item(i);
                                  tags<<m.childNodes().item(0).toElement().text();
                                  qDebug()<<m.childNodes().item(0).toElement().text();
                              }
@@ -766,6 +780,7 @@ void ArtWork::xmlInfo(QNetworkReply *reply) {
 
                 emit bioReady(bio);
                 emit tagsReady(tags);
+                emit similarArtistsReady(similarArtists);
                 // selectHead(artistHead);
             }
         }

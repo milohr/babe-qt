@@ -72,8 +72,9 @@ signals:
     void headReady(QByteArray array);
     void bioReady(QString bio);
     void tagsReady(QStringList tags);
+    void similarArtistsReady(QStringList tags);
     void infoReady(QString info);
-    void tagsReady(QString list);
+
     void artSaved(QString path,QStringList info);
     void albumTitleReady(QString title);
 

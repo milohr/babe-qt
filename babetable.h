@@ -68,7 +68,9 @@ public:
     QStringList playlistsMenus;
     QStringList colors = {"#F0FF01","#01FF5B","#3DAEFD","#B401FF","#E91E63"};
 
+    void populateTableView(QList<QMap<int,QString>> mapList, bool descriptiveTitle);
     void populateTableView(QString indication, bool descriptiveTitle=false);
+    void removeMissing(QStringList missingFiles);
     void setRating(int rate);
     void passCollectionConnection(CollectionDB *con);
     void setTableOrder(int column, int order);
@@ -77,7 +79,7 @@ public:
     void addRowAt(int row,QMap<int, QString> map, bool descriptiveTooltip);
     void passStyle(QString style);
     void passPlaylists();
-    void  populatePlaylist(QStringList urls, QString playlist);
+    void populatePlaylist(QStringList urls, QString playlist);
     void setAddMusicMsg(QString msg);
     int getIndex();
     //void removeRow(int row);

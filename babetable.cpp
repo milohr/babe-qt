@@ -353,6 +353,67 @@ void BabeTable::addRowAt(int row,QMap<int, QString> map, bool descriptiveTooltip
     if(descriptiveTooltip)
         this->item(row,TITLE)->setToolTip( "by "+map[ARTIST]);
 }
+void BabeTable::populateTableView(QList<QMap<int,QString>> mapList, bool descriptiveTitle)
+{
+
+    qDebug() << "ON POPULATE by mapList";
+
+    this->setSortingEnabled(false);
+    bool missing = false;
+    QStringList missingFiles;
+
+    if(!mapList.isEmpty())
+    {
+        for(auto trackMap : mapList)
+        {
+            QString location = trackMap[LOCATION];
+
+            if (!BaeUtils::fileExists(location))
+            {
+                qDebug() << "That file doesn't exists anymore: "
+                         << location;
+                missingFiles << location;
+                missing = true;
+
+            } else
+            {
+                if(descriptiveTitle) addRow(trackMap,true);
+                else addRow(trackMap);
+            }
+        }
+
+        if (missing) removeMissing(missingFiles);
+
+        this->setSortingEnabled(true);
+        emit finishedPopulating();
+
+    }else qDebug()<<"Error: the mapList was empty";
+
+
+}
+
+void BabeTable::removeMissing(QStringList missingFiles)
+{
+    nof.notifyUrgent("Removing missing files...",missingFiles.join("\n"));
+
+    for (auto file_r : missingFiles)
+    {
+        QString parentDir = QFileInfo(QFileInfo(file_r)).dir().path();
+        if (!BaeUtils::fileExists(parentDir))
+        {
+            qDebug()<<"the parent file doesn't exists"<<parentDir;
+            connection->removePath(parentDir);
+
+        }else
+        {
+            connection->removePath(file_r);
+            qDebug() << "deleted from db: " << file_r;
+        }
+    }
+
+    connection->setCollectionLists();
+    connection->cleanCollectionLists();
+}
 
 void BabeTable::populateTableView(QString indication, bool descriptiveTitle)
 {
@@ -445,40 +506,12 @@ void BabeTable::populateTableView(QString indication, bool descriptiveTitle)
         }
 
 
-        if (missingDialog)
-        {
-            QString parentDir;
-            // QMessageBox::about(this,"Removing missing
-            // files",missingFiles.join("\n"));
-
-            nof.notifyUrgent("Removing missing files...",missingFiles.join("\n"));
-
-            for (auto file_r : missingFiles)
-            {
-                parentDir=QFileInfo(QFileInfo(file_r)).dir().path();
-                if (!BaeUtils::fileExists(parentDir))
-                {
-                    qDebug()<<"the parent file doesn't exists"<<parentDir;
-                    connection->removePath(parentDir);
-
-                }else
-                {
-
-                    connection->removePath(file_r);
-                    qDebug() << "deleted from db: " << file_r;
-                }
-            }
-
-            connection->setCollectionLists();
-            connection->cleanCollectionLists();
-        }
+        if (missingDialog) removeMissing(missingFiles);
 
         this->setSortingEnabled(true);
         emit finishedPopulating();
-    }else
-    {
-        qDebug()<<"Error: the query didn't pass"<<indication;
-    }
+    }else qDebug()<<"Error: the query didn't pass"<<indication;
+
 
 }
 
