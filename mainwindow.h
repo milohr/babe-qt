@@ -211,6 +211,8 @@ private:
     QTimer *updater = new QTimer(this);
 
     QList<QMap<int,QString>> currentList;
+    QList<QMap<int,QString>> queuedList;
+
     QMap<int, QString> current_song;
     QMap<int, QMap<int, QString>> queued_songs;
 

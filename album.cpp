@@ -14,14 +14,12 @@ Album::Album(QString imagePath, int widgetSize, int widgetRadius, bool isDraggab
     this->draggable=isDraggable;
     this->imagePath=imagePath;
 
-
-
     if (!imagePath.isEmpty()) image.load(imagePath);
     //image.scaled(120,120,Qt::KeepAspectRatio);
     //this->setPixmap(image.scaled(size,size,Qt::KeepAspectRatio));
     //this->setToolTip(getTitle());
-    widget = new QWidget(this);
     auto layout = new QHBoxLayout();
+    widget = new QWidget(this);
     widget->setLayout(layout);
     widget->setMinimumWidth(size-2);
     widget->setGeometry(1,size-31,size-2,30);
@@ -29,10 +27,27 @@ Album::Album(QString imagePath, int widgetSize, int widgetRadius, bool isDraggab
     //widget->setStyleSheet( QString(" background: qlineargradient(x1:0, y1:0, x2:0, y2:1,stop:0 rgba(0, 0, 0, 200), stop: 0.4 rgba(0, 0, 0, 150), stop:1 rgb(0, 0, 0, 40)); border-top: 1px solid #333; border-top-left-radius:0; border-top-right-radius:0; border-bottom-right-radius:%1px; border-bottom-left-radius:%2px;").arg( QString::number(border_radius),QString::number(border_radius)));
     widget->setStyleSheet( QString(" background: rgba(0,0,0,150); border-top: 1px solid rgba(%1,%1,%1,120); border-top-left-radius:0; border-top-right-radius:0; border-bottom-right-radius:%2px; border-bottom-left-radius:%3px;").arg( QString::number(this->palette().color(QPalette::WindowText).blue()), QString::number(border_radius-1),QString::number(border_radius-1)));
     //widget->setStyleSheet("background-color: rgba(0,0,0,150); border-top: 1px solid #333;");
+    //this->titleVisible(false);
+
+    title = new ScrollText(this);
+    title->setMaxSize(size+10);
+
+    auto *left_spacer = new QWidget(this);
+    left_spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+    auto *right_spacer = new QWidget(this);
+    right_spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+    title->setStyleSheet("QLabel{background:transparent; color:white; border:none;}");
+    right_spacer->setStyleSheet("background:transparent;  border:none;");
+    left_spacer->setStyleSheet("background:transparent;  border:none;");
+
+    layout->addWidget(left_spacer);
+    layout->addWidget(title);
+    layout->addWidget(right_spacer);
 
     auto contextMenu = new QMenu(this);
     this->setContextMenuPolicy(Qt::ActionsContextMenu);
-
 
     auto babeIt = new QAction("Babe it \xe2\x99\xa1",contextMenu);
     this->addAction(babeIt);
@@ -47,16 +62,6 @@ Album::Album(QString imagePath, int widgetSize, int widgetRadius, bool isDraggab
     connect(removeIt, SIGNAL(triggered()), this, SLOT(removeIt_action()));
     connect(artIt, SIGNAL(triggered()), this, SLOT(artIt_action()));
 
-
-    title = new ScrollText(this);
-    title->setMaxSize(size+10);
-
-    auto *left_spacer = new QWidget(this);
-    left_spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-
-    auto *right_spacer = new QWidget(this);
-    right_spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-
     playBtn = new QToolButton(this);
     connect(playBtn,SIGNAL(clicked()),this,SLOT(playBtn_clicked()));
     playBtn->setIcon(QIcon(":Data/data/playBtn.svg"));
@@ -64,17 +69,7 @@ Album::Album(QString imagePath, int widgetSize, int widgetRadius, bool isDraggab
     playBtn->setGeometry((size/2)-24,(size/2)-24,48,48);
     playBtn->setStyleSheet("QToolButton{border-radius:2px;} QToolButton:hover{background: url(':Data/data/playBtn_hover.svg') top center no-repeat;} ");
     playBtn->setAutoRaise(true);
-    playBtn->hide();
-
-    layout->addWidget(left_spacer);
-    layout->addWidget(title);
-    layout->addWidget(right_spacer);
-
-
-    title->setStyleSheet("QLabel{background:transparent; color:white; border:none;}");
-    right_spacer->setStyleSheet("background:transparent;  border:none;");
-    left_spacer->setStyleSheet("background:transparent;  border:none;");
-
+    playBtn->setVisible(false);
 
 }
 
@@ -229,8 +224,8 @@ void Album::setTitleGeometry(int x, int y, int w, int h)
 }
 void Album::titleVisible(bool state)
 {
-    if(state) widget->show();
-    else widget->hide();
+    if(state) widget->setVisible(true);
+    else widget->setVisible(false);
 }
 
 void Album::mousePressEvent (QMouseEvent * event)
@@ -278,22 +273,23 @@ void Album::performDrag()
     drag->setMimeData(mimeData);
     drag->setPixmap(image.scaled(size/2,size/2,Qt::KeepAspectRatio));
     if (drag->exec(Qt::MoveAction) == Qt::MoveAction)
-       emit albumDragged();
+        emit albumDragged();
 
 }
 
 void Album::enterEvent(QEvent *event)
 {
-    Q_UNUSED(event);
+    //Q_UNUSED(event);
     //title->show();
     //title->setSpeed(1);
     //  widget->setStyleSheet("background:rgba(180, 225, 230, 150)");
     //  this->setStyleSheet("border:1px solid #f85b79");
     // qDebug()<<"entered the album cover";
-
-    playBtn->show();
-    playBtn->setToolTip("Play all - "+artist+" "+album);
     event->accept();
+    playBtn->setVisible(true);
+    playBtn->setToolTip("Play all - "+artist+" "+album);
+   // this->titleVisible(true);
+
     emit albumCoverEnter();
 }
 
@@ -306,8 +302,9 @@ void Album::leaveEvent(QEvent *event)
     // widget->setStyleSheet("background-color: rgba(0,0,0,150);");
     // this->setStyleSheet("border:1px solid #333");
     //  qDebug()<<"left the album cover";
-    playBtn->hide();
     event->accept();
-    emit albumCoverLeft();
+    playBtn->setVisible(false);
+    //this->titleVisible(false);
 
+    emit albumCoverLeft();
 }

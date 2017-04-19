@@ -8,6 +8,8 @@ OnlineView::OnlineView(QWidget *parent) :
     ui->setupUi(this);
 
     auto layout = new QVBoxLayout(this);
+    layout->setContentsMargins(0,0,0,0);
+    layout->setSpacing(0);
 
     searchField = new QLineEdit();
     searchField->setPlaceholderText("Search...");

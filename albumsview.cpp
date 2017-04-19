@@ -11,33 +11,32 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     grid->setResizeMode(QListWidget::Adjust);
     grid->setUniformItemSizes(true);
     grid->setWrapping(true);
-    grid->setMovement(QListWidget::Static);
-
-    //grid->setFrameShadow(QFrame::);
+    //grid->setMovement(QListWidget::Static);
     grid->setFrameShape(QFrame::NoFrame);
     grid->setSizePolicy(QSizePolicy ::Expanding , QSizePolicy ::Expanding );
     grid->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
     //grid->setStyleSheet("QListWidget {background:#2E2F30; border:1px solid black; border-radius: 2px; }");
-
     grid->setStyleSheet("QListWidget {background:transparent; padding-top:15px; padding-left:15px; }");
+    grid->setGridSize(QSize(albumSize+10,albumSize+10));
 
-    //grid->setMovement(QListView::Static);
     //grid->setMaximumWidth(128);
-    // grid->setFlow(QListView::LeftToRight);
+    //grid->setFlow(QListView::LeftToRight);
     //grid->setFlow(QListWidget::TopToBottom);
-    // grid->setMovement(QListView::Snap);
+    //grid->setMovement(QListView::Snap);
     //grid->setWrapping(false);
     //grid->setSpacing(20);
     //grid->setIconSize(QSize(120,120));
-    grid->setGridSize(QSize(albumSize+10,albumSize+10));
     //grid->setAlignment(Qt::AlignLeading);
 
+    auto utilsLayout = new QHBoxLayout();
+    utilsLayout->setContentsMargins(0,0,0,0);
+    utilsLayout->setSpacing(0);
+
     utilsFrame = new QFrame();
+    utilsFrame->setLayout(utilsLayout);
     // utilsFrame->setFrameShape(QFrame::StyledPanel);
     utilsFrame->setFrameShadow(QFrame::Plain);
     utilsFrame->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Minimum);
-
-
 
     slider = new QSlider();
     connect(slider,SIGNAL(sliderMoved(int)),this,SLOT(albumsSize(int)));
@@ -48,14 +47,12 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     slider->setOrientation(Qt::Orientation::Horizontal);
 
 
-
-
     order = new QComboBox();
     connect(order, SIGNAL(currentIndexChanged(QString)),this,SLOT(orderChanged(QString)));
 
     order->setFrame(false);
-    order->setMaximumWidth(70);
-    order->setMaximumHeight(22);
+    /*order->setMaximumWidth(70);
+    order->setMaximumHeight(22);*/
     order->setContentsMargins(0,0,0,0);
 
     order->addItem("Artist");
@@ -63,36 +60,16 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     order->setCurrentIndex(1);
     //order->setFrame(false);
 
-
-    auto utilsLayout = new QHBoxLayout();
-    utilsLayout->setContentsMargins(0,0,0,0);
-    utilsLayout->setSpacing(0);
     utilsLayout->addWidget(order);
     //utilsLayout->addWidget(slider);
-    utilsFrame->setLayout(utilsLayout);
 
-
-    /* auto scroll= new QScrollArea(this);
-    scroll->setWidgetResizable(true);
-    scroll->setAlignment(Qt::AlignCenter);
-    //grid->setMinimumWidth(137*4);
-
-    //scroll->setLayoutDirection(Qt::AlignCenter);
-    auto scrollWidget = new QWidget(this);
-    //scrollWidget->setLayout(grid);
-    scroll->setWidget(scrollWidget   );*/
     albumTable = new BabeTable(this);
-
-
+    albumTable->setFrameShape(QFrame::NoFrame);
     albumTable->horizontalHeader()->setVisible(false);
     albumTable->showColumn(BabeTable::TRACK);
-
+    albumTable->showColumn(BabeTable::STARS);
     albumTable->hideColumn(BabeTable::ARTIST);
     albumTable->hideColumn(BabeTable::ALBUM);
-    albumTable->showColumn(BabeTable::STARS);
-
-
-    albumTable->setFrameShape(QFrame::NoFrame);
 
 
     auto layout = new QGridLayout();
@@ -104,16 +81,11 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     // scroll->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding  );
 
     auto albumBox = new QGridLayout();
-    albumBox_frame = new QFrame(this);
-    /*QPalette palette = albumBox_frame->palette();
-   palette.setColor( backgroundRole(), QColor( 0, 0, 0,200 ) );
-   albumBox_frame->setPalette( palette );
-   albumBox_frame->setAutoFillBackground( true );*/
     albumBox->setContentsMargins(0,0,0,0);
-    // ui->listWidget->setSpacing(0);
-    // albumBox_frame->setFrameShadow(QFrame::Raised);
-    albumBox_frame->setFrameShape(QFrame::NoFrame);
     albumBox->setSpacing(0);
+
+    albumBox_frame = new QWidget(this);
+    //albumBox_frame->setFrameShape(QFrame::NoFrame);
     albumBox_frame->setLayout(albumBox);
 
     line_h = new QFrame(this);
@@ -130,25 +102,22 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     connect(cover,SIGNAL(babeAlbum_clicked(QString, QString)),this,SLOT(babeAlbum(QString, QString)));
 
 
-
     closeBtn = new QToolButton(cover);
-    //closeBtn->setStyleSheet("QToolButton{border: 1px solid red; border-radius:12px;}");
+    connect(closeBtn,SIGNAL(clicked()),SLOT(hideAlbumFrame()));
     closeBtn->setGeometry(2,2,16,16);
     closeBtn->setIcon(QIcon::fromTheme("tab-close"));
     closeBtn->setAutoRaise(true);
-    connect(closeBtn,SIGNAL(clicked()),SLOT(hideAlbumFrame()));
-    //cover->setSizeHint( QSize( 120, 120) );
-    auto line = new QFrame(this);
 
+    auto line = new QFrame(this);
     line->setFrameShape(QFrame::VLine);
     line->setFrameShadow(QFrame::Sunken);
     line->setMaximumWidth(1);
-    //connect(cover, SIGNAL(albumCoverEnter()),this,SLOT(albumHover()));
 
     if(extraList)
     {
         this->extraList=true;
         albumBox_frame->setMaximumHeight(200);
+
         artistList=new QListWidget(this);
         connect(artistList,SIGNAL(clicked(QModelIndex)),this,SLOT(filterAlbum(QModelIndex)));
         artistList->setFrameShape(QFrame::NoFrame);
@@ -368,14 +337,19 @@ void AlbumsView::populateTableViewHeads(QSqlQuery query)
 void AlbumsView::populateExtraList(QSqlQuery query)
 {
     artistList->clear();
-    QStringList albums;
+
     qDebug()<<"ON POPULATE EXTRA LIST:";
     while (query.next())
     {
-        albums<< query.value(TITLE).toString();
+        auto album = query.value(TITLE).toString();
+        auto item = new QListWidgetItem();
+        item->setText(album);
+        item->setTextAlignment(Qt::AlignCenter);
+        artistList->addItem(item);
+
     }
 
-    artistList->addItems(albums);
+    //artistList->addItems(albums);
 
 }
 

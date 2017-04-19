@@ -45,7 +45,7 @@ private:
     QList<Album*> albumsList;
     QStringList albums;
     QStringList artists;
-    QFrame *albumBox_frame;
+    QWidget *albumBox_frame;
     QFrame *line_h;
     Album *cover;
     CollectionDB *connection;
