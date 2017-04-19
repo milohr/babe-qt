@@ -336,9 +336,9 @@ void BabeTable::addRowAt(int row,QMap<int, QString> map, bool descriptiveTooltip
     this->setItem(row , LOCATION, new QTableWidgetItem(map[LOCATION]));
     this->setItem(row , STARS, new QTableWidgetItem(map[STARS]));
     this->setItem(row , BABE, new QTableWidgetItem(map[BABE]));
-    /*this->setItem(row , ART, new QTableWidgetItem(map[ART]));
+    this->setItem(row , ART, new QTableWidgetItem(map[ART]));
     this->setItem(row , PLAYED, new QTableWidgetItem(map[PLAYED]));
-    this->setItem(row , PLAYLIST, new QTableWidgetItem(map[PLAYLIST]));*/
+    //this->setItem(row , PLAYLIST, new QTableWidgetItem(map[PLAYLIST]));
 
     QColor color;
     color.setNamedColor("#000");
@@ -388,7 +388,6 @@ void BabeTable::populateTableView(QList<QMap<int,QString>> mapList, bool descrip
         emit finishedPopulating();
 
     }else qDebug()<<"Error: the mapList was empty";
-
 
 }
 
