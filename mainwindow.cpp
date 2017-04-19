@@ -859,6 +859,8 @@ void MainWindow::expand()
     layout->setContentsMargins(6,0,6,0);
 
     this->setMaximumSize(QWIDGETSIZE_MAX,QWIDGETSIZE_MAX);
+    this->setMinimumSize(0,0);
+
     this->resize(700,500);
     /*this->setWindowFlags(defaultWindowFlags);
     this->show();*/
@@ -932,6 +934,8 @@ void MainWindow::go_playlistMode()
 
     int oldHeigh = this->size().height();
     this->resize(200,oldHeigh);
+    this->setMinimumSize(0,0);
+
     this->setFixedWidth(200);
     //this->adjustSize();
     //this->setWindowFlags(defaultWindowFlags);
