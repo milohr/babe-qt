@@ -303,7 +303,7 @@ int BabeTable::getIndex() { return this->currentIndex().row(); }
 
 void BabeTable::addRow(QMap<int, QString> map, bool descriptiveTooltip)
 {
-    Q_UNUSED(descriptiveTooltip);
+    //Q_UNUSED(descriptiveTooltip);
 
     this->insertRow(this->rowCount());
 
@@ -319,8 +319,39 @@ void BabeTable::addRow(QMap<int, QString> map, bool descriptiveTooltip)
     this->setItem(this->rowCount() - 1, PLAYED, new QTableWidgetItem(map[PLAYED]));
     this->setItem(this->rowCount() - 1, PLAYLIST, new QTableWidgetItem(map[PLAYLIST]));
 
-    //if(descriptiveTooltip)
-    this->item(this->rowCount()-1,TITLE)->setToolTip( "by "+map[ARTIST]);
+    if(descriptiveTooltip)
+        this->item(this->rowCount()-1,TITLE)->setToolTip( "by "+map[ARTIST]);
+}
+
+void BabeTable::addRowAt(int row,QMap<int, QString> map, bool descriptiveTooltip)
+{
+    qDebug()<< "trying to insert row at: "<<row;
+    this->insertRow(row);
+
+    this->setItem(row , TRACK, new QTableWidgetItem(map[TRACK]));
+    this->setItem(row , TITLE, new QTableWidgetItem(map[TITLE]));
+    this->setItem(row , ARTIST, new QTableWidgetItem(map[ARTIST]));
+    this->setItem(row , ALBUM, new QTableWidgetItem(map[ALBUM]));
+    this->setItem(row , GENRE, new QTableWidgetItem(map[GENRE]));
+    this->setItem(row , LOCATION, new QTableWidgetItem(map[LOCATION]));
+    this->setItem(row , STARS, new QTableWidgetItem(map[STARS]));
+    this->setItem(row , BABE, new QTableWidgetItem(map[BABE]));
+    /*this->setItem(row , ART, new QTableWidgetItem(map[ART]));
+    this->setItem(row , PLAYED, new QTableWidgetItem(map[PLAYED]));
+    this->setItem(row , PLAYLIST, new QTableWidgetItem(map[PLAYLIST]));*/
+
+    QColor color;
+    color.setNamedColor("#000");
+    color.setAlpha(90);
+    this->item(row,TITLE)->setBackgroundColor(color);
+    QBrush brush;
+    brush.setColor("#fff");
+    this->item(row,TITLE)->setForeground(brush);
+    //this->item(row,TITLE)->setTextAlignment(Qt::AlignCenter);
+
+
+    if(descriptiveTooltip)
+        this->item(row,TITLE)->setToolTip( "by "+map[ARTIST]);
 }
 
 void BabeTable::populateTableView(QString indication, bool descriptiveTitle)
@@ -763,10 +794,6 @@ QMap<int, QString> BabeTable::getRowData(int row)
     return map;
 }
 
-void BabeTable::allowDrag()
-{
-
-}
 
 void BabeTable::on_tableWidget_doubleClicked(const QModelIndex &index)
 {

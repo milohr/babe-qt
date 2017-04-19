@@ -74,7 +74,7 @@ public:
     void setTableOrder(int column, int order);
     void setVisibleColumn(int column);
     void addRow(QMap<int, QString> map, bool descriptiveTooltip=false);
-    void allowDrag();
+    void addRowAt(int row,QMap<int, QString> map, bool descriptiveTooltip);
     void passStyle(QString style);
     void passPlaylists();
     void  populatePlaylist(QStringList urls, QString playlist);

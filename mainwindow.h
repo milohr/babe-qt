@@ -31,6 +31,7 @@
 #include "playlistsview.h"
 #include "artwork.h"
 #include "infoview.h"
+#include "onlineview.h"
 
 #include "album.h"
 #include "mpris2.h"
@@ -59,11 +60,15 @@ public:
 
     enum views
     {
-        COLLECTION,ALBUMS,ARTISTS,PLAYLISTS,QUEUE,INFO,SETTINGS,RESULTS
+        COLLECTION,ALBUMS,ARTISTS,PLAYLISTS,ONLINE,INFO,SETTINGS,RESULTS
     };
     enum utilsBar
     {
-        INFO_UB,PLAYLISTS_UB,SEARCH_UB,ALBUMS_UB,COLLECTION_UB, FAVORITES_UB,QUEUE_UB
+        INFO_UB,PLAYLISTS_UB,SEARCH_UB,ALBUMS_UB,COLLECTION_UB, FAVORITES_UB,ONLINE_UB
+    };
+    enum viewModes
+    {
+        FULLMODE, PLAYLISTMODE, MINIMODE
     };
 
 
@@ -103,7 +108,7 @@ private slots:
     void collectionView();
     void albumsView();
     void favoritesView();
-    void queueView();
+    void onlineView();
     void playlistsView();
     void infoView();
     void settingsView();
@@ -143,8 +148,7 @@ private slots:
     void babeIt(QList<QMap<int, QString> > mapList);
     void unbabeIt(QString url);
     void loadMood();
-    void addToQueue(QList<QMap<int,QString>> mapList);
-    void removeFromQueue(QMap<int,QString> map);
+    void addToQueue(QList<QMap<int,QString>> mapList);    
     void on_filterBtn_clicked();
     void on_filter_textChanged(const QString &arg1);
     void infoIt(QString title, QString artist, QString album);
@@ -154,11 +158,13 @@ private:
     Ui::MainWindow *ui;
     const QString stylePath = BaeUtils::getSettingPath()+"style.qss";
 
+    Qt::WindowFlags defaultWindowFlags;
     Notify nof;
     ArtWork *coverArt;
     Mpris *mpris;
 
     void keepOnTop(bool state);
+
     void setUpViews();
     void setUpWidgets();
     void setUpSidebar();
@@ -166,8 +172,6 @@ private:
     void setUpPlaylist();
 
     void loadTrack();
-    void loadTrackOnQueue();
-
     void next();
     void back();
     void shufflePlaylist();
@@ -192,22 +196,27 @@ private:
     QFrame *album_art_frame;
 
     /*the views*/
-    settings *settings_widget;
-    BabeTable *collectionTable;
     BabeTable *mainList;
+    BabeTable *collectionTable;
     BabeTable *resultsTable;
     AlbumsView* albumsTable;
     AlbumsView* artistsTable;
     PlaylistsView *playlistTable;
     InfoView *infoTable;
-    BabeTable *queueTable;
+    settings *settings_widget;
+    OnlineView *onlineTable;
 
     /*the streaming */
-    QList<QMap<int,QString>> currentList;
-    QList<QMap<int,QString>> queue_list;
     QMediaPlayer *player = new QMediaPlayer();
     QTimer *updater = new QTimer(this);
+
+    QList<QMap<int,QString>> currentList;
     QMap<int, QString> current_song;
+    QMap<int, QMap<int, QString>> queued_songs;
+
+    int current_song_pos;
+    //int queue_song_pos;
+
 
     QSlider *seekBar;
     QLabel *addMusicImg;

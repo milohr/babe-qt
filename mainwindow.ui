@@ -118,7 +118,7 @@
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QToolButton" name="queue_view">
+   <widget class="QToolButton" name="online_view">
     <property name="geometry">
      <rect>
       <x>0</x>
@@ -139,12 +139,14 @@
       <height>24</height>
      </size>
     </property>
+    <property name="toolTip">
+     <string>Online</string>
+    </property>
     <property name="text">
      <string>Queue</string>
     </property>
     <property name="icon">
-     <iconset theme="amarok_clock">
-      <normaloff>.</normaloff>.</iconset>
+     <iconset theme="kstars_constellationart"/>
     </property>
     <property name="checkable">
      <bool>true</bool>

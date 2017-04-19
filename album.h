@@ -64,6 +64,7 @@ signals:
     void playAlbum(QString artist, QString album);
     void changedArt(QString path,QString artist, QString album);
     void babeAlbum_clicked(QString album, QString artist);
+    void albumDragged();
 
 public slots:
     void putPixmap(QByteArray pix);

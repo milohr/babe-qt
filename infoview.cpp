@@ -25,9 +25,11 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView) {
     artist = new Album(":Data/data/cover.png", 120, 100,false,this);
     connect(artist,SIGNAL(playAlbum(QString , QString)),this,SLOT(playAlbum_clicked(QString, QString)));
 
-    ui->lyricsText->setLineWrapMode(QTextEdit::NoWrap);
-    ui->lyricsText->setStyleSheet(
-                "QTextBrowser{background-color: #575757; color:white;}");
+   /* ui->lyricsText->setLineWrapMode(QTextEdit::NoWrap);
+    ui->lyricsText->setStyleSheet("QTextBrowser{background-color: #575757; color:white;}");
+    ui->artistText->setStyleSheet("QTextBrowser{background-color: #575757; color:white;}");
+    ui->albumText->setStyleSheet("QTextBrowser{background-color: #575757; color:white;}");
+    ui->tagsInfo->setStyleSheet("QTextBrowser{background-color: #575757; color:white;}");*/
 
     lyrics = new Lyrics();
     connect(lyrics,SIGNAL(lyricsReady(QString)),this,SLOT(setLyrics(QString)));
@@ -36,7 +38,8 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView) {
     artist->borderColor = true;
 
     auto artistContainer = new QWidget();
-    artistContainer->setBackgroundRole(QPalette::Dark);
+  //artistContainer->setStyleSheet("QWidget{background-color: #575757; color:white;}");
+
     auto artistCLayout = new QHBoxLayout();
     auto *left_spacer = new QWidget();
     left_spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);

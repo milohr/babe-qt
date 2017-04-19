@@ -2,21 +2,29 @@
 #define ONLINEVIEW_H
 
 #include <QWidget>
+#include <QVBoxLayout>
+#include <QPushButton>
+#include <QLineEdit>
+
+#include "babetable.h"
 
 namespace Ui {
-class onlineView;
+class OnlineView;
 }
 
-class onlineView : public QWidget
+class OnlineView : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit onlineView(QWidget *parent = 0);
-    ~onlineView();
+    explicit OnlineView(QWidget *parent = 0);
+    ~OnlineView();
+    BabeTable *table;
 
 private:
-    Ui::onlineView *ui;
+    Ui::OnlineView *ui;
+    QLineEdit *searchField;
+
 };
 
 #endif // ONLINEVIEW_H

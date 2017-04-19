@@ -255,7 +255,7 @@ void AlbumsView::populateTableView(QSqlQuery query)
         if(!albums.contains(album+" "+artist))
         {
             albums<<album+" "+artist;
-            qDebug()<<"creating a new album[cover] for<<"<<album+" "+artist;
+            //qDebug()<<"creating a new album[cover] for<<"<<album+" "+artist;
             if(!query.value(ART).toString().isEmpty()&&query.value(ART).toString()!="NULL")
                 art = query.value(ART).toString();
 
@@ -270,6 +270,16 @@ void AlbumsView::populateTableView(QSqlQuery query)
             connect(artwork,SIGNAL(playAlbum(QString , QString)),this,SLOT(playAlbum_clicked(QString, QString)));
             connect(artwork,SIGNAL(changedArt(QString, QString , QString)),this,SLOT(changedArt_cover(QString, QString, QString)));
             connect(artwork,SIGNAL(babeAlbum_clicked(QString, QString)),this,SLOT(babeAlbum(QString, QString)));
+           //connect(artwork,SIGNAL(albumDragged()),grid,SLOT(clear()));
+
+           connect(artwork, &Album::albumDragged, [this]()
+           {
+               //grid->adjustSize();
+               //grid->update();
+              // grid->updateGeometry();
+
+               //grid->clearMask();
+           });
 
             auto item =new QListWidgetItem();
             item->setSizeHint( QSize( albumSize, albumSize));
@@ -319,7 +329,7 @@ void AlbumsView::populateTableViewHeads(QSqlQuery query)
         if(!artists.contains(artist))
         {
             artists<<artist;
-            qDebug()<<"creating a new album[head] for<<"<<artist;
+           // qDebug()<<"creating a new album[head] for<<"<<artist;
 
             if(!query.value(1).toString().isEmpty()&&query.value(1).toString()!="NULL")
                 art=(query.value(1).toString());

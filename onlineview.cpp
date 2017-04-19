@@ -1,14 +1,27 @@
 #include "onlineview.h"
 #include "ui_onlineview.h"
 
-onlineView::onlineView(QWidget *parent) :
+OnlineView::OnlineView(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::onlineView)
+    ui(new Ui::OnlineView)
 {
     ui->setupUi(this);
+
+    auto layout = new QVBoxLayout(this);
+
+    searchField = new QLineEdit();
+    searchField->setPlaceholderText("Search...");
+
+    table = new BabeTable();
+
+    layout->addWidget(searchField);
+    layout->addWidget(table);
+
+    this->setLayout(layout);
+
 }
 
-onlineView::~onlineView()
+OnlineView::~OnlineView()
 {
     delete ui;
 }

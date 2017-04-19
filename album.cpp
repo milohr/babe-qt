@@ -258,7 +258,8 @@ void Album::mouseMoveEvent(QMouseEvent *event)
 {
     if(draggable)
     {
-        if (event->buttons() & Qt::LeftButton) {
+        if (event->buttons() & Qt::LeftButton)
+        {
             int distance = (event->pos() - startPos).manhattanLength();
             if (distance >= QApplication::startDragDistance())
                 performDrag();
@@ -277,7 +278,7 @@ void Album::performDrag()
     drag->setMimeData(mimeData);
     drag->setPixmap(image.scaled(size/2,size/2,Qt::KeepAspectRatio));
     if (drag->exec(Qt::MoveAction) == Qt::MoveAction)
-        qDebug()<<"draggation happened";
+       emit albumDragged();
 
 }
 
