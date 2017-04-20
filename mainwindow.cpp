@@ -148,7 +148,7 @@ void MainWindow::setUpViews()
     connect(resultsTable,SIGNAL(enteredTable()),this,SLOT(hideControls()));
     connect(resultsTable,SIGNAL(leftTable()),this,SLOT(showControls()));
     connect(resultsTable,SIGNAL(removeIt_clicked(int)),this,SLOT(removeSong(int)));
-    connect(resultsTable,SIGNAL( babeIt_clicked(QList<QMap<int, QString>>)),this,SLOT(babeIt(QList<QMap<int, QString>>)));
+    connect(resultsTable,SIGNAL(babeIt_clicked(QList<QMap<int, QString>>)),this,SLOT(babeIt(QList<QMap<int, QString>>)));
     connect(resultsTable,SIGNAL(queueIt_clicked(QList<QMap<int, QString>>)),this,SLOT(addToQueue(QList<QMap<int, QString>>)));
     connect(resultsTable,SIGNAL(moodIt_clicked(QString)),playlistTable,SLOT(createMoodPlaylist(QString)));
     connect(resultsTable,SIGNAL(infoIt_clicked(QString, QString, QString)),this,SLOT(infoIt(QString, QString, QString)));
@@ -164,7 +164,7 @@ void MainWindow::setUpViews()
     connect(albumsTable,SIGNAL(albumOrderChanged(QString)),this,SLOT(AlbumsViewOrder(QString)));
     connect(albumsTable->albumTable,SIGNAL(tableWidget_doubleClicked(QList<QMap<int, QString>>)),this,SLOT(addToPlaylist(QList<QMap<int, QString>>)));
     connect(albumsTable->albumTable,SIGNAL(removeIt_clicked(int)),this,SLOT(removeSong(int)));
-    connect(albumsTable->albumTable,SIGNAL( babeIt_clicked(QList<QMap<int, QString>>)),this,SLOT(babeIt(QList<QMap<int, QString>>)));
+    connect(albumsTable->albumTable,SIGNAL(babeIt_clicked(QList<QMap<int, QString>>)),this,SLOT(babeIt(QList<QMap<int, QString>>)));
     connect(albumsTable,SIGNAL(playAlbum(QString, QString)),this,SLOT(putOnPlay(QString, QString)));
     connect(albumsTable,SIGNAL(babeAlbum_clicked(QList<QMap<int, QString>>)),this,SLOT(babeIt(QList<QMap<int, QString>>)));
     connect(albumsTable->albumTable,SIGNAL(queueIt_clicked(QList<QMap<int, QString>>)),this,SLOT(addToQueue(QList<QMap<int, QString>>)));
@@ -175,7 +175,7 @@ void MainWindow::setUpViews()
     artistsTable->albumTable->showColumn(BabeTable::ALBUM);
     connect(artistsTable->albumTable,SIGNAL(tableWidget_doubleClicked(QList<QMap<int, QString>>)),this,SLOT(addToPlaylist(QList<QMap<int, QString>>)));
     connect(artistsTable->albumTable,SIGNAL(removeIt_clicked(int)),this,SLOT(removeSong(int)));
-    connect(artistsTable->albumTable,SIGNAL( babeIt_clicked(QList<QMap<int, QString>>)),this,SLOT(babeIt(QList<QMap<int, QString>>)));
+    connect(artistsTable->albumTable,SIGNAL(babeIt_clicked(QList<QMap<int, QString>>)),this,SLOT(babeIt(QList<QMap<int, QString>>)));
     connect(artistsTable,SIGNAL(playAlbum(QString, QString)),this,SLOT(putOnPlay(QString, QString)));
     connect(artistsTable,SIGNAL(babeAlbum_clicked(QList<QMap<int, QString>>)),this,SLOT(babeIt(QList<QMap<int, QString>>)));
     connect(artistsTable->albumTable,SIGNAL(queueIt_clicked(QList<QMap<int, QString>>)),this,SLOT(addToQueue(QList<QMap<int, QString>>)));
@@ -493,10 +493,10 @@ void MainWindow::refreshTables() //tofix
     // favoritesTable->flushTable();
     //favoritesTable->populateTableView("SELECT * FROM tracks WHERE stars > \"0\" OR babe =  \"1\"");
     //albumsTable->flushGrid();
-    albumsTable->populateTableView(settings_widget->getCollectionDB().getQuery("SELECT * FROM albums ORDER by title asc"));
+    albumsTable->populateTableView(settings_widget->collection_db.getQuery("SELECT * FROM albums ORDER by title asc"));
     albumsTable->hideAlbumFrame();
     //artistsTable->flushGrid();
-    artistsTable->populateTableViewHeads(settings_widget->getCollectionDB().getQuery("SELECT * FROM artists ORDER by title asc"));
+    artistsTable->populateTableViewHeads(settings_widget->collection_db.getQuery("SELECT * FROM artists ORDER by title asc"));
     artistsTable->hideAlbumFrame();
     
     playlistTable->list->clear();
@@ -1315,7 +1315,10 @@ void MainWindow::orderTables()
 }
 
 
-void MainWindow::on_fav_btn_clicked() { babeIt({current_song}); }
+void MainWindow::on_fav_btn_clicked()
+{
+    if(babeIt({current_song}))  ui->fav_btn->setIcon(QIcon(":Data/data/loved.svg"));
+}
 
 void MainWindow::babeAlbum(QString album, QString artist)
 {
@@ -1335,15 +1338,14 @@ void MainWindow::unbabeIt(QString url)
 
 }
 
-void MainWindow::babeIt(QList<QMap<int,QString>> mapList)
+bool MainWindow::babeIt(QList<QMap<int,QString>> mapList)
 {
-    
+
     for(auto track : mapList)
     {
         QString url = track[BabeTable::LOCATION];
         if(isBabed(url))
-        {
-            //ui->fav_btn->setIcon(QIcon::fromTheme("face-in-love"));
+        {            //ui->fav_btn->setIcon(QIcon::fromTheme("face-in-love"));
             unbabeIt(url);
             nof.notify("Song unBabe'd it",track[BabeTable::TITLE]+" by "+track[BabeTable::ARTIST]);
             
@@ -1353,16 +1355,11 @@ void MainWindow::babeIt(QList<QMap<int,QString>> mapList)
             if(settings_widget->getCollectionDB().check_existance("tracks","location",url))
             {
                 if(settings_widget->getCollectionDB().insertInto("tracks","babe",url,1))
-                {
-                    ui->fav_btn->setIcon(QIcon(":Data/data/loved.svg"));
-                    
-                    nof.notify("Song Babe'd it",track[BabeTable::TITLE]+" by "+track[BabeTable::ARTIST]);
-                    QList<QMap<int,QString>> item;
-                    item<<track;
-                    addToPlaylist(item,true);
-                    
-                }
-                qDebug()<<"trying to babe sth";
+                {                    
+                    nof.notify("Song Babe'd it",track[BabeTable::TITLE]+" by "+track[BabeTable::ARTIST]);                    
+                    addToPlaylist({track},true);
+                } else return false;
+
             }else
             {
                 
@@ -1373,12 +1370,15 @@ void MainWindow::babeIt(QList<QMap<int,QString>> mapList)
                 
                 if(addToCollectionDB({url},"1"))
                     nof.notify("Song Babe'd it",track[BabeTable::TITLE]+" by "+track[BabeTable::ARTIST]);
+                else return false;
                 
                 ui->fav_btn->setEnabled(true);
             }
             
         }
     }
+
+    return true;
 }
 
 

@@ -146,7 +146,7 @@ private slots:
     void removeSong(int index);
     void putOnPlay(QString artist, QString album);
     void loadCover(QString artist, QString album, QString title);
-    void babeIt(QList<QMap<int, QString> > mapList);
+    bool babeIt(QList<QMap<int, QString> > mapList);
     void unbabeIt(QString url);
     void loadMood();
     void addToQueue(QList<QMap<int,QString>> mapList);    
