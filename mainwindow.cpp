@@ -1680,7 +1680,7 @@ void MainWindow::on_rowInserted(QModelIndex model ,int x,int y)
     //Q_UNUSED(model);
     //Q_UNUSED(x);Q_UNUSED(y);
     //mainList->scrollToBottom();
-    qDebug()<<x<<y;
+    //qDebug()<<x<<y;
 
     mainList->scrollTo(mainList->model()->index(x,BabeTable::TITLE),QAbstractItemView::PositionAtTop);
 
@@ -1778,78 +1778,34 @@ void MainWindow::on_filterBtn_clicked()
 
 void MainWindow::on_filter_textChanged(const QString &arg1)
 {
-    
-    QString search=arg1;
-    QStringList keys = {"location:","artist:","album:","title:","genre:" };
-    QString key;
-    
-    
-    for(auto k : keys)
+    qDebug()<<"%%%%%%%%RRRRAW";
+    if(!ui->filter->text().isEmpty())
     {
-        
-        if(search.contains(k))
+        QStringList searchList=arg1.split(",");
+
+        auto searchResults = searchFor(searchList);
+
+        if(!searchResults.isEmpty())
         {
-            
-            key=k;
-            qDebug()<<"search contains key: "<<key;
-            search.replace(k,"");
-        }
-    }
-    
-    
-    qDebug()<<"Searching for: "<<search;
-    //int oldIndex = views->currentIndex();
-    //qDebug()<<oldIndex;
-    // utilsBar->actions().at(ALBUMS_UB)->setVisible(false);
-    
-    
-    if(!search.isEmpty())
-    {
-        //views->setCurrentIndex(RESULTS);
-        if(prevIndex==PLAYLISTS) {utilsBar->actions().at(PLAYLISTS_UB)->setVisible(false); ui->frame_3->setVisible(false);}
-        
-        mainList->flushTable();
-        
-        if(key=="location:")
-        {
-            mainList->populateTableView("SELECT * FROM tracks WHERE location LIKE \"%"+search+"%\"");
-            //ui->search->setBackgroundRole(QPalette :: Dark);
-        }else if(key== "artist:")
-        {
-            mainList->populateTableView("SELECT * FROM tracks WHERE artist LIKE \"%"+search+"%\"");
-            //ui->search->setBackgroundRole(QPalette :: Dark);
-        }else if(key== "album:")
-        {
-            mainList->populateTableView("SELECT * FROM tracks WHERE album LIKE \"%"+search+"%\"");
-            //ui->search->setBackgroundRole(QPalette :: Dark);
-            
-        }else if(key=="title:")
-        {
-            mainList->populateTableView("SELECT * FROM tracks WHERE title LIKE \"%"+search+"%\"");
-            ui->search->setBackgroundRole(QPalette :: Dark);
-        }else if(key==  "genre:")
-        {
-            mainList->populateTableView("SELECT * FROM tracks WHERE genre LIKE \"%"+search+"%\"");
-            //ui->search->setStyleSheet("background-color:#e3f4d7;");
-            ui->search->setBackgroundRole(QPalette :: Dark);
+            mainList->flushTable();
+            mainList->populateTableView(searchResults,true);
         }else
         {
-            
-            mainList->populateTableView("SELECT * FROM tracks WHERE title LIKE \"%"+search+"%\" OR artist LIKE \"%"+search+"%\" OR album LIKE \"%"+search+"%\"OR genre LIKE \"%"+search+"%\"");
-            //ui->search->setStyleSheet("background-color:transparent;");
-            //ui->search->setBackgroundRole(QPalette :: Light);
+            mainList->flushTable();
+            auto old = currentList;
+            currentList.clear();
+            addToPlaylist(old);
+
         }
-        
-        //ui->saveResults->setEnabled(true);
-        //ui->refreshAll->setEnabled(false);
-        // prevIndex= views->currentIndex();
-        
+
     }else
     {
+
         mainList->flushTable();
         auto old = currentList;
         currentList.clear();
         addToPlaylist(old);
+
     }
     
 }
