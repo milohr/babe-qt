@@ -90,7 +90,7 @@ public slots:
     void putPixmap(QByteArray array);
     void changedArt(QString path, QString artist, QString album);
     void babeAlbum(QString album, QString artist);
-    void populateResults(QList<QMap<int,QString>> mapList);
+    void populateResultsTable(QList<QMap<int,QString>> mapList);
     QList<QMap<int,QString>> searchFor(QStringList queries);
     void dummy();
 
@@ -118,9 +118,7 @@ private slots:
 
     /*the view stacked actions*/
 
-    void addToFavorites(QStringList list);
-    void addToCollection(QStringList list);
-    bool addToCollectionDB_t(QStringList url,QString babe=0);
+    bool addToCollectionDB(QStringList url,QString babe=0);
     void scanNewDir(QString url,QString babe="0");
     void setToolbarIconSize(int iconSize);
     void collectionDBFinishedAdding(bool state);

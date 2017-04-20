@@ -195,15 +195,12 @@ void AlbumsView::albumHover()
 
 void  AlbumsView::flushGrid()
 {
-    albumTable->flushTable();
+    this->hideAlbumFrame();
     albums.clear();
     artists.clear();
-    grid->clear();
-    // albumsList.clear();
-
-    // grid->setRowCount(0);
-
+    grid->clear();   
 }
+
 void AlbumsView::orderChanged(QString order)
 {
     emit albumOrderChanged(order);

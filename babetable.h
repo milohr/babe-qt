@@ -122,7 +122,6 @@ public slots:
 private:
 
     Notify nof;
-
     QToolButton *fav1;
     QToolButton *fav2;
     QToolButton *fav3;

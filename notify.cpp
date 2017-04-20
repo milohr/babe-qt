@@ -17,16 +17,10 @@
 
 
 #include "notify.h"
-
-Notify::Notify(QObject *parent) : QObject(parent)
-{
-    //qDebug()<<QStandardPaths::GenericConfigLocation;
+#include "babetable.h"
 
 
-
-
-}
-
+Notify::Notify(QObject *parent) : QObject(parent){}
 
 void Notify::notify(  const QString &title, const QString &body)
 {
@@ -45,19 +39,20 @@ void Notify::notify(  const QString &title, const QString &body)
 
 }
 
-void Notify::notifySong(const QString &title,const QString &artist,const QString &album,const QString &url,  const QPixmap &pix)
+void Notify::notifySong(const QMap<int, QString> &trackMap,  const QPixmap &pix)
 {
-    this->title=title; this->artist=artist; this->album=album; this->url=url;
+    this->track = trackMap;
 
     KNotification *notification = new KNotification(QStringLiteral("Playing"),
                                                     KNotification::CloseOnTimeout, this);
 
     // notification->setComponentName(QStringLiteral("Babe"));
-    notification->setTitle(QStringLiteral("%1").arg(title));
-    notification->setText(QStringLiteral("by %1 \xe2\x99\xa1 %2").arg(artist,album));
+    notification->setTitle(QStringLiteral("%1").arg(track[BabeTable::TITLE]));
+    notification->setText(QStringLiteral("by %1 - %2").arg(track[BabeTable::ARTIST],track[BabeTable::ALBUM]));
     if(!pix.isNull()) notification->setPixmap(pix);
 
-    notification->setActions(QStringList(i18n("Babe it  \xe2\x99\xa1")));
+    if(track[BabeTable::BABE].toInt()==1) notification->setActions(QStringList(i18n("Un-Babe it  \xe2\x99\xa1")));
+    else notification->setActions(QStringList(i18n("Babe it  \xe2\x99\xa1")));
 
     connect(notification, SIGNAL(activated(uint)), SLOT(babeIt()));
 
@@ -84,5 +79,6 @@ void Notify::notifyUrgent(  const QString &title, const QString &body)
 void Notify::babeIt()
 {
     qDebug()<<"babe the shit out of it";
-    emit babeSong({url});
+     emit babeSong({track});
+
 }

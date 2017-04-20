@@ -32,7 +32,8 @@ MainWindow::MainWindow(QWidget *parent) :
     
     defaultWindowFlags = this->windowFlags();
     //mpris = new Mpris(this);
-    
+
+    //connect(this, &MainWindow::finishedPlayingSong, this, &MainWindow::addToPlayed);
     connect(this, SIGNAL(finishedPlayingSong(QString)),this,SLOT(addToPlayed(QString)));
     connect(this,SIGNAL(getCover(QString,QString,QString)),this,SLOT(setCoverArt(QString,QString,QString)));
     connect(this,SIGNAL(collectionChecked()),this,SLOT(refreshTables()));
@@ -50,8 +51,7 @@ MainWindow::MainWindow(QWidget *parent) :
         populateMainList();
         emit collectionChecked();
         
-    } else settings_widget->createCollectionDB();
-    
+    } else settings_widget->createCollectionDB();    
     
     timer = new QTimer(this);
     connect(timer, &QTimer::timeout, [this]()
@@ -60,8 +60,8 @@ MainWindow::MainWindow(QWidget *parent) :
         infoTable->getTrackInfo(current_song[BabeTable::TITLE],current_song[BabeTable::ARTIST],current_song[BabeTable::ALBUM]);
     });
     
-    //connect(&nof,SIGNAL(babeSong(QStringList)),this,SLOT(babeIt(QStringList)));
-    connect(updater, SIGNAL(timeout()), this, SLOT(update()));
+    connect(&nof,&Notify::babeSong,this,&MainWindow::babeIt);
+    connect(updater, &QTimer::timeout, this, &MainWindow::update);
     player->setVolume(100);
     
     /*LOAD THE STYLE*/
@@ -110,7 +110,8 @@ void MainWindow::setUpViews()
     connect(playlistTable->table,SIGNAL(infoIt_clicked(QString, QString, QString)),this,SLOT(infoIt(QString, QString, QString)));
     
     collectionTable = new BabeTable(this);
-    collectionTable->passCollectionConnection(&settings_widget->getCollectionDB());
+    collectionTable->passCollectionConnection(&settings_widget->getCollectionDB()); //tofix
+    //connect(collectionTable, &BabeTable::tableWidget_doubleClicked, this, &MainWindow::addToPlaylist);
     connect(collectionTable,SIGNAL(tableWidget_doubleClicked(QList<QMap<int, QString>>)),this,SLOT(addToPlaylist(QList<QMap<int, QString>>)));
     connect(collectionTable,SIGNAL(enteredTable()),this,SLOT(hideControls()));
     connect(collectionTable,SIGNAL(leftTable()),this,SLOT(showControls()));
@@ -129,8 +130,10 @@ void MainWindow::setUpViews()
     mainList->setMaximumWidth(200);
     mainList->setMinimumHeight(200);
     mainList->setAddMusicMsg("\nDrag and drop music here!");
-    connect(mainList,SIGNAL(tableWidget_doubleClicked(QList<QMap<int, QString>>)),this,SLOT(on_mainList_clicked(QList<QMap<int, QString>>)));
-    connect(mainList,SIGNAL(removeIt_clicked(int)),this,SLOT(removeSong(int)));
+    connect(mainList, &BabeTable::tableWidget_doubleClicked, this, &MainWindow::on_mainList_clicked);
+    //connect(mainList,SIGNAL(tableWidget_doubleClicked(QList<QMap<int, QString>>)),this,SLOT(on_mainList_clicked(QList<QMap<int, QString>>)));
+    connect(mainList, &BabeTable::removeIt_clicked, this, &MainWindow::removeSong);
+    //connect(mainList,SIGNAL(removeIt_clicked(int)),this,SLOT(removeSong(int)));
     connect(mainList,SIGNAL(babeIt_clicked(QList<QMap<int, QString>>)),this,SLOT(babeIt(QList<QMap<int, QString>>)));
     connect(mainList,SIGNAL(queueIt_clicked(QList<QMap<int, QString>>)),this,SLOT(addToQueue(QList<QMap<int, QString>>)));
     connect(mainList,SIGNAL(moodIt_clicked(QString)),playlistTable,SLOT(createMoodPlaylist(QString)));
@@ -477,27 +480,13 @@ void MainWindow::addToPlayed(QString url)
 
 void MainWindow::resizeEvent(QResizeEvent* event)
 {
-    
-    //qDebug()<<event->size().width()<<"x"<<event->size().height();
-    if(mini_mode==0 && event->size().width()<this->minimumSize().width()+20)
-    {
-        //this->setMaximumWidth(200);
-        // this->setFixedWidth(200);
-        //int oldHeight = this->size().height();
-        //this->resize(200,oldHeight);
-        event->accept();
+    if(mini_mode == FULLMODE && event->size().width() < this->minimumSize().width()+20)
         go_playlistMode();
-    }else if(mini_mode!=0 && event->size().width()!=200)
-    {
-        int oldHeight = this->size().height();
-        this->resize(700,oldHeight);
-        event->accept();
-        expand();
-    }
+
     QMainWindow::resizeEvent(event);
 }
 
-void MainWindow::refreshTables()
+void MainWindow::refreshTables() //tofix
 {
     collectionTable->flushTable();
     collectionTable->populateTableView("SELECT * FROM tracks");
@@ -520,15 +509,13 @@ void MainWindow::refreshTables()
     playlistTable->setPlaylistsMoods(playListsMoods);
 }
 
-
 void MainWindow::AlbumsViewOrder(QString order)
 {
     albumsTable->flushGrid();
     albumsTable->populateTableView(settings_widget->getCollectionDB().getQuery("SELECT * FROM albums ORDER by "+order.toLower()+" asc"));
 }
 
-
-void MainWindow::keyPressEvent(QKeyEvent *event)
+void MainWindow::keyPressEvent(QKeyEvent *event) //todo
 {
     
     QMainWindow::keyPressEvent(event);
@@ -571,60 +558,25 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 
 void MainWindow::enterEvent(QEvent *event)
 {
-    //qDebug()<<"entered the window";
-    //Q_UNUSED(event);
     event->accept();
     showControls();
-    //if (mini_mode==2) this->setWindowState(Qt::WindowActive);
 }
-
 
 void MainWindow::leaveEvent(QEvent *event)
-{
-    //qDebug()<<"left the window";
-    // Q_UNUSED(event);
+{  
     event->accept();
     hideControls();
-    //timer = new QTimer(this);
-    /*connect(timer, SIGNAL(timeout()), this, SLOT(hide ui->controls()));
-      
-      connect(timer,SIGNAL(timeout()), this, [&timer, this]() {
-          qDebug()<<"ime is up";
-          timer->stop();
-      });*/
-    
-    //timer->start(3000);
 }
 
-void MainWindow::hideControls()
-{
-    //qDebug()<<"ime is up";
-    ui->controls->setVisible(false);
-    //album_art->titleVisible(false);
-    // timer->stop();*/
-}
+void MainWindow::hideControls() { ui->controls->setVisible(false); }
 
-void MainWindow::showControls()
-{
-    //qDebug()<<"ime is up";
-    ui->controls->setVisible(true);
-    /*if(mini_mode==2)  album_art->titleVisible(true);
-    // if (mini_mode==2)album_art->titleVisible(true);
-    // timer->stop();*/
-}
-void MainWindow::dragEnterEvent(QDragEnterEvent *event)
-{
-    event->accept();
-}
+void MainWindow::showControls() { ui->controls->setVisible(true); }
 
-void	MainWindow::dragLeaveEvent(QDragLeaveEvent *event){
-    event->accept();
-}
+void MainWindow::dragEnterEvent(QDragEnterEvent *event) { event->accept(); }
 
-void MainWindow::dragMoveEvent(QDragMoveEvent *event)
-{
-    event->accept();
-}
+void MainWindow::dragLeaveEvent(QDragLeaveEvent *event) { event->accept(); }
+
+void MainWindow::dragMoveEvent(QDragMoveEvent *event) { event->accept(); }
 
 void MainWindow::dropEvent(QDropEvent *event)
 {
@@ -637,18 +589,17 @@ void MainWindow::dropEvent(QDropEvent *event)
     {
         auto info = event->mimeData()->text();
         auto infoList = info.split("/by/");
+
         if(infoList.size()==2)
         {
             //qDebug()<<"album: " << infoList.at(0) << "artist: "<< infoList.at(1);
             QString _artist = infoList.at(1).simplified();
             QString _album = infoList.at(0).simplified();
             mapList = settings_widget->collection_db.getTrackData(QString("SELECT * FROM tracks WHERE artist = \""+_artist+"\" and album = \""+_album+"\" ORDER by track asc "));
+
         }else
-        {
-            //qDebug()<<"artist: " << info;
             mapList = settings_widget->collection_db.getTrackData(QString("SELECT * FROM tracks WHERE artist = \""+info+"\" ORDER by album asc, track asc "));
-        }
-        //qDebug()<<mapList;
+
         addToPlaylist(mapList);
         
     }else
@@ -680,40 +631,21 @@ void MainWindow::dummy()
     qDebug()<<"TEST on DUMMYT";
 }
 
-
-
 void MainWindow::setCoverArt(QString artist, QString album,QString title)
 {
     auto coverArt = new ArtWork();
     connect(coverArt, SIGNAL(coverReady(QByteArray)), this, SLOT(putPixmap(QByteArray)));
     coverArt->setDataCover(artist,album,title);
     infoTable->getTrackArt(artist,album);
-    
 }
-
 
 void MainWindow::putPixmap(QByteArray array)
 {
     if(!array.isEmpty()) album_art->putPixmap(array);
     else  album_art->putPixmap(QString(":Data/data/cover.svg"));
-    //infoTable->setAlbumInfo(coverArt->info);
-    //delete artwork;
 }
 
-
-void MainWindow::addToFavorites(QStringList list)
-{
-    // favoritesTable->addRow(list.at(0),list.at(1),list.at(2),list.at(3),list.at(4),list.at(5));
-    qDebug()<<list.at(0)<<list.at(1)<<list.at(2)<<list.at(3)<<list.at(4)<<list.at(5);
-}
-
-void MainWindow::addToCollection(QStringList list)
-{
-    //collectionTable->addRow(list);
-    qDebug()<<list.at(0)<<list.at(1)<<list.at(2)<<list.at(3)<<list.at(4)<<list.at(5);
-}
-
-void MainWindow::setToolbarIconSize(int iconSize)
+void MainWindow::setToolbarIconSize(int iconSize) //tofix
 {
     qDebug()<< "Toolbar icons size changed";
     ui->mainToolBar->setIconSize(QSize(iconSize,iconSize));
@@ -736,13 +668,12 @@ void MainWindow::setToolbarIconSize(int iconSize)
 
 void MainWindow::collectionView()
 {
-    qDebug()<< "All songs view";
     views->setCurrentIndex(COLLECTION);
-    if(mini_mode!=0) expand();
+
+    if(mini_mode != FULLMODE) expand();
     
     utilsBar->actions().at(ALBUMS_UB)->setVisible(false);
     utilsBar->actions().at(COLLECTION_UB)->setVisible(true);
-    
     utilsBar->actions().at(PLAYLISTS_UB)->setVisible(false); ui->frame_3->setVisible(false);
     utilsBar->actions().at(INFO_UB)->setVisible(false);
     
@@ -753,99 +684,86 @@ void MainWindow::collectionView()
 void MainWindow::albumsView()
 {
     views->setCurrentIndex(ALBUMS);
-    //if(hideSearch)utilsBar->show(); line->show();
-    if(mini_mode!=0) expand();
+
+    if(mini_mode != FULLMODE) expand();
+
     utilsBar->actions().at(ALBUMS_UB)->setVisible(true);;
     utilsBar->actions().at(COLLECTION_UB)->setVisible(true);
     utilsBar->actions().at(PLAYLISTS_UB)->setVisible(false); ui->frame_3->setVisible(false);
     utilsBar->actions().at(INFO_UB)->setVisible(false);
     
-    prevIndex=views->currentIndex();
+    prevIndex = views->currentIndex();
 }
 
 void MainWindow::playlistsView()
 {
     views->setCurrentIndex(PLAYLISTS);
-    if(mini_mode!=0) expand();
+
+    if(mini_mode != FULLMODE) expand();
+
     utilsBar->actions().at(ALBUMS_UB)->setVisible(false);
     utilsBar->actions().at(COLLECTION_UB)->setVisible(true);
     utilsBar->actions().at(PLAYLISTS_UB)->setVisible(true); ui->frame_3->setVisible(true);
     utilsBar->actions().at(INFO_UB)->setVisible(false);
     
-    
-    prevIndex=views->currentIndex();
+    prevIndex = views->currentIndex();
 }
+
 void MainWindow::onlineView()
 {
     views->setCurrentIndex(ONLINE);
-    if(mini_mode!=0) expand();
+
+    if(mini_mode != FULLMODE) expand();
+
     utilsBar->actions().at(ALBUMS_UB)->setVisible(false);
     utilsBar->actions().at(COLLECTION_UB)->setVisible(false);
     utilsBar->actions().at(PLAYLISTS_UB)->setVisible(false); ui->frame_3->setVisible(false);
     utilsBar->actions().at(INFO_UB)->setVisible(false);
     
-    
-    prevIndex=views->currentIndex();
+    prevIndex = views->currentIndex();
 }
+
 void MainWindow::infoView()
-{
-    
+{    
     views->setCurrentIndex(INFO);
     
-    if(mini_mode!=0) expand();
+    if(mini_mode != FULLMODE) expand();
+
     utilsBar->actions().at(ALBUMS_UB)->setVisible(false);
     utilsBar->actions().at(COLLECTION_UB)->setVisible(true);
     utilsBar->actions().at(PLAYLISTS_UB)->setVisible(false);
     utilsBar->actions().at(INFO_UB)->setVisible(true); ui->frame_3->setVisible(true);
     
-    prevIndex=views->currentIndex();
-    //if(!hideSearch)utilsBar->hide(); line->hide();
+    prevIndex = views->currentIndex();
 }
+
 void MainWindow::favoritesView()
 {
     views->setCurrentIndex(ARTISTS);
-    if(mini_mode!=0) expand();
+
+    if(mini_mode != FULLMODE) expand();
+
     utilsBar->actions().at(ALBUMS_UB)->setVisible(false);
     utilsBar->actions().at(COLLECTION_UB)->setVisible(true);
     utilsBar->actions().at(PLAYLISTS_UB)->setVisible(false); ui->frame_3->hide();
     utilsBar->actions().at(INFO_UB)->setVisible(false);
     
-    
-    prevIndex=views->currentIndex();
-    
-    /* QString url= QFileDialog::getExistingDirectory();
-      
-qDebug()<<url;
-
-    QStringList urlCollection;
-//QDir dir = new QDir(url);
-    QDirIterator it(url, QStringList() << "*.mp4" << "*.mp3" << "*.wav" <<"*.flac" <<"*.ogg", QDir::Files, QDirIterator::Subdirectories);
-    while (it.hasNext())
-    {
-        urlCollection<<it.next();
-        
-        //qDebug() << it.next();
-    }
-    
-   // collection.add(urlCollection);
-    //updateList();
-    populateTableView();*/
+    prevIndex = views->currentIndex();
 }
 
 
 void MainWindow::settingsView()
 {
     views->setCurrentIndex(SETTINGS);
-    if(mini_mode!=0) expand();
-    //if(!hideSearch) utilsBar->hide(); line->hide();
+
+    if(mini_mode != FULLMODE) expand();
+
     utilsBar->actions().at(ALBUMS_UB)->setVisible(false);
     utilsBar->actions().at(COLLECTION_UB)->setVisible(true);
     utilsBar->actions().at(PLAYLISTS_UB)->setVisible(false); ui->frame_3->setVisible(false);
     utilsBar->actions().at(INFO_UB)->setVisible(false);
     
-    
-    prevIndex=views->currentIndex();
-    
+    prevIndex = views->currentIndex();
 }
 
 void MainWindow::expand()
@@ -874,7 +792,6 @@ void MainWindow::expand()
     ui->hide_sidebar_btn->setIcon(QIcon(":Data/data/mini_mode.svg"));
 
     mini_mode=FULLMODE;
-    //keepOnTop(false);
 }
 
 void MainWindow::go_mini()
@@ -938,30 +855,26 @@ void MainWindow::go_playlistMode()
     layout->setContentsMargins(0,0,0,0);
 
     int oldHeigh = this->size().height();
+
     this->resize(200,oldHeigh);
     this->setMinimumSize(0,0);
-
     this->setFixedWidth(200);
+
     //this->adjustSize();
     //this->setWindowFlags(defaultWindowFlags);
     //this->show();
+
     ui->hide_sidebar_btn->setToolTip("Go Mini");
     ui->hide_sidebar_btn->setIcon(QIcon(":Data/data/mini_mode.svg"));
     mini_mode=PLAYLISTMODE;
-    //keepOnTop(true);
 }
 
 void MainWindow::keepOnTop(bool state)
 {
-    if (state)
-    {//Qt::WindowFlags flags = windowFlags();
-        setWindowFlags(Qt::WindowStaysOnTopHint);
-        this->show();
-    }else
-    {
-        //setWindowFlags(~ Qt::WindowStaysOnTopHint);
-        //show();
-    }
+    if (state) this->setWindowFlags(Qt::WindowStaysOnTopHint);
+    else this->setWindowFlags(defaultWindowFlags);
+
+    this->show();
 }
 
 void MainWindow::setStyle()
@@ -989,7 +902,7 @@ void MainWindow::on_hide_sidebar_btn_clicked()
     
 }
 
-void MainWindow::on_shuffle_btn_clicked()
+void MainWindow::on_shuffle_btn_clicked() //tofix
 {
     /*state 0: media-playlist-consecutive-symbolic
             1: media-playlist-shuffle
@@ -1038,9 +951,10 @@ void MainWindow::on_open_btn_clicked()
 
 void MainWindow::populateMainList()
 {
-    mainList->populateTableView("SELECT * FROM tracks WHERE babe = 1 ORDER by played desc",true);
+    auto results = settings_widget->collection_db.getTrackData(QString("SELECT * FROM tracks WHERE babe = 1 ORDER by played desc"));
+    mainList->populateTableView(results,true);
     mainList->resizeRowsToContents();
-    currentList=mainList->getAllTableContent();
+    currentList = mainList->getAllTableContent();
 }
 
 void MainWindow::updateList()
@@ -1183,7 +1097,7 @@ void MainWindow::loadCover(QString artist, QString album, QString title)
                 {
                     QPixmap pix;
                     if (!queryCover.value(2).toString().isEmpty())  pix.load(queryCover.value(2).toString());
-                    nof.notifySong(title,artist,album,current_song[BabeTable::LOCATION],pix);
+                    nof.notifySong(current_song,pix);
                 }
                 
             }else album_art->putPixmap( QString(":Data/data/cover.svg"));
@@ -1221,7 +1135,7 @@ void MainWindow::loadCover(QString artist, QString album, QString title)
                         infoTable->setArtistArt(queryCover.value(2).toString());
                         QPixmap pix;
                         pix.load(queryCover.value(2).toString());
-                        nof.notifySong(title,artist,album,current_song[BabeTable::LOCATION],pix);
+                        nof.notifySong(current_song,pix);
                         
                     }else album_art->putPixmap( QString(":Data/data/cover.svg"));
                     
@@ -1231,7 +1145,7 @@ void MainWindow::loadCover(QString artist, QString album, QString title)
             {
                 QPixmap pix;
                 
-                nof.notifySong(title,artist,album,current_song[BabeTable::LOCATION], pix);
+                nof.notifySong(current_song, pix);
                 emit getCover(artist,album,title);
             }
         }
@@ -1250,12 +1164,10 @@ void MainWindow::addToQueue(QList<QMap<int,QString>> mapList)
     }
 }
 
-
 void MainWindow::on_seekBar_sliderMoved(int position)
 {
     player->setPosition(player->duration() / 1000 * position);
 }
-
 
 void MainWindow::update()
 {
@@ -1353,13 +1265,9 @@ void MainWindow::on_backward_btn_clicked()
 {
     if(mainList->rowCount() > 0)
     {
-        if(player->position() > 3000)
-        {
-            player->setPosition(0);
-        }
+        if(player->position() > 3000) player->setPosition(0);
         else
         {
-            
             back();
             ui->play_btn->setIcon(QIcon(":Data/data/media-playback-pause.svg"));
         }
@@ -1372,7 +1280,9 @@ void MainWindow::on_foward_btn_clicked()
     {
         if(repeat)
         {
-            repeat = !repeat;next();repeat = !repeat;
+            repeat = !repeat;
+            next();
+
         }else
         {
             next();
@@ -1392,10 +1302,9 @@ void MainWindow::collectionDBFinishedAdding(bool state)
         albumsTable->flushGrid();
         artistsTable->flushGrid();
         refreshTables();
-    }else
-    {
-        refreshTables();
-    }
+
+    }else refreshTables();
+
 }
 
 void MainWindow::orderTables()
@@ -1406,48 +1315,24 @@ void MainWindow::orderTables()
 }
 
 
-
-
-
-void MainWindow::on_fav_btn_clicked()
-{
-    
-    babeIt({current_song});
-    
-    //babeIt({mainList->getRowData(mainList->getIndex())});
-}
-
+void MainWindow::on_fav_btn_clicked() { babeIt({current_song}); }
 
 void MainWindow::babeAlbum(QString album, QString artist)
 {
-    QSqlQuery query;
+    QList<QMap<int,QString>> mapList;
     if(album.isEmpty())
-        query = settings_widget->getCollectionDB().getQuery("SELECT * FROM tracks WHERE artist = \""+artist+"\" ORDER by album asc, track asc ");
+        mapList = settings_widget->getCollectionDB().getTrackData(QString("SELECT * FROM tracks WHERE artist = \""+artist+"\""));
     else if(!artist.isEmpty())
-        query = settings_widget->getCollectionDB().getQuery("SELECT * FROM tracks WHERE artist = \""+artist+"\" and album = \""+album+"\" ORDER by track asc ");
-    
-    if(query.exec())
-    {
-        QStringList urls;
-        while(query.next())
-        {
-            urls<<query.value(CollectionDB::LOCATION).toString();
-        }
-        
-        babeIt(settings_widget->getCollectionDB().getTrackData(urls));
-        
-        
-    }
+        mapList = settings_widget->getCollectionDB().getTrackData(QString("SELECT * FROM tracks WHERE artist = \""+artist+"\" and album = \""+album+"\""));
+
+    babeIt(mapList);
 }
 
 void MainWindow::unbabeIt(QString url)
 {
-    qDebug()<<"The song is already babed";
     if(settings_widget->getCollectionDB().insertInto("tracks","babe",url,0))
-    {
         ui->fav_btn->setIcon(QIcon(":Data/data/love-amarok.svg"));
-        
-    }
+
 }
 
 void MainWindow::babeIt(QList<QMap<int,QString>> mapList)
@@ -1486,7 +1371,7 @@ void MainWindow::babeIt(QList<QMap<int,QString>> mapList)
                 ui->fav_btn->setIcon(QIcon(":Data/data/loved.svg"));
                 ui->fav_btn->setEnabled(false);
                 
-                if(addToCollectionDB_t({url},"1"))
+                if(addToCollectionDB({url},"1"))
                     nof.notify("Song Babe'd it",track[BabeTable::TITLE]+" by "+track[BabeTable::ARTIST]);
                 
                 ui->fav_btn->setEnabled(true);
@@ -1526,7 +1411,7 @@ void MainWindow::scanNewDir(QString url,QString babe)
     
     if (!list.isEmpty())
     {
-        if(addToCollectionDB_t(list,babe))
+        if(addToCollectionDB(list,babe))
             nof.notify("New music added to collection",list.join("\n"));
         
     }else
@@ -1539,7 +1424,7 @@ void MainWindow::scanNewDir(QString url,QString babe)
 }
 
 
-bool MainWindow::addToCollectionDB_t(QStringList url, QString babe)
+bool MainWindow::addToCollectionDB(QStringList url, QString babe)
 {
     if(settings_widget->getCollectionDB().addTrack(url,babe.toInt()))
     {
@@ -1613,14 +1498,14 @@ void MainWindow::on_search_textChanged(const QString &arg1)
 
         auto searchResults = searchFor(searchList);
 
-        if(!searchResults.isEmpty()) populateResults(searchResults);
+        if(!searchResults.isEmpty()) populateResultsTable(searchResults);
 
     }else views->setCurrentIndex(prevIndex);
 
 
 }
 
-void MainWindow::populateResults(QList<QMap<int,QString>> mapList)
+void MainWindow::populateResultsTable(QList<QMap<int,QString>> mapList)
 {
     views->setCurrentIndex(RESULTS);
     utilsBar->actions().at(ALBUMS_UB)->setVisible(false);
@@ -1695,9 +1580,7 @@ void MainWindow::on_refreshBtn_clicked()
     clearCurrentList();
     populateMainList();
     qDebug()<<"ehat was in current list:"<<currentList;
-    
-    qDebug()<<"ehats in current list:"<<currentList;
-    currentList=mainList->getAllTableContent();
+    currentList = mainList->getAllTableContent();
     mainList->scrollToTop();
 }
 
@@ -1778,7 +1661,7 @@ void MainWindow::on_filterBtn_clicked()
 
 void MainWindow::on_filter_textChanged(const QString &arg1)
 {
-    qDebug()<<"%%%%%%%%RRRRAW";
+
     if(!ui->filter->text().isEmpty())
     {
         QStringList searchList=arg1.split(",");
