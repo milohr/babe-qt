@@ -147,7 +147,7 @@ signals:
     void leftTable();
     void finishedPopulating();
     void rightClicked(const int row, const int column);
-    void babeIt_clicked(QList<QMap<int,QString>> mapList);
+    void babeIt_clicked(QMap<int,QString> track);
     void removeIt_clicked(int index);
     void createPlaylist_clicked();
     void refreshPlaylistsMenu(QStringList list);

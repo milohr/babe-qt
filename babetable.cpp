@@ -842,14 +842,8 @@ void BabeTable::on_tableWidget_doubleClicked(const QModelIndex &index)
 }
 
 void BabeTable::babeIt_action()
-{
-    qDebug() << "right clicked!";
-    // int row= this->currentIndex().row();
-    qDebug()
-            << this->model()->data(this->model()->index(rRow, LOCATION)).toString();
-    QList<QMap<int, QString>> mapList;
-    mapList<<getRowData(rRow);
-    emit babeIt_clicked(mapList);
+{    
+    emit babeIt_clicked(this->getRowData(rRow));
 }
 
 void BabeTable::sendIt_action(QAction *device)

@@ -79,7 +79,7 @@ signals:
     void albumOrderChanged(QString order);
     void playAlbum(QString artist, QString album);
     void changedArt(QString artist, QString album);
-    void babeAlbum_clicked(QList<QMap<int,QString>> tracks);
+    void babeAlbum_clicked(QString album, QString artist);
     void populateCoversFinished();
     void populateHeadsFinished();
 

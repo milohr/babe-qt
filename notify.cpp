@@ -79,6 +79,6 @@ void Notify::notifyUrgent(  const QString &title, const QString &body)
 void Notify::babeIt()
 {
     qDebug()<<"babe the shit out of it";
-     emit babeSong({track});
+     emit babeSong(track);
 
 }

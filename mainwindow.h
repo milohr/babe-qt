@@ -56,7 +56,7 @@ public:
     void updateList();
     void populateMainList();
     void clearCurrentList();
-    bool isBabed(QString url);
+    bool isBabed(QMap<int, QString> track);
     QStringList searchKeys = {"location:","artist:","album:","title:","genre:" };
 
 
@@ -146,8 +146,8 @@ private slots:
     void removeSong(int index);
     void putOnPlay(QString artist, QString album);
     void loadCover(QString artist, QString album, QString title);
-    bool babeIt(QList<QMap<int, QString> > mapList);
-    void unbabeIt(QString url);
+    bool babeIt(QMap<int, QString> track);
+    bool unbabeIt(QMap<int, QString> track);
     void loadMood();
     void addToQueue(QList<QMap<int,QString>> mapList);    
     void on_filterBtn_clicked();

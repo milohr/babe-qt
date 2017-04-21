@@ -28,7 +28,7 @@ private:
 
 
 signals:
-    void babeSong(QList<QMap<int, QString>> mapList);
+    void babeSong(QMap<int, QString> mapList);
 
 public slots:
     void babeIt();
