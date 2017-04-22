@@ -1469,7 +1469,7 @@ void MainWindow::addToPlaylist(QList<QMap<int,QString>> mapList, bool notRepeate
             if(!alreadyInList.contains(track[BabeTable::LOCATION]))
             {
                 newList<<track;
-                mainList->addRow(track);
+                mainList->addRow(track,true);
             }
         }
         
@@ -1477,7 +1477,7 @@ void MainWindow::addToPlaylist(QList<QMap<int,QString>> mapList, bool notRepeate
     }else
     {
         currentList+=mapList;
-        for(auto track:mapList) mainList->addRow(track);
+        for(auto track:mapList) mainList->addRow(track, true);
     }
     
     mainList->resizeRowsToContents();
