@@ -43,6 +43,7 @@ private:
     bool extraList=false;
     QListWidget *grid;
     QList<Album*> albumsList;
+    QList<QListWidgetItem*> itemsList;
     QStringList albums;
     QStringList artists;
     QWidget *albumBox_frame;

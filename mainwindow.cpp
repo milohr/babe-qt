@@ -73,7 +73,7 @@ MainWindow::MainWindow(QWidget *parent) :
         QString style(styleFile.readAll());
         this->setStyleSheet(style);
     }
-    
+    setToolbarIconSize(settings_widget->getToolbarIconSize());
     mainList->setCurrentCell(0,BabeTable::TITLE);
     
     if(mainList->rowCount()>0)
@@ -172,6 +172,7 @@ void MainWindow::setUpViews()
     connect(albumsTable,&AlbumsView::babeAlbum_clicked,this,&MainWindow::babeAlbum);
 
     artistsTable = new AlbumsView(true,this);
+    artistsTable->order->setVisible(false);
     artistsTable->albumTable->showColumn(BabeTable::ALBUM);
     connect(artistsTable->albumTable,SIGNAL(tableWidget_doubleClicked(QList<QMap<int, QString>>)),this,SLOT(addToPlaylist(QList<QMap<int, QString>>)));
     connect(artistsTable->albumTable,SIGNAL(removeIt_clicked(int)),this,SLOT(removeSong(int)));
@@ -189,8 +190,7 @@ void MainWindow::setUpViews()
     connect(infoTable, &InfoView::tagClicked,[this](QString query) { this->ui->search->setText(query);});
     connect(infoTable, &InfoView::similarArtistTagClicked,[this](QString query) { this->ui->search->setText(query);});
 
-    settings_widget->readSettings();
-    setToolbarIconSize(settings_widget->getToolbarIconSize());
+    settings_widget->readSettings();    
     connect(settings_widget, SIGNAL(toolbarIconSizeChanged(int)), this, SLOT(setToolbarIconSize(int)));
     connect(settings_widget, SIGNAL(collectionDBFinishedAdding(bool)), this, SLOT(collectionDBFinishedAdding(bool)));
     connect(settings_widget, SIGNAL(dirChanged(QString,QString)),this, SLOT(scanNewDir(QString, QString)));
@@ -200,7 +200,7 @@ void MainWindow::setUpViews()
     /* THE BUTTONS VIEWS */
     connect(ui->tracks_view, SIGNAL(clicked()), this, SLOT(collectionView()));
     connect(ui->albums_view, SIGNAL(clicked()), this, SLOT(albumsView()));
-    connect(ui->artists_view, SIGNAL(clicked()), this, SLOT(favoritesView()));
+    connect(ui->artists_view, SIGNAL(clicked()), this, SLOT(artistsView()));
     connect(ui->playlists_view, SIGNAL(clicked()), this, SLOT(playlistsView()));
     connect(ui->online_view, SIGNAL(clicked()), this, SLOT(onlineView()));
     connect(ui->info_view, SIGNAL(clicked()), this, SLOT(infoView()));
@@ -294,11 +294,14 @@ void MainWindow::setUpCollectionViewer()
     utilsBar->addWidget(playlistTable->btnContainer);
     utilsBar->addWidget(ui->searchWidget);
     utilsBar->addWidget(albumsTable->utilsFrame);
+    utilsBar->addWidget(artistsTable->utilsFrame);
     utilsBar->addWidget(ui->collectionUtils);
     
     utilsBar->actions().at(PLAYLISTS_UB)->setVisible(false); ui->frame_3->setVisible(false);
     utilsBar->actions().at(INFO_UB)->setVisible(false);
     utilsBar->actions().at(ALBUMS_UB)->setVisible(false);
+    utilsBar->actions().at(ARTISTS_UB)->setVisible(false);
+
     
     ui->search->setClearButtonEnabled(true);
     ui->search->setPlaceholderText("Search...");
@@ -381,7 +384,7 @@ void MainWindow::setUpPlaylist()
     auto clearIt = new QAction("Clear list...");
     connect(clearIt, &QAction::triggered, [this]()
     {
-        album_art->putPixmap(QString(":Data/data/cover.svg"));
+        album_art->putDefaultPixmap();
         this->mainList->flushTable();
         lCounter=-1;
         player->stop();
@@ -626,10 +629,7 @@ void MainWindow::dropEvent(QDropEvent *event)
 }
 
 
-void MainWindow::dummy()
-{
-    qDebug()<<"TEST on DUMMYT";
-}
+void MainWindow::dummy() { qDebug()<<"TEST on DUMMYT"; }
 
 void MainWindow::setCoverArt(QString artist, QString album,QString title)
 {
@@ -642,7 +642,7 @@ void MainWindow::setCoverArt(QString artist, QString album,QString title)
 void MainWindow::putPixmap(QByteArray array)
 {
     if(!array.isEmpty()) album_art->putPixmap(array);
-    else  album_art->putPixmap(QString(":Data/data/cover.svg"));
+    else  album_art->putDefaultPixmap();
 }
 
 void MainWindow::setToolbarIconSize(int iconSize) //tofix
@@ -652,6 +652,7 @@ void MainWindow::setToolbarIconSize(int iconSize) //tofix
     //playback->setIconSize(QSize(iconSize,iconSize));
     //utilsBar->setIconSize(QSize(iconSize,iconSize));
     ui->mainToolBar->update();
+    //this->utilsBar->setIconSize(QSize(iconSize,iconSize));
     /*for (auto obj : ui->collectionUtils->children())
     {
         if(static_cast<QToolButton *>(obj)!=0)
@@ -663,9 +664,6 @@ void MainWindow::setToolbarIconSize(int iconSize) //tofix
     // this->update();
 }
 
-
-
-
 void MainWindow::collectionView()
 {
     views->setCurrentIndex(COLLECTION);
@@ -673,6 +671,7 @@ void MainWindow::collectionView()
     if(mini_mode != FULLMODE) expand();
     
     utilsBar->actions().at(ALBUMS_UB)->setVisible(false);
+    utilsBar->actions().at(ARTISTS_UB)->setVisible(false);
     utilsBar->actions().at(COLLECTION_UB)->setVisible(true);
     utilsBar->actions().at(PLAYLISTS_UB)->setVisible(false); ui->frame_3->setVisible(false);
     utilsBar->actions().at(INFO_UB)->setVisible(false);
@@ -687,7 +686,8 @@ void MainWindow::albumsView()
 
     if(mini_mode != FULLMODE) expand();
 
-    utilsBar->actions().at(ALBUMS_UB)->setVisible(true);;
+    utilsBar->actions().at(ALBUMS_UB)->setVisible(true);
+    utilsBar->actions().at(ARTISTS_UB)->setVisible(false);
     utilsBar->actions().at(COLLECTION_UB)->setVisible(true);
     utilsBar->actions().at(PLAYLISTS_UB)->setVisible(false); ui->frame_3->setVisible(false);
     utilsBar->actions().at(INFO_UB)->setVisible(false);
@@ -702,6 +702,7 @@ void MainWindow::playlistsView()
     if(mini_mode != FULLMODE) expand();
 
     utilsBar->actions().at(ALBUMS_UB)->setVisible(false);
+    utilsBar->actions().at(ARTISTS_UB)->setVisible(false);
     utilsBar->actions().at(COLLECTION_UB)->setVisible(true);
     utilsBar->actions().at(PLAYLISTS_UB)->setVisible(true); ui->frame_3->setVisible(true);
     utilsBar->actions().at(INFO_UB)->setVisible(false);
@@ -716,6 +717,7 @@ void MainWindow::onlineView()
     if(mini_mode != FULLMODE) expand();
 
     utilsBar->actions().at(ALBUMS_UB)->setVisible(false);
+    utilsBar->actions().at(ARTISTS_UB)->setVisible(false);
     utilsBar->actions().at(COLLECTION_UB)->setVisible(false);
     utilsBar->actions().at(PLAYLISTS_UB)->setVisible(false); ui->frame_3->setVisible(false);
     utilsBar->actions().at(INFO_UB)->setVisible(false);
@@ -730,6 +732,7 @@ void MainWindow::infoView()
     if(mini_mode != FULLMODE) expand();
 
     utilsBar->actions().at(ALBUMS_UB)->setVisible(false);
+    utilsBar->actions().at(ARTISTS_UB)->setVisible(false);
     utilsBar->actions().at(COLLECTION_UB)->setVisible(true);
     utilsBar->actions().at(PLAYLISTS_UB)->setVisible(false);
     utilsBar->actions().at(INFO_UB)->setVisible(true); ui->frame_3->setVisible(true);
@@ -737,13 +740,14 @@ void MainWindow::infoView()
     prevIndex = views->currentIndex();
 }
 
-void MainWindow::favoritesView()
+void MainWindow::artistsView()
 {
     views->setCurrentIndex(ARTISTS);
 
     if(mini_mode != FULLMODE) expand();
 
     utilsBar->actions().at(ALBUMS_UB)->setVisible(false);
+    utilsBar->actions().at(ARTISTS_UB)->setVisible(true);
     utilsBar->actions().at(COLLECTION_UB)->setVisible(true);
     utilsBar->actions().at(PLAYLISTS_UB)->setVisible(false); ui->frame_3->hide();
     utilsBar->actions().at(INFO_UB)->setVisible(false);
@@ -759,6 +763,7 @@ void MainWindow::settingsView()
     if(mini_mode != FULLMODE) expand();
 
     utilsBar->actions().at(ALBUMS_UB)->setVisible(false);
+    utilsBar->actions().at(ARTISTS_UB)->setVisible(false);
     utilsBar->actions().at(COLLECTION_UB)->setVisible(true);
     utilsBar->actions().at(PLAYLISTS_UB)->setVisible(false); ui->frame_3->setVisible(false);
     utilsBar->actions().at(INFO_UB)->setVisible(false);
@@ -1089,7 +1094,7 @@ void MainWindow::loadCover(QString artist, QString album, QString title)
         {
             if(!queryCover.value(2).toString().isEmpty()&&queryCover.value(2).toString()!="NULL")
             {
-                album_art->putPixmap( queryCover.value(2).toString());
+                album_art->putPixmap(queryCover.value(2).toString());
                 //mpris->updateCurrentCover(queryCover.value(2).toString());
                 if(!this->isActiveWindow())
                 {
@@ -1098,7 +1103,7 @@ void MainWindow::loadCover(QString artist, QString album, QString title)
                     nof.notifySong(current_song,pix);
                 }
                 
-            }else album_art->putPixmap( QString(":Data/data/cover.svg"));
+            }else album_art->putDefaultPixmap();
             
             
         }
@@ -1135,7 +1140,7 @@ void MainWindow::loadCover(QString artist, QString album, QString title)
                         pix.load(queryCover.value(2).toString());
                         nof.notifySong(current_song,pix);
                         
-                    }else album_art->putPixmap( QString(":Data/data/cover.svg"));
+                    }else album_art->putDefaultPixmap();
                     
                 }
                 

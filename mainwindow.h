@@ -66,7 +66,7 @@ public:
     };
     enum utilsBar
     {
-        INFO_UB,PLAYLISTS_UB,SEARCH_UB,ALBUMS_UB,COLLECTION_UB, FAVORITES_UB,ONLINE_UB
+        INFO_UB,PLAYLISTS_UB,SEARCH_UB,ALBUMS_UB,ARTISTS_UB,COLLECTION_UB, FAVORITES_UB,ONLINE_UB
     };
     enum viewModes
     {
@@ -114,7 +114,7 @@ private slots:
     /*the main views*/
     void collectionView();
     void albumsView();
-    void favoritesView();
+    void artistsView();
     void onlineView();
     void playlistsView();
     void infoView();

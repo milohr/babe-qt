@@ -61,7 +61,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     //order->setFrame(false);
 
     utilsLayout->addWidget(order);
-    //utilsLayout->addWidget(slider);
+    utilsLayout->addWidget(slider);
 
     albumTable = new BabeTable(this);
     albumTable->setFrameShape(QFrame::NoFrame);
@@ -174,18 +174,19 @@ void AlbumsView::filterAlbum(QModelIndex index) {
 
 void AlbumsView::albumsSize(int value)
 {
-    Q_UNUSED(value);
-    /* albumSize=value;
-    //slider->setToo
+    albumSize=value;
     slider->setToolTip(QString::number(value));
     QToolTip::showText( slider->mapToGlobal( QPoint( 0, 0 ) ), QString::number(value) );
     for(auto album : albumsList)
     {
         album->setSize(albumSize);
-        album->setTitleGeometry(0,albumSize-30,albumSize,30);
-        //grid->setGridSize(QSize(albumSize+10,albumSize+10));
+        grid->setGridSize(QSize(albumSize+10,albumSize+10));
+        grid->update();
 
-    }*/
+    }
+
+    for(auto item : itemsList) item->setSizeHint(QSize(albumSize, albumSize));
+
 }
 
 void AlbumsView::albumHover()
@@ -196,6 +197,7 @@ void AlbumsView::albumHover()
 void  AlbumsView::flushGrid()
 {
     this->hideAlbumFrame();
+    albumsList.clear();
     albums.clear();
     artists.clear();
     grid->clear();
@@ -226,6 +228,7 @@ void AlbumsView::populateTableView(QSqlQuery query)
                 art = query.value(ART).toString();
 
             auto artwork= new Album(art,albumSize,4,true,this);
+            albumsList.push_back(artwork);
 
             artwork->borderColor=true;
             artwork->setArtist(artist);
@@ -247,7 +250,8 @@ void AlbumsView::populateTableView(QSqlQuery query)
                 //grid->clearMask();
             });
 
-            auto item =new QListWidgetItem();
+            auto item = new QListWidgetItem();
+            itemsList.push_back(item);
             item->setSizeHint( QSize( albumSize, albumSize));
             grid->addItem(item);
             grid->setItemWidget(item,artwork);
@@ -272,7 +276,7 @@ void AlbumsView::populateTableViewHeads(QSqlQuery query)
     {
         QString artist =query.value(TITLE).toString();
         QString art=":Data/data/cover.svg";
-        // albumsList.push_back(album);
+
 
         if(!artists.contains(artist))
         {
@@ -283,7 +287,7 @@ void AlbumsView::populateTableViewHeads(QSqlQuery query)
                 art=(query.value(1).toString());
 
             Album *album= new Album(art,albumSize,4,true,this);
-
+            albumsList.push_back(album);
 
             album->borderColor=true;
             album->setArtist(artist);
@@ -299,13 +303,10 @@ void AlbumsView::populateTableViewHeads(QSqlQuery query)
 
             //album->setStyleSheet(":hover {background:#3daee9; }");
             auto item =new QListWidgetItem();
-            item->setSizeHint( QSize( albumSize, albumSize) );
-
-            // item->setTextAlignment(Qt::AlignCenter);
+            itemsList.push_back(item);
+            item->setSizeHint( QSize( albumSize, albumSize));
             grid->addItem(item);
-
             grid->setItemWidget(item,album);
-
 
         }
     }

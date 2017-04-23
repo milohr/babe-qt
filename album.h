@@ -23,6 +23,7 @@ class Album : public QLabel
     Q_OBJECT
 
 public:
+
     explicit Album(QString imagePath, int widgetSize, int widgetRadius=0, bool isDraggable=false, QWidget *parent = 0);
     ~Album(){}
     void setArtist(QString artist);
@@ -46,6 +47,7 @@ public:
     QToolButton *playBtn;
 
 private:
+
     bool draggable;
     QString imagePath;
     QString artist="";
@@ -58,6 +60,7 @@ private:
     void performDrag();
 
 signals:
+
     void albumCoverClicked(QStringList info);
     void albumCoverEnter();
     void albumCoverLeft();
@@ -67,6 +70,7 @@ signals:
     void albumDragged();
 
 public slots:
+
     void putPixmap(QByteArray pix);
     void putPixmap(QString path);
     void putDefaultPixmap();
@@ -82,6 +86,9 @@ protected:
     virtual void enterEvent(QEvent *event);
     virtual void leaveEvent(QEvent *event);
     virtual void paintEvent(QPaintEvent *event);
+    virtual bool eventFilter(QObject * watched, QEvent * event) Q_DECL_OVERRIDE;
+
+
 
     // virtual void  mouseMoveEvent(QMouseEvent *evt);
 };

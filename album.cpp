@@ -46,34 +46,56 @@ Album::Album(QString imagePath, int widgetSize, int widgetRadius, bool isDraggab
     layout->addWidget(title);
     layout->addWidget(right_spacer);
 
+
+    playBtn = new QToolButton(this);
+    playBtn->installEventFilter(this);
+    connect(playBtn,SIGNAL(clicked()),this,SLOT(playBtn_clicked()));
+    playBtn->setIcon(QIcon(":Data/data/playBtn.svg"));
+    playBtn->setIconSize(QSize(48,48));
+    playBtn->setGeometry((size/2)-24,(size/2)-24,playBtn->iconSize().width(),playBtn->iconSize().width());
+    playBtn->setStyleSheet("QToolButton{border:none;}");
+    //playBtn->setStyleSheet("QToolButton{ } QToolButton:hover{background: #333; border:1px solid black; border-radius:24px; } ");
+    playBtn->setAutoRaise(true);
+    playBtn->setVisible(false);
+
+
     auto contextMenu = new QMenu(this);
     this->setContextMenuPolicy(Qt::ActionsContextMenu);
 
     auto babeIt = new QAction("Babe it \xe2\x99\xa1",contextMenu);
+    connect(babeIt, SIGNAL(triggered()), this, SLOT(babeIt_action()));
     this->addAction(babeIt);
 
     auto removeIt = new QAction("Remove",contextMenu);
+    connect(removeIt, SIGNAL(triggered()), this, SLOT(removeIt_action()));
     this->addAction(removeIt);
 
     auto artIt = new QAction("Change art...",contextMenu);
+    connect(artIt, SIGNAL(triggered()), this, SLOT(artIt_action()));
     this->addAction(artIt);
 
-    connect(babeIt, SIGNAL(triggered()), this, SLOT(babeIt_action()));
-    connect(removeIt, SIGNAL(triggered()), this, SLOT(removeIt_action()));
-    connect(artIt, SIGNAL(triggered()), this, SLOT(artIt_action()));
-
-    playBtn = new QToolButton(this);
-    connect(playBtn,SIGNAL(clicked()),this,SLOT(playBtn_clicked()));
-    playBtn->setIcon(QIcon(":Data/data/playBtn.svg"));
-    playBtn->setIconSize(QSize(48,48));
-    playBtn->setGeometry((size/2)-24,(size/2)-24,48,48);
-    playBtn->setStyleSheet("QToolButton{border-radius:2px;} QToolButton:hover{background: url(':Data/data/playBtn_hover.svg') top center no-repeat;} ");
-    playBtn->setAutoRaise(true);
-    playBtn->setVisible(false);
 
 }
 
+bool Album::eventFilter(QObject * watched, QEvent * event)
+{
+    if (watched != playBtn) return false;
 
+
+    if (event->type() == QEvent::Enter)
+    {
+        playBtn->setIcon(QIcon(":Data/data/playBtn_hover.svg"));
+        return true;
+    }
+
+    if (event->type() == QEvent::Leave)
+    {
+        playBtn->setIcon(QIcon(":Data/data/playBtn.svg"));
+        return true;
+    }
+
+    return false;
+}
 
 void Album::babeIt_action()
 {
@@ -100,22 +122,25 @@ void Album::removeIt_action()
 
 }
 
-void Album::playBtn_clicked()
+void Album::playBtn_clicked() { emit playAlbum(artist,album); }
+
+void Album::setSize(int value)
 {
-    emit playAlbum(artist,album);
+    this->size=value;
+    this->setFixedSize(size,size);
+    this->widget->setMinimumWidth(size-2);
+    this->widget->setGeometry(1,size-31,size-2,30);
+    this->playBtn->setIconSize(QSize(static_cast<int>(size*0.4),static_cast<int>(size*0.4)));
+    this->playBtn->setGeometry((size/2)-static_cast<int>((size*0.4)/2),(size/2)-static_cast<int>((size*0.4)/2),playBtn->iconSize().width(),playBtn->iconSize().width());
 }
 
 void Album::paintEvent(QPaintEvent *event)
 {
-    Q_UNUSED(event)
+    event->accept();
 
     QBrush brush(Qt::yellow);
-
-
     if(!image.isNull())
         brush.setTexture(image.scaled(size,size,Qt::KeepAspectRatio));
-
-
 
     // brush.setStyle(Qt::no);
     QPainter painter(this);
@@ -123,16 +148,9 @@ void Album::paintEvent(QPaintEvent *event)
     painter.setBrush(brush);
     if (!borderColor)painter.setPen(Qt::NoPen);
     painter.drawRoundedRect(0,0, size, size, border_radius, border_radius);
-
-    //this->setStyleSheet("border:1px solid red;");
-
-
 }
 
-QPixmap Album::getPixmap()
-{
-    return image;
-}
+QPixmap Album::getPixmap() { return image; }
 
 void Album::putPixmap(QByteArray pix)
 {
@@ -154,6 +172,8 @@ void Album::putPixmap(QString path)
 void Album::putDefaultPixmap()
 {
     this->image.load(":Data/data/cover.svg");
+    this->setPixmap(image);
+
 }
 
 QString Album::getTitle()
@@ -210,13 +230,7 @@ void Album::setTitle()
 }
 
 
-void Album::setSize(int value)
-{
-    this->size=value;
-    //widget->setGeometry(0,90,size,30);
 
-
-}
 
 void Album::setTitleGeometry(int x, int y, int w, int h)
 {
