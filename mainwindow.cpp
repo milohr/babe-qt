@@ -699,6 +699,8 @@ void MainWindow::playlistsView()
 {
     views->setCurrentIndex(PLAYLISTS);
 
+   // playlistTable->list->itemClicked(playlistTable->list->indexAt();
+
     if(mini_mode != FULLMODE) expand();
 
     utilsBar->actions().at(ALBUMS_UB)->setVisible(false);

@@ -7,6 +7,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
 {
 
     grid = new QListWidget(this);
+    grid->parentWidget()->installEventFilter(this);
     grid->setViewMode(QListWidget::IconMode);
     grid->setResizeMode(QListWidget::Adjust);
     grid->setUniformItemSizes(true);
@@ -14,19 +15,36 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     //grid->setMovement(QListWidget::Static);
     grid->setFrameShape(QFrame::NoFrame);
     grid->setSizePolicy(QSizePolicy ::Expanding , QSizePolicy ::Expanding );
-    grid->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+    grid->setSizeAdjustPolicy(QListWidget::AdjustToContents);
     //grid->setStyleSheet("QListWidget {background:#2E2F30; border:1px solid black; border-radius: 2px; }");
     grid->setStyleSheet("QListWidget {background:transparent; padding-top:15px; padding-left:15px; }");
     grid->setGridSize(QSize(albumSize+10,albumSize+10));
 
-    //grid->setMaximumWidth(128);
-    //grid->setFlow(QListView::LeftToRight);
-    //grid->setFlow(QListWidget::TopToBottom);
-    //grid->setMovement(QListView::Snap);
-    //grid->setWrapping(false);
-    //grid->setSpacing(20);
-    //grid->setIconSize(QSize(120,120));
-    //grid->setAlignment(Qt::AlignLeading);
+    QAction *zoomIn = new QAction(this);
+    zoomIn->setShortcut(tr("CTRL++"));
+    connect(zoomIn, &QAction::triggered,[this](){
+        if(albumSize+5<=200)
+        {
+            this->setAlbumsSize(albumSize+5);
+            slider->setValue(albumSize+5);
+            slider->setSliderPosition(albumSize+5);
+        }
+
+    });
+
+    QAction *zoomOut = new QAction(this);
+    zoomOut->setShortcut(tr("CTRL+-"));
+    connect(zoomOut, &QAction::triggered,[this](){
+        if(albumSize-5>=80){
+            this->setAlbumsSize(albumSize-5);
+            slider->setValue(albumSize-5);
+            slider->setSliderPosition(albumSize-5);
+        }
+    });
+
+    this->addAction(zoomIn);
+    this->addAction(zoomOut);
+
 
     auto utilsLayout = new QHBoxLayout();
     utilsLayout->setContentsMargins(0,0,0,0);
@@ -39,17 +57,17 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     utilsFrame->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Minimum);
 
     slider = new QSlider();
-    connect(slider,SIGNAL(sliderMoved(int)),this,SLOT(albumsSize(int)));
-    slider->setMaximumWidth(100);
+    connect(slider,SIGNAL(sliderMoved(int)),this,SLOT(setAlbumsSize(int)));
+    //slider->setMaximumWidth(100);
     slider->setMaximum(200);
     slider->setMinimum(80);
     slider->setValue(albumSize);
+    slider->setSliderPosition(albumSize);
     slider->setOrientation(Qt::Orientation::Horizontal);
 
 
     order = new QComboBox();
     connect(order, SIGNAL(currentIndexChanged(QString)),this,SLOT(orderChanged(QString)));
-
     order->setFrame(false);
     /*order->setMaximumWidth(70);
     order->setMaximumHeight(22);*/
@@ -58,10 +76,9 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     order->addItem("Artist");
     order->addItem("Title");
     order->setCurrentIndex(1);
-    //order->setFrame(false);
 
     utilsLayout->addWidget(order);
-    utilsLayout->addWidget(slider);
+   // utilsLayout->addWidget(slider);
 
     albumTable = new BabeTable(this);
     albumTable->setFrameShape(QFrame::NoFrame);
@@ -71,21 +88,16 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     albumTable->hideColumn(BabeTable::ARTIST);
     albumTable->hideColumn(BabeTable::ALBUM);
 
-
     auto layout = new QGridLayout();
     layout->setMargin(0);
     layout->addWidget(grid,0,0);
     layout->setSpacing(0);
-
-    //scroll->setMaximumSize(120*4,120*4);
-    // scroll->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding  );
 
     auto albumBox = new QGridLayout();
     albumBox->setContentsMargins(0,0,0,0);
     albumBox->setSpacing(0);
 
     albumBox_frame = new QWidget(this);
-    //albumBox_frame->setFrameShape(QFrame::NoFrame);
     albumBox_frame->setLayout(albumBox);
 
     line_h = new QFrame(this);
@@ -100,7 +112,6 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     connect(cover,SIGNAL(playAlbum(QString , QString)),this,SLOT(playAlbum_clicked(QString, QString)));
     connect(cover,SIGNAL(changedArt(QString, QString , QString)),this,SLOT(changedArt_cover(QString, QString, QString)));
     connect(cover,SIGNAL(babeAlbum_clicked(QString, QString)),this,SLOT(babeAlbum(QString, QString)));
-
 
     closeBtn = new QToolButton(cover);
     connect(closeBtn,SIGNAL(clicked()),SLOT(hideAlbumFrame()));
@@ -147,11 +158,38 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
 
 AlbumsView::~AlbumsView(){}
 
+
 void AlbumsView::hideAlbumFrame()
 {
     albumTable->flushTable();
     albumBox_frame->hide();
     line_h->hide();
+}
+
+bool AlbumsView::eventFilter(QObject * watched, QEvent * event)
+{
+   if(watched != grid->parent()) return false;
+
+   /* if (event->type() == QEvent::Resize)
+    {
+        int w = grid->width();
+        int a =  grid->gridSize().width()+2;
+        int c = w/a;
+        int amount = (w-(c*a))/c;
+        qDebug()<<"amount: "<< amount <<"w: "<<w<<"a: "<<a<<"c: "<<c;
+       if(grid->width()>gridSize)
+           grid->setGridSize(QSize(a+c,a+c));
+
+        else
+           grid->setGridSize(QSize(c*amount,c*amount));
+
+
+        gridSize = grid->width();
+        slider->setValue(albumSize);
+        slider->setSliderPosition(albumSize);
+        return true;
+    }*/
+    return false;
 }
 
 
@@ -172,7 +210,7 @@ void AlbumsView::filterAlbum(QModelIndex index) {
 
 }
 
-void AlbumsView::albumsSize(int value)
+void AlbumsView::setAlbumsSize(int value)
 {
     albumSize=value;
     slider->setToolTip(QString::number(value));
@@ -259,6 +297,8 @@ void AlbumsView::populateTableView(QSqlQuery query)
 
     }
 
+    //grid->adjustSize();
+    qDebug()<<grid->width()<<grid->size().height();
     emit populateCoversFinished();
 
 

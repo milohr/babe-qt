@@ -81,11 +81,12 @@ public slots:
 
 protected:
 
-    virtual void mousePressEvent (QMouseEvent * event);
-    virtual void mouseMoveEvent(QMouseEvent *event);
-    virtual void enterEvent(QEvent *event);
-    virtual void leaveEvent(QEvent *event);
-    virtual void paintEvent(QPaintEvent *event);
+
+    virtual void mousePressEvent (QMouseEvent * event) Q_DECL_OVERRIDE;
+    virtual void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+    virtual void enterEvent(QEvent *event) Q_DECL_OVERRIDE;
+    virtual void leaveEvent(QEvent *event) Q_DECL_OVERRIDE;
+    virtual void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
     virtual bool eventFilter(QObject * watched, QEvent * event) Q_DECL_OVERRIDE;
 
 

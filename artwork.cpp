@@ -19,9 +19,10 @@
 #include "artwork.h"
 #include "baeUtils.h"
 
-ArtWork::ArtWork(QObject *parent) : QObject(parent) {
-    url = "http://ws.audioscrobbler.com/2.0/";
-} //
+ArtWork::ArtWork(QObject *parent) : QObject(parent)
+{
+    url = "http://ws.audioscrobbler.com/2.0/"; //for now use as default lastFm api
+}
 
 ArtWork::~ArtWork() {} //
 

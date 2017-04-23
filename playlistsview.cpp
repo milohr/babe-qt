@@ -151,7 +151,8 @@ void PlaylistsView::setDefaultPlaylists() {
 
 void PlaylistsView::tableClicked(QStringList list) {emit songClicked(list);}
 
-void PlaylistsView::populatePlaylist(QModelIndex index) {
+void PlaylistsView::populatePlaylist(QModelIndex index)
+{
     currentPlaylist = index.data().toString();
     emit playlistClicked(currentPlaylist);
     table->flushTable();

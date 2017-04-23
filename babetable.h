@@ -32,9 +32,7 @@
 #include "metadataForm.h"
 
 
-namespace Ui {
-class BabeTable;
-}
+namespace Ui { class BabeTable; }
 
 class BabeTable : public QTableWidget
 {
@@ -49,17 +47,15 @@ public:
     {
         TRACK,TITLE,ARTIST,ALBUM,GENRE,LOCATION,STARS,BABE,ART,PLAYED,PLAYLIST,columnsCOUNT
     };
+
     enum order
     {
         DESCENDING, ASCENDING
     };
-    enum menuActions
+
+    enum menuActions //this order must be followed
     {
-        BABEIT, QUEUEIT, INFOIT, EDITIT, SAVETO, REMOVEIT, RATEIT, MOODIT
-    };
-    enum subMenuActions
-    {
-        SENDIT, ADDTO
+        BABEIT, QUEUEIT, INFOIT, EDITIT, SAVETO, REMOVEIT, RATEIT, MOODIT, SENDIT, ADDTO
     };
 
     CollectionDB *connection;
