@@ -12,6 +12,7 @@
 #include <QToolTip>
 #include <QDebug>
 #include <QShortcut>
+#include <QSplitter>
 
 #include "scrolltext.h"
 #include "album.h"
