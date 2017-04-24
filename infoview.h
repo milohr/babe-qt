@@ -47,14 +47,14 @@ public slots:
     void setArtistTagInfo(QStringList tags);
     void setTagsInfo(QStringList);
     void hideArtistInfo();
-    void playAlbum_clicked(QString artist, QString album);
+    void playAlbum_clicked(QMap<int,QString> info);
     void getTrackInfo(QString _title, QString _artist, QString _album);
     void getTrackArt(QString _artist, QString _album);
     void on_searchBtn_clicked();
 
 signals:
 
-    void playAlbum(QString artist, QString album);
+    void playAlbum(QMap<int,QString> info);
     void tagClicked(QString tag);
     void similarArtistTagClicked(QString tag);
     void similarBtnClicked(QStringList similar);

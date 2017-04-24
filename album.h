@@ -28,7 +28,7 @@ public:
     ~Album(){}
     void setArtist(QString artist);
     void setAlbum(QString album);
-    void setTitle();
+    void setTitle(QString _artist, QString _album="");
     void setBGcolor(QString bgColor);
     void titleVisible(bool state);
     void setTitleGeometry(int x, int y, int w, int h);
@@ -46,8 +46,14 @@ public:
     QPixmap getPixmap();
     QToolButton *playBtn;
 
+    enum albumField
+    {
+        ALBUM, ARTIST, ART
+    };
+
 private:
 
+    QMap<int, QString> albumMap;
     bool draggable;
     QString imagePath;
     QString artist="";
@@ -61,13 +67,14 @@ private:
 
 signals:
 
-    void albumCoverClicked(QStringList info);
+    void albumCoverClicked(QMap<int, QString> albumMap);
+    void albumCoverDoubleClicked(QMap<int, QString> albumMap);
+    void playAlbum(QMap<int, QString> albumMap);
+    void changedArt(QMap<int, QString> albumMap);
+    void babeAlbum_clicked(QMap<int, QString> albumMap);
+    void albumDragged();
     void albumCoverEnter();
     void albumCoverLeft();
-    void playAlbum(QString artist, QString album);
-    void changedArt(QString path,QString artist, QString album);
-    void babeAlbum_clicked(QString album, QString artist);
-    void albumDragged();
 
 public slots:
 
@@ -83,6 +90,7 @@ protected:
 
 
     virtual void mousePressEvent (QMouseEvent * event) Q_DECL_OVERRIDE;
+    virtual void mouseDoubleClickEvent(QMouseEvent * event) Q_DECL_OVERRIDE;
     virtual void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
     virtual void enterEvent(QEvent *event) Q_DECL_OVERRIDE;
     virtual void leaveEvent(QEvent *event) Q_DECL_OVERRIDE;

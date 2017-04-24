@@ -91,9 +91,7 @@ protected:
 public slots:
 
     void addToPlaylist(QList<QMap<int,QString>> mapList, bool notRepeated=false);
-    void putPixmap(QByteArray array);
-    void changedArt(QString path, QString artist, QString album);
-    void babeAlbum(QString album, QString artist);
+    void putPixmap(QByteArray array);    
     void populateResultsTable(QList<QMap<int,QString>> mapList);
     QList<QMap<int,QString>> searchFor(QStringList queries);
     void dummy();
@@ -148,15 +146,19 @@ private slots:
     void on_saveResults_clicked();
 
     void removeSong(int index);
-    void putOnPlay(QString artist, QString album);
+    void putOnPlay(QMap<int,QString> info);
+    void changedArt(QMap<int, QString> info);
+    void babeAlbum(QMap<int, QString> info);
     void loadCover(QString artist, QString album, QString title);
     bool babeIt(QMap<int, QString> track);
     bool unbabeIt(QMap<int, QString> track);
     void loadMood();
+    bool removeQueuedTrack(QMap<int, QString> track);
     void addToQueue(QMap<int,QString> track);
     void on_filterBtn_clicked();
     void on_filter_textChanged(const QString &arg1);
     void infoIt(QString title, QString artist, QString album);
+    void albumDoubleClicked(QMap<int, QString> info);
 
 private:
 

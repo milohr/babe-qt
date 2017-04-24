@@ -66,17 +66,17 @@ private:
 public slots:
 
     void hideAlbumFrame();
-    void playAlbum_clicked(QString artist, QString album);
-    void changedArt_cover(QString path, QString artist, QString album);
-    void changedArt_head(QString path, QString artist, QString album);
-    void babeAlbum(QString album, QString artist);
+    void playAlbum_clicked(QMap<int,QString> info);
+    void changedArt_cover(QMap<int,QString> info);
+    void changedArt_head(QMap<int,QString> info);
+    void babeAlbum(QMap<int,QString> info);
     void setAlbumsSize(int value);
 
 
 private slots:
 
-    void getAlbumInfo(QStringList info);
-    void getArtistInfo(QStringList info);
+    void getAlbumInfo(QMap<int,QString> info);
+    void getArtistInfo(QMap<int,QString> info);
     void albumTable_clicked(QStringList list);
     void albumTable_rated(QStringList list);
     void albumTable_babeIt(QStringList list);
@@ -86,13 +86,13 @@ private slots:
 
 signals:
 
+    void albumDoubleClicked(QMap<int,QString> info);
     void songClicked(QStringList url);
     void songRated(QStringList url);
     void songBabeIt(QStringList url);
     void albumOrderChanged(QString order);
-    void playAlbum(QString artist, QString album);
-    void changedArt(QString artist, QString album);
-    void babeAlbum_clicked(QString album, QString artist);
+    void playAlbum(QMap<int,QString> info);
+    void babeAlbum_clicked(QMap<int,QString> info);
     void populateCoversFinished();
     void populateHeadsFinished();
 

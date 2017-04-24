@@ -97,11 +97,7 @@ bool Album::eventFilter(QObject * watched, QEvent * event)
     return false;
 }
 
-void Album::babeIt_action()
-{
-    qDebug()<<"Babe album"<<this->artist<<this->album;
-    emit babeAlbum_clicked(this->album, this->artist);
-}
+void Album::babeIt_action() { emit babeAlbum_clicked(this->albumMap); }
 
 void Album::artIt_action()
 {
@@ -110,19 +106,17 @@ void Album::artIt_action()
     if(!path.isEmpty())
     {
         putPixmap(path);
-        emit changedArt(path,artist, album);
-
+        this->albumMap.insert(ART,path);
+        emit changedArt(this->albumMap);
     }
-
 }
 
 void Album::removeIt_action()
 {
     qDebug()<<"Remove album"<<this->artist<<this->album;
-
 }
 
-void Album::playBtn_clicked() { emit playAlbum(artist,album); }
+void Album::playBtn_clicked() { emit playAlbum(this->albumMap); }
 
 void Album::setSize(int value)
 {
@@ -207,7 +201,6 @@ void Album::setAlbum(QString album)
     this->album=album;
 }
 
-
 void Album::setBGcolor(QString bgColor)
 {
     this->bgColor=bgColor;
@@ -215,52 +208,56 @@ void Album::setBGcolor(QString bgColor)
     QColor color;
     color.setNamedColor(bgColor);
     image.fill(color);
-
     this->setPixmap(image);
-
-
 }
 
-void Album::setTitle()
+void Album::setTitle(QString _artist, QString _album)
 {
+    this->artist = _artist;
+    this->album = _album;
+
+    albumMap.insert(ARTIST,this->artist);
+    albumMap.insert(ALBUM, this->album);
+
     QString str = album.isEmpty()? artist : album+" - "+artist;
     title->setText(str);
-    // scrollText->setText(album+" - "+artist);
-    //this->setToolTip(album+" - "+artist);
 }
-
-
-
 
 void Album::setTitleGeometry(int x, int y, int w, int h)
 {
     widget->setGeometry(x,y,w,h);
 }
+
 void Album::titleVisible(bool state)
 {
     if(state) widget->setVisible(true);
     else widget->setVisible(false);
 }
 
-void Album::mousePressEvent (QMouseEvent * event)
+void Album::mouseDoubleClickEvent(QMouseEvent * event)
 {
-    //qDebug()<<"the cover art was clicked: "<<getTitle();
-    event->accept();
     if(event->button()==Qt::LeftButton)
-    {
-        emit albumCoverClicked({artist,album,bgColor});
-        QLabel::mousePressEvent(event);
+        emit albumCoverDoubleClicked(this->albumMap);
 
+    QLabel::mouseDoubleClickEvent(event);
+}
+
+void Album::mousePressEvent(QMouseEvent * event)
+{
+    if(event->type()!=QEvent::MouseButtonDblClick)
+    {
+        if(event->button()==Qt::LeftButton)
+            emit albumCoverClicked(this->albumMap);
     }
+
+
     if(event->button()==Qt::LeftButton && draggable)
     {
         if (event->button() == Qt::LeftButton)
             startPos = event->pos();
-        QLabel::mousePressEvent(event);
     }
 
-    // evt->ContextMenu()
-
+    QLabel::mousePressEvent(event);
 }
 
 void Album::mouseMoveEvent(QMouseEvent *event)
@@ -302,7 +299,7 @@ void Album::enterEvent(QEvent *event)
     event->accept();
     playBtn->setVisible(true);
     playBtn->setToolTip("Play all - "+artist+" "+album);
-   // this->titleVisible(true);
+    // this->titleVisible(true);
 
     emit albumCoverEnter();
 }

@@ -20,10 +20,12 @@
 #include "ui_infoview.h"
 
 
-InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView) {
+InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView)
+{
     ui->setupUi(this);
+
     artist = new Album(":Data/data/cover.png", 120, 100,false,this);
-    connect(artist,SIGNAL(playAlbum(QString , QString)),this,SLOT(playAlbum_clicked(QString, QString)));
+    connect(artist,&Album::playAlbum,this,&InfoView::playAlbum_clicked);
 
    /* ui->lyricsText->setLineWrapMode(QTextEdit::NoWrap);
     ui->lyricsText->setStyleSheet("QTextBrowser{background-color: #575757; color:white;}");
@@ -121,9 +123,9 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView) {
 InfoView::~InfoView() { delete ui; }
 
 
-void InfoView::playAlbum_clicked(QString artist, QString album)
+void InfoView::playAlbum_clicked(QMap<int, QString> info)
 {
-    emit playAlbum(artist,album);
+    emit playAlbum(info);
 
 }
 
