@@ -105,7 +105,7 @@ void MainWindow::setUpViews()
     connect(playlistTable->table,SIGNAL(removeIt_clicked(int)),this,SLOT(removeSong(int)));
     connect(playlistTable->table,&BabeTable::babeIt_clicked,this,&MainWindow::babeIt);
     //connect(playlistTable->table,SIGNAL(createPlaylist_clicked()),this,SLOT(playlistsView()));
-    connect(playlistTable->table,SIGNAL(queueIt_clicked(QList<QMap<int, QString>>)),this,SLOT(addToQueue(QList<QMap<int, QString>>)));
+    connect(playlistTable->table,&BabeTable::queueIt_clicked,this,&MainWindow::addToQueue);
     connect(playlistTable->table,SIGNAL(moodIt_clicked(QString)),playlistTable,SLOT(createMoodPlaylist(QString)));
     connect(playlistTable->table,SIGNAL(infoIt_clicked(QString, QString, QString)),this,SLOT(infoIt(QString, QString, QString)));
     
@@ -118,7 +118,7 @@ void MainWindow::setUpViews()
     connect(collectionTable,SIGNAL(finishedPopulating()),this,SLOT(orderTables()));
     connect(collectionTable,SIGNAL(removeIt_clicked(int)),this,SLOT(removeSong(int)));
     connect(collectionTable,&BabeTable::babeIt_clicked,this,&MainWindow::babeIt);
-    connect(collectionTable,SIGNAL(queueIt_clicked(QList<QMap<int,QString>>)),this,SLOT(addToQueue(QList<QMap<int,QString>>)));
+    connect(collectionTable,&BabeTable::queueIt_clicked,this,&MainWindow::addToQueue);
     connect(collectionTable,SIGNAL(moodIt_clicked(QString)),playlistTable,SLOT(createMoodPlaylist(QString)));
     connect(collectionTable,SIGNAL(infoIt_clicked(QString, QString, QString)),this,SLOT(infoIt(QString, QString, QString)));
     
@@ -135,7 +135,7 @@ void MainWindow::setUpViews()
     connect(mainList, &BabeTable::removeIt_clicked, this, &MainWindow::removeSong);
     //connect(mainList,SIGNAL(removeIt_clicked(int)),this,SLOT(removeSong(int)));
     connect(mainList,&BabeTable::babeIt_clicked,this,&MainWindow::babeIt);
-    connect(mainList,SIGNAL(queueIt_clicked(QList<QMap<int, QString>>)),this,SLOT(addToQueue(QList<QMap<int, QString>>)));
+    connect(mainList,&BabeTable::queueIt_clicked,this,&MainWindow::addToQueue);
     connect(mainList,SIGNAL(moodIt_clicked(QString)),playlistTable,SLOT(createMoodPlaylist(QString)));
     connect(mainList,SIGNAL(infoIt_clicked(QString, QString, QString)),this,SLOT(infoIt(QString, QString, QString)));
     connect(mainList->model() ,SIGNAL(rowsInserted(QModelIndex,int,int)),this,SLOT(on_rowInserted(QModelIndex,int,int)));
@@ -149,7 +149,7 @@ void MainWindow::setUpViews()
     connect(resultsTable,SIGNAL(leftTable()),this,SLOT(showControls()));
     connect(resultsTable,SIGNAL(removeIt_clicked(int)),this,SLOT(removeSong(int)));
     connect(resultsTable,&BabeTable::babeIt_clicked,this,&MainWindow::babeIt);
-    connect(resultsTable,SIGNAL(queueIt_clicked(QList<QMap<int, QString>>)),this,SLOT(addToQueue(QList<QMap<int, QString>>)));
+    connect(resultsTable,&BabeTable::queueIt_clicked,this,&MainWindow::addToQueue);
     connect(resultsTable,SIGNAL(moodIt_clicked(QString)),playlistTable,SLOT(createMoodPlaylist(QString)));
     connect(resultsTable,SIGNAL(infoIt_clicked(QString, QString, QString)),this,SLOT(infoIt(QString, QString, QString)));
     
@@ -165,18 +165,18 @@ void MainWindow::setUpViews()
     connect(albumsTable->albumTable,SIGNAL(tableWidget_doubleClicked(QList<QMap<int, QString>>)),this,SLOT(addToPlaylist(QList<QMap<int, QString>>)));
     connect(albumsTable->albumTable,SIGNAL(removeIt_clicked(int)),this,SLOT(removeSong(int)));
     connect(albumsTable->albumTable,&BabeTable::babeIt_clicked,this,&MainWindow::babeIt);
-    connect(albumsTable->albumTable,SIGNAL(queueIt_clicked(QList<QMap<int, QString>>)),this,SLOT(addToQueue(QList<QMap<int, QString>>)));
+    connect(albumsTable->albumTable,&BabeTable::queueIt_clicked,this,&MainWindow::addToQueue);
     connect(albumsTable->albumTable,SIGNAL(moodIt_clicked(QString)),playlistTable,SLOT(createMoodPlaylist(QString)));
     connect(albumsTable->albumTable,SIGNAL(infoIt_clicked(QString, QString, QString)),this,SLOT(infoIt(QString, QString, QString)));
     connect(albumsTable,SIGNAL(playAlbum(QString, QString)),this,SLOT(putOnPlay(QString, QString)));
-   connect(albumsTable,&AlbumsView::babeAlbum_clicked,this,&MainWindow::babeAlbum);
+    connect(albumsTable,&AlbumsView::babeAlbum_clicked,this,&MainWindow::babeAlbum);
 
     artistsTable = new AlbumsView(true,this);
     artistsTable->albumTable->showColumn(BabeTable::ALBUM);
     connect(artistsTable->albumTable,SIGNAL(tableWidget_doubleClicked(QList<QMap<int, QString>>)),this,SLOT(addToPlaylist(QList<QMap<int, QString>>)));
     connect(artistsTable->albumTable,SIGNAL(removeIt_clicked(int)),this,SLOT(removeSong(int)));
     connect(artistsTable->albumTable,&BabeTable::babeIt_clicked,this,&MainWindow::babeIt);
-    connect(artistsTable->albumTable,SIGNAL(queueIt_clicked(QList<QMap<int, QString>>)),this,SLOT(addToQueue(QList<QMap<int, QString>>)));
+    connect(artistsTable->albumTable,&BabeTable::queueIt_clicked,this,&MainWindow::addToQueue);
     connect(artistsTable->albumTable,SIGNAL(moodIt_clicked(QString)),playlistTable,SLOT(createMoodPlaylist(QString)));
     connect(artistsTable->albumTable,SIGNAL(infoIt_clicked(QString, QString, QString)),this,SLOT(infoIt(QString, QString, QString)));
     connect(artistsTable,SIGNAL(playAlbum(QString, QString)),this,SLOT(putOnPlay(QString, QString)));
@@ -803,7 +803,7 @@ void MainWindow::go_mini()
     ui->frame_5->setVisible(false);
     ui->playlistUtils->setVisible(false);
 
-    album_art->borderColor=true;
+    //album_art->borderColor=true;
 
     album_art_frame->setFrameShadow(QFrame::Plain);
     album_art_frame->setFrameShape(QFrame::NoFrame);
@@ -904,34 +904,33 @@ void MainWindow::on_hide_sidebar_btn_clicked()
 
 void MainWindow::on_shuffle_btn_clicked() //tofix
 {
-    /*state 0: media-playlist-consecutive-symbolic
-            1: media-playlist-shuffle
-            2:media-playlist-repeat-symbolic
-    */
-    if(shuffle_state==0)
+
+    if(shuffle_state == REGULAR)
     {
         shuffle = true;
+        repeat = false;
         shufflePlaylist();
         ui->shuffle_btn->setIcon(QIcon(":Data/data/media-playlist-shuffle.svg"));
         ui->shuffle_btn->setToolTip("Repeat");
-        shuffle_state=1;
+        shuffle_state = SHUFFLE;
         
-    }else if (shuffle_state==1)
+    }else if (shuffle_state == SHUFFLE)
     {
         
         repeat = true;
+        shuffle = false;
         ui->shuffle_btn->setIcon(QIcon(":Data/data/media-playlist-repeat.svg"));
         ui->shuffle_btn->setToolTip("Consecutive");
-        shuffle_state=2;
+        shuffle_state = REPEAT;
         
         
-    }else if(shuffle_state==2)
+    }else if(shuffle_state == REPEAT)
     {
         repeat = false;
         shuffle = false;
         ui->shuffle_btn->setIcon(QIcon(":Data/data/view-media-playlist.svg"));
         ui->shuffle_btn->setToolTip("Shuffle");
-        shuffle_state=0;
+        shuffle_state = REGULAR;
     }
 }
 
@@ -946,8 +945,6 @@ void MainWindow::on_open_btn_clicked()
         addToPlaylist(tracks->getTracksData());
     }
 }
-
-
 
 void MainWindow::populateMainList()
 {
@@ -975,8 +972,7 @@ void MainWindow::on_mainList_clicked(QList<QMap<int,QString>> list)
 }
 
 void MainWindow::removeSong(int index)
-{
-    
+{    
     QObject* obj = sender();
     
     if(index != -1)
@@ -1001,10 +997,14 @@ void MainWindow::removeSong(int index)
 
 void MainWindow::loadTrack()
 {    
+    //mainList->item(current_song_pos,BabeTable::TITLE)->setIcon(QIcon());
     current_song_pos = mainList->getIndex();
-    mainList->scrollTo(mainList->model()->index(current_song_pos,BabeTable::TITLE));
-
     current_song = mainList->getRowData(current_song_pos);
+    //mainList->item(current_song_pos,BabeTable::TITLE)->setIcon(QIcon::fromTheme("media-playback-pause"));
+
+    mainList->scrollTo(mainList->model()->index(current_song_pos,BabeTable::TITLE));
+    queued_song_pos = -1;
+
 
     qDebug()<<"in mainlist="<<current_song[BabeTable::LOCATION];
 
@@ -1037,7 +1037,6 @@ void MainWindow::loadTrack()
         //if(player->position()>player->duration()/4)
 
     }else removeSong(current_song_pos);
-
     
 }
 
@@ -1079,8 +1078,7 @@ void MainWindow::loadMood()
 
 
 void MainWindow::loadCover(QString artist, QString album, QString title)
-{
-    
+{    
     Q_UNUSED(title);
     
     //IF CURRENT SONG EXISTS IN THE COLLECTION THEN GET THE COVER FROM DB
@@ -1153,15 +1151,17 @@ void MainWindow::loadCover(QString artist, QString album, QString title)
     }
 }
 
-void MainWindow::addToQueue(QList<QMap<int,QString>> mapList)
+void MainWindow::addToQueue(QMap<int,QString> track)
 {
-    qDebug()<<"SONGS IN QUEUE";
-    for(auto track : mapList)
-    {
-        mainList->addRowAt(mainList->getIndex()+1,track,true);
-        //mainList->addRowAt(current_song_pos+1,track,true);
-        nof.notify("Song added to Queue",track[BabeTable::TITLE]+" by "+track[BabeTable::ARTIST]);
-    }
+
+    queued_song_pos = queued_song_pos > 0 ? queued_song_pos+1 : current_song_pos+1;
+    queued_songs.insert(track[BabeTable::LOCATION],track);
+
+    mainList->addRowAt(queued_song_pos,track,true);
+    mainList->item(queued_song_pos,BabeTable::TITLE)->setIcon(QIcon::fromTheme("clock"));
+    //mainList->addRowAt(current_song_pos+1,track,true);
+    nof.notify("Song added to Queue",track[BabeTable::TITLE]+" by "+track[BabeTable::ARTIST]);
+
 }
 
 void MainWindow::on_seekBar_sliderMoved(int position)
@@ -1180,6 +1180,15 @@ void MainWindow::update()
         
         if(player->state() == QMediaPlayer::StoppedState)
         {
+            /*if(queued_songs.contains(current_song[BabeTable::LOCATION]))
+            {
+                qDebug()<< "on queued: " << queued_songs.keys();
+                mainList->removeRow(current_song_pos);
+                queued_songs.remove(current_song[BabeTable::LOCATION]);
+                qDebug()<< "on queued: " << queued_songs.keys();
+
+            }*/
+
             QString prevSong = current_song[BabeTable::LOCATION];
             qDebug()<<"finished playing song: "<<prevSong;
             next();
@@ -1576,7 +1585,7 @@ void MainWindow::on_rowInserted(QModelIndex model ,int x,int y)
     //mainList->scrollToBottom();
     //qDebug()<<x<<y;
 
-    mainList->scrollTo(mainList->model()->index(x,BabeTable::TITLE),QAbstractItemView::PositionAtTop);
+    mainList->scrollTo(mainList->model()->index(x,BabeTable::TITLE),QAbstractItemView::PositionAtCenter);
 
     //qDebug()<<"indexes moved";
     //addMusicImg->setVisible(false);

@@ -152,7 +152,7 @@ signals:
     void createPlaylist_clicked();
     void refreshPlaylistsMenu(QStringList list);
     void moodIt_clicked(QString color);
-    void queueIt_clicked(QList<QMap<int,QString>> mapList);
+    void queueIt_clicked(QMap<int,QString> track);
     void infoIt_clicked(QString title, QString artist, QString album);
 
 };

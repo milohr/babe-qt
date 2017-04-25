@@ -72,6 +72,10 @@ public:
     {
         FULLMODE, PLAYLISTMODE, MINIMODE
     };
+    enum playModes
+    {
+        REGULAR, SHUFFLE, REPEAT
+    };
 
 
 protected:
@@ -149,7 +153,7 @@ private slots:
     bool babeIt(QMap<int, QString> track);
     bool unbabeIt(QMap<int, QString> track);
     void loadMood();
-    void addToQueue(QList<QMap<int,QString>> mapList);    
+    void addToQueue(QMap<int,QString> track);
     void on_filterBtn_clicked();
     void on_filter_textChanged(const QString &arg1);
     void infoIt(QString title, QString artist, QString album);
@@ -215,27 +219,29 @@ private:
     QList<QMap<int,QString>> queuedList;
 
     QMap<int, QString> current_song;
-    QMap<int, QMap<int, QString>> queued_songs;
+    QMap<QString, QMap<int, QString>> queued_songs;
 
     int current_song_pos;
-    //int queue_song_pos;
+    int queued_song_pos = -1;
 
 
     QSlider *seekBar;
     QLabel *addMusicImg;
-    int mini_mode=0;
-    int prevIndex;
+    QMenu *saveResults_menu;
+    QMenu *refreshBtn_menu;
 
+    int mini_mode = FULLMODE;
+    int prevIndex;
     int lCounter = 0;
-    int  shuffle_state=0;
+
+    int  shuffle_state = REGULAR;
     bool repeat = false;
     bool muted = false;
     bool showFilter= false;
     bool shuffle = false;
 
     vector<unsigned short int> shuffledPlaylist;
-    QMenu *saveResults_menu;
-    QMenu *refreshBtn_menu;
+
 
 signals:
     void finishedPlayingSong(QString url);
