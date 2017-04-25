@@ -213,7 +213,7 @@ void AlbumsView::filterAlbum(QModelIndex index)
     qDebug()<<album;
     albumTable->flushTable();
     albumTable->populateTableView("SELECT * FROM tracks WHERE album = \""+album+"\" AND artist =\""+cover->getArtist()+"\" ORDER by album asc, track asc ");
-    cover->setTitle("",album);
+    cover->setTitle(cover->getArtist(),album);
 
     QSqlQuery queryCover = connection->getQuery("SELECT * FROM albums WHERE title = \""+album+"\" AND artist =\""+cover->getArtist()+"\"");
     while (queryCover.next())

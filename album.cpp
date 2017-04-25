@@ -81,7 +81,6 @@ bool Album::eventFilter(QObject * watched, QEvent * event)
 {
     if (watched != playBtn) return false;
 
-
     if (event->type() == QEvent::Enter)
     {
         playBtn->setIcon(QIcon(":Data/data/playBtn_hover.svg"));
