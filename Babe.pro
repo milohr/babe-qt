@@ -67,8 +67,8 @@ SOURCES += main.cpp\
     notify.cpp \
     youtube.cpp \
     metadataForm.cpp \
-    onlineview.cpp \
-    web_jgm90.cpp
+    web_jgm90.cpp \
+    rabbitview.cpp
 
 HEADERS  += mainwindow.h \
             playlist.h \
@@ -90,15 +90,14 @@ HEADERS  += mainwindow.h \
     youtube.h \
     baeUtils.h \
     metadataForm.h \
-    onlineview.h \
-    web_jgm90.h
+    web_jgm90.h \
+    rabbitview.h
 
 FORMS    += mainwindow.ui \
     settings.ui \
     about.ui \
     infoview.ui \
-    metadataForm.ui \
-    onlineview.ui
+    metadataForm.ui
 
 RESOURCES += \
     data.qrc

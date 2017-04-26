@@ -68,7 +68,6 @@ public:
     void populateTableView(QString indication, bool descriptiveTitle=false);
     void removeMissing(QStringList missingFiles);
     void setRating(int rate);
-    void passCollectionConnection(CollectionDB *con);
     void setTableOrder(int column, int order);
     void setVisibleColumn(int column);
     void addRow(QMap<int, QString> map, bool descriptiveTooltip=false);

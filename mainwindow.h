@@ -19,6 +19,8 @@
 #include <QWidget>
 #include <QStringList>
 #include <QMenu>
+#include <QFrame>
+#include <QSize>
 
 #include <QPixmap>
 #include <QDir>
@@ -31,7 +33,7 @@
 #include "playlistsview.h"
 #include "artwork.h"
 #include "infoview.h"
-#include "onlineview.h"
+#include "rabbitview.h"
 
 #include "album.h"
 #include "mpris2.h"
@@ -57,16 +59,17 @@ public:
     void populateMainList();
     void clearCurrentList();
     bool isBabed(QMap<int, QString> track);
+    void feedRabbit();
     QStringList searchKeys = {"location:","artist:","album:","title:","genre:" };
 
 
     enum views
     {
-        COLLECTION,ALBUMS,ARTISTS,PLAYLISTS,ONLINE,INFO,SETTINGS,RESULTS
+        COLLECTION,ALBUMS,ARTISTS,PLAYLISTS,RABBIT,INFO,SETTINGS,RESULTS
     };
     enum utilsBar
     {
-        INFO_UB,PLAYLISTS_UB,SEARCH_UB,ALBUMS_UB,ARTISTS_UB,COLLECTION_UB, FAVORITES_UB,ONLINE_UB
+        INFO_UB,PLAYLISTS_UB,SEARCH_UB,ALBUMS_UB,ARTISTS_UB,COLLECTION_UB, FAVORITES_UB,RABBIT_UB
     };
     enum viewModes
     {
@@ -113,7 +116,7 @@ private slots:
     void collectionView();
     void albumsView();
     void artistsView();
-    void onlineView();
+    void rabbitView();
     void playlistsView();
     void infoView();
     void settingsView();
@@ -149,7 +152,7 @@ private slots:
     void putOnPlay(QMap<int,QString> info);
     void changedArt(QMap<int, QString> info);
     void babeAlbum(QMap<int, QString> info);
-    void loadCover(QString artist, QString album, QString title);
+    bool loadCover(QString artist, QString album, QString title);
     bool babeIt(QMap<int, QString> track);
     bool unbabeIt(QMap<int, QString> track);
     void loadMood();
@@ -177,6 +180,7 @@ private:
     void setUpSidebar();
     void setUpCollectionViewer();
     void setUpPlaylist();
+    void setUpLeftFrame();
 
     void loadTrack();
     void next();
@@ -186,21 +190,23 @@ private:
     void go_mini();
     void go_playlistMode();
 
-    QFrame *frame;
+    QFrame *rightFrame;
+    QGridLayout *rightFrame_layout;
     QFrame *line;
     QFrame *lineV;
-    QGridLayout *frame_layout;
     QStackedWidget *views;
     QToolBar *playback;
     QToolBar *utilsBar;
     QTimer *timer;
 
-    QWidget *main_widget;
-    QGridLayout * layout;
+    QWidget *mainWidget;
+    QGridLayout * mainLayout;
     QLabel *info;
     Album *album_art;
     QWidget *controls;
-    QFrame *album_art_frame;
+    QWidget *playlistWidget;
+    QFrame *leftFrame;
+
 
     /*the views*/
     BabeTable *mainList;
@@ -211,21 +217,19 @@ private:
     PlaylistsView *playlistTable;
     InfoView *infoTable;
     settings *settings_widget;
-    OnlineView *onlineTable;
+    RabbitView *rabbitTable;
 
     /*the streaming */
     QMediaPlayer *player = new QMediaPlayer();
     QTimer *updater = new QTimer(this);
 
-    QList<QMap<int,QString>> currentList;
     QList<QMap<int,QString>> queuedList;
-
-    QMap<int, QString> current_song;
     QMap<QString, QMap<int, QString>> queued_songs;
-
-    int current_song_pos;
     int queued_song_pos = -1;
 
+    QList<QMap<int,QString>> currentList;
+    QMap<int, QString> current_song;
+    int current_song_pos;
 
     QSlider *seekBar;
     QLabel *addMusicImg;
@@ -233,22 +237,23 @@ private:
     QMenu *refreshBtn_menu;
 
     int mini_mode = FULLMODE;
-    int prevIndex;
-    int lCounter = 0;
-
+    int prevIndex;    
+    int lCounter = 0;    
     int  shuffle_state = REGULAR;
+
     bool repeat = false;
     bool muted = false;
-    bool showFilter= false;
     bool shuffle = false;
 
     vector<unsigned short int> shuffledPlaylist;
+
+    QSize prevSize;
 
 
 signals:
     void finishedPlayingSong(QString url);
     void collectionChecked();
-    void getCover(QString artist, QString album, QString title);
+    void fetchCover(QString artist, QString album, QString title);
 
 };
 

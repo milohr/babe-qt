@@ -907,11 +907,6 @@ void BabeTable::flushTable()
     this->setRowCount(0);
 }
 
-void BabeTable::passCollectionConnection(CollectionDB *con)
-{
-    connection = con;
-}
-
 QStringList BabeTable::getTableContent(int column)
 {
     QStringList result;

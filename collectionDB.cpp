@@ -85,7 +85,6 @@ void CollectionDB::removePath(QString path)
     bool success = queryTracks.exec();
 
 
-
     emit DBactionFinished(false);
 
     if(!success)
@@ -96,6 +95,31 @@ void CollectionDB::removePath(QString path)
 
 }
 
+
+QString CollectionDB::getArtistArt(QString artist)
+{
+    QString artistHead;
+
+    QSqlQuery queryHead("SELECT * FROM artists WHERE title = \""+artist+"\"");
+
+    while (queryHead.next())
+        if(!queryHead.value(1).toString().isEmpty()&&queryHead.value(1).toString()!="NULL")
+            artistHead = queryHead.value(1).toString();
+
+    return artistHead;
+}
+
+QString CollectionDB::getAlbumArt(QString album, QString artist)
+{
+    QString albumCover;
+
+    QSqlQuery queryCover ("SELECT * FROM albums WHERE title = \""+album+"\" AND artist = \""+artist+"\"");
+    while (queryCover.next())
+        if(!queryCover.value(2).toString().isEmpty()&&queryCover.value(2).toString()!="NULL")
+            albumCover = queryCover.value(2).toString();
+
+    return albumCover;
+}
 
 QList<QMap<int, QString>> CollectionDB::getTrackData(QStringList urls)
 {
@@ -135,7 +159,7 @@ QList<QMap<int, QString>> CollectionDB::getTrackData(QString queryText)
     QList<QMap<int, QString>> mapList;
     QSqlQuery query;
     query.prepare(queryText);
-   // qDebug()<<queryText;
+    // qDebug()<<queryText;
     if(query.exec())
     {
         //qDebug()<<"getTrackData query passed";
@@ -153,7 +177,7 @@ QList<QMap<int, QString>> CollectionDB::getTrackData(QString queryText)
             QString playlist = query.value(PLAYLIST).toString();
             QString played = query.value(PLAYED).toString();
 
-           // qDebug()<<track<<title<<artist<<album;
+            // qDebug()<<track<<title<<artist<<album;
 
             const QMap<int, QString> map{{TRACK,track}, {TITLE,title}, {ARTIST,artist},{ALBUM,album},{GENRE,genre},{LOCATION,location},{STARS,stars},{BABE,babe},{ART,art},{PLAYED,played},{PLAYLIST,playlist}};
 

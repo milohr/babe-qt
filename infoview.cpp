@@ -237,7 +237,11 @@ void InfoView::getTrackInfo(QString _title, QString _artist, QString _album)
         ArtWork artistInfo;
         connect(&coverInfo, SIGNAL(infoReady(QString)), this, SLOT(setAlbumInfo(QString)));
         connect(&artistInfo, SIGNAL(bioReady(QString)), this, SLOT(setArtistInfo(QString)));
-        connect(&artistInfo, SIGNAL(similarArtistsReady(QStringList)), this, SLOT(setArtistTagInfo(QStringList)));
+        connect(&artistInfo, &ArtWork::similarArtistsReady, [this] (QMap<QString,QByteArray> info)
+        {
+            this->setArtistTagInfo(info.keys());
+        });
+
         connect(&artistInfo, SIGNAL(tagsReady(QStringList)), this, SLOT(setTagsInfo(QStringList)));
 
         coverInfo.setDataCoverInfo(_artist,_album);

@@ -72,7 +72,7 @@ signals:
     void headReady(QByteArray array);
     void bioReady(QString bio);
     void tagsReady(QStringList tags);
-    void similarArtistsReady(QStringList tags);
+    void similarArtistsReady(QMap<QString,QByteArray> info);
     void infoReady(QString info);
 
     void artSaved(QString path,QStringList info);

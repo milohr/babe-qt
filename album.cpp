@@ -2,19 +2,15 @@
 
 
 Album::Album(QString imagePath, int widgetSize, int widgetRadius, bool isDraggable, QWidget *parent) : QLabel(parent)
-{
-    //this->setMaximumSize(100,100);
-    //this->set
-    //this->setMinimumSize(120,120);
-    //this->setStyleSheet("QLabel{border:transparent} QLabel:hover{border:1px solid #3daee9} QLabel:pressed{border:1px solid red}");
-
+{    
     this->size=widgetSize;
     this->setFixedSize(size,size);
     this->border_radius=widgetRadius;
     this->draggable=isDraggable;
     this->imagePath=imagePath;
 
-    if (!imagePath.isEmpty()) image.load(imagePath);
+    if (!imagePath.isEmpty()) this->putPixmap(imagePath);
+    else this->putDefaultPixmap();
     //image.scaled(120,120,Qt::KeepAspectRatio);
     //this->setPixmap(image.scaled(size,size,Qt::KeepAspectRatio));
     //this->setToolTip(getTitle());
@@ -73,8 +69,6 @@ Album::Album(QString imagePath, int widgetSize, int widgetRadius, bool isDraggab
     auto artIt = new QAction("Change art...",contextMenu);
     connect(artIt, SIGNAL(triggered()), this, SLOT(artIt_action()));
     this->addAction(artIt);
-
-
 }
 
 bool Album::eventFilter(QObject * watched, QEvent * event)
@@ -161,44 +155,23 @@ void Album::putPixmap(QString path)
     this->setPixmap(image);
 }
 
-
 void Album::putDefaultPixmap()
 {
     this->image.load(":Data/data/cover.svg");
     this->setPixmap(image);
-
 }
 
-QString Album::getTitle()
-{
-    return title->text();
-}
+QString Album::getTitle() { return title->text(); }
 
-QString Album::getArtist()
-{
-    return this->artist;
-}
+QString Album::getArtist() { return this->artist; }
 
-QString Album::getAlbum()
-{
-    return this->album;
-}
+QString Album::getAlbum() { return this->album; }
 
+QString Album::getBGcolor() { return this->bgColor; }
 
-QString Album::getBGcolor()
-{
-    return this->bgColor;
-}
+void Album::setArtist(QString artist) { this->artist=artist; }
 
-void Album::setArtist(QString artist)
-{
-    this->artist=artist;
-}
-
-void Album::setAlbum(QString album)
-{
-    this->album=album;
-}
+void Album::setAlbum(QString album) { this->album=album; }
 
 void Album::setBGcolor(QString bgColor)
 {
@@ -222,10 +195,7 @@ void Album::setTitle(QString _artist, QString _album)
     title->setText(str);
 }
 
-void Album::setTitleGeometry(int x, int y, int w, int h)
-{
-    widget->setGeometry(x,y,w,h);
-}
+void Album::setTitleGeometry(int x, int y, int w, int h) { widget->setGeometry(x,y,w,h); }
 
 void Album::titleVisible(bool state)
 {

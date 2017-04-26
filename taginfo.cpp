@@ -51,7 +51,7 @@ QString TagInfo::getAlbum() {
      writeData();
      albumName= QString::fromStdWString(file.tag()->album().toWString());
  }*/
-
+    
     return albumName;
 }
 
@@ -103,14 +103,14 @@ QString TagInfo::getComment()
 QByteArray TagInfo::getCover()
 {
     QByteArray array;
-
+    
     return array;
 }
 
 void TagInfo::setCover(QByteArray array)
 {
-    Q_UNUSED(array);
-
+    Q_UNUSED(array);    
+       
 }
 
 void TagInfo::setComment(QString comment)

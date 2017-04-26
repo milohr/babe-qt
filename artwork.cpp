@@ -243,8 +243,6 @@ QString ArtWork::getAlbumTitle(QString artist, QString title) {
 
         loop.exec();
 
-
-
         if (reply->error() == QNetworkReply::NoError)
         {
             QByteArray bts = reply->readAll();
@@ -658,7 +656,7 @@ void ArtWork::xmlInfo(QNetworkReply *reply) {
                     if (n.isElement()) {
                         if (n.nodeName() == "wiki") {
                             // qDebug()<<n.nodeName();
-                           info = n.childNodes().item(1).toElement().text();
+                            info = n.childNodes().item(1).toElement().text();
                             // qDebug()<<n.firstChildElement().toElement().text();
                             // <<n.toElement().text();
                         }
@@ -705,8 +703,10 @@ void ArtWork::xmlInfo(QNetworkReply *reply) {
 
                 const QDomNodeList list3 =
                         doc.documentElement().namedItem("artist").childNodes();
-                for (int i = 0; i < list3.count(); i++) {
+                for (int i = 0; i < list3.count(); i++)
+                {
                     QDomNode n = list3.item(i);
+
                     if (n.nodeName() != "image")
                         continue;
                     if (!n.hasAttributes())
@@ -714,7 +714,8 @@ void ArtWork::xmlInfo(QNetworkReply *reply) {
 
                     QString imageSize = n.attributes().namedItem("size").nodeValue();
                     if (imageSize == "extralarge")
-                        if (n.isElement()) {
+                        if (n.isElement())
+                        {
                             artistHead = n.toElement().text();
                             break;
                         }
@@ -731,47 +732,85 @@ void ArtWork::xmlInfo(QNetworkReply *reply) {
 
             } else if (type == ARTIST_INFO)
             {
+                QByteArray artistImg;
                 QString bio;
                 QStringList tags;
-                QStringList similarArtists;
+                QString similarArtistName;
+                QByteArray similarArtistImg;
+
+                QMap<QString,QByteArray> similarArtists;
 
                 const QDomNodeList nodeList = doc.documentElement().namedItem("artist").childNodes();
 
                 for (int i = 0; i < nodeList.count(); i++)
                 {
                     QDomNode n = nodeList.item(i);
+
                     if (n.isElement())
                     {
-                        if (n.nodeName() == "bio")
+                        if(n.nodeName()=="image" && n.hasAttributes())
                         {
-                            // qDebug()<<n.nodeName();
-                             bio = n.childNodes().item(2).toElement().text();
-                            // qDebug()<<n.firstChildElement().toElement().text();
-                            // <<n.toElement().text();
+                            QString imgSize = n.attributes().namedItem("size").nodeValue();
+                            if (imgSize == "extralarge")
+                                if (n.isElement())
+                                {
+                                    auto artistImg_url = n.toElement().text();
+                                    artistImg = selectCover(artistImg_url);
+                                }
+
                         }
+
+                        if (n.nodeName() == "bio")
+                            bio = n.childNodes().item(2).toElement().text();
+
 
                         if(n.nodeName() == "similar")
                         {
                             auto similarList = n.toElement().childNodes();
 
-                             for(int i=0; i<similarList.count(); i++)
-                             {
-                                 QDomNode m = similarList.item(i);
-                                 similarArtists<<m.childNodes().item(0).toElement().text();
-                                 qDebug()<<m.childNodes().item(0).toElement().text();
-                             }
+                            for(int i=0; i<similarList.count(); i++)
+                            {
+                                QDomNode m = similarList.item(i);
+
+                                similarArtistName = m.childNodes().item(0).toElement().text();
+
+                                auto artist = m.toElement().childNodes();
+
+                                for(int j=0; j<artist.count(); j++)
+                                {
+                                    QDomNode k = artist.item(j);
+
+                                    if(k.nodeName()=="image" && k.hasAttributes())
+                                    {
+                                        QString imgSize = k.attributes().namedItem("size").nodeValue();
+                                        if (imgSize == "extralarge")
+                                            if (k.isElement())
+                                            {
+                                                auto artistImg_url = k.toElement().text();
+                                                qDebug()<<"for similar artist img: "<< artistImg_url;
+                                                similarArtistImg = selectCover(artistImg_url);
+                                            }
+                                    }
+
+                                }
+
+                                similarArtists.insert(similarArtistName,similarArtistImg);
+                                qDebug()<<m.childNodes().item(0).toElement().text();
+                            }
+
+
                         }
 
                         if(n.nodeName() == "tags")
                         {
                             auto tagsList = n.toElement().childNodes();
 
-                             for(int i=0; i<tagsList.count(); i++)
-                             {
-                                 QDomNode m = tagsList.item(i);
-                                 tags<<m.childNodes().item(0).toElement().text();
-                                 qDebug()<<m.childNodes().item(0).toElement().text();
-                             }
+                            for(int i=0; i<tagsList.count(); i++)
+                            {
+                                QDomNode m = tagsList.item(i);
+                                tags<<m.childNodes().item(0).toElement().text();
+                                qDebug()<<m.childNodes().item(0).toElement().text();
+                            }
                         }
                     }
                 }
@@ -779,6 +818,7 @@ void ArtWork::xmlInfo(QNetworkReply *reply) {
                 if (bio.isEmpty()) qDebug()<<"Could not find head info for: "<<artist;
                 if (tags.isEmpty()) qDebug()<<"Could not find head tags for: "<<artist;
 
+                emit headReady(artistImg);
                 emit bioReady(bio);
                 emit tagsReady(tags);
                 emit similarArtistsReady(similarArtists);
@@ -836,6 +876,5 @@ void ArtWork::selectHead(QString url) {
     delete reply;
     emit headReady(downloaded);
 }
-
 
 

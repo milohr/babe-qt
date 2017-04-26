@@ -293,7 +293,7 @@ void AlbumsView::populateTableView(QSqlQuery query)
 
             auto item = new QListWidgetItem();
             itemsList.push_back(item);
-            item->setSizeHint( QSize( albumSize, albumSize));
+            item->setSizeHint(QSize( albumSize, albumSize));
             grid->addItem(item);
             grid->setItemWidget(item,artwork);
         }
@@ -390,8 +390,6 @@ void AlbumsView::changedArt_head(QMap<int,QString> info)
     connection->execQuery(QString("UPDATE artists SET art = \"%1\" WHERE title = \"%2\" ").arg(path,artist) );
 
 }
-
-void AlbumsView::passConnection(CollectionDB *con) { this->connection=con; }
 
 void AlbumsView::getArtistInfo(QMap<int,QString> info)
 {

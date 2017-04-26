@@ -118,7 +118,7 @@
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QToolButton" name="online_view">
+   <widget class="QToolButton" name="rabbit_view">
     <property name="geometry">
      <rect>
       <x>0</x>
@@ -146,7 +146,8 @@
      <string>Queue</string>
     </property>
     <property name="icon">
-     <iconset theme="kstars_constellationart"/>
+     <iconset theme="kstars_constellationart">
+      <normaloff>.</normaloff>.</iconset>
     </property>
     <property name="checkable">
      <bool>true</bool>

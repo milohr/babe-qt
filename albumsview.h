@@ -34,7 +34,6 @@ public:
     void populateTableView(QSqlQuery query);
     void populateTableViewHeads(QSqlQuery query);
     void populateExtraList(QSqlQuery query);
-    void passConnection(CollectionDB *con);
     void flushGrid();
     int getAlbumSize() { return this->albumSize; }
     QSlider *slider;
