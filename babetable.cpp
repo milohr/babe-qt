@@ -31,7 +31,7 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
     //this->setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
     this->setFrameShape(QFrame::NoFrame);
     this->setColumnCount(columnsCOUNT-1);
-    this->setHorizontalHeaderLabels({"Track", "Tile", "Artist", "Album", "Genre",
+    this->setHorizontalHeaderLabels({"Track", "Title", "Artist", "Album", "Genre",
                                      "Location", "Stars", "Babe", "Art", "Played",
                                      "Playlist"});
     this->horizontalHeader()->setDefaultSectionSize(150);

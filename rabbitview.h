@@ -21,8 +21,13 @@ class RabbitView : public QWidget
 public:
 
     explicit RabbitView(QWidget *parent = 0);
-    void flushSuggestions();
+    void flushSuggestions(int list=ALL);
     BabeTable * getTable() { return this->generalSuggestion; }
+
+    enum suggestionsTables
+    {
+        SIMILAR,GENERAL,ALL
+    };
 
 private:
 
@@ -36,7 +41,11 @@ public slots:
     void populateArtistSuggestion(QMap<QString, QByteArray> info);
     void populateGeneralSuggestion(QList<QMap<int,QString>> mapList);
 
+    void filterByArtist(QMap<int, QString> albumMap);
+
 signals:
+    void playAlbum(QMap<int,QString> info);
+
 
 };
 

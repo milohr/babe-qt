@@ -43,8 +43,9 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setUpViews();
     this->setUpSidebar();
     this->setUpPlaylist();
-    this->setUpLeftFrame();
+    this->setUpRightFrame();
     this->setUpCollectionViewer();
+    this->setUpActions();
 
     //* CHECK FOR DATABASE *//
     if(settings_widget->checkCollection())
@@ -156,11 +157,9 @@ void MainWindow::setUpViews()
     connect(resultsTable,SIGNAL(infoIt_clicked(QString, QString, QString)),this,SLOT(infoIt(QString, QString, QString)));
 
     rabbitTable = new RabbitView(this);
-    /*queueTable->setSortingEnabled(false);
-    connect(queueTable,SIGNAL(babeIt_clicked(QList<QMap<int, QString>>)),this,SLOT(babeIt(QList<QMap<int, QString>>)));
-    connect(queueTable,SIGNAL(removeIt_clicked(int)),this,SLOT(removeSong(int)));
-    connect(queueTable,SIGNAL(moodIt_clicked(QString)),playlistTable,SLOT(createMoodPlaylist(QString)));
-    connect(queueTable,SIGNAL(infoIt_clicked(QString, QString, QString)),this,SLOT(infoIt(QString, QString, QString)));*/
+    connect(rabbitTable,&RabbitView::playAlbum,this,&MainWindow::putOnPlay);
+    connect(rabbitTable->getTable(),SIGNAL(tableWidget_doubleClicked(QList<QMap<int, QString>>)),this,SLOT(addToPlaylist(QList<QMap<int, QString>>)));
+
 
     albumsTable = new AlbumsView(false,this);
     connect(albumsTable,SIGNAL(albumOrderChanged(QString)),this,SLOT(AlbumsViewOrder(QString)));
@@ -270,14 +269,14 @@ void MainWindow::setUpCollectionViewer()
 {
     mainLayout = new QGridLayout();
 
-    rightFrame_layout = new QGridLayout();
-    rightFrame_layout->setContentsMargins(0,0,0,0);
-    rightFrame_layout->setSpacing(0);
+    leftFrame_layout = new QGridLayout();
+    leftFrame_layout->setContentsMargins(0,0,0,0);
+    leftFrame_layout->setSpacing(0);
 
-    rightFrame = new QFrame(this);
-    rightFrame->setFrameShape(QFrame::StyledPanel);
-    rightFrame->setFrameShadow(QFrame::Raised);
-    rightFrame->setLayout(rightFrame_layout);
+    leftFrame = new QFrame(this);
+    leftFrame->setFrameShape(QFrame::StyledPanel);
+    leftFrame->setFrameShadow(QFrame::Raised);
+    leftFrame->setLayout(leftFrame_layout);
 
     line = new QFrame(this);
     line->setFrameShape(QFrame::HLine);
@@ -315,14 +314,14 @@ void MainWindow::setUpCollectionViewer()
     ui->saveResults->setMenu(saveResults_menu);
     ui->saveResults->setStyleSheet("QToolButton::menu-indicator { image: none; }");
 
-    rightFrame_layout->addWidget(ui->mainToolBar,0,0,3,1,Qt::AlignLeft);
-    rightFrame_layout->addWidget(lineV,0,1,3,1,Qt::AlignLeft);
-    rightFrame_layout->addWidget(views,0,2);
-    rightFrame_layout->addWidget(line,1,2);
-    rightFrame_layout->addWidget(utilsBar,2,2);
+    leftFrame_layout->addWidget(ui->mainToolBar,0,0,3,1,Qt::AlignLeft);
+    leftFrame_layout->addWidget(lineV,0,1,3,1,Qt::AlignLeft);
+    leftFrame_layout->addWidget(views,0,2);
+    leftFrame_layout->addWidget(line,1,2);
+    leftFrame_layout->addWidget(utilsBar,2,2);
 
-    mainLayout->addWidget(rightFrame, 0,0);
-    mainLayout->addWidget(leftFrame,0,1, Qt::AlignRight);
+    mainLayout->addWidget(leftFrame, 0,0);
+    mainLayout->addWidget(rightFrame,0,1, Qt::AlignRight);
 
     mainWidget= new QWidget(this);
     mainWidget->setLayout(mainLayout);
@@ -411,20 +410,23 @@ void MainWindow::setUpPlaylist()
 }
 
 
-void MainWindow::setUpLeftFrame()
+void MainWindow::setUpRightFrame()
 {
-    auto *leftFrame_layout = new QGridLayout();
-    leftFrame_layout->setContentsMargins(0,0,0,0);
-    leftFrame_layout->setSpacing(0);
+    auto *rightFrame_layout = new QGridLayout();
+    rightFrame_layout->setContentsMargins(0,0,0,0);
+    rightFrame_layout->setSpacing(0);
 
-    leftFrame = new QFrame(this);
-    leftFrame->setLayout(leftFrame_layout);
-    leftFrame->setFrameShadow(QFrame::Raised);
-    leftFrame->setFrameShape(QFrame::StyledPanel);
-    leftFrame->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Expanding);
+    rightFrame = new QFrame(this);
+    rightFrame->setLayout(rightFrame_layout);
+    rightFrame->setFrameShadow(QFrame::Raised);
+    rightFrame->setFrameShape(QFrame::StyledPanel);
+    rightFrame->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Expanding);
 
+    rightFrame_layout->addWidget(playlistWidget,0,0);
+}
 
-    leftFrame_layout->addWidget(playlistWidget,0,0);
+void MainWindow::setUpActions()
+{
 
 }
 
@@ -800,7 +802,7 @@ void MainWindow::settingsView()
 void MainWindow::expand()
 {
     ui->tracks_view_2->setVisible(false);
-    if(!rightFrame->isVisible()) rightFrame->setVisible(true);
+    if(!leftFrame->isVisible()) leftFrame->setVisible(true);
     if(!ui->frame_4->isVisible()) ui->frame_4->setVisible(true);
     if(!mainList->isVisible()) mainList->setVisible(true);
     if(!ui->frame_5->isVisible()) ui->frame_5->setVisible(true);
@@ -808,8 +810,8 @@ void MainWindow::expand()
 
     album_art->borderColor=false;
 
-    leftFrame->setFrameShadow(QFrame::Raised);
-    leftFrame->setFrameShape(QFrame::StyledPanel);
+    rightFrame->setFrameShadow(QFrame::Raised);
+    rightFrame->setFrameShape(QFrame::StyledPanel);
     mainLayout->setContentsMargins(6,0,6,0);
 
     this->setMaximumSize(QWIDGETSIZE_MAX,QWIDGETSIZE_MAX);
@@ -828,7 +830,7 @@ void MainWindow::expand()
 void MainWindow::go_mini()
 {
 
-    rightFrame->setVisible(false);
+    leftFrame->setVisible(false);
     ui->frame_4->setVisible(false);
     mainList->setVisible(false);
     ui->frame_5->setVisible(false);
@@ -836,8 +838,8 @@ void MainWindow::go_mini()
 
     //album_art->borderColor=true;
 
-    leftFrame->setFrameShadow(QFrame::Plain);
-    leftFrame->setFrameShape(QFrame::NoFrame);
+    rightFrame->setFrameShadow(QFrame::Plain);
+    rightFrame->setFrameShape(QFrame::NoFrame);
 
     this->resize(200,200);
     this->setFixedSize(200,200);
@@ -871,7 +873,7 @@ void MainWindow::go_playlistMode()
     }
     ui->tracks_view_2->setIcon(QIcon::fromTheme(icon));
 
-    rightFrame->setVisible(false);
+    leftFrame->setVisible(false);
     if(!ui->frame_4->isVisible()) ui->frame_4->setVisible(true);
     if(!mainList->isVisible()) mainList->setVisible(true);
     if(!ui->frame_5->isVisible()) ui->frame_5->setVisible(true);
@@ -880,8 +882,8 @@ void MainWindow::go_playlistMode()
 
     album_art->borderColor=false;
 
-    leftFrame->setFrameShadow(QFrame::Plain);
-    leftFrame->setFrameShape(QFrame::NoFrame);
+    rightFrame->setFrameShadow(QFrame::Plain);
+    rightFrame->setFrameShape(QFrame::NoFrame);
 
     mainLayout->setContentsMargins(0,0,0,0);
 
@@ -1029,6 +1031,8 @@ void MainWindow::removeSong(int index)
 void MainWindow::loadTrack()
 {
     //mainList->item(current_song_pos,BabeTable::TITLE)->setIcon(QIcon());
+    prev_song = current_song;
+
     current_song_pos = mainList->getIndex();
     current_song = mainList->getRowData(current_song_pos);
     //mainList->item(current_song_pos,BabeTable::TITLE)->setIcon(QIcon::fromTheme("media-playback-pause"));
@@ -1070,33 +1074,34 @@ void MainWindow::loadTrack()
                 nof.notifySong(current_song,QPixmap());
         }
 
-        rabbitTable->flushSuggestions();
-        //
-
-
     }else removeSong(current_song_pos);
 
 }
 
 void MainWindow::feedRabbit()
-{
+{    
+    rabbitTable->flushSuggestions(RabbitView::GENERAL);
+
     ArtWork rabbitInfo;
-    connect(&rabbitInfo, &ArtWork::similarArtistsReady, [this] (QMap<QString,QByteArray> info)
+
+    if(prev_song[BabeTable::ARTIST] != current_song[BabeTable::ARTIST])
     {
         rabbitTable->flushSuggestions();
 
-        rabbitTable->populateArtistSuggestion(info);
-        QStringList query;
-        for (auto tag : info.keys()) query << QString("artist:"+tag).trimmed();
-        auto searchResults = this->searchFor(query);
+        connect(&rabbitInfo, &ArtWork::similarArtistsReady, [this] (QMap<QString,QByteArray> info)
+        {
+            rabbitTable->populateArtistSuggestion(info);
+            QStringList query;
+            for (auto tag : info.keys()) query << QString("artist:"+tag).trimmed();
+            auto searchResults = this->searchFor(query);
 
-        if(!searchResults.isEmpty()) rabbitTable->populateGeneralSuggestion(searchResults);
+            if(!searchResults.isEmpty()) rabbitTable->populateGeneralSuggestion(searchResults);
 
-    });
+        });
+    }
 
     connect(&rabbitInfo, &ArtWork::tagsReady, [this] (QStringList tags)
     {
-        rabbitTable->flushSuggestions();
 
         auto searchResults = this->searchFor(tags);
 
@@ -1229,10 +1234,11 @@ void MainWindow::update()
         {
             if(!queued_songs.isEmpty()) removeQueuedTrack(current_song);
 
-            QString prevSong = current_song[BabeTable::LOCATION];
-            qDebug()<<"finished playing song: "<<prevSong;
+            prev_song = current_song;
+            qDebug()<<"finished playing song: "<<prev_song[BabeTable::LOCATION];
+
+            emit finishedPlayingSong(prev_song[BabeTable::LOCATION]);
             next();
-            emit finishedPlayingSong(prevSong);
         }
     }else
     {

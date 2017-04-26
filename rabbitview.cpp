@@ -11,21 +11,21 @@ RabbitView::RabbitView(QWidget *parent) : QWidget(parent)
     line->setFrameShadow(QFrame::Plain);
     line->setMaximumHeight(1);
 
-    line->setStyleSheet("QFrame{border-color:black;}");
 
     artistSuggestion = new QListWidget(this);
     artistSuggestion->setGridSize(QSize(80+10,80+10));
-
+    artistSuggestion->setFixedHeight(120);
     artistSuggestion->setFrameShape(QFrame::NoFrame);
     artistSuggestion->setViewMode(QListWidget::IconMode);
     artistSuggestion->setResizeMode(QListWidget::Adjust);
-    artistSuggestion->setSizePolicy(QSizePolicy ::Expanding , QSizePolicy ::Expanding);
+    artistSuggestion->setFlow(QListView::TopToBottom);
+    artistSuggestion->setSizePolicy(QSizePolicy ::Expanding , QSizePolicy ::Fixed);
     artistSuggestion->setSizeAdjustPolicy(QListWidget::AdjustToContentsOnFirstShow);
-    artistSuggestion->setStyleSheet("QListWidget {background:#575757; padding-top:15px; padding-left:15px; }");
+    artistSuggestion->setStyleSheet("QListWidget {background:#575757; padding-top:10px; padding-left:15px; }");
+
 
     generalSuggestion = new BabeTable(this);
     generalSuggestion->passStyle("QHeaderView::section { background-color:#333; color:white; }");
-
     generalSuggestion->setFrameShape(QFrame::NoFrame);
 
 
@@ -33,8 +33,8 @@ RabbitView::RabbitView(QWidget *parent) : QWidget(parent)
     splitter->setChildrenCollapsible(false);
     splitter->setOrientation(Qt::Vertical);
 
+    splitter->setStyleSheet("QSplitter::handle {background-color:black;} QSplitter::handle:horizontal { width: 1px; }");
     splitter->addWidget(artistSuggestion);
-    splitter->addWidget(line);
     splitter->addWidget(generalSuggestion);
 
     suggestionWidget_layout->addWidget(splitter,0,0);
@@ -49,12 +49,16 @@ void RabbitView::populateArtistSuggestion(QMap<QString,QByteArray> info)
     for(auto tag: info.keys())
     {
         auto art = new Album("",80,2,true,this);
+        connect(art, &Album::albumCoverClicked,this,&RabbitView:: filterByArtist);
+        connect(art,&Album::playAlbum, [this] (QMap<int,QString> info) { emit playAlbum(info); });
+        // connect(art,&Album::changedArt,this,&RabbitView::changedArt_cover);
+        //connect(art,&Album::babeAlbum_clicked,this,&RabbitView::babeAlbum);
+
         art->putPixmap(info[tag]);
         art->borderColor=true;
         art->setTitle(tag);
         art->titleVisible(false);
         auto item = new QListWidgetItem();
-        item->setText(tag);
         item->setSizeHint(QSize(80,80));
         artistSuggestion->addItem(item);
         artistSuggestion->setItemWidget(item, art);
@@ -68,8 +72,20 @@ void RabbitView::populateGeneralSuggestion(QList<QMap<int,QString>> mapList)
     //generalSuggestion->addItems(tags);
 }
 
-void RabbitView::flushSuggestions()
+void RabbitView::flushSuggestions(int list)
+{
+    switch(list)
+    {
+    case SIMILAR: artistSuggestion->clear(); break;
+    case GENERAL: generalSuggestion->flushTable(); break;
+    case ALL:  generalSuggestion->flushTable(); artistSuggestion->clear(); break;
+    }
+
+}
+
+void RabbitView::filterByArtist(QMap<int,QString> mapList)
 {
     generalSuggestion->flushTable();
     artistSuggestion->clear();
 }
+

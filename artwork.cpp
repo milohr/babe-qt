@@ -26,7 +26,8 @@ ArtWork::ArtWork(QObject *parent) : QObject(parent)
 
 ArtWork::~ArtWork() {} //
 
-void ArtWork::setDataCover(QString artist, QString album,QString title, QString path) {
+void ArtWork::setDataCover(QString artist, QString album,QString title, QString path)
+{
     this->artist = BaeUtils::fixString(artist);
     this->album = BaeUtils::fixString(album);
     this->title=BaeUtils::fixString(title);
@@ -60,9 +61,8 @@ void ArtWork::setDataCover(QString artist, QString album,QString title, QString 
             setDataCover_title(this->artist,this->title);
         }
     }else if(!this->title.isEmpty()&&!this->artist.isEmpty())
-    {
         setDataCover_title(this->artist,this->title);
-    }
+
 }
 
 
@@ -756,12 +756,16 @@ void ArtWork::xmlInfo(QNetworkReply *reply) {
                                 {
                                     auto artistImg_url = n.toElement().text();
                                     artistImg = selectCover(artistImg_url);
-                                }
+                                    emit headReady(artistImg);
 
+                                }
                         }
 
                         if (n.nodeName() == "bio")
+                        {
                             bio = n.childNodes().item(2).toElement().text();
+                            emit bioReady(bio);
+                        }
 
 
                         if(n.nodeName() == "similar")
@@ -795,49 +799,47 @@ void ArtWork::xmlInfo(QNetworkReply *reply) {
                                 }
 
                                 similarArtists.insert(similarArtistName,similarArtistImg);
-                                qDebug()<<m.childNodes().item(0).toElement().text();
                             }
 
+                            emit similarArtistsReady(similarArtists);
 
-                        }
+                    }
 
-                        if(n.nodeName() == "tags")
+                    if(n.nodeName() == "tags")
+                    {
+                        auto tagsList = n.toElement().childNodes();
+
+                        for(int i=0; i<tagsList.count(); i++)
                         {
-                            auto tagsList = n.toElement().childNodes();
-
-                            for(int i=0; i<tagsList.count(); i++)
-                            {
-                                QDomNode m = tagsList.item(i);
-                                tags<<m.childNodes().item(0).toElement().text();
-                                qDebug()<<m.childNodes().item(0).toElement().text();
-                            }
+                            QDomNode m = tagsList.item(i);
+                            tags<<m.childNodes().item(0).toElement().text();
+                            qDebug()<<m.childNodes().item(0).toElement().text();
                         }
+
+                        emit tagsReady(tags);
                     }
                 }
-
-                if (bio.isEmpty()) qDebug()<<"Could not find head info for: "<<artist;
-                if (tags.isEmpty()) qDebug()<<"Could not find head tags for: "<<artist;
-
-                emit headReady(artistImg);
-                emit bioReady(bio);
-                emit tagsReady(tags);
-                emit similarArtistsReady(similarArtists);
-                // selectHead(artistHead);
             }
+
+            if (bio.isEmpty()) qDebug()<<"Could not find head info for: "<<artist;
+            if (tags.isEmpty()) qDebug()<<"Could not find head tags for: "<<artist;
+
+            // selectHead(artistHead);
         }
-
-        // No cover URL?  This could be a problem.
-        // Better let the user know what's going on.
-
-    } else {
-        qDebug() << "Error in parser :("; //this needs some more work and fixes
-
-        if (album.isEmpty())
-            emit artSaved("", {artist});
-        else
-            emit artSaved("", {album, artist});
-
     }
+
+    // No cover URL?  This could be a problem.
+    // Better let the user know what's going on.
+
+} else {
+qDebug() << "Error in parser :("; //this needs some more work and fixes
+
+if (album.isEmpty())
+emit artSaved("", {artist});
+else
+emit artSaved("", {album, artist});
+
+}
 }
 
 QByteArray ArtWork::selectCover(QString url) {

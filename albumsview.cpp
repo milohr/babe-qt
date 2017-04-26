@@ -102,7 +102,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     line_h->setMaximumHeight(1);
 
     cover = new Album(":Data/data/cover.svg",120,0,true,this);
-    connect(cover,&Album::playAlbum,this,&AlbumsView::playAlbum_clicked);
+    connect(cover,&Album::playAlbum,[this] (QMap<int,QString> info) { emit playAlbum(info); });
     connect(cover,&Album::changedArt,this,&AlbumsView::changedArt_cover);
     connect(cover,&Album::babeAlbum_clicked,this,&AlbumsView::babeAlbum);
 
@@ -277,7 +277,7 @@ void AlbumsView::populateTableView(QSqlQuery query)
 
             connect(artwork, &Album::albumCoverClicked,this,&AlbumsView::getAlbumInfo);
             connect(artwork, &Album::albumCoverDoubleClicked, [this] (QMap<int, QString> info) { emit albumDoubleClicked(info); });
-            connect(artwork,&Album::playAlbum,this,&AlbumsView::playAlbum_clicked);
+            connect(artwork,&Album::playAlbum, [this] (QMap<int,QString> info) { emit playAlbum(info); });
             connect(artwork,&Album::changedArt,this,&AlbumsView::changedArt_cover);
             connect(artwork,&Album::babeAlbum_clicked,this,&AlbumsView::babeAlbum);
             //connect(artwork,SIGNAL(albumDragged()),grid,SLOT(clear()));
@@ -336,7 +336,7 @@ void AlbumsView::populateTableViewHeads(QSqlQuery query)
 
             connect(album, &Album::albumCoverClicked,this,&AlbumsView::getArtistInfo);
             connect(album, &Album::albumCoverDoubleClicked, [this] (QMap<int, QString> info) { emit albumDoubleClicked(info); });
-            connect(album,&Album::playAlbum,this,&AlbumsView::playAlbum_clicked);
+            connect(album,&Album::playAlbum,[this](QMap<int,QString> info) { emit playAlbum(info);});
             connect(album,&Album::changedArt,this,&AlbumsView::changedArt_head);
             connect(album,&Album::babeAlbum_clicked,this,&AlbumsView::babeAlbum);
 
@@ -367,11 +367,6 @@ void AlbumsView::populateExtraList(QSqlQuery query)
     }
 }
 
-
-void AlbumsView::playAlbum_clicked(QMap<int,QString> info)
-{
-    emit playAlbum(info);
-}
 
 void AlbumsView::changedArt_cover(QMap<int,QString> info)
 {

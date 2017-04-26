@@ -180,7 +180,8 @@ private:
     void setUpSidebar();
     void setUpCollectionViewer();
     void setUpPlaylist();
-    void setUpLeftFrame();
+    void setUpRightFrame();
+    void setUpActions();
 
     void loadTrack();
     void next();
@@ -191,7 +192,7 @@ private:
     void go_playlistMode();
 
     QFrame *rightFrame;
-    QGridLayout *rightFrame_layout;
+    QGridLayout *leftFrame_layout;
     QFrame *line;
     QFrame *lineV;
     QStackedWidget *views;
@@ -229,6 +230,7 @@ private:
 
     QList<QMap<int,QString>> currentList;
     QMap<int, QString> current_song;
+    QMap<int, QString> prev_song;
     int current_song_pos;
 
     QSlider *seekBar;

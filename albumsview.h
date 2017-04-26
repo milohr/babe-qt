@@ -65,7 +65,6 @@ private:
 public slots:
 
     void hideAlbumFrame();
-    void playAlbum_clicked(QMap<int,QString> info);
     void changedArt_cover(QMap<int,QString> info);
     void changedArt_head(QMap<int,QString> info);
     void babeAlbum(QMap<int,QString> info);
