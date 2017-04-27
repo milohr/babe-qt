@@ -81,7 +81,7 @@ public:
 
     QMap<int,QString> getRowData(int row);
     QMap<QString, QString> getKdeConnectDevices();
-    QStringList getTableContent(int column);
+    QStringList getTableContent(columns);
     QList<QMap<int, QString>> getAllTableContent();
 
 

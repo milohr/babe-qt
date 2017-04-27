@@ -20,14 +20,15 @@ class RabbitView : public QWidget
 
 public:
 
-    explicit RabbitView(QWidget *parent = 0);
-    void flushSuggestions(int list=ALL);
-    BabeTable * getTable() { return this->generalSuggestion; }
+    explicit RabbitView(QWidget *parent = 0);   
 
     enum suggestionsTables
     {
         SIMILAR,GENERAL,ALL
     };
+
+    void flushSuggestions(suggestionsTables = ALL);
+    BabeTable * getTable() { return this->generalSuggestion; }
 
 private:
 

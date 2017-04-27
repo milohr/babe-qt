@@ -907,7 +907,7 @@ void BabeTable::flushTable()
     this->setRowCount(0);
 }
 
-QStringList BabeTable::getTableContent(int column)
+QStringList BabeTable::getTableContent(BabeTable::columns column)
 {
     QStringList result;
     for (int i = 0; i < this->rowCount(); i++)

@@ -385,6 +385,8 @@ void MainWindow::setUpPlaylist()
     connect(clearIt, &QAction::triggered, [this]()
     {
         album_art->putDefaultPixmap();
+        currentList.clear();
+        current_song.clear();
         this->mainList->flushTable();
         lCounter=-1;
         player->stop();
@@ -1001,6 +1003,8 @@ void MainWindow::on_mainList_clicked(QList<QMap<int,QString>> list)
     lCounter = mainList->getIndex();
     loadTrack();
 
+    if(!currentList.contains(current_song)) this->addToPlaylist({current_song});
+
     ui->play_btn->setIcon(QIcon(":Data/data/media-playback-pause.svg"));
 }
 
@@ -1225,33 +1229,28 @@ void MainWindow::update()
 {
     if(mainList->rowCount() > 0)
     {
-        if(!seekBar->isEnabled()) seekBar->setEnabled(true);
-
-        if(!seekBar->isSliderDown())
-            seekBar->setValue(static_cast<int>(static_cast<double>(player->position())/player->duration()*1000));
-
-        if(player->state() == QMediaPlayer::StoppedState)
+        if(player->state() == QMediaPlayer::PlayingState)
         {
-            if(!queued_songs.isEmpty()) removeQueuedTrack(current_song);
+            if(!seekBar->isEnabled()) seekBar->setEnabled(true);
 
-            prev_song = current_song;
-            qDebug()<<"finished playing song: "<<prev_song[BabeTable::LOCATION];
+            if(!seekBar->isSliderDown())
+                seekBar->setValue(static_cast<int>(static_cast<double>(player->position())/player->duration()*1000));
 
-            emit finishedPlayingSong(prev_song[BabeTable::LOCATION]);
-            next();
+            if(player->state() == QMediaPlayer::StoppedState)
+            {
+                if(!queued_songs.isEmpty()) removeQueuedTrack(current_song);
+
+                prev_song = current_song;
+                qDebug()<<"finished playing song: "<<prev_song[BabeTable::LOCATION];
+
+                emit finishedPlayingSong(prev_song[BabeTable::LOCATION]);
+                next();
+            }
         }
     }else
     {
-        if(player->state() != QMediaPlayer::PlayingState)
-        {
-            seekBar->setValue(0);
-            seekBar->setEnabled(false);
-        }else
-        {
-            if(!seekBar->isSliderDown())
-                seekBar->setValue(static_cast<int>(static_cast<double>(player->position())/player->duration() * 1000));
-        }
-
+        seekBar->setValue(0);
+        seekBar->setEnabled(false);
     }
 }
 
@@ -1314,7 +1313,7 @@ void MainWindow::shufflePlaylist()
 
 void MainWindow::on_play_btn_clicked()
 {
-    if(mainList->rowCount() > 0)
+    if(mainList->rowCount() > 0 || !current_song.isEmpty())
     {
         if(player->state() == QMediaPlayer::PlayingState)
         {
@@ -1681,7 +1680,7 @@ void MainWindow::on_addAll_clicked()
     switch(views->currentIndex())
     {
     case COLLECTION:
-        addToPlaylist( collectionTable->getAllTableContent()); break;
+        addToPlaylist(collectionTable->getAllTableContent()); break;
     case ALBUMS:
         addToPlaylist(albumsTable->albumTable->getAllTableContent()); break;
     case ARTISTS:

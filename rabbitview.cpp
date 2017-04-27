@@ -72,7 +72,7 @@ void RabbitView::populateGeneralSuggestion(QList<QMap<int,QString>> mapList)
     //generalSuggestion->addItems(tags);
 }
 
-void RabbitView::flushSuggestions(int list)
+void RabbitView::flushSuggestions(RabbitView::suggestionsTables list)
 {
     switch(list)
     {
