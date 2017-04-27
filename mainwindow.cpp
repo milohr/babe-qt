@@ -1083,7 +1083,7 @@ void MainWindow::loadTrack()
 }
 
 void MainWindow::feedRabbit()
-{    
+{
     rabbitTable->flushSuggestions(RabbitView::GENERAL);
 
     ArtWork rabbitInfo;
@@ -1227,26 +1227,25 @@ void MainWindow::on_seekBar_sliderMoved(int position)
 
 void MainWindow::update()
 {
-    if(mainList->rowCount() > 0)
+    if(!current_song.isEmpty())
     {
-        if(player->state() == QMediaPlayer::PlayingState)
+        if(!seekBar->isEnabled()) seekBar->setEnabled(true);
+
+        if(!seekBar->isSliderDown())
+            seekBar->setValue(static_cast<int>(static_cast<double>(player->position())/player->duration()*1000));
+
+        if(player->state() == QMediaPlayer::StoppedState)
         {
-            if(!seekBar->isEnabled()) seekBar->setEnabled(true);
+            if(!queued_songs.isEmpty()) removeQueuedTrack(current_song);
 
-            if(!seekBar->isSliderDown())
-                seekBar->setValue(static_cast<int>(static_cast<double>(player->position())/player->duration()*1000));
+            prev_song = current_song;
+            qDebug()<<"finished playing song: "<<prev_song[BabeTable::LOCATION];
 
-            if(player->state() == QMediaPlayer::StoppedState)
-            {
-                if(!queued_songs.isEmpty()) removeQueuedTrack(current_song);
-
-                prev_song = current_song;
-                qDebug()<<"finished playing song: "<<prev_song[BabeTable::LOCATION];
-
-                emit finishedPlayingSong(prev_song[BabeTable::LOCATION]);
-                next();
-            }
+            emit finishedPlayingSong(prev_song[BabeTable::LOCATION]);
+            next();
         }
+
+
     }else
     {
         seekBar->setValue(0);
