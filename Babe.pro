@@ -94,6 +94,7 @@ FORMS += mainwindow.ui \
     metadataForm.ui
 
 RESOURCES += \
-    data.qrc
+    data.qrc \
+    resources.qrc
 
 OTHER_FILES += DatabaseTables.sql
