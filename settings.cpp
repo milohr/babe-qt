@@ -159,7 +159,7 @@ void settings::handleDirectoryChanged_extension()
     if (!urls.isEmpty())
     {
 
-        nof.notify("Song recived!","wait a sec while the track ["+ids.join("\n")+"] is added to your collection :)");
+        nof.notify("Song received!","wait a sec while the track ["+ids.join("\n")+"] is added to your collection :)");
 
         ytFetch->fetch(ids,urls);
         // qDebug()<<ids;

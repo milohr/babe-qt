@@ -74,7 +74,7 @@ QString Mpris::PlaybackStatus() const
 
 qlonglong Mpris::Position() const
 {
-    // Cant use MPDStatus, as we dont poll for track position, but use a timer instead!
+    // Can't use MPDStatus, as we don't poll for track position, but use a timer instead!
     //return MPDStatus::self()->timeElapsed();
     return 1000000000;
 }

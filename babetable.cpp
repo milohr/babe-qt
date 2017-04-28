@@ -556,7 +556,7 @@ void BabeTable::setVisibleColumn(int column) {
 
 QMap<QString,QString> BabeTable::getKdeConnectDevices()
 {
-    qDebug()<<"getting the kdeconnect devices avaliable";
+    qDebug()<<"getting the kdeconnect devices available";
     QMap<QString,QString> _devices;
     QProcess process;
     process.start("kdeconnect-cli -a");

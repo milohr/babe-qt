@@ -117,7 +117,7 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent) {
     this->setLayout(layout);
 }
 
-void PlaylistsView::dummy() { qDebug() << "signal was recived"; }
+void PlaylistsView::dummy() { qDebug() << "signal was received"; }
 
 void PlaylistsView::setDefaultPlaylists() {
     auto title = new QListWidgetItem("PLAYLISTS");
