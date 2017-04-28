@@ -79,6 +79,7 @@ set (
    youtube.cpp
    metadataForm.cpp
    web_jgm90.cpp
+   rabbitview.cpp
    )
 
    
