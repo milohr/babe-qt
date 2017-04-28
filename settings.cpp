@@ -110,11 +110,9 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
             SLOT(handleDirectoryChanged(QString)));
 }
 
-settings::~settings() {
-    //collection_db.closeConnection();
-
+settings::~settings()
+{
 }
-
 
 void settings::youtubeTrackReady(bool state)
 {
@@ -430,31 +428,21 @@ void settings::readSettings() {
     }
 }
 
-bool settings::checkCollection() {
-
-
-    if (BaeUtils::fileExists(collectionDBPath + collectionDBName))
-    {
+bool settings::checkCollection()
+{
+    if (BaeUtils::fileExists(collectionDBPath + collectionDBName)) {
         qDebug() << "The CollectionDB does exists.";
-
-        collection_db.openCollection(collectionDBPath + collectionDBName);
         collectionWatcher();
-
         return true;
-
-    } else { return false; }
-
+    } else {
+        return false;
+    }
 }
 
 
 void settings::createCollectionDB()
 {
-    qDebug() << "The CollectionDB doesn't exists. Going to create the database "
-                "and tables";
-
-    collection_db.openCollection(collectionDBPath + collectionDBName);
-    collection_db.prepareCollectionDB();
-
+    qDebug() << "The CollectionDB doesn't exists. Going to create the database and tables";
 }
 
 void settings::populateDB(QString path) {

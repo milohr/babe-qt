@@ -1365,7 +1365,6 @@ void MainWindow::collectionDBFinishedAdding(bool state)
     {
         if(!ui->fav_btn->isEnabled()) ui->fav_btn->setEnabled(true);
         qDebug()<<"now it i time to put the tracks in the table ;)";
-        //settings_widget->getCollectionDB().closeConnection();
         albumsTable->flushGrid();
         artistsTable->flushGrid();
         refreshTables();
@@ -1639,15 +1638,13 @@ QList<QMap<int, QString> > MainWindow::searchFor(QStringList queries)
 
 
 
-void MainWindow::on_rowInserted(QModelIndex model ,int x,int y)
+void MainWindow::on_rowInserted(QModelIndex model, int x, int y)
 {
-    //Q_UNUSED(model);
-    //Q_UNUSED(x);Q_UNUSED(y);
+    Q_UNUSED(model)
+    Q_UNUSED(y)
     //mainList->scrollToBottom();
     //qDebug()<<x<<y;
-
-    mainList->scrollTo(mainList->model()->index(x,BabeTable::TITLE),QAbstractItemView::PositionAtCenter);
-
+    mainList->scrollTo(mainList->model()->index(x, BabeTable::TITLE), QAbstractItemView::PositionAtCenter);
     //qDebug()<<"indexes moved";
     //addMusicImg->setVisible(false);
 }

@@ -85,6 +85,7 @@ void RabbitView::flushSuggestions(RabbitView::suggestionsTables list)
 
 void RabbitView::filterByArtist(QMap<int,QString> mapList)
 {
+    Q_UNUSED(mapList)
     generalSuggestion->flushTable();
     artistSuggestion->clear();
 }
