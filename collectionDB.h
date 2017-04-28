@@ -35,7 +35,6 @@ public:
     bool removeQuery(QString queryTxt);
     bool execQuery(QString queryTxt);
     bool check_existance(QString tableName, QString searchId, QString search);
-    void createTable(QString tableName);
 
     QList<QMap<int, QString>> getTrackData(QStringList urls);
     QList<QMap<int, QString>> getTrackData(QString queryText);
@@ -53,7 +52,6 @@ public:
 
 public slots:
     bool addTrack(QStringList paths, int babe=0);
-    void closeConnection();
     void insertPlaylist(QString name, QString color);
     void removePath(QString path);
     void setCollectionLists();

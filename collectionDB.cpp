@@ -17,7 +17,7 @@
 #include "collectionDB.h"
 
 CollectionDB::CollectionDB(QObject *parent) : QObject(parent)
-    ,m_database(new Database)
+    ,m_database(Database::instance())
 {
 }
 
@@ -490,19 +490,8 @@ bool CollectionDB::insertInto(QString tableName, QString column, QString locatio
 
 }
 
-
-void CollectionDB::createTable(QString tableName)
-{
-
-    QSqlQuery query;
-    query.exec("CREATE TABLE "+tableName+"(track integer, title text, artist text, album text, genre text, location text unique, stars integer, babe integer, art text, played integer, playlist text);");
-
-}
-
 void CollectionDB::insertPlaylist(QString name, QString color)
 {
-
-
     if(color.isEmpty())
     {
         QSqlQuery query;
