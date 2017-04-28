@@ -11,8 +11,8 @@
 #include <QStringList>
 #include <QVariantMap>
 #include <QVariantHash>
-#include <QGuiApplication>
-#include <QQmlApplicationEngine>
+#include <QApplication>
+#include <QStandardPaths>
 
 Database* Database::m_instance = nullptr;
 
@@ -126,8 +126,7 @@ void Database::setDatabaseName()
         fileName.prepend("../");
     } else {
         // is desktop
-        QQmlApplicationEngine engine;
-        QString path(engine.offlineStoragePath());
+        QString path(QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation)+"/"+QApplication::applicationName());
         QDir qdir(path);
         if (!qdir.exists())
             qdir.mkpath(path);
