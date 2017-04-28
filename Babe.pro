@@ -48,9 +48,9 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp \
-        playlist.cpp \
-        track.cpp \
+    mainwindow.cpp \
+    playlist.cpp \
+    track.cpp \
     settings.cpp \
     collectionDB.cpp \
     about.cpp \
@@ -71,8 +71,8 @@ SOURCES += main.cpp\
     rabbitview.cpp
 
 HEADERS  += mainwindow.h \
-            playlist.h \
-            track.h \
+    playlist.h \
+    track.h \
     settings.h \
     collectionDB.h \
     about.h \
