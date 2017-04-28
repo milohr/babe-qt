@@ -248,7 +248,7 @@ int Database::insert(const QString &tableName, const QVariantMap &insertData)
     return lastId;
 }
 
-int Database::remove(const QString &tableName, const QVariantMap &where)
+int Database::remove(const QString &tableName, const QVariantMap &where, const QString &whereOperator)
 {
     if (tableName.isEmpty()) {
         emit logMessage(QStringLiteral("Fatal error on remove data! The table name is empty!"));
@@ -263,7 +263,7 @@ int Database::remove(const QString &tableName, const QVariantMap &where)
     QMap<QString, QVariant>::const_iterator j = where.constBegin();
     while (j != where.constEnd()) {
         separator = (k++ == 0) ? QStringLiteral("") : QStringLiteral(" AND ");
-        whereStr += QString("%1%2 = '%3'").arg(separator).arg(j.key()).arg(j.value().toString());
+        whereStr += QString("%1%2 %3 '%4'").arg(separator).arg(j.key()).arg(whereOperator).arg(j.value().toString());
         ++j;
     }
     if (queryExec(QString(QStringLiteral("DELETE FROM %1 WHERE %2")).arg(tableName).arg(whereStr)))
