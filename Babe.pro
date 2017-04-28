@@ -4,7 +4,6 @@
 #
 #-------------------------------------------------
 
-
 install_it.path = $$OUT_PWD
 install_it.files = data/*
 
@@ -22,17 +21,12 @@ QT       += KConfigCore
 QT       += KNotifications
 QT       += KI18n
 
-
-
-
-
 CONFIG   += c++14
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = Babe
 TEMPLATE = app
-
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked as deprecated (the exact warnings
@@ -45,8 +39,6 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-
-
 SOURCES += main.cpp\
         mainwindow.cpp \
         playlist.cpp \
@@ -58,6 +50,7 @@ SOURCES += main.cpp\
     album.cpp \
     albumsview.cpp \
     scrolltext.cpp \
+    database.cpp \
     playlistsview.cpp \
     taginfo.cpp \
     artwork.cpp \
@@ -80,6 +73,7 @@ HEADERS  += mainwindow.h \
     album.h \
     albumsview.h \
     scrolltext.h \
+    database.h \
     playlistsview.h \
     taginfo.h \
     artwork.h \
@@ -93,7 +87,7 @@ HEADERS  += mainwindow.h \
     web_jgm90.h \
     rabbitview.h
 
-FORMS    += mainwindow.ui \
+FORMS += mainwindow.ui \
     settings.ui \
     about.ui \
     infoview.ui \
@@ -102,4 +96,4 @@ FORMS    += mainwindow.ui \
 RESOURCES += \
     data.qrc
 
-
+OTHER_FILES += DatabaseTables.sql
