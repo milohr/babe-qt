@@ -12,113 +12,48 @@
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software Foundation,
    Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
-
-   */
-
+ */
 
 #include "collectionDB.h"
 
-
-CollectionDB::CollectionDB()
+CollectionDB::CollectionDB(QObject *parent) : QObject(parent)
+    ,m_database(new Database)
 {
-
-}
-
-/*CollectionDB::CollectionDB(bool connect)
-{
-    if(connect)
-    {
-        m_db = QSqlDatabase::addDatabase("QSQLITE");
-        m_db.setDatabaseName("../player/collection.db");
-        m_db.open();
-
-        if (!m_db.open())
-        {
-           qDebug() << "Error: connection with database fail";
-        }
-        else
-        {
-           qDebug() << "Database: connection ok";
-
-        }
-    }
-}*/
-
-void CollectionDB::closeConnection()
-{
-    m_db.close();
-}
-
-void CollectionDB::openCollection(QString path)
-{
-    m_db = QSqlDatabase::addDatabase("QSQLITE");
-    m_db.setDatabaseName(path);
-
-    if (!m_db.open())
-    {
-        qDebug() << "Error: connection with database fail" <<m_db.lastError().text();
-    }
-    else
-    {
-        qDebug() << "Database: connection ok";
-    }
-}
-
-
-void CollectionDB::prepareCollectionDB()
-{
-    QSqlQuery query;
-    query.exec("CREATE TABLE tracks(track integer, title text, artist text, album text, genre text, location text unique, stars integer, babe integer, art text, played integer, playlist text);");
-    query.exec("CREATE TABLE albums(title text, artist text, art text, location text);");
-    query.exec("CREATE TABLE playlists(title text, art text unique);");
-    query.exec("CREATE TABLE artists(title text, art text, location text);");
-
-    //query.exec("CREATE TABLE tracks(title text, album text, artist text, location text, stars integer, babe integer);");
 }
 
 void CollectionDB::removePath(QString path)
 {
-
-    qDebug()<<"trying to delete all from :"<< path;
-    QSqlQuery queryTracks;
-    queryTracks.prepare("DELETE FROM tracks  WHERE location LIKE \"%"+path+"%\"");
-    bool success = queryTracks.exec();
-
+    qDebug() << "trying to delete all from :"<< path;
+    QVariantMap where;
+    where.insert("location", path);
+    int result = m_database->remove("tracks", where, "LIKE");
 
     emit DBactionFinished(false);
-
-    if(!success)
-    {
-        qDebug() << "removePerson error: ";
-
-    }
-
+    if (!result)
+        qDebug() << "removePath error!";
 }
-
 
 QString CollectionDB::getArtistArt(QString artist)
 {
-    QString artistHead;
+    QVariantMap where;
+    where.insert("title", artist);
+    QVariantList result = m_database->select("artists", where);
 
-    QSqlQuery queryHead("SELECT * FROM artists WHERE title = \""+artist+"\"");
-
-    while (queryHead.next())
-        if(!queryHead.value(1).toString().isEmpty()&&queryHead.value(1).toString()!="NULL")
-            artistHead = queryHead.value(1).toString();
-
-    return artistHead;
+    if (result.isEmpty())
+        return QStringLiteral("");
+    return result.at(0).toMap().value("art").toString();
 }
 
 QString CollectionDB::getAlbumArt(QString album, QString artist)
 {
-    QString albumCover;
+    QVariantMap where;
+    where.insert("title", album);
+    where.insert("artist", artist);
+    QVariantList result = m_database->select("albums", where);
 
-    QSqlQuery queryCover ("SELECT * FROM albums WHERE title = \""+album+"\" AND artist = \""+artist+"\"");
-    while (queryCover.next())
-        if(!queryCover.value(2).toString().isEmpty()&&queryCover.value(2).toString()!="NULL")
-            albumCover = queryCover.value(2).toString();
-
-    return albumCover;
+    if (result.isEmpty())
+        return QStringLiteral("");
+    return result.at(0).toMap().value("art").toString();
 }
 
 QList<QMap<int, QString>> CollectionDB::getTrackData(QStringList urls)

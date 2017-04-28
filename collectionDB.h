@@ -1,5 +1,6 @@
 #ifndef COLLECTIONDB_H
 #define COLLECTIONDB_H
+
 #include <QString>
 #include <QStringList>
 #include <QList>
@@ -13,16 +14,16 @@
 #include <QSqlDriver>
 #include <QFileInfo>
 #include <QDir>
+
 #include "track.h"
 #include "taginfo.h"
+#include "database.h"
 
 class CollectionDB : public QObject
 {
     Q_OBJECT
 public:
-
-    explicit CollectionDB();
-    //CollectionDB(bool connect);
+    explicit CollectionDB(QObject *parent = 0);
     ~CollectionDB(){}
     void openCollection(QString path);
     QSqlQuery getQuery(QString queryTxt);
@@ -44,22 +45,16 @@ public:
     QStringList getPlaylistsMoods();
     QStringList albums;
     QStringList artists;
+
     enum colums
     {
         TRACK,TITLE,ARTIST,ALBUM,GENRE,LOCATION,STARS,BABE,ART,PLAYED,PLAYLIST
     };
 
-private:
-
-    QSqlDatabase m_db;
-    QList <Track> trackList;
-
-
 public slots:
     bool addTrack(QStringList paths, int babe=0);
     void closeConnection();
     void insertPlaylist(QString name, QString color);
-
     void removePath(QString path);
     void setCollectionLists();
     void refreshArtistsTable();
@@ -67,11 +62,14 @@ public slots:
     void insertCoverArt(QString path, QStringList info);
     void insertHeadArt(QString path, QStringList info);
 
-
 signals:
     void progress(int);
     void DBactionFinished(bool state);
 
+private:
+    QSqlDatabase m_db;
+    QList <Track> trackList;
+    Database *m_database;
 };
 
 
