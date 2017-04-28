@@ -237,20 +237,21 @@ void settings::refreshWatchFiles()
 
 }
 
-CollectionDB &settings::getCollectionDB() { return collection_db; }
+CollectionDB &settings::getCollectionDB()
+{
+    return collection_db;
+}
 
-void settings::on_toolbarIconSize_activated(const QString &arg1) {
-    // qDebug () <<arg1;
+void settings::on_toolbarIconSize_activated(const QString &arg1)
+{
     iconSize = arg1.toInt();
     setSettings({"toolbarIconSize=", arg1});
-
     emit toolbarIconSizeChanged(iconSize);
 }
 
-void settings::on_open_clicked() {
+void settings::on_open_clicked()
+{
     QString url = QFileDialog::getExistingDirectory(this,"Select folder...", QDir().homePath()+"/Music/");
-
-    // qDebug()<<url;
     if (!collectionPaths.contains(url) && !url.isEmpty()) {
         ui->collectionPath->addItem(url);
         collectionPaths << url;
@@ -260,15 +261,15 @@ void settings::on_open_clicked() {
     }
 }
 
-void settings::setSettings(QStringList setting) {
+void settings::setSettings(QStringList setting)
+{
     std::string strNew;
     // std::string strReplace;
     strNew = setting.at(0).toStdString() + setting.at(1).toStdString();
     bool replace = false;
     /**/
     // qDebug()<<setting.at(0);
-    std::ifstream settings(settingPath.toStdString() +
-                           settingsName.toStdString());
+    std::ifstream settings(settingPath.toStdString() + settingsName.toStdString());
     QStringList newline;
     std::string line;
     while (std::getline(settings, line)) {
