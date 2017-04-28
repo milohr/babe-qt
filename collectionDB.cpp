@@ -12,9 +12,16 @@
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software Foundation,
    Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
- */
+*/
 
 #include "collectionDB.h"
+#include <QMapIterator>
+
+#include <QSqlDatabase>
+#include <QSqlQuery>
+#include <QSqlError>
+#include <QSqlRecord>
+#include <QSqlDriver>
 
 CollectionDB::CollectionDB(QObject *parent) : QObject(parent)
     ,m_database(Database::instance())
@@ -58,71 +65,33 @@ QString CollectionDB::getAlbumArt(QString album, QString artist)
 
 QList<QMap<int, QString>> CollectionDB::getTrackData(QStringList urls)
 {
+    QVariantMap where;
     QList<QMap<int, QString>> mapList;
-
-    for(auto url:urls)
-    {
-        QSqlQuery query("SELECT * FROM tracks WHERE location =\""+url+"\"");
-        if(query.exec())
-        {
-            while(query.next())
-            {
-                QString track = query.value(TRACK).toString();
-                QString title = query.value(TITLE).toString();
-                QString artist = query.value(ARTIST).toString();
-                QString album = query.value(ALBUM).toString();
-                QString genre = query.value(GENRE).toString();
-                QString location = query.value(LOCATION).toString();
-                QString stars = query.value(STARS).toString();
-                QString babe = query.value(BABE).toString();
-                QString art = query.value(ART).toString();
-                QString playlist = query.value(PLAYLIST).toString();
-                QString played = query.value(PLAYED).toString();
-
-                const QMap<int, QString> map{{TRACK,track}, {TITLE,title}, {ARTIST,artist},{ALBUM,album},{GENRE,genre},{LOCATION,location},{STARS,stars},{BABE,babe},{ART,art},{PLAYED,played},{PLAYLIST,playlist}};
-
-                mapList<<map;
-            }
-        }
+    for (auto url : urls) {
+        where.clear();
+        where.insert("location", url);
+        mapList.append(getTrackData(where).at(0));
     }
-
     return mapList;
 }
 
-QList<QMap<int, QString>> CollectionDB::getTrackData(QString queryText)
+QList<QMap<int, QString>> CollectionDB::getTrackData(const QVariantMap &filter, const QString &orderBy, const QString &whereOperator)
 {
     QList<QMap<int, QString>> mapList;
-    QSqlQuery query;
-    query.prepare(queryText);
-    // qDebug()<<queryText;
-    if(query.exec())
-    {
-        //qDebug()<<"getTrackData query passed";
-        while(query.next())
-        {
-            QString track = query.value(TRACK).toString();
-            QString title = query.value(TITLE).toString();
-            QString artist = query.value(ARTIST).toString();
-            QString album = query.value(ALBUM).toString();
-            QString genre = query.value(GENRE).toString();
-            QString location = query.value(LOCATION).toString();
-            QString stars = query.value(STARS).toString();
-            QString babe = query.value(BABE).toString();
-            QString art = query.value(ART).toString();
-            QString playlist = query.value(PLAYLIST).toString();
-            QString played = query.value(PLAYED).toString();
-
-            // qDebug()<<track<<title<<artist<<album;
-
-            const QMap<int, QString> map{{TRACK,track}, {TITLE,title}, {ARTIST,artist},{ALBUM,album},{GENRE,genre},{LOCATION,location},{STARS,stars},{BABE,babe},{ART,art},{PLAYED,played},{PLAYLIST,playlist}};
-
-            mapList<<map;
+    QVariantList resultSet = m_database->select("tracks", filter, -1, 0, orderBy, false, Database::SELECT_TYPE::All_Itens_Int, whereOperator);
+    int count = 0;
+    foreach (const QVariant &set, resultSet) {
+        count = 0;
+        QMap<int, QString> map;
+        QMapIterator<QString, QVariant> entry(set.toMap());
+        while (entry.hasNext()) {
+            entry.next();
+            map.insert(count++, entry.value().toString());
         }
+        mapList << map;
     }
-
     return mapList;
 }
-
 
 void CollectionDB::cleanCollectionLists()
 {
@@ -163,26 +132,10 @@ void CollectionDB::cleanCollectionLists()
     }
 }
 
-
-
-
 QSqlQuery CollectionDB::getQuery(QString queryTxt)
 {
     QSqlQuery query(queryTxt);
     return query;
-}
-
-
-bool CollectionDB::removeQuery(QString queryTxt)
-{
-    QSqlQuery query;
-    query.prepare(queryTxt);
-
-    if(!query.exec())
-    {
-        qDebug() << "removeQuery error: "<< query.lastError();
-        return false;
-    }else return true;
 }
 
 bool CollectionDB::checkQuery(QString queryTxt)

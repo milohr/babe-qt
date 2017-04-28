@@ -1,19 +1,14 @@
 #ifndef COLLECTIONDB_H
 #define COLLECTIONDB_H
 
+#include <QDir>
+#include <QList>
+#include <QDebug>
+#include <QFileInfo>
 #include <QString>
 #include <QStringList>
-#include <QList>
-#include <QSqlDatabase>
 #include <QWidget>
 #include <typeinfo>
-#include <QDebug>
-#include <QSqlQuery>
-#include <QSqlError>
-#include <QSqlRecord>
-#include <QSqlDriver>
-#include <QFileInfo>
-#include <QDir>
 
 #include "track.h"
 #include "taginfo.h"
@@ -32,12 +27,11 @@ public:
     bool insertInto(QString tableName, QString column, QString location, QString value);
     void setTrackList(QList <Track>);
     void prepareCollectionDB();
-    bool removeQuery(QString queryTxt);
     bool execQuery(QString queryTxt);
     bool check_existance(QString tableName, QString searchId, QString search);
 
     QList<QMap<int, QString>> getTrackData(QStringList urls);
-    QList<QMap<int, QString>> getTrackData(QString queryText);
+    QList<QMap<int, QString>> getTrackData(const QVariantMap &filter, const QString &orderBy = "", const QString &whereOperator = "&");
     QString getArtistArt(QString artist);
     QString getAlbumArt(QString album, QString artist);
     QStringList getPlaylists();
@@ -47,11 +41,11 @@ public:
 
     enum colums
     {
-        TRACK,TITLE,ARTIST,ALBUM,GENRE,LOCATION,STARS,BABE,ART,PLAYED,PLAYLIST
+        ID, TRACK, TITLE, ARTIST, ALBUM, GENRE, LOCATION, STARS, BABE, ART, PLAYED, PLAYLIST
     };
 
 public slots:
-    bool addTrack(QStringList paths, int babe=0);
+    bool addTrack(QStringList paths, int babe = 0);
     void insertPlaylist(QString name, QString color);
     void removePath(QString path);
     void setCollectionLists();
@@ -66,7 +60,7 @@ signals:
 
 private:
     QSqlDatabase m_db;
-    QList <Track> trackList;
+    QList<Track> trackList;
     Database *m_database;
 };
 
