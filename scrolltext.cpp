@@ -26,7 +26,6 @@ ScrollText::ScrollText(QWidget *parent) {
     speed = 0;
     direction = RightToLeft;
     connect(&timer, SIGNAL(timeout()), this, SLOT(refreshLabel()));
-    //
 }
 void ScrollText::refreshLabel() { repaint(); }
 
@@ -53,8 +52,6 @@ void ScrollText::setMaxSize(int size) {
 }
 
 void ScrollText::stop() {
-    // connect(&timer, SIGNAL(timeout()), this, SLOT(refreshLabel()));
-    // timer.stop();
 }
 
 void ScrollText::reset() {

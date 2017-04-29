@@ -57,10 +57,7 @@ void Lyrics::startConnection()
     QObject::connect(&manager,SIGNAL(finished(QNetworkReply*)),this,SLOT(xmlInfo(QNetworkReply*)));
     loop.exec();
 
-
-    //qDebug()<<url;
     delete reply;
-
 }
 
 
@@ -71,41 +68,29 @@ void Lyrics::xmlInfo(QNetworkReply *reply)
     {
         QByteArray bts = reply->readAll();
         QString xmlData(bts);
-        //qDebug()<<xmlData;
-        //QString info;
-        //qDebug()<<xmlData;
         QDomDocument doc;
 
         if (!doc.setContent(xmlData))
         {
             qDebug()<<"The XML obtained from last.fm "
                       "is invalid.";
-        }else
-        {
-
-
-
+        } else {
             QString temp = doc.documentElement().namedItem("url").toElement().text().toLatin1();
             QUrl temp_u (temp);
             temp_u.toEncoded(QUrl::FullyEncoded);
-            //qDebug("LyricsWindow: received url = %s", qPrintable(temp));
-
 
             temp =temp_u.toString();
 
             temp.replace("http://lyrics.wikia.com/","http://lyrics.wikia.com/index.php?title=");
             temp.append("&action=edit");
-            //qDebug() << temp;
             QRegExp url_regexp("<url>(.*)</url>");
             url_regexp.setMinimal(true);
             QUrl url = QUrl::fromEncoded(temp.toLatin1());
             QString referer = url_regexp.cap(1);
-            //  qDebug("LyricsWindow: request url = %s", url.toEncoded().constData());
             QNetworkRequest request;
             request.setUrl(url);
             request.setRawHeader("Referer", referer.toLatin1());
             qDebug("Receiving lyrics");
-
 
             QNetworkAccessManager m_http;
 
@@ -117,8 +102,6 @@ void Lyrics::xmlInfo(QNetworkReply *reply)
             QObject::connect(&m_http,SIGNAL(finished(QNetworkReply*)),this,SLOT(getLyrics(QNetworkReply*)));
             loop.exec();
 
-
-            //qDebug()<<url;
             delete reply;
         }
 
@@ -129,7 +112,6 @@ void Lyrics::getLyrics(QNetworkReply *reply)
 {
     QString content = QString::fromUtf8(reply->readAll().constData());
 
-    //QString text;
     content.replace("&lt;", "<");
     QRegExp lyrics_regexp("<lyrics>(.*)</lyrics>");
     lyrics_regexp.indexIn(content);
@@ -146,28 +128,16 @@ void Lyrics::getLyrics(QNetworkReply *reply)
     else
     {
         text += lyrics;
-        // qDebug()<<text;
     }
     reply->deleteLater();
-
-    //lyric = doc.documentElement().namedItem("lyrics").toElement().text();
 
     if(text.isEmpty())
     {
         qDebug()<<"Could not find " <<
                   " lyrics ";
-
-
-    }else
-    {
-        // qDebug()<<"the lyrics are"<< lyric;
+    } else {
         text= "<p align='center'>"+text+"<p>";
-
- emit lyricsReady(text);
-
-        //disconnect(this, SIGNAL(lyricsReady(QString)), 0, 0);
-
-
+        emit lyricsReady(text);
     }
 
 }

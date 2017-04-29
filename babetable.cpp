@@ -21,14 +21,8 @@
 
 BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
 
-    /* connection = new CollectionDB();
-  connection->openCollection("../player/collection.db");*/
-
     connect(this, SIGNAL(doubleClicked(QModelIndex)), this,
             SLOT(on_tableWidget_doubleClicked(QModelIndex)));
-    //connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),SLOT(setUpContextMenu(const QPoint&)));
-    //connect(this->model(),SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)),this,SLOT(itemEdited(const QModelIndex&, const QModelIndex&)));
-    //this->setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
     this->setFrameShape(QFrame::NoFrame);
     this->setColumnCount(columnsCOUNT-1);
     this->setHorizontalHeaderLabels({"Track", "Title", "Artist", "Album", "Genre",
@@ -47,7 +41,6 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
 
     this->verticalHeader()->resizeSections(QHeaderView::ResizeToContents);
 
-    // this->setGridStyle(Qt::PenStyle);
     this->setShowGrid(false);
 
     this->setColumnWidth(TRACK, 20);
@@ -83,11 +76,7 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
     fav4->setIcon(QIcon::fromTheme("rating-unrated"));
     fav5->setIcon(QIcon::fromTheme("rating-unrated"));
 
-    // this->horizontalHeaderItem(0);
-    // this->horizontalHeaderItem(0)->setResizeMode(1, QHeaderView::Interactive);
-    // this->horizontalHeader()->setHighlightSections(true);
     contextMenu = new QMenu(this);
-    //this->setContextMenuPolicy(Qt::ActionsContextMenu);
 
     auto babeIt = new QAction("Babe it \xe2\x99\xa1", contextMenu);
     contextMenu->addAction(babeIt);
@@ -95,11 +84,7 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
     auto queueIt = new QAction("Queue", contextMenu);
     contextMenu->addAction(queueIt);
 
-    /*auto sendIt = new QAction("Send to phone... ", contextMenu);
-    this->addAction(sendIt);*/
-
     QAction *sendEntry = contextMenu->addAction("Send to phone...");
-    //this->addAction(sendEntry);
     sendToMenu = new QMenu("...");
     sendEntry->setMenu(sendToMenu);
 
@@ -121,16 +106,6 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
     playlistsMenu = new QMenu("...");
     addEntry->setMenu(playlistsMenu);
 
-    // auto moodIt = new QAction("Mood..", contextMenu);
-    // this->addAction(moodIt);
-
-    /*QAction *moodEntry = contextMenu->addAction("Mood...");
-  this->addAction(moodEntry);
-  moodMenu = new QMenu("...");
-  moodEntry->setMenu(moodMenu);*/
-    // passPlaylists();
-    // playlistsMenu->addAction("hello rold");
-
     connect(this, SIGNAL(rightClicked(const int, const int)), this, SLOT(setUpContextMenu(const int, const int)));
     connect(playlistsMenu, SIGNAL(triggered(QAction *)), this,
             SLOT(addToPlaylist(QAction *)));
@@ -140,7 +115,6 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
 
     connect(babeIt, SIGNAL(triggered()), this, SLOT(babeIt_action()));
     connect(queueIt, SIGNAL(triggered()), this, SLOT(queueIt_action()));
-    //connect(sendIt, SIGNAL(triggered()), this, SLOT(sendIt_action()));
     connect(infoIt, SIGNAL(triggered()), this, SLOT(infoIt_action()));
     connect(editIt, SIGNAL(triggered()), this, SLOT(editIt_action()));
     connect(removeIt, SIGNAL(triggered()), this, SLOT(removeIt_action()));
@@ -158,7 +132,6 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
     bg->addButton(fav3, 3);
     bg->addButton(fav4, 4);
     bg->addButton(fav5, 5);
-    // connect(fav1,SIGNAL(enterEvent(QEvent)),this,hoverEvent());
     ty->addWidget(fav1);
     ty->addWidget(fav2);
     ty->addWidget(fav3);
@@ -178,9 +151,7 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
     for(int i=0; i<5; i++)
     {
         auto  *colorTag = new QToolButton();
-        //colorTag->setIconSize(QSize(10,10));
         colorTag->setFixedSize(15,15);
-        // colorTag->setAutoRaise(true);
         colorTag->setStyleSheet(QString("QToolButton { background-color: %1;}").arg(colors.at(i)));
         moodGroup->addButton(colorTag,i);
         moodsLayout->addWidget(colorTag);
@@ -252,7 +223,6 @@ void BabeTable::populatePlaylist(QStringList urls, QString playlist)  //this nee
 {
     for (auto location : urls)
     {
-        // ui->fav_btn->setIcon(QIcon::fromTheme("face-in-love"));
         qDebug() << "Song to add: " << location << " to: " << playlist;
 
         QSqlQuery query = connection->getQuery(
@@ -262,7 +232,6 @@ void BabeTable::populatePlaylist(QStringList urls, QString playlist)  //this nee
         while (query.next())
             list = query.value(PLAYLIST).toString();
         list += " " + playlist;
-        // qDebug()<<played;
 
         if (connection->insertInto("tracks", "playlist", location, list))
             qDebug() << list;
@@ -316,16 +285,11 @@ void BabeTable::addRowAt(int row,QMap<int, QString> map, bool descriptiveTooltip
     this->setItem(row , BABE, new QTableWidgetItem(map[BABE]));
     this->setItem(row , ART, new QTableWidgetItem(map[ART]));
     this->setItem(row , PLAYED, new QTableWidgetItem(map[PLAYED]));
-    //this->setItem(row , PLAYLIST, new QTableWidgetItem(map[PLAYLIST]));
 
     QColor color;
     color.setNamedColor("#000");
     color.setAlpha(40);
     this->item(row,TITLE)->setBackgroundColor(color);
-    /* QBrush brush;
-    brush.setColor("#fff");
-    this->item(row,TITLE)->setForeground(brush);*/
-    //this->item(row,TITLE)->setTextAlignment(Qt::AlignCenter);
 
     if(descriptiveTooltip)
         this->item(row,TITLE)->setToolTip( "by "+map[ARTIST]);
@@ -561,7 +525,6 @@ QMap<QString,QString> BabeTable::getKdeConnectDevices()
     QProcess process;
     process.start("kdeconnect-cli -a");
     process.waitForFinished();
-    // auto output = process->readAllStandardOutput();
 
     process.setReadChannel(QProcess::StandardOutput);
 
@@ -587,9 +550,8 @@ QMap<QString,QString> BabeTable::getKdeConnectDevices()
 
 
 void BabeTable::setUpContextMenu(const int row, const int column)
-{    
+{
     qDebug() << "setUpContextMenu";
-    //contextMenu->exec(QCursor::pos());
 
     int rate = 0;
     bool babe = false;
@@ -601,7 +563,6 @@ void BabeTable::setUpContextMenu(const int row, const int column)
     for (auto playlist : connection->getPlaylists())
         playlistsMenu->addAction(playlist);
 
-    // playlistsMenu->addAction("Create new...");
     sendToMenu->clear();
     QMapIterator<QString, QString> i(getKdeConnectDevices());
     while (i.hasNext())
@@ -709,7 +670,6 @@ void BabeTable::mousePressEvent(QMouseEvent *evt)
 void BabeTable::rateGroup(int id)
 {
     qDebug() << "rated with: " << id;
-    // int row= this->currentIndex().row();
     QString location = this->getRowData(rRow)[LOCATION];
 
     QSqlQuery query = connection->getQuery(
@@ -749,9 +709,6 @@ void BabeTable::rateGroup(int id)
         } else {
             qDebug() << "rated and trying to add to favs failed";
         }
-        // this->update();
-    } else
-    {
     }
 }
 
@@ -791,7 +748,7 @@ void BabeTable::on_tableWidget_doubleClicked(const QModelIndex &index)
 }
 
 void BabeTable::babeIt_action()
-{    
+{
     emit babeIt_clicked(this->getRowData(rRow));
 }
 
@@ -823,9 +780,6 @@ void BabeTable::sendIt_action(QAction *device)
 
 void BabeTable::editIt_action()
 {
-    //editing=true;
-    // emit this->edit(this->model()->index(rRow,rColumn));
-
     auto infoForm = new metadataForm(getRowData(rRow),this);
     connect(infoForm,SIGNAL(infoModified(QMap<int, QString>)),this,SLOT(itemEdited(QMap<int, QString>)));
     infoForm->show();
@@ -840,9 +794,6 @@ void BabeTable::itemEdited(QMap<int, QString> map)
     this->item(rRow,ARTIST)->setText(map[ARTIST]);
     this->item(rRow,ALBUM)->setText(map[ALBUM]);
     this->item(rRow,GENRE)->setText(map[GENRE]);
-
-    //connection->insertInto("tracks",column,this->model()->index(newIndex.row(),LOCATION).data().toString(),newIndex.data().toString());
-
 }
 
 void BabeTable::infoIt_action()
@@ -856,7 +807,6 @@ void BabeTable::infoIt_action()
 void BabeTable::removeIt_action()
 {
     qDebug() << "removeIt/right clicked!";
-    // int row= this->currentIndex().row();
     qDebug()
             << this->model()->data(this->model()->index(rRow, LOCATION)).toString();
     this->removeRow(rRow);
@@ -870,7 +820,6 @@ void BabeTable::moodIt_action(QString color)
     {
         QSqlQuery query;
         query.prepare("UPDATE tracks SET art = (:art) WHERE location = (:location)" );
-        //query.prepare("SELECT * FROM "+tableName+" WHERE "+searchId+" = (:search)");
         query.bindValue(":art",  color);
         query.bindValue(":location", this->getRowData(rRow)[LOCATION]);
 
@@ -883,18 +832,12 @@ void BabeTable::moodIt_action(QString color)
         }else qDebug()<<"COULDN'T insert art[color] into DB";
 
     }
-
-
-    //emit moodIt_clicked(this->model()->data(this->model()->index(row, LOCATION)).toString(),color.name());
-    /*emit babeIt_clicked(
-      {this->model()->data(this->model()->index(row, LOCATION)).toString()});*/
 }
 
 
 void BabeTable::queueIt_action()
 {
     qDebug() << "queueIt clicked!";
-    // int row= this->currentIndex().row();
     QString url = this->model()->data(this->model()->index(rRow, LOCATION)).toString();
     qDebug()<<url;
 

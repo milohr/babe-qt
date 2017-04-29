@@ -40,9 +40,9 @@ bool Playlist::isMusic(QString file)
     else if (mimeType.inherits("audio/MPEG-4"))
         return true;
     else if (mimeType.inherits("video/mpeg"))
-        return true;    
+        return true;
     else if (mimeType.inherits("audio/m4a"))
-        return true;    
+        return true;
     else if (mimeType.inherits("audio/mp3"))
         return false;
     else if (mimeType.inherits("audio/ogg"))
@@ -60,7 +60,7 @@ QList<QMap<int,QString>> Playlist::getTracksData()
     QList<QMap<int,QString>> mapList;
 
     for(auto file : getTracks())
-    {       
+    {
         QString track = QString::number(file.getTrack());
         QString title = QString::fromStdString(file.getTitle());
         QString artist = QString::fromStdString(file.getArtist());
@@ -92,7 +92,6 @@ void Playlist::add(QStringList files)
 
             Track track;
 
-            // qDebug()<<QString::fromStdWString(file.tag()->title().toWString());
             QString title = info.getTitle();
             QString artist = info.getArtist();
             QString album = info.getAlbum();
@@ -130,7 +129,6 @@ void Playlist::addClean(QStringList files)
 
         Track track;
 
-        // qDebug()<<QString::fromStdWString(file.tag()->title().toWString());
         QString title = info.getTitle();
         QString artist = info.getArtist();
         QString album = info.getAlbum();
@@ -165,7 +163,6 @@ void Playlist::setMetaData(QString title, QString artist, QString album,QString 
     track.setArtist(artist.toStdString());
     track.setAlbum(album.toStdString());
     track.setLocation(location.toStdString());
-    // track.setName(getNameFromLocation(location.toStdString()));
     tracks.push_back(track);
 }
 

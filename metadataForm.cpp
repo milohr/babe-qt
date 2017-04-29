@@ -26,7 +26,6 @@ metadataForm::metadataForm(QMap<int,QString> info, QWidget *parent) :
     ui->setupUi(this);
     Qt::WindowFlags flags = Qt::Dialog;
      setWindowFlags(flags);
-     //mapFromParent(QPoint(100, 100));
 
      track=info[BabeTable::TRACK];
      title=info[BabeTable::TITLE];

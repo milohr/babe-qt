@@ -102,10 +102,6 @@ static inline QString ucfirst(const QString str) {
 
 static inline QString fixString(QString title)
 {
-
-    //title.remove(QRegExp(QString::fromUtf8("[·-`~!@#$%^&*()_—+=|:;<>«»,.?/{}\'\"\\\[\\\]\\\\]")));
-
-
     title=title.contains("(")&&title.contains(")")?fixTitle(title,"(",")"):title;
     title=title.contains("[")&&title.contains("]")?fixTitle(title,"[","]"):title;
     title=title.contains("{")&&title.contains("}")?fixTitle(title,"{","}"):title;

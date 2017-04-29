@@ -13,8 +13,6 @@
 #include <taginfo.h>
 #include <babetable.h>
 
-//#include <QtMultimedia/QMediaPlayer>
-
 class Playlist
 {
 public:

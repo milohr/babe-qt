@@ -94,7 +94,7 @@ protected:
 public slots:
 
     void addToPlaylist(QList<QMap<int,QString>> mapList, bool notRepeated=false);
-    void putPixmap(QByteArray array);    
+    void putPixmap(QByteArray array);
     void populateResultsTable(QList<QMap<int,QString>> mapList);
     QList<QMap<int,QString>> searchFor(QStringList queries);
     void dummy();
@@ -133,7 +133,6 @@ private slots:
     void on_search_returnPressed();
     void on_search_textChanged(const QString &arg1);
 
-    //void on_resultsPLaylist_clicked();
     void setCoverArt(QString artist, QString album, QString title);
     void orderTables();
     void on_rowInserted(QModelIndex model ,int x,int y);
@@ -239,8 +238,8 @@ private:
     QMenu *refreshBtn_menu;
 
     int mini_mode = FULLMODE;
-    int prevIndex;    
-    int lCounter = 0;    
+    int prevIndex;
+    int lCounter = 0;
     int  shuffle_state = REGULAR;
 
     bool repeat = false;

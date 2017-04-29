@@ -77,7 +77,6 @@ public:
     void populatePlaylist(QStringList urls, QString playlist);
     void setAddMusicMsg(QString msg);
     int getIndex();
-    //void removeRow(int row);
 
     QMap<int,QString> getRowData(int row);
     QMap<QString, QString> getKdeConnectDevices();
@@ -89,7 +88,6 @@ protected:
 
     virtual void enterEvent(QEvent *event);
     virtual void leaveEvent(QEvent *event);
-    //  virtual void mouseReleaseEvent(QMouseEvent* evt);
     virtual void mousePressEvent(QMouseEvent* evt);
     virtual void keyPressEvent(QKeyEvent *event);
 

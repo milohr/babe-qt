@@ -47,8 +47,7 @@ public:
     };
 
 private:
-    QString url ;
-    //QImage cover;
+    QString url;
     QPixmap art;
     QString album;
     QString artist;
@@ -57,8 +56,6 @@ private:
     QByteArray coverArray;
     QString path;
     int type;
-
-    //QNetworkReply reply;
 
 public slots:
 
