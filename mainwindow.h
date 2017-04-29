@@ -42,7 +42,6 @@
 #include "settings.h"
 #include "collectionDB.h"
 
-
 namespace Ui {
 class MainWindow;
 }
@@ -50,7 +49,6 @@ class MainWindow;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
-
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
@@ -60,16 +58,15 @@ public:
     void clearCurrentList();
     bool isBabed(QMap<int, QString> track);
     void feedRabbit();
-    QStringList searchKeys = {"location:","artist:","album:","title:","genre:" };
-
+    QStringList searchKeys = {"location:", "artist:", "album:", "title:", "genre:"};
 
     enum views
     {
-        COLLECTION,ALBUMS,ARTISTS,PLAYLISTS,RABBIT,INFO,SETTINGS,RESULTS
+        COLLECTION, ALBUMS, ARTISTS, PLAYLISTS, RABBIT, INFO, SETTINGS, RESULTS
     };
     enum utilsBar
     {
-        INFO_UB,PLAYLISTS_UB,SEARCH_UB,ALBUMS_UB,ARTISTS_UB,COLLECTION_UB, FAVORITES_UB,RABBIT_UB
+        INFO_UB, PLAYLISTS_UB, SEARCH_UB, ALBUMS_UB, ARTISTS_UB, COLLECTION_UB, FAVORITES_UB, RABBIT_UB
     };
     enum viewModes
     {
@@ -79,7 +76,6 @@ public:
     {
         REGULAR, SHUFFLE, REPEAT
     };
-
 
 protected:
     virtual void enterEvent(QEvent *event);
@@ -92,7 +88,6 @@ protected:
     virtual void keyPressEvent(QKeyEvent *event);
 
 public slots:
-
     void addToPlaylist(QList<QMap<int,QString>> mapList, bool notRepeated=false);
     void putPixmap(QByteArray array);    
     void populateResultsTable(QList<QMap<int,QString>> mapList);
@@ -100,17 +95,15 @@ public slots:
     void dummy();
 
 private slots:
-
+    void update();
     void on_hide_sidebar_btn_clicked();
     void on_shuffle_btn_clicked();
     void on_open_btn_clicked();
     void on_mainList_clicked(QList<QMap<int, QString>> list);
-    void update();
     void on_seekBar_sliderMoved(int position);
     void on_play_btn_clicked();
     void on_backward_btn_clicked();
     void on_foward_btn_clicked();
-
 
     /*the main views*/
     void collectionView();
@@ -122,9 +115,8 @@ private slots:
     void settingsView();
 
     /*the view stacked actions*/
-
-    bool addToCollectionDB(QStringList url,QString babe=0);
-    void scanNewDir(QString url,QString babe="0");
+    bool addToCollectionDB(QStringList url,QString babe = 0);
+    void scanNewDir(QString url, QString babe = "0");
     void setToolbarIconSize(int iconSize);
     void collectionDBFinishedAdding(bool state);
     void on_fav_btn_clicked();
@@ -133,14 +125,13 @@ private slots:
     void on_search_returnPressed();
     void on_search_textChanged(const QString &arg1);
 
-    //void on_resultsPLaylist_clicked();
     void setCoverArt(QString artist, QString album, QString title);
     void orderTables();
-    void on_rowInserted(QModelIndex model ,int x,int y);
+    void on_rowInserted(QModelIndex model, int x, int y);
 
     void AlbumsViewOrder(QString order);
     void refreshTables();
-    void addToPlayed(QString url);
+    void addToPlayed(const QString &url);
     void on_refreshBtn_clicked();
     void on_tracks_view_2_clicked();
     void on_refreshAll_clicked();
@@ -164,9 +155,8 @@ private slots:
     void albumDoubleClicked(QMap<int, QString> info);
 
 private:
-
     Ui::MainWindow *ui;
-    const QString stylePath = BaeUtils::getSettingPath()+"style.qss";
+    const QString stylePath = BaeUtils::getSettingPath() + "style.qss";
 
     Qt::WindowFlags defaultWindowFlags;
     Notify nof;
@@ -190,6 +180,7 @@ private:
     void expand();
     void go_mini();
     void go_playlistMode();
+    QList<QMap<int, QString>> readTrackData(const QString &album, const QString &artist);
 
     QFrame *rightFrame;
     QGridLayout *leftFrame_layout;
@@ -207,7 +198,6 @@ private:
     QWidget *controls;
     QWidget *playlistWidget;
     QFrame *leftFrame;
-
 
     /*the views*/
     BabeTable *mainList;
@@ -241,7 +231,7 @@ private:
     int mini_mode = FULLMODE;
     int prevIndex;    
     int lCounter = 0;    
-    int  shuffle_state = REGULAR;
+    int shuffle_state = REGULAR;
 
     bool repeat = false;
     bool muted = false;
@@ -251,15 +241,10 @@ private:
 
     QSize prevSize;
 
-
 signals:
     void finishedPlayingSong(QString url);
     void collectionChecked();
     void fetchCover(QString artist, QString album, QString title);
-
 };
-
-
-
 
 #endif // MAINWINDOW_H
