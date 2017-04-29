@@ -1,13 +1,9 @@
 #ifndef COLLECTIONDB_H
 #define COLLECTIONDB_H
 
-#include <QDir>
 #include <QList>
-#include <QDebug>
-#include <QFileInfo>
 #include <QString>
 #include <QStringList>
-#include <QWidget>
 #include <typeinfo>
 
 #include "track.h"
@@ -21,17 +17,16 @@ public:
     explicit CollectionDB(QObject *parent = 0);
     ~CollectionDB(){}
     void openCollection(QString path);
-    QSqlQuery getQuery(QString queryTxt);
+    QSqlQuery getQuery(const QString &queryTxt);
     bool checkQuery(QString queryTxt);
-    bool insertInto(QString tableName, QString column, QString location, int value);
-    bool insertInto(QString tableName, QString column, QString location, QString value);
-    void setTrackList(QList <Track>);
+    bool updateTrack(const QString &column, const QString &location, const QVariant &value);
     void prepareCollectionDB();
     bool execQuery(QString queryTxt);
-    bool check_existance(QString tableName, QString searchId, QString search);
+    bool hasTrack(const QString &searchId, const QString &searchTerm);
 
-    QList<QMap<int, QString>> getTrackData(QStringList urls);
-    QList<QMap<int, QString>> getTrackData(const QVariantMap &filter, const QString &orderBy = "", const QString &whereOperator = "&");
+    QList<QMap<int, QString>> getTrackData(const QString &url);
+    QList<QMap<int, QString>> getTrackData(const QVariantMap &filter, const QString &orderBy = "", const QString &whereOperator = "&", const QString &whereComparator = QStringLiteral("="));
+
     QString getArtistArt(QString artist);
     QString getAlbumArt(QString album, QString artist);
     QStringList getPlaylists(int limit = -1, int offset = 0, const QString &orderBy = "title");
@@ -41,28 +36,26 @@ public:
 
     enum colums
     {
-        ID, TRACK, TITLE, ARTIST, ALBUM, GENRE, LOCATION, STARS, BABE, ART, PLAYED, PLAYLIST
+        TRACK, TITLE, ARTIST, ALBUM, GENRE, LOCATION, STARS, BABE, ART, PLAYED, PLAYLIST
     };
 
 public slots:
+    void debugDatabaseMessage(const QString &message);
     bool addTrack(QStringList paths, int babe = 0);
-    void insertPlaylist(QString name, QString color);
+    void insertPlaylist(const QString &name = "", const QString &color = "");
     void removePath(QString path);
     void setCollectionLists();
     void refreshArtistsTable();
     void cleanCollectionLists();
-    void insertCoverArt(QString path, QStringList info);
-    void insertHeadArt(QString path, QStringList info);
+    void insertCoverArt(const QString &art, const QStringList &info);
+    void insertHeadArt(const QString &art, const QStringList &info);
 
 signals:
     void progress(int);
     void DBactionFinished(bool state);
 
 private:
-    QSqlDatabase m_db;
-    QList<Track> trackList;
     Database *m_database;
 };
-
 
 #endif // COLLECTION_H
