@@ -34,7 +34,7 @@ public:
     QList<QMap<int, QString>> getTrackData(const QVariantMap &filter, const QString &orderBy = "", const QString &whereOperator = "&");
     QString getArtistArt(QString artist);
     QString getAlbumArt(QString album, QString artist);
-    QStringList getPlaylists();
+    QStringList getPlaylists(int limit = -1, int offset = 0, const QString &orderBy = "title");
     QStringList getPlaylistsMoods();
     QStringList albums;
     QStringList artists;
