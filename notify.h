@@ -1,5 +1,4 @@
-#ifndef NOTIFY_H
-#define NOTIFY_H
+#pragma once
 
 #include <QObject>
 #include <QByteArray>
@@ -34,4 +33,3 @@ public slots:
     void babeIt();
 };
 
-#endif // NOTIFY_H

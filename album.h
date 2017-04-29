@@ -1,5 +1,5 @@
-#ifndef ALBUM_H
-#define ALBUM_H
+#pragma once
+
 #include <QLabel>
 #include <QString>
 #include <QPixmap>
@@ -102,4 +102,3 @@ protected:
     // virtual void  mouseMoveEvent(QMouseEvent *evt);
 };
 
-#endif // ALBUM_H

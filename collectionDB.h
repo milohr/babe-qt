@@ -1,5 +1,5 @@
-#ifndef COLLECTIONDB_H
-#define COLLECTIONDB_H
+#pragma once
+
 #include <QString>
 #include <QStringList>
 #include <QList>
@@ -74,4 +74,3 @@ signals:
 };
 
 
-#endif // COLLECTION_H

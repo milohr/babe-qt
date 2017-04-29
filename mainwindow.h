@@ -1,5 +1,4 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#pragma once
 
 #include <QMainWindow>
 #include <QGridLayout>
@@ -261,4 +260,3 @@ signals:
 
 
 
-#endif // MAINWINDOW_H

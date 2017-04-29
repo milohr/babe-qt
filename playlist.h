@@ -1,5 +1,4 @@
-#ifndef PLAYLIST_H
-#define PLAYLIST_H
+#pragma once
 
 #include "vector"
 #include "track.h"
@@ -39,4 +38,3 @@ private:
 
 };
 
-#endif // PLAYLIST_H

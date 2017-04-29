@@ -1,5 +1,4 @@
-#ifndef SCROLLTEXT_H
-#define SCROLLTEXT_H
+#pragma once
 
 #include "scrolltext.h"
 #include <QLabel>
@@ -48,4 +47,3 @@ class ScrollText : public QLabel
         void refreshLabel();
 };
 
-#endif // SCROLLTEXT_H

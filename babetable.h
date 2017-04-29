@@ -1,5 +1,4 @@
-#ifndef BABETABLE_H
-#define BABETABLE_H
+#pragma once
 
 #include <QWidget>
 #include <QStringList>
@@ -150,4 +149,3 @@ signals:
 
 };
 
-#endif // BABETABLE_H

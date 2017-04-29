@@ -1,5 +1,4 @@
-#ifndef BAEUTILS_H
-#define BAEUTILS_H
+#pragma once
 
 #include "string"
 #include <QString>
@@ -131,4 +130,3 @@ static inline bool fileExists(QString url)
 
 }
 
-#endif // UTILS_H

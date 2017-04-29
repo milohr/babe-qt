@@ -1,5 +1,4 @@
-#ifndef WEB_JGM90_H
-#define WEB_JGM90_H
+#pragma once
 
 #include <QObject>
 
@@ -15,4 +14,3 @@ signals:
 public slots:
 };
 
-#endif // WEB_JGM90_H

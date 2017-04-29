@@ -1,5 +1,5 @@
-#ifndef ARTWORK_H
-#define ARTWORK_H
+#pragma once
+
 #include <QPixmap>
 #include <QDebug>
 #include <QImage>
@@ -77,4 +77,3 @@ signals:
 
 };
 
-#endif // ARTWORK_H

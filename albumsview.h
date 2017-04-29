@@ -1,5 +1,4 @@
-#ifndef ALBUMSVIEW_H
-#define ALBUMSVIEW_H
+#pragma once
 
 #include <QWidget>
 #include <QSqlQuery>
@@ -100,4 +99,3 @@ protected:
 
 };
 
-#endif // ALBUMSVIEW_H

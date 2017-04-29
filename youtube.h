@@ -1,5 +1,5 @@
-#ifndef YOUTUBE_H
-#define YOUTUBE_H
+#pragma once
+
 #include <QObject>
 #include <QWidget>
 #include <QProcess>
@@ -40,4 +40,3 @@ signals:
    void  youtubeTrackReady(bool state);
 };
 
-#endif // YOUTUBE_H

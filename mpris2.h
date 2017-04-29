@@ -1,3 +1,4 @@
+#pragma once
 
 /*
  * Cantata
@@ -21,8 +22,6 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
-#ifndef MPRIS2_H
-#define MPRIS2_H
 
 #include<QObject>
 #include <QObject>
@@ -153,4 +152,3 @@ private:
     int pos;
 };
 
-#endif // MPRIS2_H

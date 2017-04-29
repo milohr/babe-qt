@@ -1,5 +1,4 @@
-#ifndef INFOVIEW_H
-#define INFOVIEW_H
+#pragma once
 
 #include <QWidget>
 #include <QToolButton>
@@ -68,4 +67,3 @@ private slots:
     void on_similarArtistInfo_anchorClicked(const QUrl &arg1);
 };
 
-#endif // INFOVIEW_H

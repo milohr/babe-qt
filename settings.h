@@ -1,5 +1,4 @@
-#ifndef SETTINGS_H
-#define SETTINGS_H
+#pragma once
 
 #include <QWidget>
 #include <QString>
@@ -131,4 +130,3 @@ signals:
 
 };
 
-#endif // SETTINGS_H

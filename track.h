@@ -1,5 +1,4 @@
-#ifndef TRACK_H
-#define TRACK_H
+#pragma once
 
 #include <string>
 
@@ -42,4 +41,3 @@ private:
     string location = "";
 };
 
-#endif // TRACK_H
