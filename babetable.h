@@ -30,22 +30,20 @@
 #include "album.h"
 #include "collectionDB.h"
 #include "metadataForm.h"
-
+#include "database.h"
 
 namespace Ui { class BabeTable; }
 
 class BabeTable : public QTableWidget
 {
     Q_OBJECT
-
 public:
-
     explicit BabeTable(QWidget *parent = 0);
     ~BabeTable();
 
     enum columns
     {
-        TRACK,TITLE,ARTIST,ALBUM,GENRE,LOCATION,STARS,BABE,ART,PLAYED,PLAYLIST,columnsCOUNT
+        TRACK, TITLE, ARTIST, ALBUM, GENRE, LOCATION, STARS, BABE, ART, PLAYED, PLAYLIST, columnsCOUNT
     };
 
     enum order
@@ -53,16 +51,16 @@ public:
         DESCENDING, ASCENDING
     };
 
-    enum menuActions //this order must be followed
+    enum menuActions // this order must be followed
     {
         BABEIT, QUEUEIT, INFOIT, EDITIT, SAVETO, REMOVEIT, RATEIT, MOODIT, SENDIT, ADDTO
     };
 
     CollectionDB *connection;
 
-    const QMap<int, QString> columnsNames{{TRACK, "track"}, {TITLE, "title"}, {ARTIST, "artist"},{ALBUM,"album"},{GENRE,"genre"},{LOCATION,"location"},{STARS,"stars"},{BABE,"babe"},{ART,"art"},{PLAYED,"played"},{PLAYLIST,"playlist"}};
+    const QMap<int, QString> columnsNames{{TRACK, "track"}, {TITLE, "title"}, {ARTIST, "artist"}, {ALBUM,"album"}, {GENRE,"genre"}, {LOCATION,"location"}, {STARS,"stars"}, {BABE,"babe"}, {ART,"art"}, {PLAYED,"played"}, {PLAYLIST,"playlist"}};
     QStringList playlistsMenus;
-    QStringList colors = {"#F0FF01","#01FF5B","#3DAEFD","#B401FF","#E91E63"};
+    QStringList colors = {"#F0FF01", "#01FF5B", "#3DAEFD", "#B401FF", "#E91E63"};
 
     void populateTableView(QList<QMap<int,QString>> mapList, bool descriptiveTitle);
     void populateTableView(QString indication, bool descriptiveTitle=false);
@@ -74,27 +72,22 @@ public:
     void addRowAt(int row,QMap<int, QString> map, bool descriptiveTooltip);
     void passStyle(QString style);
     void passPlaylists();
-    void populatePlaylist(QStringList urls, QString playlist);
+    void populatePlaylist(const QStringList &urls, const QString &playlist);
     void setAddMusicMsg(QString msg);
     int getIndex();
-    //void removeRow(int row);
 
     QMap<int,QString> getRowData(int row);
     QMap<QString, QString> getKdeConnectDevices();
     QStringList getTableContent(columns);
     QList<QMap<int, QString>> getAllTableContent();
 
-
 protected:
-
     virtual void enterEvent(QEvent *event);
     virtual void leaveEvent(QEvent *event);
-    //  virtual void mouseReleaseEvent(QMouseEvent* evt);
     virtual void mousePressEvent(QMouseEvent* evt);
     virtual void keyPressEvent(QKeyEvent *event);
 
 private slots:
-
     void on_tableWidget_doubleClicked(const QModelIndex &index);
     void rateGroup(int id);
     void setUpContextMenu(const int row, const int column);
@@ -115,7 +108,6 @@ public slots:
     void flushTable();
 
 private:
-
     Notify nof;
     QToolButton *fav1;
     QToolButton *fav2;
@@ -134,6 +126,7 @@ private:
 
     QLabel *addMusicTxt;
     QString addMusicMsg = "oops... :(\nnothing here";
+    Database *m_database;
 
 signals:
     void tableWidget_doubleClicked(QList<QMap<int,QString>> mapList);
@@ -149,7 +142,6 @@ signals:
     void moodIt_clicked(QString color);
     void queueIt_clicked(QMap<int,QString> track);
     void infoIt_clicked(QString title, QString artist, QString album);
-
 };
 
 #endif // BABETABLE_H

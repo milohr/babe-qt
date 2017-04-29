@@ -26,7 +26,6 @@
 #include "collectionDB.h"
 #include "artwork.h"
 
-
 namespace Ui {
 class settings;
 }
@@ -34,12 +33,9 @@ class settings;
 class settings : public QWidget
 {
     Q_OBJECT
-
 public:
-
     explicit settings(QWidget *parent = 0);
     ~settings();
-
     const QString settingPath= BaeUtils::getSettingPath();
     const QString collectionDBPath=BaeUtils::getCollectionDBPath();
     const QString cachePath=BaeUtils::getCachePath();
@@ -49,28 +45,23 @@ public:
     bool checkCollection();
     void createCollectionDB();
     CollectionDB &getCollectionDB();
-
-    int getToolbarIconSize()  {return iconSize;}
-
+    int getToolbarIconSize();
     void setSettings(QStringList setting);
     void readSettings();
     void removeSettings(QStringList setting);
     void refreshCollectionPaths();
     void collectionWatcher();
     void addToWatcher(QStringList paths);
-    QStringList getCollectionPath() {return collectionPaths;}
+    QStringList getCollectionPath();
     CollectionDB collection_db;
-    bool youtubeTrackDone=false;
+    bool youtubeTrackDone = false;
 
     enum iconSizes
     {
-        s16,s22,s24
+        s16, s22, s24
     };
-    //enum albums { ALBUM_TITLE, ARTIST, ART};
-    // enum artists { ARTIST_TITLE, ART};
 
 private slots:
-
     void on_open_clicked();
     void on_toolbarIconSize_activated(const QString &arg1);
     void finishedAddingTracks(bool state);
@@ -79,17 +70,12 @@ private slots:
     void handleDirectoryChanged(QString dir);
     void on_collectionPath_clicked(const QModelIndex &index);
     void on_remove_clicked();
-
     void on_debugBtn_clicked();
-
     void on_ytBtn_clicked();
-
     void on_fetchBtn_clicked();
-
     void on_checkBox_stateChanged(int arg1);
 
 public slots:
-
     void populateDB(QString path);
     void fetchArt();
     void refreshWatchFiles();
@@ -97,11 +83,8 @@ public slots:
     void handleDirectoryChanged_cache(QString dir);
     void handleDirectoryChanged_extension();
 
-
 private:
     Ui::settings *ui;
-
-
     const QString notifyDir= BaeUtils::getNotifyDir();
     const QString collectionDBName = "collection.db";
     const QString settingsName = "settings.conf";
@@ -114,8 +97,6 @@ private:
     QLabel *artFetcherNotice;
     QMovie *movie;
     QString pathToRemove;
-    // QFileSystemWatcher watcher;
-    //QThread* thread;
     About *about_ui;
     QStringList files;
     QStringList dirs;
@@ -124,7 +105,6 @@ private:
     QTimer *cacheTimer;
 
 signals:
-
     void toolbarIconSizeChanged(int newSize);
     void collectionPathChanged(QString newPath);
     void collectionDBFinishedAdding(bool state);

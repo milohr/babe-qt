@@ -12,23 +12,16 @@
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software Foundation,
    Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
-
-   */
-
+*/
 
 #include "babetable.h"
 
-
 BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
 
-    /* connection = new CollectionDB();
-  connection->openCollection("../player/collection.db");*/
+    m_database = Database::instance();
+    connection = new CollectionDB();
 
-    connect(this, SIGNAL(doubleClicked(QModelIndex)), this,
-            SLOT(on_tableWidget_doubleClicked(QModelIndex)));
-    //connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),SLOT(setUpContextMenu(const QPoint&)));
-    //connect(this->model(),SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)),this,SLOT(itemEdited(const QModelIndex&, const QModelIndex&)));
-    //this->setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
+    connect(this, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(on_tableWidget_doubleClicked(QModelIndex)));
     this->setFrameShape(QFrame::NoFrame);
     this->setColumnCount(columnsCOUNT-1);
     this->setHorizontalHeaderLabels({"Track", "Title", "Artist", "Album", "Genre",
@@ -47,7 +40,6 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
 
     this->verticalHeader()->resizeSections(QHeaderView::ResizeToContents);
 
-    // this->setGridStyle(Qt::PenStyle);
     this->setShowGrid(false);
 
     this->setColumnWidth(TRACK, 20);
@@ -83,11 +75,7 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
     fav4->setIcon(QIcon::fromTheme("rating-unrated"));
     fav5->setIcon(QIcon::fromTheme("rating-unrated"));
 
-    // this->horizontalHeaderItem(0);
-    // this->horizontalHeaderItem(0)->setResizeMode(1, QHeaderView::Interactive);
-    // this->horizontalHeader()->setHighlightSections(true);
     contextMenu = new QMenu(this);
-    //this->setContextMenuPolicy(Qt::ActionsContextMenu);
 
     auto babeIt = new QAction("Babe it \xe2\x99\xa1", contextMenu);
     contextMenu->addAction(babeIt);
@@ -95,14 +83,9 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
     auto queueIt = new QAction("Queue", contextMenu);
     contextMenu->addAction(queueIt);
 
-    /*auto sendIt = new QAction("Send to phone... ", contextMenu);
-    this->addAction(sendIt);*/
-
     QAction *sendEntry = contextMenu->addAction("Send to phone...");
-    //this->addAction(sendEntry);
     sendToMenu = new QMenu("...");
     sendEntry->setMenu(sendToMenu);
-
 
     auto infoIt = new QAction("Info + ", contextMenu);
     contextMenu->addAction(infoIt);
@@ -117,34 +100,18 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
     contextMenu->addAction(removeIt);
 
     QAction *addEntry = contextMenu->addAction("Add to...");
-    //this->addAction(addEntry);
     playlistsMenu = new QMenu("...");
     addEntry->setMenu(playlistsMenu);
 
-    // auto moodIt = new QAction("Mood..", contextMenu);
-    // this->addAction(moodIt);
-
-    /*QAction *moodEntry = contextMenu->addAction("Mood...");
-  this->addAction(moodEntry);
-  moodMenu = new QMenu("...");
-  moodEntry->setMenu(moodMenu);*/
-    // passPlaylists();
-    // playlistsMenu->addAction("hello rold");
-
     connect(this, SIGNAL(rightClicked(const int, const int)), this, SLOT(setUpContextMenu(const int, const int)));
-    connect(playlistsMenu, SIGNAL(triggered(QAction *)), this,
-            SLOT(addToPlaylist(QAction *)));
-    connect(sendToMenu, SIGNAL(triggered(QAction *)), this,
-            SLOT(sendIt_action(QAction *)));
-
+    connect(playlistsMenu, SIGNAL(triggered(QAction *)), this, SLOT(addToPlaylist(QAction *)));
+    connect(sendToMenu, SIGNAL(triggered(QAction *)), this, SLOT(sendIt_action(QAction *)));
 
     connect(babeIt, SIGNAL(triggered()), this, SLOT(babeIt_action()));
     connect(queueIt, SIGNAL(triggered()), this, SLOT(queueIt_action()));
-    //connect(sendIt, SIGNAL(triggered()), this, SLOT(sendIt_action()));
     connect(infoIt, SIGNAL(triggered()), this, SLOT(infoIt_action()));
     connect(editIt, SIGNAL(triggered()), this, SLOT(editIt_action()));
     connect(removeIt, SIGNAL(triggered()), this, SLOT(removeIt_action()));
-
 
     auto gr = new QWidget();
     auto ty = new QHBoxLayout();
@@ -158,13 +125,11 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
     bg->addButton(fav3, 3);
     bg->addButton(fav4, 4);
     bg->addButton(fav5, 5);
-    // connect(fav1,SIGNAL(enterEvent(QEvent)),this,hoverEvent());
     ty->addWidget(fav1);
     ty->addWidget(fav2);
     ty->addWidget(fav3);
     ty->addWidget(fav4);
     ty->addWidget(fav5);
-
 
     QWidgetAction *chkBoxAction = new QWidgetAction(contextMenu);
     chkBoxAction->setDefaultWidget(gr);
@@ -175,12 +140,9 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
     auto moodsLayout = new QHBoxLayout();
     QButtonGroup *moodGroup = new QButtonGroup(contextMenu);
     connect(moodGroup, SIGNAL(buttonClicked(int)), this, SLOT(moodTrack(int)));
-    for(int i=0; i<5; i++)
-    {
+    for (int i = 0; i < 5; i++) {
         auto  *colorTag = new QToolButton();
-        //colorTag->setIconSize(QSize(10,10));
         colorTag->setFixedSize(15,15);
-        // colorTag->setAutoRaise(true);
         colorTag->setStyleSheet(QString("QToolButton { background-color: %1;}").arg(colors.at(i)));
         moodGroup->addButton(colorTag,i);
         moodsLayout->addWidget(colorTag);
@@ -189,9 +151,7 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
 
     QWidgetAction *moodsAction = new QWidgetAction(contextMenu);
     moodsAction->setDefaultWidget(moods);
-
     contextMenu->addAction(moodsAction);
-
 
     QFont helvetica("Helvetica", 10);
     addMusicTxt = new QLabel();
@@ -216,71 +176,77 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
     updater->start(1000);
 }
 
-
-BabeTable::~BabeTable() {  }
-
+BabeTable::~BabeTable()
+{
+}
 
 void BabeTable::setAddMusicMsg(QString msg)
 {
-    addMusicMsg+=msg;
+    addMusicMsg += msg;
     addMusicTxt->setText(addMusicMsg);
-
 }
 
 void BabeTable::update()
 {
-    if(this->rowCount()!=0)
-    {
-        if(addMusicTxt->isVisible()) addMusicTxt->setVisible(false);
-
-    }else addMusicTxt->setVisible(true);
-
+    if (this->rowCount() != 0) {
+        if (addMusicTxt->isVisible())
+            addMusicTxt->setVisible(false);
+    } else {
+        addMusicTxt->setVisible(true);
+    }
 }
 
-void BabeTable::moodTrack(int color) { moodIt_action(colors.at(color)); }
+void BabeTable::moodTrack(int color)
+{
+    moodIt_action(colors.at(color));
+}
 
 void BabeTable::addToPlaylist(QAction *action)
 {
     QString playlist = action->text().replace("&", "");
     QString location = getRowData(rRow)[LOCATION];
-
-    if (playlist.contains("Create new...")) emit createPlaylist_clicked();
-    else populatePlaylist({location}, playlist);
+    if (playlist.contains("Create new..."))
+        emit createPlaylist_clicked();
+    else
+        populatePlaylist({location}, playlist);
 }
 
-void BabeTable::populatePlaylist(QStringList urls, QString playlist)  //this needs to get fixed
+void BabeTable::populatePlaylist(const QStringList &urls, const QString &playlist)
 {
-    for (auto location : urls)
-    {
-        // ui->fav_btn->setIcon(QIcon::fromTheme("face-in-love"));
-        qDebug() << "Song to add: " << location << " to: " << playlist;
-
-        QSqlQuery query = connection->getQuery(
-                    "SELECT * FROM tracks WHERE location = \"" + location + "\"");
-
-        QString list;
-        while (query.next())
-            list = query.value(PLAYLIST).toString();
-        list += " " + playlist;
-        // qDebug()<<played;
-
-        if (connection->insertInto("tracks", "playlist", location, list))
-            qDebug() << list;
-
+    foreach (QString url, urls) {
+        QList<QMap<int, QString>> resultSet = connection->getTrackData(url);
+        if (resultSet.isEmpty())
+            continue;
+        QMap<int, QString> map = resultSet.at(0);
+        QString list = map.value(PLAYLIST) + " " + playlist;
+        connection->updateTrack("playlist", url, list);
+        nof.notifyUrgent("Tracks added to playlist:", playlist);
     }
-    nof.notifyUrgent("Tracks added to playlist:",playlist);
 }
 
+void BabeTable::passPlaylists()
+{
+}
 
-void BabeTable::passPlaylists() {}
+void BabeTable::enterEvent(QEvent *event)
+{
+    Q_UNUSED(event);
+}
 
-void BabeTable::enterEvent(QEvent *event) { Q_UNUSED(event); }
+void BabeTable::leaveEvent(QEvent *event)
+{
+    Q_UNUSED(event);
+}
 
-void BabeTable::leaveEvent(QEvent *event) { Q_UNUSED(event); }
+void BabeTable::passStyle(QString style)
+{
+    this->setStyleSheet(style);
+}
 
-void BabeTable::passStyle(QString style) { this->setStyleSheet(style); }
-
-int BabeTable::getIndex() { return this->currentIndex().row(); }
+int BabeTable::getIndex()
+{
+    return this->currentIndex().row();
+}
 
 void BabeTable::addRow(QMap<int, QString> map, bool descriptiveTooltip)
 {
@@ -298,7 +264,7 @@ void BabeTable::addRow(QMap<int, QString> map, bool descriptiveTooltip)
     this->setItem(this->rowCount() - 1, PLAYED, new QTableWidgetItem(map[PLAYED]));
     this->setItem(this->rowCount() - 1, PLAYLIST, new QTableWidgetItem(map[PLAYLIST]));
 
-    if(descriptiveTooltip)
+    if (descriptiveTooltip)
         this->item(this->rowCount()-1,TITLE)->setToolTip( "by "+map[ARTIST]);
 }
 
@@ -316,105 +282,71 @@ void BabeTable::addRowAt(int row,QMap<int, QString> map, bool descriptiveTooltip
     this->setItem(row , BABE, new QTableWidgetItem(map[BABE]));
     this->setItem(row , ART, new QTableWidgetItem(map[ART]));
     this->setItem(row , PLAYED, new QTableWidgetItem(map[PLAYED]));
-    //this->setItem(row , PLAYLIST, new QTableWidgetItem(map[PLAYLIST]));
 
     QColor color;
     color.setNamedColor("#000");
     color.setAlpha(40);
     this->item(row,TITLE)->setBackgroundColor(color);
-    /* QBrush brush;
-    brush.setColor("#fff");
-    this->item(row,TITLE)->setForeground(brush);*/
-    //this->item(row,TITLE)->setTextAlignment(Qt::AlignCenter);
-
-    if(descriptiveTooltip)
+    if (descriptiveTooltip)
         this->item(row,TITLE)->setToolTip( "by "+map[ARTIST]);
 }
 
 void BabeTable::populateTableView(QList<QMap<int,QString>> mapList, bool descriptiveTitle)
 {
-    qDebug() << "ON POPULATE by mapList";
-
     this->setSortingEnabled(false);
     bool missing = false;
     QStringList missingFiles;
-
-    if(!mapList.isEmpty())
-    {
-        for(auto trackMap : mapList)
-        {
+    if (!mapList.isEmpty()) {
+        for (auto trackMap : mapList) {
             QString location = trackMap[LOCATION];
-
-            if (!BaeUtils::fileExists(location))
-            {
-                qDebug() << "That file doesn't exists anymore: "
-                         << location;
+            if (!BaeUtils::fileExists(location)) {
                 missingFiles << location;
                 missing = true;
 
-            } else addRow(trackMap,descriptiveTitle);
-
+            } else {
+                addRow(trackMap,descriptiveTitle);
+            }
         }
-
-        if (missing) removeMissing(missingFiles);
-
+        if (missing)
+            removeMissing(missingFiles);
         this->setSortingEnabled(true);
         emit finishedPopulating();
-
-    }else qDebug()<<"Error: the mapList was empty";
-
+    }
 }
 
 void BabeTable::removeMissing(QStringList missingFiles)
 {
     nof.notifyUrgent("Removing missing files...",missingFiles.join("\n"));
-
-    for (auto file_r : missingFiles)
-    {
+    for (auto file_r : missingFiles) {
         QString parentDir = QFileInfo(QFileInfo(file_r)).dir().path();
-
-        if (!BaeUtils::fileExists(parentDir)) connection->removePath(parentDir);
-        else connection->removePath(file_r);
+        if (!BaeUtils::fileExists(parentDir))
+            connection->removePath(parentDir);
+        else
+            connection->removePath(file_r);
     }
-
     connection->setCollectionLists();
     connection->cleanCollectionLists();
 }
 
 void BabeTable::populateTableView(QString indication, bool descriptiveTitle)
 {
-
-    qDebug() << "ON POPULATE:"<<indication;
-
     this->setSortingEnabled(false);
     bool missingDialog = false;
     QStringList missingFiles;
     QSqlQuery query = connection->getQuery(indication);
 
-    if(query.exec())
-    {
-        while (query.next())
-        {
-
-            QString location =query.value(LOCATION).toString();
-
-            if (!BaeUtils::fileExists(location))
-            {
-                qDebug() << "That file doesn't exists anymore: "
-                         << location;
+    if (query.exec()) {
+        while (query.next()) {
+            QString location = query.value(LOCATION).toString();
+            if (!BaeUtils::fileExists(location)) {
                 missingFiles << location;
                 missingDialog = true;
-
-            } else
-            {
-
+            } else {
                 QString track = query.value(TRACK).toString();
                 QString title = query.value(TITLE).toString();
                 QString artist = query.value(ARTIST).toString();
                 QString album = query.value(ALBUM).toString();
                 QString genre = query.value(GENRE).toString();
-
-
                 QString rating;
                 switch (query.value((STARS)).toInt()) {
                 case 0:
@@ -437,14 +369,9 @@ void BabeTable::populateTableView(QString indication, bool descriptiveTitle)
                             "\xe2\x98\x86 \xe2\x98\x86 \xe2\x98\x86 \xe2\x98\x86 \xe2\x98\x86 ";
                     break;
                 }
-
                 if (query.value(BABE).toInt() == 1)
                     rating = "\xe2\x99\xa1 ";
-
-
                 QString stars =  rating;
-
-
                 QString bb;
                 switch (query.value((BABE)).toInt()) {
                 case 0:
@@ -456,33 +383,24 @@ void BabeTable::populateTableView(QString indication, bool descriptiveTitle)
                 }
 
                 QString babe = bb;
-
                 QString art = query.value(ART).toString();
-
                 QString played =query.value(PLAYED).toString();
                 QString playlist =query.value(PLAYLIST).toString();
-
                 const QMap<int, QString> map{{TRACK,track}, {TITLE,title}, {ARTIST,artist},{ALBUM,album},{GENRE,genre},{LOCATION,location},{STARS,stars},{BABE,babe},{ART,art},{PLAYED,played},{PLAYLIST,playlist}};
-
                 addRow(map,descriptiveTitle);
             }
         }
-
-
-        if (missingDialog) removeMissing(missingFiles);
-
+        if (missingDialog)
+            removeMissing(missingFiles);
         this->setSortingEnabled(true);
         emit finishedPopulating();
-    }else qDebug()<<"Error: the query didn't pass"<<indication;
-
-
+    }
 }
 
 void BabeTable::setRating(int rate)
 {
     switch (rate)
     {
-
     case 0:
         fav1->setIcon(QIcon::fromTheme("rating-unrated"));
         fav2->setIcon(QIcon::fromTheme("rating-unrated"));
@@ -490,7 +408,6 @@ void BabeTable::setRating(int rate)
         fav4->setIcon(QIcon::fromTheme("rating-unrated"));
         fav5->setIcon(QIcon::fromTheme("rating-unrated"));
         break;
-
     case 1:
         fav1->setIcon(QIcon::fromTheme("rating"));
         fav2->setIcon(QIcon::fromTheme("rating-unrated"));
@@ -498,7 +415,6 @@ void BabeTable::setRating(int rate)
         fav4->setIcon(QIcon::fromTheme("rating-unrated"));
         fav5->setIcon(QIcon::fromTheme("rating-unrated"));
         break;
-
     case 2:
         fav1->setIcon(QIcon::fromTheme("rating"));
         fav2->setIcon(QIcon::fromTheme("rating"));
@@ -506,7 +422,6 @@ void BabeTable::setRating(int rate)
         fav4->setIcon(QIcon::fromTheme("rating-unrated"));
         fav5->setIcon(QIcon::fromTheme("rating-unrated"));
         break;
-
     case 3:
         fav1->setIcon(QIcon::fromTheme("rating"));
         fav2->setIcon(QIcon::fromTheme("rating"));
@@ -514,7 +429,6 @@ void BabeTable::setRating(int rate)
         fav4->setIcon(QIcon::fromTheme("rating-unrated"));
         fav5->setIcon(QIcon::fromTheme("rating-unrated"));
         break;
-
     case 4:
         fav1->setIcon(QIcon::fromTheme("rating"));
         fav2->setIcon(QIcon::fromTheme("rating"));
@@ -522,7 +436,6 @@ void BabeTable::setRating(int rate)
         fav4->setIcon(QIcon::fromTheme("rating"));
         fav5->setIcon(QIcon::fromTheme("rating-unrated"));
         break;
-
     case 5:
         fav1->setIcon(QIcon::fromTheme("rating"));
         fav2->setIcon(QIcon::fromTheme("rating"));
@@ -542,55 +455,39 @@ void BabeTable::setTableOrder(int column, int order) {
 }
 
 void BabeTable::setVisibleColumn(int column) {
-    if (column == LOCATION) {
+    if (column == LOCATION)
         this->showColumn(LOCATION);
-    } else if (column == STARS) {
+    else if (column == STARS)
         this->showColumn(STARS);
-    } else if (column == BABE) {
+    else if (column == BABE)
         this->showColumn(BABE);
-    } else if (column == ALBUM) {
+    else if (column == ALBUM)
         this->showColumn(ALBUM);
-    }
 }
-
 
 QMap<QString,QString> BabeTable::getKdeConnectDevices()
 {
-    qDebug()<<"getting the kdeconnect devices avaliable";
-    QMap<QString,QString> _devices;
+    QMap<QString, QString> _devices;
     QProcess process;
     process.start("kdeconnect-cli -a");
     process.waitForFinished();
-    // auto output = process->readAllStandardOutput();
-
     process.setReadChannel(QProcess::StandardOutput);
 
     while (process.canReadLine()) {
         QString line = QString::fromLocal8Bit(process.readLine());
-        qDebug()<<"line:"<<line;
-        if(line.contains("(paired and reachable)"))
-        {
+        if (line.contains("(paired and reachable)")) {
             QStringList items = line.split(" ");
-            auto key=QString(items.at(2));
-            auto name=QString(items.at(1)).replace(":","");
-
-            qDebug()<<"Founded devices: "<<key<<":"<<name;
+            auto key = QString(items.at(2));
+            auto name = QString(items.at(1)).replace(":","");
             _devices.insert(key,name);
         }
     }
-
-    this->devices=_devices;
+    this->devices = _devices;
     return devices;
-
 }
 
-
-
 void BabeTable::setUpContextMenu(const int row, const int column)
-{    
-    qDebug() << "setUpContextMenu";
-    //contextMenu->exec(QCursor::pos());
-
+{
     int rate = 0;
     bool babe = false;
     this->rRow = row;
@@ -598,160 +495,113 @@ void BabeTable::setUpContextMenu(const int row, const int column)
 
     playlistsMenu->clear();
 
-    for (auto playlist : connection->getPlaylists())
+    QStringList list = connection->getPlaylists();
+    for (const QString &playlist : list)
         playlistsMenu->addAction(playlist);
 
-    // playlistsMenu->addAction("Create new...");
     sendToMenu->clear();
     QMapIterator<QString, QString> i(getKdeConnectDevices());
-    while (i.hasNext())
-    {
+    while (i.hasNext()) {
         i.next();
-        qDebug()<<i.key();
         sendToMenu->addAction(i.value());
     }
-
-    QString url = this->getRowData(rRow)[LOCATION];
-
-    QSqlQuery query = connection->getQuery(
-                "SELECT * FROM tracks WHERE location = \"" + url + "\"");
-
-    while (query.next())
-    {
-        rate = query.value(STARS).toInt();
-        babe = query.value(BABE).toInt() == 1 ? true : false;
+    QString url = {this->getRowData(rRow)[LOCATION]};
+    if (!url.isEmpty()) {
+        QList<QMap<int, QString>> list = connection->getTrackData(url);
+        if (!list.isEmpty()) {
+            QMap<int, QString> result;
+            foreach (result, list) {
+                rate = result.value(STARS).toInt();
+                babe = result.value(BABE).toInt() == 1 ? true : false;
+            }
+        }
+        setRating(rate);
+        if (babe)
+            contextMenu->actions().at(0)->setText("Un-Babe it");
+        else
+            contextMenu->actions().at(0)->setText("Babe it");
     }
-
-    setRating(rate);
-
-    if (babe)
-        contextMenu->actions().at(0)->setText("Un-Babe it");
-    else
-        contextMenu->actions().at(0)->setText("Babe it");
-
     contextMenu->exec(QCursor::pos());
-
 }
 
 QStringList BabeTable::getPlaylistMenus()
 {
-
     playlistsMenus.clear();
-    for (auto playlist : connection->getPlaylists()) {
+    for (auto playlist : connection->getPlaylists())
         playlistsMenus << playlist;
-    }
     return playlistsMenus;
 }
 
 void BabeTable::keyPressEvent(QKeyEvent *event) {
     switch (event->key()) {
-    case Qt::Key_Return: {
-
-        QList<QMap<int, QString>> list;
-
-        list<<getRowData(this->getIndex());
-        emit tableWidget_doubleClicked(list);
-
-        break;
-    }
-    case Qt::Key_Up: {
-        QModelIndex index = this->currentIndex();
-        int row = index.row() - 1;
-        int column = 1;
-        QModelIndex newIndex = this->model()->index(row, column);
-        this->selectionModel()->select(newIndex, QItemSelectionModel::Select);
-        this->setCurrentIndex(newIndex);
-        this->setFocus();
-
-        qDebug()
-                << this->model()->data(this->model()->index(row, LOCATION)).toString();
-
-        break;
-    }
-    case Qt::Key_Down: {
-        QModelIndex index = this->currentIndex();
-        int row = index.row() + 1;
-        int column = 1;
-        QModelIndex newIndex = this->model()->index(row, column);
-        this->selectionModel()->select(newIndex, QItemSelectionModel::Select);
-        this->setCurrentIndex(newIndex);
-        this->setFocus();
-
-        qDebug()
-                << this->model()->data(this->model()->index(row, LOCATION)).toString();
-        break;
-    }
-    default: {
-        QTableWidget::keyPressEvent(event);
-        break;
-    }
+        case Qt::Key_Return: {
+            QList<QMap<int, QString>> list;
+            list<<getRowData(this->getIndex());
+            emit tableWidget_doubleClicked(list);
+            break;
+        }
+        case Qt::Key_Up: {
+            QModelIndex index = this->currentIndex();
+            int row = index.row() - 1;
+            int column = 1;
+            QModelIndex newIndex = this->model()->index(row, column);
+            this->selectionModel()->select(newIndex, QItemSelectionModel::Select);
+            this->setCurrentIndex(newIndex);
+            this->setFocus();
+            break;
+        }
+        case Qt::Key_Down: {
+            QModelIndex index = this->currentIndex();
+            int row = index.row() + 1;
+            int column = 1;
+            QModelIndex newIndex = this->model()->index(row, column);
+            this->selectionModel()->select(newIndex, QItemSelectionModel::Select);
+            this->setCurrentIndex(newIndex);
+            this->setFocus();
+            break;
+        }
+        default: {
+            QTableWidget::keyPressEvent(event);
+            break;
+        }
     }
 }
 
 void BabeTable::mousePressEvent(QMouseEvent *evt)
 {
-
-    if (evt->button() == Qt::RightButton)
-    {
-        qDebug() << "table right clicked";
+    if (evt->button() == Qt::RightButton) {
         evt->accept();
         int row = this->indexAt(evt->pos()).row();
-        int column= this->indexAt(evt->pos()).column();
-        qDebug()<<row << column;
-
-        if(row != -1) emit rightClicked(row, column);
+        int column = this->indexAt(evt->pos()).column();
+        if (row != -1)
+            emit rightClicked(row, column);
     }
-
     QTableWidget::mousePressEvent(evt);
-
 }
 
 void BabeTable::rateGroup(int id)
 {
-    qDebug() << "rated with: " << id;
-    // int row= this->currentIndex().row();
-    QString location = this->getRowData(rRow)[LOCATION];
-
-    QSqlQuery query = connection->getQuery(
-                "SELECT * FROM tracks WHERE location = \"" + location + "\"");
-
     int rate = 0;
-
-    while (query.next())
-        rate = query.value(STARS).toInt();
-
-    if (connection->check_existance("tracks", "location", location))
-    {
-        if (connection->insertInto("tracks", "stars", location, id))
+    QString location = this->getRowData(rRow)[LOCATION];
+    QList<QMap<int, QString>> list = connection->getTrackData(location);
+    QMap<int, QString> map;
+    foreach (map, list)
+        rate = map.value(STARS).toInt();
+    if (connection->hasTrack("location", location)) {
+        if (connection->updateTrack("stars", location, id))
             setRating(id);
-
         QString stars;
         for (int i = 0; i < id; i++)
             stars += "\xe2\x98\x86 ";
-
         this->item(rRow, STARS)->setText(stars);
-
-        if (id > 0 && rate < 5)
-        {
-            QString title =
-                    this->model()->data(this->model()->index(rRow, TITLE)).toString();
-            QString artist =
-                    this->model()->data(this->model()->index(rRow, ARTIST)).toString();
-            QString album =
-                    this->model()->data(this->model()->index(rRow, ALBUM)).toString();
-            QString star =
-                    this->model()->data(this->model()->index(rRow, STARS)).toString();
-            QString babe =
-                    this->model()->data(this->model()->index(rRow, BABE)).toString();
-
-            qDebug() << "rated and trying to add to favs";
+        if (id > 0 && rate < 5) {
+            QString title = this->model()->data(this->model()->index(rRow, TITLE)).toString();
+            QString artist = this->model()->data(this->model()->index(rRow, ARTIST)).toString();
+            QString album = this->model()->data(this->model()->index(rRow, ALBUM)).toString();
+            QString star = this->model()->data(this->model()->index(rRow, STARS)).toString();
+            QString babe = this->model()->data(this->model()->index(rRow, BABE)).toString();
             emit songRated({title, artist, album, location, star, babe});
-        } else {
-            qDebug() << "rated and trying to add to favs failed";
         }
-        // this->update();
-    } else
-    {
     }
 }
 
@@ -775,18 +625,12 @@ QMap<int, QString> BabeTable::getRowData(int row)
     return map;
 }
 
-
 void BabeTable::on_tableWidget_doubleClicked(const QModelIndex &index)
 {
     Q_UNUSED(index);
-
     QList<QMap<int, QString>> list;
     auto track = getRowData(this->getIndex());
-    list<<track;
-    qDebug()
-            << "BabeTable doubleClicked item<<"
-            << track[LOCATION];
-
+    list << track;
     emit tableWidget_doubleClicked(list);
 }
 
@@ -798,51 +642,36 @@ void BabeTable::babeIt_action()
 void BabeTable::sendIt_action(QAction *device)
 {
     auto track = this->getRowData(rRow);
-
-    QString url =track[LOCATION];
+    QString url = track[LOCATION];
     QString title = track[TITLE];
     QString artist = track[ARTIST];
-
     QString deviceName = device->text().replace("&","");
     QString deviceKey = devices.key(deviceName);
-
-    qDebug()<<"trying to send "<< url << "to : "<< deviceName;
     auto process = new QProcess(this);
     connect(process, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
             [=](int exitCode, QProcess::ExitStatus exitStatus)
     {
-        qDebug()<<"processFinished_totally"<<exitCode<<exitStatus;
+        Q_UNUSED(exitCode)
+        Q_UNUSED(exitStatus)
         nof.notifyUrgent("Song sent to " + deviceName,title +" by "+ artist);
-
     });
-
-    qDebug()<<"kdeconnect-cli -d " +deviceKey+ " --share " + url;
     process->start("kdeconnect-cli -d " +deviceKey+ " --share " +"\""+ url+"\"");
-
 }
 
 void BabeTable::editIt_action()
 {
-    //editing=true;
-    // emit this->edit(this->model()->index(rRow,rColumn));
-
     auto infoForm = new metadataForm(getRowData(rRow),this);
     connect(infoForm,SIGNAL(infoModified(QMap<int, QString>)),this,SLOT(itemEdited(QMap<int, QString>)));
     infoForm->show();
-
 }
 
 void BabeTable::itemEdited(QMap<int, QString> map)
 {
-    qDebug()<<"item changed: " << map[TITLE];
     this->item(rRow,TRACK)->setText(map[TRACK]);
     this->item(rRow,TITLE)->setText(map[TITLE]);
     this->item(rRow,ARTIST)->setText(map[ARTIST]);
     this->item(rRow,ALBUM)->setText(map[ALBUM]);
     this->item(rRow,GENRE)->setText(map[GENRE]);
-
-    //connection->insertInto("tracks",column,this->model()->index(newIndex.row(),LOCATION).data().toString(),newIndex.data().toString());
-
 }
 
 void BabeTable::infoIt_action()
@@ -855,49 +684,23 @@ void BabeTable::infoIt_action()
 
 void BabeTable::removeIt_action()
 {
-    qDebug() << "removeIt/right clicked!";
-    // int row= this->currentIndex().row();
-    qDebug()
-            << this->model()->data(this->model()->index(rRow, LOCATION)).toString();
     this->removeRow(rRow);
     emit removeIt_clicked(rRow);
 }
 
 void BabeTable::moodIt_action(QString color)
 {
-
-    if(!color.isEmpty())
-    {
-        QSqlQuery query;
-        query.prepare("UPDATE tracks SET art = (:art) WHERE location = (:location)" );
-        //query.prepare("SELECT * FROM "+tableName+" WHERE "+searchId+" = (:search)");
-        query.bindValue(":art",  color);
-        query.bindValue(":location", this->getRowData(rRow)[LOCATION]);
-
-        if(query.exec())
-        {
-            qDebug()<<"Art[color] inserted into DB"<< color;
-
-            emit moodIt_clicked(color); contextMenu->close();
-
-        }else qDebug()<<"COULDN'T insert art[color] into DB";
-
+    if (!color.isEmpty()) {
+        int result = connection->updateTrack("art", this->getRowData(rRow)[LOCATION], color);
+        if (result > 0)
+            emit moodIt_clicked(color);
+        contextMenu->close();
     }
-
-
-    //emit moodIt_clicked(this->model()->data(this->model()->index(row, LOCATION)).toString(),color.name());
-    /*emit babeIt_clicked(
-      {this->model()->data(this->model()->index(row, LOCATION)).toString()});*/
 }
-
 
 void BabeTable::queueIt_action()
 {
-    qDebug() << "queueIt clicked!";
-    // int row= this->currentIndex().row();
-    QString url = this->model()->data(this->model()->index(rRow, LOCATION)).toString();
-    qDebug()<<url;
-
+    this->model()->data(this->model()->index(rRow, LOCATION)).toString();
     emit queueIt_clicked(getRowData(rRow));
 }
 
@@ -910,19 +713,17 @@ void BabeTable::flushTable()
 QStringList BabeTable::getTableContent(BabeTable::columns column)
 {
     QStringList result;
-    for (int i = 0; i < this->rowCount(); i++)
+    int rowCount = this->rowCount();
+    for (int i = 0; i < rowCount; i++)
         result << this->model()->data(this->model()->index(i, column)).toString();
-
     return result;
 }
-
 
 QList<QMap<int, QString>> BabeTable::getAllTableContent()
 {
     QList<QMap<int,QString>> mapList;
-
-    for (int i = 0; i<this->rowCount(); i++)
-        mapList<<getRowData(i);
-
+    int rowCount = this->rowCount();
+    for (int i = 0; i < rowCount; i++)
+        mapList << getRowData(i);
     return mapList;
 }

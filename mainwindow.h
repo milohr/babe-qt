@@ -125,14 +125,13 @@ private slots:
     void on_search_returnPressed();
     void on_search_textChanged(const QString &arg1);
 
-    //void on_resultsPLaylist_clicked();
     void setCoverArt(QString artist, QString album, QString title);
     void orderTables();
     void on_rowInserted(QModelIndex model, int x, int y);
 
     void AlbumsViewOrder(QString order);
     void refreshTables();
-    void addToPlayed(QString url);
+    void addToPlayed(const QString &url);
     void on_refreshBtn_clicked();
     void on_tracks_view_2_clicked();
     void on_refreshAll_clicked();
@@ -247,8 +246,5 @@ signals:
     void collectionChecked();
     void fetchCover(QString artist, QString album, QString title);
 };
-
-
-
 
 #endif // MAINWINDOW_H
