@@ -1524,6 +1524,8 @@ QList<QMap<int, QString> > MainWindow::searchFor(QStringList queries)
 
 void MainWindow::on_rowInserted(QModelIndex model ,int x,int y)
 {
+    Q_UNUSED(model)
+    Q_UNUSED(y)
     mainList->scrollTo(mainList->model()->index(x,BabeTable::TITLE),QAbstractItemView::PositionAtCenter);
 }
 

@@ -57,34 +57,34 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
         cachePath_dir.mkpath(".");
     if (!youtubeCache_dir.exists())
         youtubeCache_dir.mkpath(".");
-        ytFetch = new YouTube(this);
-        connect(ytFetch,SIGNAL(youtubeTrackReady(bool)),this,SLOT(youtubeTrackReady(bool)));
-        ytFetch->searchPendingFiles();
-        extensionWatcher = new QFileSystemWatcher();
-        extensionWatcher->addPath(extensionFetchingPath);
-        connect(extensionWatcher, SIGNAL(directoryChanged(QString)), this,
-                SLOT(handleDirectoryChanged_extension()));
+    ytFetch = new YouTube(this);
+    connect(ytFetch,SIGNAL(youtubeTrackReady(bool)),this,SLOT(youtubeTrackReady(bool)));
+    ytFetch->searchPendingFiles();
+    extensionWatcher = new QFileSystemWatcher();
+    extensionWatcher->addPath(extensionFetchingPath);
+    connect(extensionWatcher, SIGNAL(directoryChanged(QString)), this,
+            SLOT(handleDirectoryChanged_extension()));
 
-        connect(this, SIGNAL(collectionPathChanged(QString)), this,
-                SLOT(populateDB(QString)));
-        connect(&collection_db, SIGNAL(DBactionFinished(bool)), this,
-                SLOT(finishedAddingTracks(bool)));
-        connect(&collection_db, SIGNAL(progress(int)), ui->progressBar,
-                SLOT(setValue(int)));
+    connect(this, SIGNAL(collectionPathChanged(QString)), this,
+            SLOT(populateDB(QString)));
+    connect(&collection_db, SIGNAL(DBactionFinished(bool)), this,
+            SLOT(finishedAddingTracks(bool)));
+    connect(&collection_db, SIGNAL(progress(int)), ui->progressBar,
+            SLOT(setValue(int)));
 
-        ui->remove->setEnabled(false);
-        ui->progressBar->hide();
-        about_ui = new About();
+    ui->remove->setEnabled(false);
+    ui->progressBar->hide();
+    about_ui = new About();
 
-        movie = new QMovie(":Data/data/ajax-loader.gif");
-        ui->label->setMovie(movie);
-        ui->label->hide();
+    movie = new QMovie(":Data/data/ajax-loader.gif");
+    ui->label->setMovie(movie);
+    ui->label->hide();
 
-        watcher = new QFileSystemWatcher(this);
+    watcher = new QFileSystemWatcher(this);
 
-        connect(watcher, SIGNAL(directoryChanged(QString)), this,
-                SLOT(handleDirectoryChanged(QString)));
-    }
+    connect(watcher, SIGNAL(directoryChanged(QString)), this,
+            SLOT(handleDirectoryChanged(QString)));
+}
 
 settings::~settings() {
 }
