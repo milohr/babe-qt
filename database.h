@@ -25,7 +25,6 @@ private:
     Database(const Database &other);
     void operator=(Database const &);
     virtual ~Database();
-
     void openConnection();
 
 public:
@@ -37,15 +36,13 @@ public:
 
 public:
     static Database *instance();
-
     void build(bool forceRebuild = false);
     void setDatabaseName();
-
     bool sqliteFileExists();
     bool queryExec(const QString &sqlQueryString);
+    QSqlQuery qsqlQuery(const QString &queryTxt);
 
-    QVariantList select(const QString &tableName, const QVariantMap &where = QVariantMap(), int limit = -1, int offset = 0, const QString &orderBy = QStringLiteral(""), bool descending = false, enum SELECT_TYPE select_type = All_Itens_Int, QString whereOperator = QStringLiteral("AND"));
-
+    QVariantList select(const QString &tableName, const QVariantMap &where = QVariantMap(), int limit = -1, int offset = 0, const QString &orderBy = QStringLiteral(""), bool descending = false, enum SELECT_TYPE select_type = All_Itens_Int, QString whereOperator = QStringLiteral("AND"), QString whereComparator = QStringLiteral("="));
     int insert(const QString &tableName, const QVariantMap &insertData);
     int remove(const QString &tableName, const QVariantMap &where, const QString &whereOperator = "=");
     int update(const QString &tableName, const QVariantMap &updateMap, const QVariantMap &where, QString whereOperator = "AND");
