@@ -29,7 +29,6 @@ TagInfo::TagInfo(QString file)
 
 void TagInfo::writeData()
 {
-    // QString album_=this->getAlbum();
     QString title_=this->getTitle();
     QString artist_=this->getArtist();
 
@@ -46,12 +45,6 @@ QString TagInfo::getAlbum() {
 
     QString albumName= QString::fromStdWString(file.tag()->album().toWString());
 
-    /*if(albumName.isEmpty())
- {
-     writeData();
-     albumName= QString::fromStdWString(file.tag()->album().toWString());
- }*/
-    
     return albumName;
 }
 
@@ -77,11 +70,9 @@ QString TagInfo::getGenre() {
 
 QString TagInfo::fileName() {
     return BaeUtils::getNameFromLocation(path);
-    //return file.file()->name();
 }
 
 int TagInfo::getYear() {
-    //return BaeUtils::getNameFromLocation(path);
     return static_cast<signed int>(file.tag()->year());
 }
 
@@ -103,14 +94,14 @@ QString TagInfo::getComment()
 QByteArray TagInfo::getCover()
 {
     QByteArray array;
-    
+
     return array;
 }
 
 void TagInfo::setCover(QByteArray array)
 {
-    Q_UNUSED(array);    
-       
+    Q_UNUSED(array);
+
 }
 
 void TagInfo::setComment(QString comment)

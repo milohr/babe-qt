@@ -24,7 +24,7 @@ ArtWork::ArtWork(QObject *parent) : QObject(parent)
     url = "http://ws.audioscrobbler.com/2.0/"; //for now use as default lastFm api
 }
 
-ArtWork::~ArtWork() {} //
+ArtWork::~ArtWork() {}
 
 void ArtWork::setDataCover(QString artist, QString album,QString title, QString path)
 {
@@ -94,9 +94,7 @@ void ArtWork::setDataCover_spotify(QString artist, QString album,QString title)
 
         url.append("&type=track");
 
-        // qDebug()<<"spotify api url:"<<url;
         type = ALBUM_by_SPOTIFY;
-        //qDebug()<<"trying to get cover by_title:"<<url;
         bool json =true;
         startConnection(json);
     }
@@ -425,24 +423,12 @@ void ArtWork::startConnection(bool json) {
     }
     loop.exec();
 
-    // qDebug()<<url;
     delete reply;
 }
 
 QByteArray ArtWork::getCover() { return coverArray; }
 
 void ArtWork::dummy() { qDebug() << "QQQQQQQQQQQQQQQQQQQQ on DUMMYT"; }
-
-/*void ArtWork::onFinished(QNetworkReply* reply)
-                  {
-                      if (reply->error() == QNetworkReply::NoError)
-                      {
-                         QByteArray bts = reply->readAll();
-                         QString xmlData(bts);
-                        // gotAlbumInfo(xmlData);
-                      //emit prueba(&str);
-                      }
-                  }*/
 
 void ArtWork::saveArt(QByteArray array) {
 
@@ -520,7 +506,7 @@ void ArtWork::jsonInfo(QNetworkReply *reply)
                     if(!img.isEmpty())
                     {
                         this->coverArray = selectCover(img);
-                        qDebug()<<"ALBUM_by_SPOTIFY placing covver array";
+                        qDebug()<<"ALBUM_by_SPOTIFY placing cover array";
                     }else
 
                     {
@@ -536,7 +522,7 @@ void ArtWork::jsonInfo(QNetworkReply *reply)
         }
     }else
     {
-        qDebug()<<"eror in network reply in jsonInfo";
+        qDebug()<<"error in network reply in jsonInfo";
     }
 
 
@@ -549,11 +535,8 @@ void ArtWork::xmlInfo(QNetworkReply *reply) {
     {
         QByteArray bts = reply->readAll();
         QString xmlData(bts);
-        // qDebug()<<xmlData;
         QString coverUrl;
         QString artistHead;
-        // QString info;
-        // qDebug()<<xmlData;
         QDomDocument doc;
 
         if (!doc.setContent(xmlData)) {
@@ -596,7 +579,6 @@ void ArtWork::xmlInfo(QNetworkReply *reply) {
 
                     this->coverArray = selectCover(coverUrl);
                 }
-                // selectInfo(info);
 
             }else if(type == ALBUM_by_TITLE)
             {
@@ -613,7 +595,6 @@ void ArtWork::xmlInfo(QNetworkReply *reply) {
                             for(int j=0; j<list2.size();j++)
                             {
                                 auto m= list2.item(j);
-                                //qDebug()<<m.nodeName();
                                 if(m.nodeName().contains("image"))
                                 {
                                     QString imageSize = m.attributes().namedItem("size").nodeValue();
@@ -639,8 +620,6 @@ void ArtWork::xmlInfo(QNetworkReply *reply) {
 
                 }else{
 
-                    // qDebug() << "the cover art url is" << coverUrl;
-
                     this->coverArray = selectCover(coverUrl);
                 }
 
@@ -655,10 +634,7 @@ void ArtWork::xmlInfo(QNetworkReply *reply) {
                     QDomNode n = list2.item(i);
                     if (n.isElement()) {
                         if (n.nodeName() == "wiki") {
-                            // qDebug()<<n.nodeName();
                             info = n.childNodes().item(1).toElement().text();
-                            // qDebug()<<n.firstChildElement().toElement().text();
-                            // <<n.toElement().text();
                         }
                     }
                 }
@@ -823,8 +799,6 @@ void ArtWork::xmlInfo(QNetworkReply *reply) {
 
             if (bio.isEmpty()) qDebug()<<"Could not find head info for: "<<artist;
             if (tags.isEmpty()) qDebug()<<"Could not find head tags for: "<<artist;
-
-            // selectHead(artistHead);
         }
     }
 
@@ -855,14 +829,12 @@ QByteArray ArtWork::selectCover(QString url) {
                      SLOT(quit()));
     loop.exec();
     QByteArray downloaded(reply->readAll());
-    // emit coverReady(downloaded);
     delete reply;
     emit coverReady(downloaded);
     return downloaded;
 }
 
 void ArtWork::selectHead(QString url) {
-    // qDebug()<<"trying to get the head";
     QNetworkAccessManager manager;
 
     QNetworkReply *reply = manager.get(QNetworkRequest(QUrl(url)));
@@ -874,7 +846,6 @@ void ArtWork::selectHead(QString url) {
                      SLOT(quit()));
     loop.exec();
     QByteArray downloaded(reply->readAll());
-    // emit coverReady(downloaded);
     delete reply;
     emit headReady(downloaded);
 }

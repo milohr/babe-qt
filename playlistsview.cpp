@@ -32,8 +32,6 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent) {
     list->setFrameShape(QFrame::NoFrame);
     list->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-    // list->setStyleSheet("background: #575757; color:white;");
-
     connect(list, SIGNAL(doubleClicked(QModelIndex)), list,
             SLOT(edit(QModelIndex)));
     connect(list, SIGNAL(clicked(QModelIndex)), this,
@@ -41,20 +39,7 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent) {
     connect(list, SIGNAL(itemChanged(QListWidgetItem *)), this,
             SLOT(playlistName(QListWidgetItem *)));
 
-
-    // connect(table,SIGNAL(tableWidget_doubleClicked(QStringList)),this,SLOT(tableClicked(QStringList)));
-    // connect(table,SIGNAL(createPlaylist_clicked()),this,SLOT(createPlaylist()));
-    // auto item =new QListWidgetItem();
-
-    // list->addItem(item);
-    // auto color = new ColorTag();
-    // color->setStyleSheet("background-color: blue;");
-    // list->setItemWidget(list->item(1),color);
-    // list->setStyleSheet("background-color:transparent;");
-
-    // list->addItem("Favorites");
     table->setFrameShape(QFrame::NoFrame);
-    // table->setSizePolicy(QSizePolicy::Expanding);
 
     frame = new QFrame();
     frame->setFrameShadow(QFrame::Raised);
@@ -62,7 +47,7 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent) {
 
     addBtn = new QToolButton();
     removeBtn = new QToolButton();
-    // addBtn->setGeometry(50,50,16,16);
+
     connect(addBtn, SIGNAL(clicked()), this, SLOT(createPlaylist()));
     connect(removeBtn, SIGNAL(clicked()), this, SLOT(removePlaylist()));
     addBtn->setAutoRaise(true);
@@ -79,7 +64,7 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent) {
 
     btnContainer = new QWidget();
     btnContainer->setFixedWidth(120);
-    // btnContainer->setGeometry(0,150,150,30);
+
     auto *left_spacer = new QWidget();
     left_spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     auto btnLayout = new QHBoxLayout();
@@ -89,35 +74,20 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent) {
     btnLayout->addWidget(addBtn);
     btnLayout->addWidget(left_spacer);
     btnLayout->addWidget(removeBtn);
-    // btnLayout->addWidget(line);
 
     line_v = new QFrame();
     line_v->setFrameShape(QFrame::VLine);
     line_v->setFrameShadow(QFrame::Plain);
     line_v->setMaximumWidth(1);
-    // line->setMaximumHeight(2);
-    // btnContainer->setFixedHeight(32);
-
-    // auto sidebarLayout = new QGridLayout();
-    // sidebarLayout->setContentsMargins(0,0,0,0);
-    // sidebarLayout->setSpacing(0);
-    // sidebarLayout->addWidget(list,0,0);
-    // sidebarLayout->addWidget(line,1,0,Qt::AlignBottom);
-    // sidebarLayout->addWidget(btnContainer,2,0,Qt::AlignBottom);
-    // frame->setLayout(sidebarLayout);
 
     layout->addWidget(list, 0, 0, Qt::AlignLeft);
     layout->addWidget(line_v, 0, 1, Qt::AlignLeft);
     layout->addWidget(table, 0, 2);
 
-    // layout->addWidget(btnContainer,1,0);
-    // auto container = new QGridLayout();
-    // container->addWidget(frame);
-    // container->setContentsMargins(0,0,0,0);
     this->setLayout(layout);
 }
 
-void PlaylistsView::dummy() { qDebug() << "signal was recived"; }
+void PlaylistsView::dummy() { qDebug() << "signal was received"; }
 
 void PlaylistsView::setDefaultPlaylists() {
     auto title = new QListWidgetItem("PLAYLISTS");
@@ -168,12 +138,10 @@ void PlaylistsView::populatePlaylist(QModelIndex index)
                     "SELECT * FROM tracks WHERE stars > \"0\" ORDER  by stars desc");
 
     } else if (currentPlaylist == "Babes") {
-        // table->showColumn(BabeTable::PLAYED);
         removeBtn->setEnabled(true);
         table->populateTableView(
                     "SELECT * FROM tracks WHERE babe = \"1\" ORDER  by played desc");
     }else if (currentPlaylist == "Online") {
-        // table->showColumn(BabeTable::PLAYED);
         removeBtn->setEnabled(false);
         table->populateTableView("SELECT * FROM tracks WHERE location LIKE \"%" +
                                  youtubeCachePath + "%\"");
@@ -197,8 +165,6 @@ void PlaylistsView::createPlaylist() {
     list->addItem(item);
     currentPlaylist = "";
     emit list->doubleClicked(list->model()->index(list->count() - 1, 0));
-
-    // item->setFlags (item->flags () & Qt::ItemIsEditable);
 }
 
 void PlaylistsView::removePlaylist()
@@ -216,15 +182,6 @@ void PlaylistsView::removePlaylist()
         table->flushTable();
         table->populateTableView(
                     "SELECT * FROM tracks WHERE babe = \"1\" ORDER  by played desc");
-    }else if (currentPlaylist == "Online") {
-        // table->showColumn(BabeTable::PLAYED);
-       /* table->populateTableView("SELECT * FROM tracks WHERE location LIKE \"%" +
-                                 youtubeCachePath + "%\"");*/
-    } else if(!currentPlaylist.isEmpty()&&!currentPlaylist.contains("#")) {
-
-       /* table->hideColumn(BabeTable::PLAYED);
-        table->populateTableView("SELECT * FROM tracks WHERE playlist LIKE \"%" +
-                                 currentPlaylist + "%\"");*/
     }else if (currentPlaylist.contains("#")) {
 
 
@@ -247,12 +204,7 @@ void PlaylistsView::createMoodPlaylist(QString color)
     {
         qDebug()<<"trying to cretae mooded palylist";
         auto *item = new QListWidgetItem(color);
-        //color.setAlpha(40);
         item->setBackgroundColor(color);
-        /*QBrush brush;
-        brush.setColor(color.darker(160));
-        item->setForeground(brush);*/
-        // item->setFlags(item->flags() | Qt::ItemIsEditable);
         list->addItem(item);
 
         if (!color.isEmpty())
@@ -270,7 +222,6 @@ void PlaylistsView::createMoodPlaylist(QString color)
 void PlaylistsView::playlistName(QListWidgetItem *item) {
     qDebug() << "old playlist name: " << currentPlaylist
              << "new playlist name: " << item->text();
-    //  qDebug()<<"new playlist name: "<<item->text();
 
     if(!playlists.contains(item->text()))
     {
@@ -288,7 +239,6 @@ void PlaylistsView::playlistName(QListWidgetItem *item) {
 void PlaylistsView::on_removeBtn_clicked() {}
 
 void PlaylistsView::setPlaylists(QStringList playlists) {
-    // list->addItems(playlists);
 
     for (auto playlist : playlists) {
 
@@ -296,31 +246,19 @@ void PlaylistsView::setPlaylists(QStringList playlists) {
         item->setFlags(item->flags() | Qt::ItemIsEditable);
         list->addItem(item);
     }
-
-
-    // for (auto o: playlists) qDebug( )<<o;
 }
 
 void PlaylistsView::setPlaylistsMoods(QStringList moods_n) {
-    // list->addItems(playlists);
 
     for (auto mood : moods_n) {
-
 
         auto item = new QListWidgetItem(mood);
         QColor color;
         color.setNamedColor(mood);
         color.setAlpha(40);
         item->setBackgroundColor(color);
-        /*QBrush brush;
-        brush.setColor(color.darker(160));
-        item->setForeground(brush);*/
-       list->addItem(item);
-
-
+        list->addItem(item);
     }
-
-    // for (auto o: playlists) qDebug( )<<o;
 }
 
 void PlaylistsView::definePlaylists(QStringList playlists){

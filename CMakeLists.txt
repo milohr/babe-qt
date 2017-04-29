@@ -78,8 +78,8 @@ set (
    notify.cpp
    youtube.cpp
    metadataForm.cpp
-   onlineview.cpp
    web_jgm90.cpp
+   rabbitview.cpp
    )
 
    
@@ -114,7 +114,6 @@ ki18n_wrap_ui (
    about.ui
    infoview.ui
    metadataForm.ui
-   onlineview.ui
    )
 
 qt5_add_resources (

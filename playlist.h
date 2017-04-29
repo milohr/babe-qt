@@ -1,5 +1,4 @@
-#ifndef PLAYLIST_H
-#define PLAYLIST_H
+#pragma once
 
 #include "vector"
 #include "track.h"
@@ -12,8 +11,6 @@
 #include <QString>
 #include <taginfo.h>
 #include <babetable.h>
-
-//#include <QtMultimedia/QMediaPlayer>
 
 class Playlist
 {
@@ -41,4 +38,3 @@ private:
 
 };
 
-#endif // PLAYLIST_H

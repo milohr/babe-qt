@@ -24,26 +24,6 @@ CollectionDB::CollectionDB()
 
 }
 
-/*CollectionDB::CollectionDB(bool connect)
-{
-    if(connect)
-    {
-        m_db = QSqlDatabase::addDatabase("QSQLITE");
-        m_db.setDatabaseName("../player/collection.db");
-        m_db.open();
-
-        if (!m_db.open())
-        {
-           qDebug() << "Error: connection with database fail";
-        }
-        else
-        {
-           qDebug() << "Database: connection ok";
-
-        }
-    }
-}*/
-
 void CollectionDB::closeConnection()
 {
     m_db.close();
@@ -72,8 +52,6 @@ void CollectionDB::prepareCollectionDB()
     query.exec("CREATE TABLE albums(title text, artist text, art text, location text);");
     query.exec("CREATE TABLE playlists(title text, art text unique);");
     query.exec("CREATE TABLE artists(title text, art text, location text);");
-
-    //query.exec("CREATE TABLE tracks(title text, album text, artist text, location text, stars integer, babe integer);");
 }
 
 void CollectionDB::removePath(QString path)
@@ -159,10 +137,8 @@ QList<QMap<int, QString>> CollectionDB::getTrackData(QString queryText)
     QList<QMap<int, QString>> mapList;
     QSqlQuery query;
     query.prepare(queryText);
-    // qDebug()<<queryText;
     if(query.exec())
     {
-        //qDebug()<<"getTrackData query passed";
         while(query.next())
         {
             QString track = query.value(TRACK).toString();
@@ -176,8 +152,6 @@ QList<QMap<int, QString>> CollectionDB::getTrackData(QString queryText)
             QString art = query.value(ART).toString();
             QString playlist = query.value(PLAYLIST).toString();
             QString played = query.value(PLAYED).toString();
-
-            // qDebug()<<track<<title<<artist<<album;
 
             const QMap<int, QString> map{{TRACK,track}, {TITLE,title}, {ARTIST,artist},{ALBUM,album},{GENRE,genre},{LOCATION,location},{STARS,stars},{BABE,babe},{ART,art},{PLAYED,played},{PLAYLIST,playlist}};
 
@@ -270,16 +244,10 @@ void CollectionDB::setCollectionLists()
     {
         QString artist = query.value(ARTIST).toString();
         QString album = query.value(ALBUM).toString();
-        //QString file = query.value(LOCATION).toString();
 
         if(!albums.contains(artist+" "+album)) albums<<artist+" "+album;
         if(!artists.contains(artist)) artists<<artist;
     }
-    // refreshArtistsTable();
-    /*qDebug()<<"artist in collection list::";
-    for(auto artist:artists)qDebug()<<artist;
-    qDebug()<<"albums in collection list::";
-    for(auto album:albums)qDebug()<<album;*/
 }
 
 void CollectionDB::refreshArtistsTable()
@@ -292,7 +260,6 @@ void CollectionDB::refreshArtistsTable()
     {
         while(query.next())
         {
-            //success = true;
             QString artist = query.value(ARTIST).toString();
             QString file = query.value(LOCATION).toString();
             if(!artists.contains(artist))
@@ -366,7 +333,6 @@ bool CollectionDB::addTrack(QStringList paths, int babe)
                     query.bindValue(":title", album);
                     query.bindValue(":artist", artist);
                     query.bindValue(":art", "");
-                    // query.bindValue(":location", QFileInfo(file).dir().path());
                     if(query.exec())
                     {
                         albums<<artist+" "+album;
@@ -382,7 +348,6 @@ bool CollectionDB::addTrack(QStringList paths, int babe)
                     query.prepare("INSERT INTO artists (title, art, location)" "VALUES (:title, :art, :location)");
                     query.bindValue(":title", artist);
                     query.bindValue(":art", "");
-                    // query.bindValue(":location", QFileInfo(file).dir().path());
                     if(query.exec()) artists<<artist;
                 }
 
@@ -407,7 +372,6 @@ bool CollectionDB::addTrack(QStringList paths, int babe)
 
 void CollectionDB::insertCoverArt(QString path,QStringList info)
 {
-    //UPDATE albums SET art = "lalaltest" WHERE title = "Starboy" AND artist = "The Weeknd"
 
     qDebug()<<"the path:"<<path<<"the list:"<<info.at(0)<<info.at(1);
     if(info.size()==2)
@@ -415,7 +379,6 @@ void CollectionDB::insertCoverArt(QString path,QStringList info)
 
         QSqlQuery query;
         query.prepare("UPDATE albums SET art = (:art) WHERE title = (:title) AND artist = (:artist)" );
-        //query.prepare("SELECT * FROM "+tableName+" WHERE "+searchId+" = (:search)");
         query.bindValue(":art",  path.isEmpty()?"NULL": path );
         query.bindValue(":title", info.at(0));
         query.bindValue(":artist", info.at(1));
@@ -423,7 +386,6 @@ void CollectionDB::insertCoverArt(QString path,QStringList info)
         {
             qDebug()<<"Artwork[cover] inserted into DB"<<info.at(0)<<info.at(1);
             if(!albums.contains(info.at(0))) albums<<info.at(1)+" "+info.at(0);
-            //qDebug()<<"insertInto<<"<<"UPDATE "+tableName+" SET "+column+" = "+ value + " WHERE location = "+location;
         }else
         {
             qDebug()<<"COULDNT Artwork[cover] inerted into DB"<<info.at(0)<<info.at(1);
@@ -445,7 +407,6 @@ void CollectionDB::insertHeadArt(QString path, QStringList info)
         {
             qDebug()<<"Artwork[head] inerted into DB"<<info.at(0);
             if(!artists.contains(info.at(0)))artists<<info.at(0);
-            //qDebug()<<"insertInto<<"<<"UPDATE "+tableName+" SET "+column+" = "+ value + " WHERE location = "+location;
         }
     }
 }
@@ -454,11 +415,6 @@ void CollectionDB::insertHeadArt(QString path, QStringList info)
 void CollectionDB::setTrackList(QList<Track> trackList)
 {
     this->trackList=trackList;
-
-    /*for(auto tr:trackList)
-        {
-            qDebug()<<QString::fromStdString(tr.getTitle());
-        }*/
 }
 
 bool CollectionDB::check_existance(QString tableName, QString searchId, QString search)
@@ -495,7 +451,6 @@ bool CollectionDB::execQuery(QString queryTxt)
 
     QSqlQuery query;
     query.prepare(queryTxt);
-    //query.prepare("SELECT * FROM "+tableName+" WHERE "+searchId+" = (:search)");
 
     if(query.exec())
     {
@@ -516,7 +471,6 @@ bool CollectionDB::insertInto(QString tableName, QString column, QString locatio
     if(query.exec("PRAGMA synchronous=OFF"))
     {
         query.prepare("UPDATE "+tableName+" SET "+column+" = (:value) WHERE location = (:location)" );
-        //query.prepare("SELECT * FROM "+tableName+" WHERE "+searchId+" = (:search)");
 
         query.bindValue(":value", value);
         query.bindValue(":location", location);
@@ -539,7 +493,6 @@ bool CollectionDB::insertInto(QString tableName, QString column, QString locatio
 
     QSqlQuery query;
     query.prepare("UPDATE "+tableName+" SET "+column+" = (:value) WHERE location = (:location)" );
-    //query.prepare("SELECT * FROM "+tableName+" WHERE "+searchId+" = (:search)");
 
     query.bindValue(":value", value);
     query.bindValue(":location", location);
@@ -575,39 +528,21 @@ void CollectionDB::insertPlaylist(QString name, QString color)
 
         query.bindValue(":title", name);
 
-        if(query.exec())
-        {
-            //qDebug()<<"insertInto<<"<<"UPDATE playlists SET title = "+ name ;
+        if(name.isEmpty() && !query.exec()) {
+            QSqlQuery query;
+            query.prepare("INSERT INTO playlists (title, art)" "VALUES (:title, :art) ");
 
-        }
-    }else if(name.isEmpty())
-    {  QSqlQuery query;
-        query.prepare("INSERT INTO playlists (title, art)" "VALUES (:title, :art) ");
+            query.bindValue(":title", "mood");
+            query.bindValue(":art", color);
 
-        query.bindValue(":title", "mood");
-        query.bindValue(":art", color);
+        } else if(!name.isEmpty()&&!color.isEmpty()) {
+            QSqlQuery query;
+            query.prepare("INSERT INTO playlists (title, art)" "VALUES (:title, :art) ");
 
-        if(query.exec())
-        {
-            //qDebug()<<"insertInto<<"<<"UPDATE playlists SET title = "+ name ;
-
-        }
-
-    }else if(!name.isEmpty()&&!color.isEmpty())
-    {
-
-        QSqlQuery query;
-        query.prepare("INSERT INTO playlists (title, art)" "VALUES (:title, :art) ");
-
-        query.bindValue(":title", "mood");
-        query.bindValue(":art", color);
-        if(query.exec())
-        {
-            //qDebug()<<"insertInto<<"<<"UPDATE playlists SET title = "+ name ;
-
+            query.bindValue(":title", "mood");
+            query.bindValue(":art", color);
         }
     }
-
 }
 
 QStringList CollectionDB::getPlaylists()

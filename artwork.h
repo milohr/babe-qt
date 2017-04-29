@@ -1,5 +1,5 @@
-#ifndef ARTWORK_H
-#define ARTWORK_H
+#pragma once
+
 #include <QPixmap>
 #include <QDebug>
 #include <QImage>
@@ -47,8 +47,7 @@ public:
     };
 
 private:
-    QString url ;
-    //QImage cover;
+    QString url;
     QPixmap art;
     QString album;
     QString artist;
@@ -57,8 +56,6 @@ private:
     QByteArray coverArray;
     QString path;
     int type;
-
-    //QNetworkReply reply;
 
 public slots:
 
@@ -80,4 +77,3 @@ signals:
 
 };
 
-#endif // ARTWORK_H

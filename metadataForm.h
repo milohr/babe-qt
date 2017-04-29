@@ -1,5 +1,4 @@
-#ifndef METADATAFORM_H
-#define METADATAFORM_H
+#pragma once
 
 #include <QWidget>
 #include <QMap>
@@ -35,4 +34,3 @@ signals:
 
 };
 
-#endif // FORM_H

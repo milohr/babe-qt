@@ -1,5 +1,4 @@
-#ifndef SETTINGS_H
-#define SETTINGS_H
+#pragma once
 
 #include <QWidget>
 #include <QString>
@@ -66,8 +65,6 @@ public:
     {
         s16,s22,s24
     };
-    //enum albums { ALBUM_TITLE, ARTIST, ART};
-    // enum artists { ARTIST_TITLE, ART};
 
 private slots:
 
@@ -114,8 +111,6 @@ private:
     QLabel *artFetcherNotice;
     QMovie *movie;
     QString pathToRemove;
-    // QFileSystemWatcher watcher;
-    //QThread* thread;
     About *about_ui;
     QStringList files;
     QStringList dirs;
@@ -135,4 +130,3 @@ signals:
 
 };
 
-#endif // SETTINGS_H

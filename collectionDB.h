@@ -1,5 +1,5 @@
-#ifndef COLLECTIONDB_H
-#define COLLECTIONDB_H
+#pragma once
+
 #include <QString>
 #include <QStringList>
 #include <QList>
@@ -22,7 +22,6 @@ class CollectionDB : public QObject
 public:
 
     explicit CollectionDB();
-    //CollectionDB(bool connect);
     ~CollectionDB(){}
     void openCollection(QString path);
     QSqlQuery getQuery(QString queryTxt);
@@ -75,4 +74,3 @@ signals:
 };
 
 
-#endif // COLLECTION_H

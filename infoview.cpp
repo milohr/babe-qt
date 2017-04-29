@@ -27,12 +27,6 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView)
     artist = new Album(":Data/data/cover.png", 120, 100,false,this);
     connect(artist,&Album::playAlbum,this,&InfoView::playAlbum_clicked);
 
-   /* ui->lyricsText->setLineWrapMode(QTextEdit::NoWrap);
-    ui->lyricsText->setStyleSheet("QTextBrowser{background-color: #575757; color:white;}");
-    ui->artistText->setStyleSheet("QTextBrowser{background-color: #575757; color:white;}");
-    ui->albumText->setStyleSheet("QTextBrowser{background-color: #575757; color:white;}");
-    ui->tagsInfo->setStyleSheet("QTextBrowser{background-color: #575757; color:white;}");*/
-
     lyrics = new Lyrics();
     connect(lyrics,SIGNAL(lyricsReady(QString)),this,SLOT(setLyrics(QString)));
 
@@ -40,7 +34,6 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView)
     artist->borderColor = true;
 
     auto artistContainer = new QWidget();
-  //artistContainer->setStyleSheet("QWidget{background-color: #575757; color:white;}");
 
     auto artistCLayout = new QHBoxLayout();
     auto *left_spacer = new QWidget();
@@ -57,14 +50,12 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView)
     ui->artistLayout->insertWidget(0, artistContainer);
 
     infoUtils = new QWidget();
-    // artistContainer->setStyleSheet("QWidget{background-color: #575757;
-    // color:white;}");
     infoUtils->setMaximumWidth(200);
     auto infoUtils_layout = new QHBoxLayout();
     infoUtils_layout->setContentsMargins(0, 0, 0, 0);
     infoUtils_layout->setSpacing(0);
 
-    auto similarBtn = new QToolButton();    
+    auto similarBtn = new QToolButton();
     connect(similarBtn, &QToolButton::clicked, [this]()
     {
         auto list = ui->similarArtistInfo->toPlainText().trimmed().split(",");
@@ -108,11 +99,6 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView)
     infoUtils->hide();
     ui->customsearch->setVisible(false);
     ui->frame_2->setVisible(false);
-    //ui->searchBtn->setParent(ui->lyricsText);
-    // ui->searchBtn->setGeometry(5,5,22,22);
-
-    //ui->searchBtn->setVisible(false);
-
     ui->tagsInfo->setOpenLinks(false);
     ui->tagsInfo->setStyleSheet("QTextBrowser{background: transparent;}");
 
@@ -172,8 +158,6 @@ void InfoView::setTagsInfo(QStringList tags)
 
 void InfoView::setAlbumInfo(QString info)
 {
-
-    //qDebug() << info;
     if (info.isEmpty()) {
         ui->albumText->hide();
 

@@ -1,5 +1,5 @@
-#ifndef TAGINFO_H
-#define TAGINFO_H
+#pragma once
+
 #include <taglib/taglib.h>
 #include <taglib/tag.h>
 #include <taglib/fileref.h>
@@ -45,4 +45,3 @@ private:
     QString path;
 };
 
-#endif // TAGINFO_H

@@ -1,5 +1,5 @@
-#ifndef LYRICS_H
-#define LYRICS_H
+#pragma once
+
 #include <QtNetwork>
 #include <QUrl>
 #include <QWidget>
@@ -32,4 +32,3 @@ public slots:
     void getLyrics(QNetworkReply *reply);
 };
 
-#endif // LYRICS_H

@@ -22,9 +22,7 @@
 
 settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
     ui->setupUi(this);
-    // QFrame frame = new QFrame();
 
-    // collectionDBPath=QDir().absolutePath()+collectionDBPath;
     qDebug() << "Getting collectionDB info from: " << collectionDBPath;
     qDebug() << "Getting settings info from: " << settingPath;
     qDebug() << "Getting artwork files from: " << cachePath;
@@ -59,22 +57,6 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
         cachePath_dir.mkpath(".");
     if (!youtubeCache_dir.exists())
         youtubeCache_dir.mkpath(".");
-
-    /*cacheTimer = new QTimer();
-    connect(cacheTimer, &QTimer::timeout, [this]() {
-        // this->setLyrics(artist,title);
-        emit dirChanged(youtubeCachePath,"1");
-        cacheTimer->stop();
-        //qDebug()<<"antonpirulilului";
-        //this->getTrackInfo();
-
-    });*/
-
-    /* auto cacheWatcher = new QFileSystemWatcher();
-    cacheWatcher->addPath(youtubeCachePath);
-    connect(cacheWatcher, SIGNAL(directoryChanged(QString)), this,
-            SLOT(handleDirectoryChanged_cache(QString)));*/
-
     ytFetch = new YouTube(this);
     connect(ytFetch,SIGNAL(youtubeTrackReady(bool)),this,SLOT(youtubeTrackReady(bool)));
     ytFetch->searchPendingFiles();
@@ -89,11 +71,6 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
             SLOT(finishedAddingTracks(bool)));
     connect(&collection_db, SIGNAL(progress(int)), ui->progressBar,
             SLOT(setValue(int)));
-    // thread = new QThread(parent);
-    // thread->setTerminationEnabled=true;
-    // collection_db.moveToThread(thread);
-    // connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
-    //  connect(thread, SIGNAL(started()), &collection_db, SLOT(addTrack()));
 
     ui->remove->setEnabled(false);
     ui->progressBar->hide();
@@ -104,15 +81,12 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
     ui->label->hide();
 
     watcher = new QFileSystemWatcher(this);
-    // watcher->addPath(youtubeCachePath);
 
     connect(watcher, SIGNAL(directoryChanged(QString)), this,
             SLOT(handleDirectoryChanged(QString)));
 }
 
 settings::~settings() {
-    //collection_db.closeConnection();
-
 }
 
 
@@ -159,11 +133,9 @@ void settings::handleDirectoryChanged_extension()
     if (!urls.isEmpty())
     {
 
-        nof.notify("Song recived!","wait a sec while the track ["+ids.join("\n")+"] is added to your collection :)");
+        nof.notify("Song received!","wait a sec while the track ["+ids.join("\n")+"] is added to your collection :)");
 
         ytFetch->fetch(ids,urls);
-        // qDebug()<<ids;
-        //qDebug()<<urls;
     }
 }
 
@@ -183,7 +155,6 @@ void settings::on_remove_clicked() {
         refreshCollectionPaths();
         refreshWatchFiles();
         ui->remove->setEnabled(false);
-        //emit collectionPathRemoved(pathToRemove);
         emit refreshTables();
     }
 }
@@ -219,7 +190,6 @@ void settings::refreshWatchFiles()
                     subDir=QFileInfo(subDir).path();
                     if(QFileInfo(subDir).isDir()&&QFileInfo(subDir).exists())
                     {
-                        //QDir dir = new QDir(url.path());
                         if(!dirs.contains(subDir))
                             dirs <<subDir;
                     }
@@ -229,20 +199,14 @@ void settings::refreshWatchFiles()
         }
 
     }
-
-    /*for(auto path:files) qDebug() << "refreshed watcher -file:"<< path;
-    for(auto path:dirs) qDebug() << "refreshed watcher -dir:"<< path;*/
     watcher->removePaths(watcher->directories());
-    // watcher->removePaths(watcher->files());
 
     addToWatcher(dirs);
-
 }
 
 CollectionDB &settings::getCollectionDB() { return collection_db; }
 
 void settings::on_toolbarIconSize_activated(const QString &arg1) {
-    // qDebug () <<arg1;
     iconSize = arg1.toInt();
     setSettings({"toolbarIconSize=", arg1});
 
@@ -252,7 +216,6 @@ void settings::on_toolbarIconSize_activated(const QString &arg1) {
 void settings::on_open_clicked() {
     QString url = QFileDialog::getExistingDirectory(this,"Select folder...", QDir().homePath()+"/Music/");
 
-    // qDebug()<<url;
     if (!collectionPaths.contains(url) && !url.isEmpty()) {
         ui->collectionPath->addItem(url);
         collectionPaths << url;
@@ -264,17 +227,14 @@ void settings::on_open_clicked() {
 
 void settings::setSettings(QStringList setting) {
     std::string strNew;
-    // std::string strReplace;
     strNew = setting.at(0).toStdString() + setting.at(1).toStdString();
     bool replace = false;
-    /**/
-    // qDebug()<<setting.at(0);
+
     std::ifstream settings(settingPath.toStdString() +
                            settingsName.toStdString());
     QStringList newline;
     std::string line;
     while (std::getline(settings, line)) {
-        // qDebug()<<get_setting;
         if (QString::fromStdString(line).contains(setting.at(0))) {
             if (!QString::fromStdString(line).contains("collectionPath=")) {
                 replace = true;
@@ -302,17 +262,13 @@ void settings::setSettings(QStringList setting) {
 
 void settings::removeSettings(QStringList setting) {
     std::string strNew;
-    // std::string strReplace;
     strNew = "";
     bool replace = false;
-    /**/
-    // qDebug()<<setting.at(0);
     std::ifstream settings(settingPath.toStdString() +
                            settingsName.toStdString());
     QStringList newline;
     std::string line;
     while (std::getline(settings, line)) {
-        // qDebug()<<get_setting;
         if (QString::fromStdString(line).contains(setting.at(0)) &&
                 QString::fromStdString(line).contains(setting.at(1))) {
 
@@ -376,7 +332,6 @@ void settings::collectionWatcher()
     }
 
     addToWatcher(dirs);
-    // for(auto m: dirs) qDebug()<<m;
 }
 
 
@@ -398,15 +353,13 @@ void settings::readSettings() {
     std::string line;
     while (std::getline(settings, line)) {
         auto get_setting = QString::fromStdString(line);
-        // qDebug()<<get_setting;
+
         if (get_setting.contains("collectionPath=")) {
             collectionPaths << get_setting.replace("collectionPath=", "");
             qDebug() << "Setting the cPath: "
                      << get_setting.replace("collectionPath=", "");
             ui->collectionPath->addItem(get_setting.replace("collectionPath=", ""));
 
-            // connect(&watcher, SIGNAL(fileChanged(QString)), this,
-            // SLOT(handleFileChanged(const QString&)));
         }
 
         if (get_setting.contains("toolbarIconSize=")) {
@@ -472,31 +425,16 @@ void settings::populateDB(QString path) {
 
         while (it.hasNext()) {
             urlCollection << it.next();
-
-            // qDebug() << it.next();
         }
     } else if (QFileInfo(path).isFile()) {
         urlCollection << path;
         qDebug() << path;
     }
 
-    /* Playlist *collection= new Playlist();
-                  collection->addClean(urlCollection);
-                  //updateList();
-                 collection_db.setTrackList(collection->getTracks());*/
     ui->progressBar->setValue(0);
     ui->progressBar->setMaximum(urlCollection.size());
     ui->progressBar->show();
     collection_db.addTrack(urlCollection);
-    // thread->start();
-
-    // collection_db.start();
-
-    /*for(auto tr:urlCollection)
-                  {
-                      qDebug()<<tr;
-                  }
-                  //populateTableView();*/
 }
 
 void settings::finishedAddingTracks(bool state) {
@@ -507,11 +445,8 @@ void settings::finishedAddingTracks(bool state) {
         ui->progressBar->setValue(0);
 
         nof.notify("Songs added to collection","finished writting new songs to the collection :)");
-        //emit collectionDBFinishedAdding(true);
-
 
         qDebug() << "good to hear it finished yay! now going to fetch artwork";
-
 
         collectionWatcher();
         emit refreshTables();
@@ -554,8 +489,6 @@ void settings::fetchArt() {
         connect(&coverArt, &ArtWork::artSaved, &collection_db,
                 &CollectionDB::insertCoverArt);
 
-        //  QString art = cachePath+artist+"_"+album+".jpg";
-
         qDebug() << artist << album;
         coverArt.setDataCover(artist, album,title, cachePath);
 
@@ -565,9 +498,6 @@ void settings::fetchArt() {
     while (query_Heads.next())
     {
 
-        //   QString artist = query_Heads.value(0).toString();
-
-
         ArtWork artistHead;
 
         connect(&artistHead, &ArtWork::headReady, &artistHead,
@@ -576,7 +506,6 @@ void settings::fetchArt() {
                 &CollectionDB::insertHeadArt);
 
         QString artist = query_Heads.value(0).toString();
-        // QString art = cachePath+artist+".jpg";
 
         artistHead.setDataHead(artist, cachePath);
     }
@@ -587,22 +516,16 @@ void settings::fetchArt() {
 
 
     emit collectionDBFinishedAdding(true);
-   // emit refreshTables();
 }
 
 void settings::on_pushButton_clicked() {
-    // QMessageBox::about(this, "Babe Tiny Music Player","Version: 0.0
-    // Alpha\nWritten and designed\nby: Camilo Higuita");
     about_ui->show();
 }
 
 void settings::on_debugBtn_clicked()
 {
-    /*qDebug()<<"Current files being watched:";
-    for(auto file: watcher->files()) qDebug()<<file;*/
     qDebug()<<"Current dirs being watched:";
     for(auto dir: watcher->directories()) qDebug()<<dir;
-
 }
 
 void settings::on_ytBtn_clicked()

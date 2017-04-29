@@ -1,5 +1,4 @@
-#ifndef BAEUTILS_H
-#define BAEUTILS_H
+#pragma once
 
 #include "string"
 #include <QString>
@@ -102,10 +101,6 @@ static inline QString ucfirst(const QString str) {
 
 static inline QString fixString(QString title)
 {
-
-    //title.remove(QRegExp(QString::fromUtf8("[·-`~!@#$%^&*()_—+=|:;<>«»,.?/{}\'\"\\\[\\\]\\\\]")));
-
-
     title=title.contains("(")&&title.contains(")")?fixTitle(title,"(",")"):title;
     title=title.contains("[")&&title.contains("]")?fixTitle(title,"[","]"):title;
     title=title.contains("{")&&title.contains("}")?fixTitle(title,"{","}"):title;
@@ -135,4 +130,3 @@ static inline bool fileExists(QString url)
 
 }
 
-#endif // UTILS_H

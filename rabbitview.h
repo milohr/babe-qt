@@ -1,5 +1,4 @@
-#ifndef RABITVIEW_H
-#define RABITVIEW_H
+#pragma once
 
 #include <QObject>
 #include <QListWidget>
@@ -50,4 +49,3 @@ signals:
 
 };
 
-#endif // RABITVIEW_H

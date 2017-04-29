@@ -1,5 +1,4 @@
-#ifndef ABOUT_H
-#define ABOUT_H
+#pragma once
 
 #include <QDialog>
 #include <QDebug>
@@ -33,4 +32,3 @@ private:
     const QString url="https://github.com/milohr/babe-qt";
 };
 
-#endif // ABOUT_H

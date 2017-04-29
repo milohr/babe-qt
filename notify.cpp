@@ -27,13 +27,11 @@ void Notify::notify(  const QString &title, const QString &body)
     KNotification *notification = new KNotification(QStringLiteral("Notify"),
                                                     KNotification::CloseOnTimeout, this);
 
-    // notification->setComponentName(QStringLiteral("Babe"));
     notification->setTitle(QStringLiteral("%1").arg(title));
     notification->setText(QStringLiteral("%1").arg(body));
     QPixmap babeIcon;
     babeIcon.load(":Data/data/babe_128.svg");
     notification->setPixmap(babeIcon);
-    //connect(notification, SIGNAL(ac), this, SLOT(notify()));
 
     notification->sendEvent();
 
@@ -46,7 +44,6 @@ void Notify::notifySong(const QMap<int, QString> &trackMap,  const QPixmap &pix)
     KNotification *notification = new KNotification(QStringLiteral("Playing"),
                                                     KNotification::CloseOnTimeout, this);
 
-    // notification->setComponentName(QStringLiteral("Babe"));
     notification->setTitle(QStringLiteral("%1").arg(track[BabeTable::TITLE]));
     notification->setText(QStringLiteral("by %1 - %2").arg(track[BabeTable::ARTIST],track[BabeTable::ALBUM]));
     if(!pix.isNull()) notification->setPixmap(pix);
@@ -55,9 +52,6 @@ void Notify::notifySong(const QMap<int, QString> &trackMap,  const QPixmap &pix)
     else notification->setActions(QStringList(i18n("Babe it  \xe2\x99\xa1")));
 
     connect(notification, SIGNAL(activated(uint)), SLOT(babeIt()));
-
-
-    //connect(notification, SIGNAL(ac), this, SLOT(notify()));
 
     notification->sendEvent();
 
@@ -68,7 +62,6 @@ void Notify::notifyUrgent(  const QString &title, const QString &body)
     KNotification *notification = new KNotification(QStringLiteral("Urgent"),
                                                     KNotification::CloseOnTimeout, this);
 
-    // notification->setComponentName(QStringLiteral("Babe"));
     notification->setTitle(QStringLiteral("%1").arg(title));
     notification->setText(QStringLiteral("%1").arg(body));
 

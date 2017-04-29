@@ -1,5 +1,4 @@
-#ifndef PLAYLISTSVIEW_H
-#define PLAYLISTSVIEW_H
+#pragma once
 
 #include <QWidget>
 #include <babetable.h>
@@ -64,4 +63,3 @@ signals:
 
 };
 
-#endif // PLAYLISTSVIEW_H

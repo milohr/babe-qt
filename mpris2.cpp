@@ -35,19 +35,6 @@ Mpris::Mpris(QObject *p)
 
 
     QDBusConnection::sessionBus().registerObject("/org/mpris/MediaPlayer2", this, QDBusConnection::ExportAdaptors);
-    /*connect(this, SIGNAL(setRandom(bool)), MPDConnection::self(), SLOT(setRandom(bool)));
-    connect(this, SIGNAL(setRepeat(bool)), MPDConnection::self(), SLOT(setRepeat(bool)));
-    connect(this, SIGNAL(setSeekId(qint32, quint32)), MPDConnection::self(), SLOT(setSeekId(qint32, quint32)));
-    connect(this, SIGNAL(setVolume(int)), MPDConnection::self(), SLOT(setVolume(int)));*/
-
-    //    connect(MPDConnection::self(), SIGNAL(currentSongUpdated(const Song &)), this, SLOT(updateCurrentSong(const Song &)));
-    //connect(MPDStatus::self(), SIGNAL(updated()), this, SLOT(updateStatus()));
-    /* if (mprisPath.isEmpty()) {
-        mprisPath=QLatin1String(CANTATA_REV_URL);
-        mprisPath.replace(".", "/");
-        mprisPath="/"+mprisPath+"/Track/%1";
-    }*/
-    //connect(CurrentCover::self(), SIGNAL(coverFile(const QString &)), this, SLOT(updateCurrentCover(const QString &)));
 }
 
 Mpris::~Mpris()
@@ -74,7 +61,7 @@ QString Mpris::PlaybackStatus() const
 
 qlonglong Mpris::Position() const
 {
-    // Cant use MPDStatus, as we dont poll for track position, but use a timer instead!
+    // Can't use MPDStatus, as we don't poll for track position, but use a timer instead!
     //return MPDStatus::self()->timeElapsed();
     return 1000000000;
 }
