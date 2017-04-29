@@ -468,48 +468,23 @@ void settings::populateDB(QString path) {
         urlCollection << path;
         qDebug() << path;
     }
-
-    /* Playlist *collection= new Playlist();
-                  collection->addClean(urlCollection);
-                  //updateList();
-                 collection_db.setTrackList(collection->getTracks());*/
     ui->progressBar->setValue(0);
     ui->progressBar->setMaximum(urlCollection.size());
     ui->progressBar->show();
     collection_db.addTrack(urlCollection);
-    // thread->start();
-
-    // collection_db.start();
-
-    /*for(auto tr:urlCollection)
-                  {
-                      qDebug()<<tr;
-                  }
-                  //populateTableView();*/
 }
 
 void settings::finishedAddingTracks(bool state) {
     if (state) {
-
-
         ui->progressBar->hide();
         ui->progressBar->setValue(0);
-
         nof.notify("Songs added to collection","finished writting new songs to the collection :)");
-        //emit collectionDBFinishedAdding(true);
-
-
         qDebug() << "good to hear it finished yay! now going to fetch artwork";
-
-
         collectionWatcher();
         emit refreshTables();
         fetchArt();
-
-    }else
-    {
+    } else {
         emit collectionDBFinishedAdding(true);
-
     }
 }
 
