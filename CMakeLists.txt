@@ -49,15 +49,18 @@ set(babe_SRCS
   scrolltext.cpp
   playlistsview.cpp
   taginfo.cpp
-  artwork.cpp
   infoview.cpp
-  lyrics.cpp
   mpris2.cpp
   notify.cpp
   youtube.cpp
   metadataForm.cpp
   web_jgm90.cpp
   rabbitview.cpp
+  pulpo/pulpo.cpp
+  pulpo/lyrics.cpp
+  pulpo/services/lastfmService.cpp
+  pulpo/services/spotifyService.cpp
+
 )
 
 ki18n_wrap_ui(babe_SRCS
