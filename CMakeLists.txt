@@ -108,6 +108,8 @@ install(TARGETS babe ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES org.kde.babe.appdata.xml DESTINATION ${KDE_INSTALL_METAINFODIR})
 
+install(PROGRAMS org.kde.babe.desktop DESTINATION ${KDE_INSTALL_APPDIR})
+
 feature_summary (
    WHAT ALL
    INCLUDE_QUIET_PACKAGES
