@@ -1,8 +1,8 @@
 [Desktop Entry]
 Name=Babe
 Comment=Play your music collection
-TryExec=Babe
-Exec=Babe %U
+TryExec=babe
+Exec=babe %U
 Terminal=false
 Type=Application
 Icon=Babe
