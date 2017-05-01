@@ -27,7 +27,7 @@
     </screenshot>
   </screenshots>
   <provides>
-    <binary>Babe</binary>
+    <binary>babe</binary>
   </provides>
   <project_group>KDE</project_group>
-</component> 
+</component>
