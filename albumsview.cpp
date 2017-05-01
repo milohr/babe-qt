@@ -156,6 +156,10 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
 
     albumBox_frame->hide(); line_h->hide();
 
+    splitter->setSizes({0,0,0});
+    splitter->setStretchFactor(0, 1);
+    splitter->setStretchFactor(1, 0);
+
     this->setLayout(layout);
 }
 
@@ -268,6 +272,7 @@ void AlbumsView::populateTableView(QSqlQuery query)
             //qDebug()<<"creating a new album[cover] for<<"<<album+" "+artist;
             if(!query.value(ART).toString().isEmpty()&&query.value(ART).toString()!="NULL")
                 art = query.value(ART).toString();
+            else art = connection->getArtistArt(artist);
 
             auto artwork= new Album(art,albumSize,4,true,this);
             albumsList.push_back(artwork);
@@ -309,7 +314,7 @@ void AlbumsView::populateTableView(QSqlQuery query)
 
 void AlbumsView::babeAlbum(QMap<int,QString> info)
 {
-      emit babeAlbum_clicked(info);
+    emit babeAlbum_clicked(info);
 }
 
 void AlbumsView::populateTableViewHeads(QSqlQuery query)

@@ -31,7 +31,7 @@
 #include "albumsview.h"
 #include "babetable.h"
 #include "playlistsview.h"
-#include "artwork.h"
+#include "pulpo/pulpo.h"
 #include "infoview.h"
 #include "rabbitview.h"
 
@@ -94,7 +94,7 @@ protected:
 public slots:
 
     void addToPlaylist(QList<QMap<int,QString>> mapList, bool notRepeated=false);
-    void putPixmap(QByteArray array);    
+    void putPixmap(const QByteArray &array);
     void populateResultsTable(QList<QMap<int,QString>> mapList);
     QList<QMap<int,QString>> searchFor(QStringList queries);
     void dummy();
@@ -125,7 +125,7 @@ private slots:
 
     bool addToCollectionDB(QStringList url,QString babe=0);
     void scanNewDir(QString url,QString babe="0");
-    void setToolbarIconSize(int iconSize);
+    void setToolbarIconSize(const int &iconSize);
     void collectionDBFinishedAdding(bool state);
     void on_fav_btn_clicked();
     void hideControls();
@@ -134,7 +134,7 @@ private slots:
     void on_search_textChanged(const QString &arg1);
 
     //void on_resultsPLaylist_clicked();
-    void setCoverArt(QString artist, QString album, QString title);
+    void setCoverArt(const QString &artist, const QString &album, const QString &title);
     void orderTables();
     void on_rowInserted(QModelIndex model ,int x,int y);
 
@@ -170,7 +170,6 @@ private:
 
     Qt::WindowFlags defaultWindowFlags;
     Notify nof;
-    ArtWork *coverArt;
     Mpris *mpris;
 
     void keepOnTop(bool state);
@@ -190,6 +189,7 @@ private:
     void expand();
     void go_mini();
     void go_playlistMode();
+    void clearMainList();
 
     QFrame *rightFrame;
     QGridLayout *leftFrame_layout;
@@ -232,6 +232,7 @@ private:
     QMap<int, QString> current_song;
     QMap<int, QString> prev_song;
     int current_song_pos;
+
 
     QSlider *seekBar;
     QLabel *addMusicImg;

@@ -71,7 +71,8 @@ void YouTube::fetch(QStringList ids_,QStringList urls_)
         //connect(process, SIGNAL(readyReadStandardOutput()), this, SLOT(processFinished()));
         //connect(process, SIGNAL(finished(int)), this, SLOT(processFinished_totally(int)));
         connect(process, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
-            [=](int exitCode, QProcess::ExitStatus exitStatus){
+            [=](int exitCode, QProcess::ExitStatus exitStatus)
+        {
 
         qDebug()<<"processFinished_totally"<<exitCode<<exitStatus;
         processFinished_totally(exitCode,process->arguments().at(process->arguments().size()-1),exitStatus);

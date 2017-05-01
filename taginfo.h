@@ -11,7 +11,7 @@
 
 #include <QString>
 #include <QByteArray>
-#include "artwork.h"
+#include "pulpo/pulpo.h"
 #include "baeUtils.h"
 
 class TagInfo

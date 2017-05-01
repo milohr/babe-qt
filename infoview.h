@@ -7,8 +7,8 @@
 #include <QHBoxLayout>
 #include <QToolButton>
 #include "album.h"
-#include "lyrics.h"
-#include "artwork.h"
+#include "pulpo/pulpo.h"
+#include "pulpo/lyrics.h"
 
 namespace Ui {
 class InfoView;
@@ -38,18 +38,18 @@ private:
 
 public slots:
 
+    void clearInfoViews();
     void setAlbumArt(QByteArray array);
     void setAlbumInfo(QString info);
-    void setArtistArt(QByteArray array);
-    void setArtistArt(QString url);
+    void setArtistArt(const QByteArray &array);
+    void setArtistArt(const QString &url);
     void setLyrics(QString lyrics);
-    void setArtistInfo(QString info);
+    void setArtistInfo(const QString &info);
     void setArtistTagInfo(QStringList tags);
     void setTagsInfo(QStringList);
     void hideArtistInfo();
     void playAlbum_clicked(QMap<int,QString> info);
-    void getTrackInfo(QString _title, QString _artist, QString _album);
-    void getTrackArt(QString _artist, QString _album);
+    void getTrackInfo(const QString &title_, const QString &artist_, const QString &album_);
     void on_searchBtn_clicked();
 
 signals:

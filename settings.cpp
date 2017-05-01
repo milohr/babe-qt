@@ -547,50 +547,43 @@ void settings::fetchArt() {
                 collection_db.getQuery("SELECT * FROM tracks WHERE artist = \""+artist+"\" AND album = \""+album+"\"");
         if(query_Title.next()) title=query_Title.value(CollectionDB::TITLE).toString();
 
+        collection_db.insertCoverArt("",{album,artist});
 
-        ArtWork coverArt;
-        connect(&coverArt, &ArtWork::coverReady, &coverArt,
-                &ArtWork::saveArt);
-        connect(&coverArt, &ArtWork::artSaved, &collection_db,
-                &CollectionDB::insertCoverArt);
+        Pulpo art(title,artist,album);
 
-        //  QString art = cachePath+artist+"_"+album+".jpg";
+        connect(&art, &Pulpo::albumArtReady,[this,&art] (QByteArray array){ art.saveArt(array,this->cachePath); });
+        connect(&art, &Pulpo::artSaved, &collection_db, &CollectionDB::insertCoverArt);
 
-        qDebug() << artist << album;
-        coverArt.setDataCover(artist, album,title, cachePath);
-
+        art.fetchAlbumInfo(Pulpo::AlbumArt,Pulpo::LastFm,true);
 
     }
 
     while (query_Heads.next())
     {
-
-        //   QString artist = query_Heads.value(0).toString();
-
-
-        ArtWork artistHead;
-
-        connect(&artistHead, &ArtWork::headReady, &artistHead,
-                &ArtWork::saveArt);
-        connect(&artistHead, &ArtWork::artSaved, &collection_db,
-                &CollectionDB::insertHeadArt);
-
         QString artist = query_Heads.value(0).toString();
-        // QString art = cachePath+artist+".jpg";
 
-        artistHead.setDataHead(artist, cachePath);
+        collection_db.insertHeadArt("",{artist});
+
+        Pulpo art("",artist,"");
+
+        connect(&art, &Pulpo::artistArtReady,[this,&art] (QByteArray array){ art.saveArt(array,this->cachePath); });
+        connect(&art, &Pulpo::artSaved, &collection_db, &CollectionDB::insertHeadArt);
+
+       art.fetchArtistInfo(Pulpo::ArtistArt,Pulpo::LastFm);
+
+
     }
 
     nof.notify("Finished fetching art","the artwork for your collection is now ready :)");
     movie->stop();
     ui->label->hide();
 
-
     emit collectionDBFinishedAdding(true);
-   // emit refreshTables();
+    // emit refreshTables();
 }
 
-void settings::on_pushButton_clicked() {
+void settings::on_pushButton_clicked()
+{
     // QMessageBox::about(this, "Babe Tiny Music Player","Version: 0.0
     // Alpha\nWritten and designed\nby: Camilo Higuita");
     about_ui->show();

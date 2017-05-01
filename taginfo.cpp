@@ -15,7 +15,6 @@
 
    */
 
-
 #include "taginfo.h"
 
 
@@ -23,45 +22,34 @@
 TagInfo::TagInfo(QString file)
 {
     this->file = TagLib::FileRef(file.toUtf8());
-    path = file;
+    this->path = file;
 }
 
 
 void TagInfo::writeData()
 {
-    // QString album_=this->getAlbum();
-    QString title_=this->getTitle();
-    QString artist_=this->getArtist();
+    Pulpo info(this->getTitle(),this->getArtist(),this->getAlbum());
+    QString newTitle = info.getStaticTrackInfo(Pulpo::TrackAlbum).toString();
+    int trackPosition = info.getStaticTrackInfo(Pulpo::TrackPosition).toInt();
 
-    if(!title_.isEmpty()&&!artist_.isEmpty())
-    {
-        ArtWork info;
-        auto newTitle=info.getAlbumTitle(artist_,title_);
-
-        this->setAlbum(newTitle.isEmpty()?"UNKNOWN":newTitle);
-    }
+    this->setTrack(trackPosition);
+    this->setAlbum(newTitle.isEmpty()?"UNKNOWN":newTitle);
 }
 
-QString TagInfo::getAlbum() {
-
-    QString albumName= QString::fromStdWString(file.tag()->album().toWString());
-
-    /*if(albumName.isEmpty())
- {
-     writeData();
-     albumName= QString::fromStdWString(file.tag()->album().toWString());
- }*/
-    
-    return albumName;
+QString TagInfo::getAlbum()
+{
+    return QString::fromStdWString(file.tag()->album().toWString());
 }
 
-QString TagInfo::getTitle() {
-    return QString::fromStdWString(file.tag()->title().toWString()).size() > 0
+QString TagInfo::getTitle()
+{
+    return !QString::fromStdWString(file.tag()->title().toWString()).isEmpty()
             ? QString::fromStdWString(file.tag()->title().toWString())
             : fileName();
 }
 
-QString TagInfo::getArtist() {
+QString TagInfo::getArtist()
+{
     return QString::fromStdWString(file.tag()->artist().toWString()).size() > 0
             ? QString::fromStdWString(file.tag()->artist().toWString())
             : "UNKNOWN";
@@ -69,13 +57,15 @@ QString TagInfo::getArtist() {
 
 int TagInfo::getTrack() { return static_cast<signed int>(file.tag()->track()); }
 
-QString TagInfo::getGenre() {
+QString TagInfo::getGenre()
+{
     return QString::fromStdWString(file.tag()->genre().toWString()).size() > 0
             ? QString::fromStdWString(file.tag()->genre().toWString())
             : "UNKNOWN";
 }
 
-QString TagInfo::fileName() {
+QString TagInfo::fileName()
+{
     return BaeUtils::getNameFromLocation(path);
     //return file.file()->name();
 }
@@ -109,8 +99,8 @@ QByteArray TagInfo::getCover()
 
 void TagInfo::setCover(QByteArray array)
 {
-    Q_UNUSED(array);    
-       
+    Q_UNUSED(array);
+
 }
 
 void TagInfo::setComment(QString comment)

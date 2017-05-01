@@ -60,15 +60,17 @@ SOURCES += main.cpp\
     scrolltext.cpp \
     playlistsview.cpp \
     taginfo.cpp \
-    artwork.cpp \
     infoview.cpp \
-    lyrics.cpp \
     mpris2.cpp \
     notify.cpp \
     youtube.cpp \
     metadataForm.cpp \
     web_jgm90.cpp \
-    rabbitview.cpp
+    rabbitview.cpp \
+    pulpo/lyrics.cpp \
+    pulpo/pulpo.cpp \
+    pulpo/services/lastfmService.cpp \
+    pulpo/services/spotifyService.cpp
 
 HEADERS  += mainwindow.h \
             playlist.h \
@@ -82,16 +84,18 @@ HEADERS  += mainwindow.h \
     scrolltext.h \
     playlistsview.h \
     taginfo.h \
-    artwork.h \
     infoview.h \
-    lyrics.h \
     mpris2.h \
     notify.h \
     youtube.h \
     baeUtils.h \
     metadataForm.h \
     web_jgm90.h \
-    rabbitview.h
+    rabbitview.h \
+    pulpo/lyrics.h \
+    pulpo/pulpo.h \
+    pulpo/services/lastfmService.h \
+    pulpo/services/spotifyService.h
 
 FORMS    += mainwindow.ui \
     settings.ui \

@@ -100,7 +100,7 @@ static inline QString ucfirst(const QString str) {
     return result.join(" ");
 }
 
-static inline QString fixString(QString title)
+static inline QString fixString (QString title)
 {
 
     //title.remove(QRegExp(QString::fromUtf8("[·-`~!@#$%^&*()_—+=|:;<>«»,.?/{}\'\"\\\[\\\]\\\\]")));
@@ -120,7 +120,7 @@ static inline QString fixString(QString title)
     title=title.contains('"')?title.replace('"',""):title;
     title=title.contains(":")?title.replace(":",""):title;
     title=title.contains("&")? title.replace("&", "and"):title;
-    qDebug()<<"fixed string:"<<title;
+    //qDebug()<<"fixed string:"<<title;
 
     return ucfirst(title).simplified();
 }

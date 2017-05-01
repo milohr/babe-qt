@@ -24,7 +24,7 @@
 #include "playlist.h"
 #include "about.h"
 #include "collectionDB.h"
-#include "artwork.h"
+#include "pulpo/pulpo.h"
 
 
 namespace Ui {

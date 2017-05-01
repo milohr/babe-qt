@@ -382,18 +382,8 @@ void MainWindow::setUpPlaylist()
     ui->refreshBtn->setPopupMode(QToolButton::MenuButtonPopup);
 
     auto clearIt = new QAction("Clear list...");
-    connect(clearIt, &QAction::triggered, [this]()
-    {
-        album_art->putDefaultPixmap();
-        currentList.clear();
-        current_song.clear();
-        this->mainList->flushTable();
-        lCounter=-1;
-        player->stop();
+    connect(clearIt, &QAction::triggered, [this]() { clearMainList(); });
 
-        //album_art->putDefaultPixmap();
-
-    });
     refreshBtn_menu->addAction(clearIt);
 
     auto saveIt = new QAction("Save as playlist...");
@@ -655,24 +645,23 @@ void MainWindow::dropEvent(QDropEvent *event)
     }
 }
 
-
 void MainWindow::dummy() { qDebug()<<"TEST on DUMMYT"; }
 
-void MainWindow::setCoverArt(QString artist, QString album,QString title)
+void MainWindow::setCoverArt(const QString &artist, const QString &album,const QString &title)
 {
-    auto coverArt = new ArtWork();
-    connect(coverArt, SIGNAL(coverReady(QByteArray)), this, SLOT(putPixmap(QByteArray)));
-    coverArt->setDataCover(artist,album,title);
-    infoTable->getTrackArt(artist,album);
+    qDebug()<<"Trying to retieve the cover art from Pulpo for"<< title << artist << album;
+  Pulpo coverArt(title,artist,album);
+    connect(&coverArt,&Pulpo::albumArtReady,this,&MainWindow::putPixmap);
+    coverArt.fetchAlbumInfo(Pulpo::AlbumArt,Pulpo::Spotify);
 }
 
-void MainWindow::putPixmap(QByteArray array)
+void MainWindow::putPixmap(const QByteArray &array)
 {
     if(!array.isEmpty()) album_art->putPixmap(array);
     else  album_art->putDefaultPixmap();
 }
 
-void MainWindow::setToolbarIconSize(int iconSize) //tofix
+void MainWindow::setToolbarIconSize(const int &iconSize) //tofix
 {
     qDebug()<< "Toolbar icons size changed";
     ui->mainToolBar->setIconSize(QSize(iconSize,iconSize));
@@ -1003,7 +992,7 @@ void MainWindow::on_mainList_clicked(QList<QMap<int,QString>> list)
     lCounter = mainList->getIndex();
     loadTrack();
 
-    if(!currentList.contains(current_song)) this->addToPlaylist({current_song});
+    if(!currentList.contains(current_song)) currentList<<current_song;
 
     ui->play_btn->setIcon(QIcon(":Data/data/media-playback-pause.svg"));
 }
@@ -1068,15 +1057,12 @@ void MainWindow::loadTrack()
 
         loadMood();
 
-        if(loadCover(current_song[BabeTable::ARTIST],current_song[BabeTable::ALBUM],current_song[BabeTable::TITLE]))
-        {
+        loadCover(current_song[BabeTable::ARTIST],current_song[BabeTable::ALBUM],current_song[BabeTable::TITLE]);
+
+
             if(!this->isActiveWindow())
                 nof.notifySong(current_song,album_art->getPixmap());
-        }else
-        {
-            if(!this->isActiveWindow())
-                nof.notifySong(current_song,QPixmap());
-        }
+
 
     }else removeSong(current_song_pos);
 
@@ -1086,13 +1072,13 @@ void MainWindow::feedRabbit()
 {
     rabbitTable->flushSuggestions(RabbitView::GENERAL);
 
-    ArtWork rabbitInfo;
+    Pulpo rabbitInfo(current_song[BabeTable::TITLE],current_song[BabeTable::ARTIST],current_song[BabeTable::ALBUM]);
 
     if(prev_song[BabeTable::ARTIST] != current_song[BabeTable::ARTIST])
     {
         rabbitTable->flushSuggestions();
 
-        connect(&rabbitInfo, &ArtWork::similarArtistsReady, [this] (QMap<QString,QByteArray> info)
+        connect(&rabbitInfo, &Pulpo::artistSimilarReady, [this] (QMap<QString,QByteArray> info)
         {
             rabbitTable->populateArtistSuggestion(info);
             QStringList query;
@@ -1104,7 +1090,7 @@ void MainWindow::feedRabbit()
         });
     }
 
-    connect(&rabbitInfo, &ArtWork::tagsReady, [this] (QStringList tags)
+    connect(&rabbitInfo, &Pulpo::albumTagsReady, [this] (QStringList tags)
     {
 
         auto searchResults = this->searchFor(tags);
@@ -1113,7 +1099,10 @@ void MainWindow::feedRabbit()
 
     });
 
-    rabbitInfo.setDataHeadInfo(current_song[BabeTable::ARTIST]);
+    rabbitInfo.fetchAlbumInfo(Pulpo::AlbumTags,Pulpo::LastFm);
+    rabbitInfo.fetchArtistInfo(Pulpo::ArtistSimilar,Pulpo::LastFm);
+
+
     // rabbitTable->populateGeneralSuggestion(searchFor({"genre:"+current_song[BabeTable::GENRE]}));
 
 }
@@ -1466,7 +1455,6 @@ void  MainWindow::infoIt(QString title, QString artist, QString album)
     //views->setCurrentIndex(INFO);
     infoView();
     infoTable->getTrackInfo(title, artist,album);
-    infoTable->getTrackArt(artist,album);
 
 }
 
@@ -1653,14 +1641,21 @@ void MainWindow::on_rowInserted(QModelIndex model ,int x,int y)
 }
 
 void MainWindow::on_refreshBtn_clicked()
-{
-    mainList->flushTable();
-
-    clearCurrentList();
+{    
+    clearMainList();
     populateMainList();
-    qDebug()<<"ehat was in current list:"<<currentList;
     currentList = mainList->getAllTableContent();
     mainList->scrollToTop();
+}
+
+void MainWindow::clearMainList()
+{
+    album_art->putDefaultPixmap();
+    currentList.clear();
+    current_song.clear();
+    this->mainList->flushTable();
+    lCounter=-1;
+    player->stop();
 }
 
 void MainWindow::on_tracks_view_2_clicked()

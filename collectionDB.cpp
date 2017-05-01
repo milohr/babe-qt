@@ -326,21 +326,26 @@ bool CollectionDB::addTrack(QStringList paths, int babe)
             qDebug()<<file;
             TagInfo info(file);
 
+            QString  album;
             int track;
-            QString  title, artist, album, genre;
-            // you should check if args are ok first...
-            track=info.getTrack();
-            title=BaeUtils::fixString(info.getTitle());
-            artist=BaeUtils::fixString(info.getArtist());
-            genre=info.getGenre();
+            QString title=BaeUtils::fixString(info.getTitle());
+            QString artist=BaeUtils::fixString(info.getArtist());
+            QString genre=info.getGenre();
+
+
+            qDebug()<<"on colelction adding new: "<<title<<artist;
 
             if(info.getAlbum().isEmpty())
             {
                 qDebug()<<"the album has not title, so i'm going to try and get it.";
                 info.writeData();
                 album=info.getAlbum();
-
-            }else album=info.getAlbum();
+                track=info.getTrack();
+            }else
+            {
+                album=info.getAlbum();
+                track=info.getTrack();
+            }
 
             album=BaeUtils::fixString(album);
 
