@@ -1,47 +1,27 @@
-cmake_minimum_required (VERSION 2.8.12)
+cmake_minimum_required(VERSION 3.0)
 project (Babe)
 
-find_package (ECM 0.0.11 REQUIRED NO_MODULE)
-set (
-   CMAKE_MODULE_PATH
-   ${ECM_MODULE_PATH}
-   ${ECM_KDE_MODULE_DIR}
-   ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules
-   )
+set (KF5_MIN_VERSION "5.24.0")
+find_package (ECM ${KF5_MIN_VERSION} CONFIG REQUIRED)
+set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake/modules)
 
-include (KDEInstallDirs)
-include (KDECMakeSettings)
+include(KDEInstallDirs)
+include(KDECMakeSettings)
 include (KDECompilerSettings NO_POLICY_SCOPE)
-# include (ECMInstallIcons)
-# include (ECMMarkAsTest)
-# include (ECMMarkNonGuiExecutable)
-# include (ECMOptionalAddSubdirectory)
-# include (ECMQtDeclareLoggingCategory)
-include (FeatureSummary)
-include (CheckIncludeFiles)
-
-
-
-# Add the build directories to the incudes
-set (CMAKE_INCLUDE_CURRENT_DIR ON)
-
-# Run MOC for everything that needs it
-set (CMAKE_AUTOMOC ON)
+include(FeatureSummary)
 
 set (QT_MIN_VERSION "5.5.0")
-set (KF5_MIN_VERSION "5.24.0")
-
 # Find the required Qt libraries
 find_package (
    Qt5 ${QT_MIN_VERSION} CONFIG REQUIRED COMPONENTS
    Core
-   Gui
-   Widgets
-   Multimedia
-   Sql
-   Network
-   Xml
    DBus
+   Gui
+   Multimedia
+   Network
+   Sql
+   Widgets
+   Xml
    )
 
 # Find the required KDE Frameworks
@@ -52,48 +32,45 @@ find_package (
    Config
    )
 
-
 find_package (Taglib REQUIRED)
 include_directories (${TAGLIB_INCLUDES})
 
-set (
-   babe_SRCS
-   main.cpp
-   mainwindow.cpp
-   playlist.cpp
-   track.cpp
-   settings.cpp
-   collectionDB.cpp
-   about.cpp
-   babetable.cpp
-   album.cpp
-   albumsview.cpp
-   scrolltext.cpp
-   playlistsview.cpp
-   taginfo.cpp
-   artwork.cpp
-   infoview.cpp
-   lyrics.cpp
-   mpris2.cpp
-   notify.cpp
-   youtube.cpp
-   metadataForm.cpp
-   onlineview.cpp
-   web_jgm90.cpp
-   )
+set(babe_SRCS
+  main.cpp
+  mainwindow.cpp
+  playlist.cpp
+  track.cpp
+  settings.cpp
+  collectionDB.cpp
+  about.cpp
+  babetable.cpp
+  album.cpp
+  albumsview.cpp
+  scrolltext.cpp
+  playlistsview.cpp
+  taginfo.cpp
+  artwork.cpp
+  infoview.cpp
+  lyrics.cpp
+  mpris2.cpp
+  notify.cpp
+  youtube.cpp
+  metadataForm.cpp
+  web_jgm90.cpp
+  rabbitview.cpp
+)
 
-   
-install(FILES org.kde.babe.appdata.xml DESTINATION ${KDE_INSTALL_METAINFODIR})
-# install_it.path = $$OUT_PWD
-# install_it.files = data/*
-#
-# unix:!macx: LIBS += -L$$PWD/3rdparty/taglib-1.9.1/taglib/ -ltag
-# INCLUDEPATH += $$PWD/3rdparty/taglib-1.9.1/taglib/Headers
-# DEPENDPATH += $$PWD/3rdparty/taglib-1.9.1/taglib/Headers
+ki18n_wrap_ui(babe_SRCS
+  mainwindow.ui
+  settings.ui
+  about.ui
+  infoview.ui
+  metadataForm.ui
+)
 
+qt5_add_resources(babe_SRCS data.qrc)
 
 add_definitions (-std=c++14)
-
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked as deprecated (the exact warnings
@@ -107,30 +84,9 @@ add_definitions (-DQT_DEPRECATED_WARNINGS)
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 #add_definitions (-DQT_DISABLE_DEPRECATED_BEFORE=0x060000)
 
-ki18n_wrap_ui (
-   babe_SRCS
-   mainwindow.ui
-   settings.ui
-   about.ui
-   infoview.ui
-   metadataForm.ui
-   onlineview.ui
-   )
+add_executable(babe ${babe_SRCS})
 
-qt5_add_resources (
-   babe_SRCS
-   data.qrc
-   )
-
-add_executable (
-   babe
-   ${babe_SRCS}
-   )
-
-install(TARGETS babe ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
-
-target_link_libraries (
-   babe
+target_link_libraries(babe
    Qt5::Core
    Qt5::Gui
    Qt5::Widgets
@@ -146,7 +102,11 @@ target_link_libraries (
    KF5::ConfigGui
 
    ${TAGLIB_LIBRARIES}
-   )
+)
+
+install(TARGETS babe ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
+
+install(FILES org.kde.babe.appdata.xml DESTINATION ${KDE_INSTALL_METAINFODIR})
 
 feature_summary (
    WHAT ALL
