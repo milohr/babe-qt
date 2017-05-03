@@ -907,7 +907,7 @@ void BabeTable::flushTable()
     this->setRowCount(0);
 }
 
-QStringList BabeTable::getTableContent(BabeTable::columns column)
+QStringList BabeTable::getTableColumnContent(const columns &column)
 {
     QStringList result;
     for (int i = 0; i < this->rowCount(); i++)
@@ -927,9 +927,9 @@ QList<QMap<int, QString>> BabeTable::getAllTableContent()
     return mapList;
 }
 
-void BabeTable::removeRepeated()
+void BabeTable::removeRepeated()//tofix
 {
-    auto list = this->getTableContent(LOCATION);
+    auto list = this->getTableColumnContent(BabeTable::LOCATION);
     list.removeDuplicates();
     this->flushTable();
     this->populateTableView(connection->getTrackData(list),false);

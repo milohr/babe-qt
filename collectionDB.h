@@ -36,8 +36,8 @@ public:
     bool check_existance(QString tableName, QString searchId, QString search);
     void createTable(QString tableName);
 
-    QList<QMap<int, QString>> getTrackData(QStringList urls);
-    QList<QMap<int, QString>> getTrackData(QString queryText);
+    QList<QMap<int, QString>> getTrackData(const QStringList &urls);
+    QList<QMap<int, QString>> getTrackData(const QString &queryText);
     QString getArtistArt(QString artist);
     QString getAlbumArt(QString album, QString artist);
     QStringList getPlaylists();

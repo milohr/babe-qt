@@ -121,7 +121,7 @@ QString CollectionDB::getAlbumArt(QString album, QString artist)
     return albumCover;
 }
 
-QList<QMap<int, QString>> CollectionDB::getTrackData(QStringList urls)
+QList<QMap<int, QString>> CollectionDB::getTrackData(const QStringList &urls)
 {
     QList<QMap<int, QString>> mapList;
 
@@ -154,7 +154,7 @@ QList<QMap<int, QString>> CollectionDB::getTrackData(QStringList urls)
     return mapList;
 }
 
-QList<QMap<int, QString>> CollectionDB::getTrackData(QString queryText)
+QList<QMap<int, QString>> CollectionDB::getTrackData(const QString &queryText)
 {
     QList<QMap<int, QString>> mapList;
     QSqlQuery query;

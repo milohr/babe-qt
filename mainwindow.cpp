@@ -393,14 +393,16 @@ void MainWindow::setUpPlaylist()
     calibrateBtn_menu->addAction(clearIt);
 
     auto cleanIt = new QAction("Clean...");
-    connect(cleanIt, &QAction::triggered, [this]() { mainList->removeRepeated(); });
+    connect(cleanIt, &QAction::triggered, [this]()
+    {
+        mainList->removeRepeated();
+
+    });
+
     calibrateBtn_menu->addAction(cleanIt);
 
     auto saveIt = new QAction("Save as playlist...");
     calibrateBtn_menu->addAction(saveIt);
-
-    auto changeIt = new QAction("Change Playlist...");
-    calibrateBtn_menu->addAction(changeIt);
 
     playlistWidget_layout->addWidget(album_art, 0,0,Qt::AlignTop);
     playlistWidget_layout->addWidget(ui->frame_6,1,0);
@@ -1524,7 +1526,7 @@ void MainWindow::addToPlaylist(QList<QMap<int,QString>> mapList, bool notRepeate
     if(notRepeated)
     {
         QList<QMap<int,QString>> newList;
-        QStringList alreadyInList = mainList->getTableContent(BabeTable::LOCATION);
+        QStringList alreadyInList = mainList->getTableColumnContent(BabeTable::LOCATION);
         for(auto track: mapList)
         {
             if(!alreadyInList.contains(track[BabeTable::LOCATION]))
@@ -1643,7 +1645,7 @@ void MainWindow::on_rowInserted(QModelIndex model ,int x,int y)
     //mainList->scrollToBottom();
     //qDebug()<<x<<y;
 
-    mainList->scrollTo(mainList->model()->index(x,BabeTable::TITLE),QAbstractItemView::PositionAtCenter);
+    //mainList->scrollTo(mainList->model()->index(x,BabeTable::TITLE),QAbstractItemView::PositionAtCenter);
 
     //qDebug()<<"indexes moved";
     //addMusicImg->setVisible(false);
@@ -1702,13 +1704,13 @@ void MainWindow::saveResultsTo(QAction *action)
     QString playlist=action->text().replace("&","");
     switch(views->currentIndex())
     {
-    case COLLECTION: collectionTable->populatePlaylist(collectionTable->getTableContent(BabeTable::LOCATION),playlist); break;
-    case ALBUMS: albumsTable->albumTable->populatePlaylist(albumsTable->albumTable->getTableContent(BabeTable::LOCATION),playlist); break;
-    case ARTISTS: artistsTable->albumTable->populatePlaylist(artistsTable->albumTable->getTableContent(BabeTable::LOCATION),playlist); break;
-    case PLAYLISTS: playlistTable->table->populatePlaylist(playlistTable->table->getTableContent(BabeTable::LOCATION),playlist); break;
-        //case INFO: collectionTable->populatePlaylist(collectionTable->getTableContent(BabeTable::LOCATION),playlist); break;
-        //case SETTINGS:  collectionTable->populatePlaylist(collectionTable->getTableContent(BabeTable::LOCATION),playlist); break;
-    case RESULTS: resultsTable->populatePlaylist(resultsTable->getTableContent(BabeTable::LOCATION),playlist); break;
+    case COLLECTION: collectionTable->populatePlaylist(collectionTable->getTableColumnContent(BabeTable::LOCATION),playlist); break;
+    case ALBUMS: albumsTable->albumTable->populatePlaylist(albumsTable->albumTable->getTableColumnContent(BabeTable::LOCATION),playlist); break;
+    case ARTISTS: artistsTable->albumTable->populatePlaylist(artistsTable->albumTable->getTableColumnContent(BabeTable::LOCATION),playlist); break;
+    case PLAYLISTS: playlistTable->table->populatePlaylist(playlistTable->table->getTableColumnContent(BabeTable::LOCATION),playlist); break;
+        //case INFO: collectionTable->populatePlaylist(collectionTable->getTableColumnContent(BabeTable::LOCATION),playlist); break;
+        //case SETTINGS:  collectionTable->populatePlaylist(collectionTable->getTableColumnContent(BabeTable::LOCATION),playlist); break;
+    case RESULTS: resultsTable->populatePlaylist(resultsTable->getTableColumnContent(BabeTable::LOCATION),playlist); break;
 
     }
 }
