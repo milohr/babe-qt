@@ -66,6 +66,7 @@ void RabbitView::populateArtistSuggestion(QMap<QString,QByteArray> info)
 void RabbitView::populateGeneralSuggestion(QList<QMap<int,QString>> mapList)
 {
     generalSuggestion->populateTableView(mapList,false);
+    generalSuggestion->removeRepeated();
 }
 
 void RabbitView::flushSuggestions(RabbitView::suggestionsTables list)

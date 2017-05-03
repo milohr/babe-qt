@@ -929,5 +929,8 @@ QList<QMap<int, QString>> BabeTable::getAllTableContent()
 
 void BabeTable::removeRepeated()
 {
-
+    auto list = this->getTableContent(LOCATION);
+    list.removeDuplicates();
+    this->flushTable();
+    this->populateTableView(connection->getTrackData(list),false);
 }
