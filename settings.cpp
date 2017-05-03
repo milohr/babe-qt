@@ -118,8 +118,6 @@ settings::~settings() {
 
 void settings::youtubeTrackReady(bool state)
 {
-
-
     if(state)
     {
         qDebug()<<"the youtube track is ready";
@@ -457,7 +455,8 @@ void settings::createCollectionDB()
 
 }
 
-void settings::populateDB(QString path) {
+void settings::populateDB(QString path)
+{
 
     qDebug() << "Function Name: " << Q_FUNC_INFO
              << "new path for database action: " << path;
@@ -499,10 +498,10 @@ void settings::populateDB(QString path) {
                   //populateTableView();*/
 }
 
-void settings::finishedAddingTracks(bool state) {
-    if (state) {
-
-
+void settings::finishedAddingTracks(bool state)
+{
+    if (state)
+    {
         ui->progressBar->hide();
         ui->progressBar->setValue(0);
 
@@ -517,11 +516,9 @@ void settings::finishedAddingTracks(bool state) {
         emit refreshTables();
         fetchArt();
 
-    }else
-    {
-        emit collectionDBFinishedAdding(true);
+    }else emit collectionDBFinishedAdding(true);
 
-    }
+
 }
 
 void settings::fetchArt() {

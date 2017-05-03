@@ -99,13 +99,7 @@ void YouTube::processFinished_totally(int state,QString id,QProcess::ExitStatus 
         ids.removeAll(doneId);
         qDebug()<<"ids left to process: "<<ids;
 
-        //qDebug()<<ids.size();
-        if(ids.isEmpty())
-        {
-
-            emit youtubeTrackReady(true);
-
-        }
+        if(ids.isEmpty()) emit youtubeTrackReady(true);
 }
 
 

@@ -70,7 +70,8 @@ SOURCES += main.cpp\
     pulpo/lyrics.cpp \
     pulpo/pulpo.cpp \
     pulpo/services/lastfmService.cpp \
-    pulpo/services/spotifyService.cpp
+    pulpo/services/spotifyService.cpp \
+    pulpo/services/musicbrainzService.cpp
 
 HEADERS  += mainwindow.h \
             playlist.h \
@@ -95,7 +96,8 @@ HEADERS  += mainwindow.h \
     pulpo/lyrics.h \
     pulpo/pulpo.h \
     pulpo/services/lastfmService.h \
-    pulpo/services/spotifyService.h
+    pulpo/services/spotifyService.h \
+    pulpo/services/musicbrainzService.h
 
 FORMS    += mainwindow.ui \
     settings.ui \

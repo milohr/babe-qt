@@ -1,6 +1,6 @@
-#include "musicbrainzservice.h"
+#include "musicbrainzService.h"
 
-musicbrainzService::musicbrainzService(QObject *parent) : QObject(parent)
+musicbrainzService::musicbrainzService()
 {
 
 }

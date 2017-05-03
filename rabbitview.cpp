@@ -11,7 +11,6 @@ RabbitView::RabbitView(QWidget *parent) : QWidget(parent)
     line->setFrameShadow(QFrame::Plain);
     line->setMaximumHeight(1);
 
-
     artistSuggestion = new QListWidget(this);
     artistSuggestion->setGridSize(QSize(80+10,80+10));
     artistSuggestion->setFixedHeight(120);
@@ -23,11 +22,9 @@ RabbitView::RabbitView(QWidget *parent) : QWidget(parent)
     artistSuggestion->setSizeAdjustPolicy(QListWidget::AdjustToContentsOnFirstShow);
     artistSuggestion->setStyleSheet("QListWidget {background:#575757; padding-top:10px; padding-left:15px; }");
 
-
     generalSuggestion = new BabeTable(this);
     generalSuggestion->passStyle("QHeaderView::section { background-color:#333; color:white; }");
-    generalSuggestion->setFrameShape(QFrame::NoFrame);
-
+    generalSuggestion->setAddMusicMsg("\nCouldn't find similar music");
 
     QSplitter *splitter = new QSplitter(parent);
     splitter->setChildrenCollapsible(false);
@@ -69,7 +66,6 @@ void RabbitView::populateArtistSuggestion(QMap<QString,QByteArray> info)
 void RabbitView::populateGeneralSuggestion(QList<QMap<int,QString>> mapList)
 {
     generalSuggestion->populateTableView(mapList,false);
-    //generalSuggestion->addItems(tags);
 }
 
 void RabbitView::flushSuggestions(RabbitView::suggestionsTables list)

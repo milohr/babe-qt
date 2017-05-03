@@ -120,9 +120,9 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent) {
 void PlaylistsView::dummy() { qDebug() << "signal was recived"; }
 
 void PlaylistsView::setDefaultPlaylists() {
-    auto title = new QListWidgetItem("PLAYLISTS");
+   /* auto title = new QListWidgetItem("PLAYLISTS");
     title->setTextAlignment(Qt::AlignCenter);
-    list->addItem(title);
+    list->addItem(title);*/
 
     auto mostPlayed = new QListWidgetItem();
     mostPlayed->setIcon(QIcon::fromTheme("favorite-genres-amarok"));

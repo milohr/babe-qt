@@ -55,13 +55,8 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     void setStyle();
-    void updateList();
-    void populateMainList();
-    void clearCurrentList();
-    bool isBabed(QMap<int, QString> track);
-    void feedRabbit();
-    QStringList searchKeys = {"location:","artist:","album:","title:","genre:" };
 
+    QStringList searchKeys = {"location:","artist:","album:","title:","genre:"};
 
     enum views
     {
@@ -69,7 +64,7 @@ public:
     };
     enum utilsBar
     {
-        INFO_UB,PLAYLISTS_UB,SEARCH_UB,ALBUMS_UB,ARTISTS_UB,COLLECTION_UB, FAVORITES_UB,RABBIT_UB
+        INFO_UB,PLAYLISTS_UB,SEARCH_UB,ALBUMS_UB,ARTISTS_UB,COLLECTION_UB,FAVORITES_UB,RABBIT_UB
     };
     enum viewModes
     {
@@ -82,6 +77,7 @@ public:
 
 
 protected:
+
     virtual void enterEvent(QEvent *event);
     virtual void leaveEvent(QEvent *event);
     virtual void dragEnterEvent(QDragEnterEvent *event);
@@ -111,7 +107,6 @@ private slots:
     void on_backward_btn_clicked();
     void on_foward_btn_clicked();
 
-
     /*the main views*/
     void collectionView();
     void albumsView();
@@ -122,7 +117,6 @@ private slots:
     void settingsView();
 
     /*the view stacked actions*/
-
     bool addToCollectionDB(QStringList url,QString babe=0);
     void scanNewDir(QString url,QString babe="0");
     void setToolbarIconSize(const int &iconSize);
@@ -166,11 +160,45 @@ private slots:
 private:
 
     Ui::MainWindow *ui;
+
+    CollectionDB connection;
+
     const QString stylePath = BaeUtils::getSettingPath()+"style.qss";
+
+    int viewMode = FULLMODE;
+
+    int prevIndex;
 
     Qt::WindowFlags defaultWindowFlags;
     Notify nof;
     Mpris *mpris;
+
+    QSize prevSize;
+
+    QWidget *mainWidget;
+    QGridLayout * mainLayout;
+    QStackedWidget *views;
+
+    QFrame *leftFrame;
+    QGridLayout *leftFrame_layout;
+    QFrame *rightFrame;
+    QFrame *line;
+    QFrame *lineV;
+
+    QToolBar *utilsBar;
+    Album *album_art;
+    QWidget *playlistWidget;
+
+    /*the views*/
+    BabeTable *mainList;
+    BabeTable *collectionTable;
+    BabeTable *resultsTable;
+    AlbumsView* albumsTable;
+    AlbumsView* artistsTable;
+    PlaylistsView *playlistTable;
+    InfoView *infoTable;
+    settings *settings_widget;
+    RabbitView *rabbitTable;
 
     void keepOnTop(bool state);
 
@@ -189,59 +217,34 @@ private:
     void expand();
     void go_mini();
     void go_playlistMode();
+
     void clearMainList();
-
-    QFrame *rightFrame;
-    QGridLayout *leftFrame_layout;
-    QFrame *line;
-    QFrame *lineV;
-    QStackedWidget *views;
-    QToolBar *playback;
-    QToolBar *utilsBar;
-    QTimer *timer;
-
-    QWidget *mainWidget;
-    QGridLayout * mainLayout;
-    QLabel *info;
-    Album *album_art;
-    QWidget *controls;
-    QWidget *playlistWidget;
-    QFrame *leftFrame;
-
-
-    /*the views*/
-    BabeTable *mainList;
-    BabeTable *collectionTable;
-    BabeTable *resultsTable;
-    AlbumsView* albumsTable;
-    AlbumsView* artistsTable;
-    PlaylistsView *playlistTable;
-    InfoView *infoTable;
-    settings *settings_widget;
-    RabbitView *rabbitTable;
+    void updateList();
+    void populateMainList();
+    void clearCurrentList();
+    bool isBabed(QMap<int, QString> track);
+    void feedRabbit();
 
     /*the streaming */
     QMediaPlayer *player = new QMediaPlayer();
     QTimer *updater = new QTimer(this);
+    QTimer *timer;
 
-    QList<QMap<int,QString>> queuedList;
+    QSlider *seekBar;
+    QMenu *saveResults_menu;
+    QMenu *refreshBtn_menu;
+
     QMap<QString, QMap<int, QString>> queued_songs;
     int queued_song_pos = -1;
 
     QList<QMap<int,QString>> currentList;
     QMap<int, QString> current_song;
-    QMap<int, QString> prev_song;
     int current_song_pos;
 
+    QMap<int, QString> prev_song;
+    int prev_song_pos;
 
-    QSlider *seekBar;
-    QLabel *addMusicImg;
-    QMenu *saveResults_menu;
-    QMenu *refreshBtn_menu;
-
-    int mini_mode = FULLMODE;
-    int prevIndex;    
-    int lCounter = 0;    
+    int lCounter = 0;
     int  shuffle_state = REGULAR;
 
     bool repeat = false;
@@ -249,8 +252,6 @@ private:
     bool shuffle = false;
 
     vector<unsigned short int> shuffledPlaylist;
-
-    QSize prevSize;
 
 
 signals:
