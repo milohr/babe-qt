@@ -157,7 +157,7 @@ void MainWindow::setUpViews()
     connect(resultsTable,SIGNAL(infoIt_clicked(QString, QString, QString)),this,SLOT(infoIt(QString, QString, QString)));
 
     rabbitTable = new RabbitView(this);
-    connect(rabbitTable,&RabbitView::playAlbum,this,&MainWindow::putOnPlay);
+    connect(rabbitTable,&RabbitView::playAlbum,this,&MainWindow::putAlbumOnPlay);
     connect(rabbitTable->getTable(),SIGNAL(tableWidget_doubleClicked(QList<QMap<int, QString>>)),this,SLOT(addToPlaylist(QList<QMap<int, QString>>)));
     connect(rabbitTable->getTable(),&BabeTable::queueIt_clicked,this,&MainWindow::addToQueue);
     connect(rabbitTable->getTable(),&BabeTable::babeIt_clicked,this,&MainWindow::babeIt);
@@ -172,7 +172,7 @@ void MainWindow::setUpViews()
     connect(albumsTable->albumTable,&BabeTable::queueIt_clicked,this,&MainWindow::addToQueue);
     connect(albumsTable->albumTable,SIGNAL(moodIt_clicked(QString)),playlistTable,SLOT(createMoodPlaylist(QString)));
     connect(albumsTable->albumTable,SIGNAL(infoIt_clicked(QString, QString, QString)),this,SLOT(infoIt(QString, QString, QString)));
-    connect(albumsTable,&AlbumsView::playAlbum,this,&MainWindow::putOnPlay);
+    connect(albumsTable,&AlbumsView::playAlbum,this,&MainWindow::putAlbumOnPlay);
     connect(albumsTable,&AlbumsView::babeAlbum_clicked,this,&MainWindow::babeAlbum);
     connect(albumsTable,&AlbumsView::albumDoubleClicked,this,&MainWindow::albumDoubleClicked);
 
@@ -185,12 +185,12 @@ void MainWindow::setUpViews()
     connect(artistsTable->albumTable,&BabeTable::queueIt_clicked,this,&MainWindow::addToQueue);
     connect(artistsTable->albumTable,SIGNAL(moodIt_clicked(QString)),playlistTable,SLOT(createMoodPlaylist(QString)));
     connect(artistsTable->albumTable,SIGNAL(infoIt_clicked(QString, QString, QString)),this,SLOT(infoIt(QString, QString, QString)));
-    connect(artistsTable,&AlbumsView::playAlbum,this,&MainWindow::putOnPlay);
+    connect(artistsTable,&AlbumsView::playAlbum,this,&MainWindow::putAlbumOnPlay);
     connect(artistsTable,&AlbumsView::babeAlbum_clicked,this,&MainWindow::babeAlbum);
     connect(artistsTable,&AlbumsView::albumDoubleClicked,this,&MainWindow::albumDoubleClicked);
 
     infoTable = new InfoView(this);
-    connect(infoTable,&InfoView::playAlbum,this,&MainWindow::putOnPlay);
+    connect(infoTable,&InfoView::playAlbum,this,&MainWindow::putAlbumOnPlay);
     connect(infoTable,&InfoView::similarBtnClicked,[this](QStringList queries) { this->ui->search->setText(queries.join(",")); });
     connect(infoTable,&InfoView::tagsBtnClicked,[this](QStringList queries) { this->ui->search->setText(queries.join(",")); });
     connect(infoTable,&InfoView::tagClicked,[this](QString query) { this->ui->search->setText(query);});
@@ -342,7 +342,7 @@ void MainWindow::setUpPlaylist()
     playlistWidget->setLayout(playlistWidget_layout);
 
     album_art = new Album(":Data/data/babe.png",200,0,false);
-    connect(album_art,&Album::playAlbum,this,&MainWindow::putOnPlay);
+    connect(album_art,&Album::playAlbum,this,&MainWindow::putAlbumOnPlay);
     connect(album_art,&Album::changedArt,this,&MainWindow::changedArt);
     connect(album_art,&Album::babeAlbum_clicked,this,&MainWindow::babeAlbum);
 
@@ -380,19 +380,27 @@ void MainWindow::setUpPlaylist()
     ui->shuffle_btn->setToolTip("Shuffle");
     ui->tracks_view_2->setVisible(false);
 
-    refreshBtn_menu = new QMenu(this);
-    ui->refreshBtn->setMenu(refreshBtn_menu);
-    ui->refreshBtn->setPopupMode(QToolButton::MenuButtonPopup);
+    calibrateBtn_menu = new QMenu(this);
+    ui->calibrateBtn->setMenu(calibrateBtn_menu);
+    ui->calibrateBtn->setPopupMode(QToolButton::InstantPopup);
 
-    auto clearIt = new QAction("Clear list...");
+    auto refreshIt = new QAction("Calibrate...");
+    connect(refreshIt, &QAction::triggered, [this]() { calibrateMainList(); });
+    calibrateBtn_menu->addAction(refreshIt);
+
+    auto clearIt = new QAction("Clear...");
     connect(clearIt, &QAction::triggered, [this]() { clearMainList(); });
+    calibrateBtn_menu->addAction(clearIt);
 
-    refreshBtn_menu->addAction(clearIt);
+    auto cleanIt = new QAction("Clean...");
+    connect(cleanIt, &QAction::triggered, [this]() { mainList->removeRepeated(); });
+    calibrateBtn_menu->addAction(cleanIt);
 
     auto saveIt = new QAction("Save as playlist...");
-    refreshBtn_menu->addAction(saveIt);
+    calibrateBtn_menu->addAction(saveIt);
+
     auto changeIt = new QAction("Change Playlist...");
-    refreshBtn_menu->addAction(changeIt);
+    calibrateBtn_menu->addAction(changeIt);
 
     playlistWidget_layout->addWidget(album_art, 0,0,Qt::AlignTop);
     playlistWidget_layout->addWidget(ui->frame_6,1,0);
@@ -449,7 +457,7 @@ void MainWindow::albumDoubleClicked(QMap<int, QString> info)
 
 }
 
-void MainWindow::putOnPlay(QMap<int,QString> info)
+void MainWindow::putAlbumOnPlay(QMap<int,QString> info)
 {
     QString artist =info[Album::ARTIST];
     QString album = info[Album::ALBUM];
@@ -466,21 +474,28 @@ void MainWindow::putOnPlay(QMap<int,QString> info)
             mapList = settings_widget->getCollectionDB().getTrackData(QString("SELECT * FROM tracks WHERE artist = \""+artist+"\" AND album = \""+album+"\" ORDER by track asc"));
 
         if(!mapList.isEmpty())
-        {
-            mainList->flushTable();
-            currentList.clear();
+            this->putOnPlay(mapList);
 
-            addToPlaylist(mapList);
-
-            if(mainList->rowCount()>0)
-            {
-                mainList->setCurrentCell(0,BabeTable::TITLE);
-                lCounter=0;
-                loadTrack();
-            }
-        }
     }
 
+}
+
+void MainWindow::putOnPlay(const QList<QMap<int,QString>> &mapList)
+{
+    if(!mapList.isEmpty())
+    {
+        mainList->flushTable();
+        currentList.clear();
+
+        addToPlaylist(mapList);
+
+        if(mainList->rowCount()>0)
+        {
+            mainList->setCurrentCell(0,BabeTable::TITLE);
+            lCounter=0;
+            loadTrack();
+        }
+    }
 }
 
 void MainWindow::addToPlayed(QString url)
@@ -816,7 +831,7 @@ void MainWindow::expand()
     this->show();*/
 
     ui->hide_sidebar_btn->setToolTip("Go Mini");
-    ui->hide_sidebar_btn->setIcon(QIcon(":Data/data/this->viewMode.svg"));
+    ui->hide_sidebar_btn->setIcon(QIcon(":Data/data/mini_mode.svg"));
 
     this->viewMode=FULLMODE;
 }
@@ -892,7 +907,7 @@ void MainWindow::go_playlistMode()
     //this->show();
 
     ui->hide_sidebar_btn->setToolTip("Go Mini");
-    ui->hide_sidebar_btn->setIcon(QIcon(":Data/data/this->viewMode.svg"));
+    ui->hide_sidebar_btn->setIcon(QIcon(":Data/data/mini_mode.svg"));
     this->viewMode=PLAYLISTMODE;
 }
 
@@ -1000,7 +1015,7 @@ void MainWindow::on_mainList_clicked(QList<QMap<int,QString>> list)
     ui->play_btn->setIcon(QIcon(":Data/data/media-playback-pause.svg"));
 }
 
-void MainWindow::removeSong(int index)
+void MainWindow::removeSong(const int &index)
 {
     QObject* obj = sender();
 
@@ -1148,7 +1163,7 @@ void MainWindow::loadMood()
 }
 
 
-bool MainWindow::loadCover(QString artist, QString album, QString title) //tofix separte getalbumcover from get artisthead
+bool MainWindow::loadCover(const QString &artist, const QString &album, const QString &title) //tofix separte getalbumcover from get artisthead
 {
     Q_UNUSED(title);
     QString artistHead;
@@ -1411,7 +1426,7 @@ bool MainWindow::unbabeIt(QMap<int,QString> track)
 
 }
 
-bool MainWindow::babeIt(QMap<int, QString> track)
+bool MainWindow::babeIt(const QMap<int, QString> &track)
 {
     QString url = track[BabeTable::LOCATION];
     if(isBabed(track))
@@ -1549,7 +1564,6 @@ void MainWindow::on_search_returnPressed()
         if(views->currentIndex()==PLAYLISTS) {utilsBar->actions().at(PLAYLISTS_UB)->setVisible(true); ui->frame_3->setVisible(true);}
         resultsTable->flushTable();
         // ui->saveResults->setEnabled(false);
-        ui->refreshAll->setEnabled(true);
     }else views->setCurrentIndex(RESULTS);
 }
 
@@ -1575,8 +1589,6 @@ void MainWindow::populateResultsTable(QList<QMap<int,QString>> mapList)
     utilsBar->actions().at(ALBUMS_UB)->setVisible(false);
     resultsTable->flushTable();
     resultsTable->populateTableView(mapList,false);
-
-    ui->refreshAll->setEnabled(false);
 }
 
 QList<QMap<int, QString> > MainWindow::searchFor(QStringList queries)
@@ -1637,13 +1649,6 @@ void MainWindow::on_rowInserted(QModelIndex model ,int x,int y)
     //addMusicImg->setVisible(false);
 }
 
-void MainWindow::on_refreshBtn_clicked()
-{    
-    clearMainList();
-    populateMainList();
-    currentList = mainList->getAllTableContent();
-    mainList->scrollToTop();
-}
 
 void MainWindow::clearMainList()
 {
@@ -1660,14 +1665,8 @@ void MainWindow::on_tracks_view_2_clicked()
     expand();
 }
 
-void MainWindow::on_refreshAll_clicked()
-{
-    refreshTables();
-}
-
 void MainWindow::on_addAll_clicked()
 {
-
     switch(views->currentIndex())
     {
     case COLLECTION:
@@ -1682,7 +1681,6 @@ void MainWindow::on_addAll_clicked()
         addToPlaylist(rabbitTable->getTable()->getAllTableContent()); break;
     case RESULTS:
         addToPlaylist(resultsTable->getAllTableContent()); break;
-
     }
 }
 
@@ -1762,4 +1760,39 @@ void MainWindow::on_filter_textChanged(const QString &arg1)
 
     }
 
+}
+
+void MainWindow::calibrateMainList()
+{
+    clearMainList();
+    populateMainList();
+    currentList = mainList->getAllTableContent();
+    mainList->scrollToTop();
+
+    if(mainList->rowCount()>0)
+    {
+        mainList->setCurrentCell(0,BabeTable::TITLE);
+        lCounter=0;
+        loadTrack();
+    }
+}
+
+void MainWindow::on_playAll_clicked()
+{
+
+    switch(views->currentIndex())
+    {
+    case COLLECTION:
+        putOnPlay(collectionTable->getAllTableContent()); break;
+    case ALBUMS:
+        putOnPlay(albumsTable->albumTable->getAllTableContent()); break;
+    case ARTISTS:
+        putOnPlay(artistsTable->albumTable->getAllTableContent()); break;
+    case PLAYLISTS:
+        putOnPlay(playlistTable->table->getAllTableContent()); break;
+    case RABBIT:
+        putOnPlay(rabbitTable->getTable()->getAllTableContent()); break;
+    case RESULTS:
+        putOnPlay(resultsTable->getAllTableContent()); break;
+    }
 }

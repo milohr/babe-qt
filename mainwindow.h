@@ -135,19 +135,18 @@ private slots:
     void AlbumsViewOrder(QString order);
     void refreshTables();
     void addToPlayed(QString url);
-    void on_refreshBtn_clicked();
     void on_tracks_view_2_clicked();
-    void on_refreshAll_clicked();
     void on_addAll_clicked();
     void saveResultsTo(QAction *action);
     void on_saveResults_clicked();
 
-    void removeSong(int index);
-    void putOnPlay(QMap<int,QString> info);
+    void removeSong(const int &index);
+    void putAlbumOnPlay(QMap<int,QString> info);
+    void putOnPlay(const QList<QMap<int,QString>> &mapList);
     void changedArt(QMap<int, QString> info);
     void babeAlbum(QMap<int, QString> info);
-    bool loadCover(QString artist, QString album, QString title);
-    bool babeIt(QMap<int, QString> track);
+    bool loadCover(const QString &artist, const QString &album, const QString &title);
+    bool babeIt(const QMap<int, QString> &track);
     bool unbabeIt(QMap<int, QString> track);
     void loadMood();
     bool removeQueuedTrack(QMap<int, QString> track);
@@ -156,6 +155,8 @@ private slots:
     void on_filter_textChanged(const QString &arg1);
     void infoIt(QString title, QString artist, QString album);
     void albumDoubleClicked(QMap<int, QString> info);
+
+    void on_playAll_clicked();
 
 private:
 
@@ -219,6 +220,7 @@ private:
     void go_playlistMode();
 
     void clearMainList();
+    void calibrateMainList();
     void updateList();
     void populateMainList();
     void clearCurrentList();
@@ -232,7 +234,7 @@ private:
 
     QSlider *seekBar;
     QMenu *saveResults_menu;
-    QMenu *refreshBtn_menu;
+    QMenu *calibrateBtn_menu;
 
     QMap<QString, QMap<int, QString>> queued_songs;
     int queued_song_pos = -1;

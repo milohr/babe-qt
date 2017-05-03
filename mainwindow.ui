@@ -453,6 +453,22 @@
       </widget>
      </item>
      <item>
+      <widget class="QToolButton" name="playAll">
+       <property name="toolTip">
+        <string>Play results...</string>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+       <property name="icon">
+        <iconset theme="media-playback-start-symbolic"/>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QToolButton" name="saveResults">
        <property name="toolTip">
         <string>Save results...</string>
@@ -462,23 +478,6 @@
        </property>
        <property name="icon">
         <iconset theme="document-save-as">
-         <normaloff>.</normaloff>.</iconset>
-       </property>
-       <property name="autoRaise">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QToolButton" name="refreshAll">
-       <property name="toolTip">
-        <string>Refresh</string>
-       </property>
-       <property name="text">
-        <string>...</string>
-       </property>
-       <property name="icon">
-        <iconset theme="amarok_playlist_refresh">
          <normaloff>.</normaloff>.</iconset>
        </property>
        <property name="autoRaise">
@@ -670,7 +669,7 @@ margin:0;
       </widget>
      </item>
      <item row="0" column="0">
-      <widget class="QToolButton" name="refreshBtn">
+      <widget class="QToolButton" name="calibrateBtn">
        <property name="minimumSize">
         <size>
          <width>36</width>

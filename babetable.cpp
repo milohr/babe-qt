@@ -926,3 +926,8 @@ QList<QMap<int, QString>> BabeTable::getAllTableContent()
 
     return mapList;
 }
+
+void BabeTable::removeRepeated()
+{
+
+}

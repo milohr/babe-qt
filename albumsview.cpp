@@ -10,7 +10,6 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     layout->setSpacing(0);
 
     grid = new QListWidget(this);
-    grid->parentWidget()->installEventFilter(this);
     grid->setViewMode(QListWidget::IconMode);
     grid->setResizeMode(QListWidget::Adjust);
     grid->setUniformItemSizes(true);
@@ -172,44 +171,6 @@ void AlbumsView::hideAlbumFrame()
     albumBox_frame->hide();
     line_h->hide();
 }
-
-bool AlbumsView::eventFilter(QObject * watched, QEvent * event)
-{
-    Q_UNUSED(event);
-    /*if(event->type() == QEvent::Wheel)
-    {
-        if(QApplication::keyboardModifiers()==Qt::ControlModifier)
-        {
-            this->setAlbumsSize(albumSize+5);
-            slider->setValue(albumSize+5);
-            slider->setSliderPosition(albumSize+5);
-        }
-        qDebug()<< "scroll wheel";
-    }*/
-    if(watched != grid->parent()) return false;
-
-    /* if (event->type() == QEvent::Resize)
-    {
-        int w = grid->width();
-        int a =  grid->gridSize().width()+2;
-        int c = w/a;
-        int amount = (w-(c*a))/c;
-        qDebug()<<"amount: "<< amount <<"w: "<<w<<"a: "<<a<<"c: "<<c;
-       if(grid->width()>gridSize)
-           grid->setGridSize(QSize(a+c,a+c));
-
-        else
-           grid->setGridSize(QSize(c*amount,c*amount));
-
-
-        gridSize = grid->width();
-        slider->setValue(albumSize);
-        slider->setSliderPosition(albumSize);
-        return true;
-    }*/
-    return false;
-}
-
 
 void AlbumsView::filterAlbum(QModelIndex index)
 {

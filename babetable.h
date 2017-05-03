@@ -77,6 +77,7 @@ public:
     void populatePlaylist(QStringList urls, QString playlist);
     void setAddMusicMsg(QString msg);
     int getIndex();
+    void removeRepeated();
     //void removeRow(int row);
 
     QMap<int,QString> getRowData(int row);

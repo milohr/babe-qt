@@ -94,9 +94,6 @@ signals:
     void populateCoversFinished();
     void populateHeadsFinished();
 
-protected:
-    virtual bool eventFilter(QObject * watched, QEvent * event) Q_DECL_OVERRIDE;
-
 
 };
 
