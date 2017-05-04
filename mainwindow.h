@@ -41,6 +41,7 @@
 #include "playlist.h"
 #include "settings.h"
 #include "collectionDB.h"
+#include "web_jgm90.h"
 
 
 namespace Ui {
@@ -56,7 +57,7 @@ public:
     ~MainWindow();
     void setStyle();
 
-    QStringList searchKeys = {"location:","artist:","album:","title:","genre:"};
+    QStringList searchKeys = {"location:","artist:","album:","title:","genre:","online:"};
 
     enum views
     {
@@ -200,6 +201,7 @@ private:
     InfoView *infoTable;
     settings *settings_widget;
     RabbitView *rabbitTable;
+    web_jgm90 *onlineFetcher;
 
     void keepOnTop(bool state);
 

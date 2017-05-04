@@ -143,6 +143,8 @@ void MainWindow::setUpViews()
     connect(mainList,SIGNAL(infoIt_clicked(QString, QString, QString)),this,SLOT(infoIt(QString, QString, QString)));
     connect(mainList->model() ,SIGNAL(rowsInserted(QModelIndex,int,int)),this,SLOT(on_rowInserted(QModelIndex,int,int)));
 
+
+    onlineFetcher = new web_jgm90();
     resultsTable=new BabeTable(this);
     resultsTable->passStyle("QHeaderView::section { background-color:#575757; color:white; }");
     resultsTable->setVisibleColumn(BabeTable::STARS);
@@ -1626,6 +1628,9 @@ QList<QMap<int, QString> > MainWindow::searchFor(QStringList queries)
 
             else if(key==  "genre:")
                 mapList += settings_widget->getCollectionDB().getTrackData(QString("SELECT * FROM tracks WHERE genre LIKE \"%"+searchQuery+"%\""));
+
+            else if(key==  "online:")
+                mapList += onlineFetcher->fetch(searchQuery);
 
             else
                 mapList += settings_widget->getCollectionDB().getTrackData(QString("SELECT * FROM tracks WHERE title LIKE \"%"+searchQuery+"%\" OR artist LIKE \"%"+searchQuery+"%\" OR album LIKE \"%"+searchQuery+"%\"OR genre LIKE \"%"+searchQuery+"%\""));
