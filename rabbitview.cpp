@@ -50,7 +50,7 @@ void RabbitView::populateArtistSuggestion(QMap<QString,QByteArray> info)
         connect(art,&Album::playAlbum, [this] (QMap<int,QString> info) { emit playAlbum(info); });
         // connect(art,&Album::changedArt,this,&RabbitView::changedArt_cover);
         //connect(art,&Album::babeAlbum_clicked,this,&RabbitView::babeAlbum);
-
+        art->setToolTip(tag);
         art->putPixmap(info[tag]);
         art->borderColor=true;
         art->setTitle(tag);
@@ -82,7 +82,7 @@ void RabbitView::flushSuggestions(RabbitView::suggestionsTables list)
 
 void RabbitView::filterByArtist(QMap<int,QString> mapList)
 {
-    generalSuggestion->flushTable();
-    artistSuggestion->clear();
+    /* generalSuggestion->flushTable();
+    artistSuggestion->clear();*/
 }
 

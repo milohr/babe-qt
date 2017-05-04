@@ -214,11 +214,12 @@ bool Pulpo::fetchTrackInfo(const Pulpo::TrackInfo &infoType, const Pulpo::LyricS
 
 QVariant Pulpo::getStaticAlbumInfo(const AlbumInfo &infoType)
 {
-
+return QVariant ();
 }
 
 QVariant Pulpo::getStaticArtistInfo(const ArtistInfo &infoType)
 {
+    return QVariant ();
 
 }
 
