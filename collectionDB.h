@@ -58,7 +58,7 @@ private:
 public slots:
     bool addTrack(QStringList paths, int babe=0);
     void closeConnection();
-    void insertPlaylist(QString name, QString color);
+    void insertPlaylist(QString name);
 
     void removePath(QString path);
     void setCollectionLists();

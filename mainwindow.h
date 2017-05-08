@@ -21,6 +21,7 @@
 #include <QMenu>
 #include <QFrame>
 #include <QSize>
+#include <QDockWidget>
 
 #include <QPixmap>
 #include <QDir>
@@ -181,8 +182,11 @@ private:
     QGridLayout * mainLayout;
     QStackedWidget *views;
 
+    QDockWidget *leftDock;
     QFrame *leftFrame;
     QGridLayout *leftFrame_layout;
+
+    QDockWidget *rightDock;
     QFrame *rightFrame;
     QFrame *line;
     QFrame *lineV;

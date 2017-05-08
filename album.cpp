@@ -134,6 +134,7 @@ void Album::paintEvent(QPaintEvent *event)
     painter.setRenderHint(QPainter::Antialiasing);
     painter.setBrush(brush);
     if (!borderColor)painter.setPen(Qt::NoPen);
+
     painter.drawRoundedRect(0,0, size, size, border_radius, border_radius);
 }
 
@@ -268,7 +269,8 @@ void Album::enterEvent(QEvent *event)
     event->accept();
     playBtn->setVisible(true);
     playBtn->setToolTip("Play all - "+artist+" "+album);
-    // this->titleVisible(true);
+
+    widget->setStyleSheet( QString(" background: %4; border-top: 1px solid rgba(%1,%1,%1,120); border-top-left-radius:0; border-top-right-radius:0; border-bottom-right-radius:%2px; border-bottom-left-radius:%3px;").arg( QString::number(this->palette().color(QPalette::WindowText).blue()), QString::number(border_radius-1),QString::number(border_radius-1),"#000"));
 
     emit albumCoverEnter();
 }
@@ -285,6 +287,8 @@ void Album::leaveEvent(QEvent *event)
     event->accept();
     playBtn->setVisible(false);
     //this->titleVisible(false);
+
+    widget->setStyleSheet( QString(" background: rgba(0,0,0,150); border-top: 1px solid rgba(%1,%1,%1,120); border-top-left-radius:0; border-top-right-radius:0; border-bottom-right-radius:%2px; border-bottom-left-radius:%3px;").arg( QString::number(this->palette().color(QPalette::WindowText).blue()), QString::number(border_radius-1),QString::number(border_radius-1)));
 
     emit albumCoverLeft();
 }

@@ -461,7 +461,8 @@
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset theme="media-playback-start-symbolic"/>
+        <iconset theme="media-playback-start-symbolic">
+         <normaloff>.</normaloff>.</iconset>
        </property>
        <property name="autoRaise">
         <bool>true</bool>

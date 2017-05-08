@@ -25,12 +25,17 @@ document.addEventListener('DOMContentLoaded', function()
            }
            
           
-          console.log(newStr);
+ /*var title = document.getElementById('title').value;
+          var artist = document.getElementById('artist').value;
+          var album = document.getElementById('album').value;
+          var info = "[title] = "+title+"\n[artist] = "+artist+"\n[album] = "+album;
+          console.log(info);          */
           download(newStr, newStr+'.babe', 'text/plain');
           chrome.browserAction.setIcon({path: "icon_done.png"});
           
         }else
-        { console.log("url does not contains yuotube");
+        { 
+            console.log("url does not contains yuotube");
             
             document.getElementById("warning").innerHTML+= "This isn't a YouTube url";
         }
@@ -39,13 +44,13 @@ document.addEventListener('DOMContentLoaded', function()
   }, false);
   
   
-  var optionsBtn = document.getElementById('optionsBtn');
+  /*var optionsBtn = document.getElementById('optionsBtn');
    optionsBtn.addEventListener('click', function() 
   {
 console.log("options btn clicked");
 document.getElementById("optionsBtn").style.visibility="show";
    
-  }, false);
+  }, false);*/
   
 }, false);
 

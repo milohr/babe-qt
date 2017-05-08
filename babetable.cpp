@@ -30,6 +30,7 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
     //connect(this->model(),SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)),this,SLOT(itemEdited(const QModelIndex&, const QModelIndex&)));
     //this->setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
     this->setFrameShape(QFrame::NoFrame);
+    this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     this->setColumnCount(columnsCOUNT-1);
     this->setHorizontalHeaderLabels({"Track", "Title", "Artist", "Album", "Genre",
                                      "Location", "Stars", "Babe", "Art", "Played",
@@ -170,7 +171,6 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
     chkBoxAction->setDefaultWidget(gr);
 
     contextMenu->addAction(chkBoxAction);
-
     auto moods = new QWidget();
     auto moodsLayout = new QHBoxLayout();
     QButtonGroup *moodGroup = new QButtonGroup(contextMenu);
@@ -282,7 +282,7 @@ void BabeTable::passStyle(QString style) { this->setStyleSheet(style); }
 
 int BabeTable::getIndex() { return this->currentIndex().row(); }
 
-void BabeTable::addRow(QMap<int, QString> map, bool descriptiveTooltip)
+void BabeTable::addRow(QMap<int, QString> map, bool descriptiveTooltip, bool coloring)
 {
     this->insertRow(this->rowCount());
 
@@ -298,11 +298,14 @@ void BabeTable::addRow(QMap<int, QString> map, bool descriptiveTooltip)
     this->setItem(this->rowCount() - 1, PLAYED, new QTableWidgetItem(map[PLAYED]));
     this->setItem(this->rowCount() - 1, PLAYLIST, new QTableWidgetItem(map[PLAYLIST]));
 
+    if(coloring && !map[ART].isEmpty())
+        this->colorizeRow(this->rowCount()-1,map[ART]);
+
     if(descriptiveTooltip)
         this->item(this->rowCount()-1,TITLE)->setToolTip( "by "+map[ARTIST]);
 }
 
-void BabeTable::addRowAt(int row,QMap<int, QString> map, bool descriptiveTooltip)
+void BabeTable::addRowAt(int row,QMap<int, QString> map, bool descriptiveTooltip, bool coloring)
 {
     this->insertRow(row);
 
@@ -318,20 +321,16 @@ void BabeTable::addRowAt(int row,QMap<int, QString> map, bool descriptiveTooltip
     this->setItem(row , PLAYED, new QTableWidgetItem(map[PLAYED]));
     //this->setItem(row , PLAYLIST, new QTableWidgetItem(map[PLAYLIST]));
 
-    QColor color;
-    color.setNamedColor("#000");
-    color.setAlpha(40);
-    this->item(row,TITLE)->setBackgroundColor(color);
-    /* QBrush brush;
-    brush.setColor("#fff");
-    this->item(row,TITLE)->setForeground(brush);*/
-    //this->item(row,TITLE)->setTextAlignment(Qt::AlignCenter);
+
+    if(coloring)
+        this->colorizeRow(row,"#000");
+
 
     if(descriptiveTooltip)
         this->item(row,TITLE)->setToolTip( "by "+map[ARTIST]);
 }
 
-void BabeTable::populateTableView(QList<QMap<int,QString>> mapList, bool descriptiveTitle)
+void BabeTable::populateTableView(QList<QMap<int,QString>> mapList, bool descriptiveTitle, bool coloring)
 {
     qDebug() << "ON POPULATE by mapList";
 
@@ -352,7 +351,7 @@ void BabeTable::populateTableView(QList<QMap<int,QString>> mapList, bool descrip
                 missingFiles << location;
                 missing = true;
 
-            } else addRow(trackMap,descriptiveTitle);
+            } else addRow(trackMap,descriptiveTitle,coloring);
 
         }
 
@@ -381,7 +380,7 @@ void BabeTable::removeMissing(QStringList missingFiles)
     connection->cleanCollectionLists();
 }
 
-void BabeTable::populateTableView(QString indication, bool descriptiveTitle)
+void BabeTable::populateTableView(QString indication, bool descriptiveTitle, bool coloring)
 {
 
     qDebug() << "ON POPULATE:"<<indication;
@@ -464,7 +463,7 @@ void BabeTable::populateTableView(QString indication, bool descriptiveTitle)
 
                 const QMap<int, QString> map{{TRACK,track}, {TITLE,title}, {ARTIST,artist},{ALBUM,album},{GENRE,genre},{LOCATION,location},{STARS,stars},{BABE,babe},{ART,art},{PLAYED,played},{PLAYLIST,playlist}};
 
-                addRow(map,descriptiveTitle);
+                addRow(map,descriptiveTitle,coloring);
             }
         }
 
@@ -756,23 +755,10 @@ void BabeTable::rateGroup(int id)
 }
 
 QMap<int, QString> BabeTable::getRowData(int row)
-{
-    QMap<int,QString> data;
-
-    QString track = this->model()->data(this->model()->index(row, TRACK)).toString();
-    QString title = this->model()->data(this->model()->index(row, TITLE)).toString();
-    QString artist = this->model()->data(this->model()->index(row, ARTIST)).toString();
-    QString album = this->model()->data(this->model()->index(row, ALBUM)).toString();
-    QString genre = this->model()->data(this->model()->index(row, GENRE)).toString();
+{  
     QString location = this->model()->data(this->model()->index(row, LOCATION)).toString();
-    QString stars = this->model()->data(this->model()->index(row, STARS)).toString();
-    QString babe = this->model()->data(this->model()->index(row, BABE)).toString();
-    QString playlist = this->model()->data(this->model()->index(row, PLAYLIST)).toString();
-    QString played = this->model()->data(this->model()->index(row, PLAYED)).toString();
-    QString art = this->model()->data(this->model()->index(row, ART)).toString();
 
-    const  QMap<int, QString> map{{TRACK,track}, {TITLE,title}, {ARTIST,artist},{ALBUM,album},{GENRE,genre},{LOCATION,location},{STARS,stars},{BABE,babe},{ART,art},{PLAYED,played},{PLAYLIST,playlist}};
-    return map;
+    return connection->getTrackData("SELECT * FROM tracks WHERE location = \"" + location + "\"").first();
 }
 
 
@@ -865,7 +851,6 @@ void BabeTable::removeIt_action()
 
 void BabeTable::moodIt_action(QString color)
 {
-
     if(!color.isEmpty())
     {
         QSqlQuery query;
@@ -878,18 +863,25 @@ void BabeTable::moodIt_action(QString color)
         {
             qDebug()<<"Art[color] inserted into DB"<< color;
 
-            emit moodIt_clicked(color); contextMenu->close();
+            contextMenu->close();
+            moodIt_clicked(rRow,color);
 
         }else qDebug()<<"COULDN'T insert art[color] into DB";
 
     }
-
-
-    //emit moodIt_clicked(this->model()->data(this->model()->index(row, LOCATION)).toString(),color.name());
-    /*emit babeIt_clicked(
-      {this->model()->data(this->model()->index(row, LOCATION)).toString()});*/
 }
 
+void BabeTable::colorizeRow(const int &row, const QString &color)
+{
+    QColor coloring;
+    coloring.setNamedColor(color);
+    coloring.setAlpha(40);
+    this->item(row,TITLE)->setBackgroundColor(coloring);
+    /* QBrush brush;
+    brush.setColor("#fff");
+    this->item(row,TITLE)->setForeground(brush);*/
+    //this->item(row,TITLE)->setTextAlignment(Qt::AlignCenter);
+}
 
 void BabeTable::queueIt_action()
 {
@@ -932,5 +924,5 @@ void BabeTable::removeRepeated()//tofix
     auto list = this->getTableColumnContent(BabeTable::LOCATION);
     list.removeDuplicates();
     this->flushTable();
-    this->populateTableView(connection->getTrackData(list),false);
+    this->populateTableView(connection->getTrackData(list),true,true);
 }

@@ -27,12 +27,11 @@ public:
     void setPlaylistsMoods(QStringList moods_n);
     void setDefaultPlaylists();
     void definePlaylists(QStringList playlists);
-    void defineMoods(QStringList moods);
     QFrame *line_v;
     QWidget *btnContainer;
     QString currentPlaylist;
     QStringList playlists;
-    QStringList moods;
+    QStringList moods = BaeUtils::getMoodColors();
     QString youtubeCachePath=BaeUtils::getYoutubeCachePath();
 
    // QToolButton *removeBtn;
@@ -53,11 +52,10 @@ public slots:
     void on_removeBtn_clicked();
     void populatePlaylist(QModelIndex index);
     void tableClicked(QStringList list);
-    void createMoodPlaylist(QString color);
     void dummy();
 
 signals:
-    void playlistCreated(QString name, QString art);
+    void playlistCreated(QString name);
     void songClicked(QStringList list);
     void playlistClicked(QString playlist);
     void modifyPlaylistName(QString newName);

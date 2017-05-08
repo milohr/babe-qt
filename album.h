@@ -60,7 +60,7 @@ private:
     QString album="";
     QString bgColor="";
     ScrollText *title;
-
+    QColor borderQColor = this->palette().color(QPalette::BrightText).name();
     QPoint oldPos;
     QPoint startPos;
     void performDrag();
@@ -87,7 +87,6 @@ public slots:
     void removeIt_action();
 
 protected:
-
 
     virtual void mousePressEvent (QMouseEvent * event) Q_DECL_OVERRIDE;
     virtual void mouseDoubleClickEvent(QMouseEvent * event) Q_DECL_OVERRIDE;

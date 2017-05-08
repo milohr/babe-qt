@@ -569,11 +569,9 @@ void CollectionDB::createTable(QString tableName)
 
 }
 
-void CollectionDB::insertPlaylist(QString name, QString color)
+void CollectionDB::insertPlaylist(QString name)
 {
-
-
-    if(color.isEmpty())
+    if(!name.isEmpty())
     {
         QSqlQuery query;
         query.prepare("INSERT INTO playlists (title)" "VALUES (:title) ");
@@ -581,38 +579,8 @@ void CollectionDB::insertPlaylist(QString name, QString color)
         query.bindValue(":title", name);
 
         if(query.exec())
-        {
-            //qDebug()<<"insertInto<<"<<"UPDATE playlists SET title = "+ name ;
-
-        }
-    }else if(name.isEmpty())
-    {  QSqlQuery query;
-        query.prepare("INSERT INTO playlists (title, art)" "VALUES (:title, :art) ");
-
-        query.bindValue(":title", "mood");
-        query.bindValue(":art", color);
-
-        if(query.exec())
-        {
-            //qDebug()<<"insertInto<<"<<"UPDATE playlists SET title = "+ name ;
-
-        }
-
-    }else if(!name.isEmpty()&&!color.isEmpty())
-    {
-
-        QSqlQuery query;
-        query.prepare("INSERT INTO playlists (title, art)" "VALUES (:title, :art) ");
-
-        query.bindValue(":title", "mood");
-        query.bindValue(":art", color);
-        if(query.exec())
-        {
-            //qDebug()<<"insertInto<<"<<"UPDATE playlists SET title = "+ name ;
-
-        }
+            qDebug()<<"playlist created<<"<< name ;
     }
-
 }
 
 QStringList CollectionDB::getPlaylists()

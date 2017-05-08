@@ -50,10 +50,10 @@ void RabbitView::populateArtistSuggestion(QMap<QString,QByteArray> info)
         connect(art,&Album::playAlbum, [this] (QMap<int,QString> info) { emit playAlbum(info); });
         // connect(art,&Album::changedArt,this,&RabbitView::changedArt_cover);
         //connect(art,&Album::babeAlbum_clicked,this,&RabbitView::babeAlbum);
-        art->setToolTip(tag);
+        art->setToolTip(BaeUtils::fixString(tag));
         art->putPixmap(info[tag]);
         art->borderColor=true;
-        art->setTitle(tag);
+        art->setTitle(BaeUtils::fixString(tag));
         art->titleVisible(false);
         auto item = new QListWidgetItem();
         item->setSizeHint(QSize(80,80));
@@ -65,7 +65,7 @@ void RabbitView::populateArtistSuggestion(QMap<QString,QByteArray> info)
 
 void RabbitView::populateGeneralSuggestion(QList<QMap<int,QString>> mapList)
 {
-    generalSuggestion->populateTableView(mapList,false);
+    generalSuggestion->populateTableView(mapList,false,false);
     generalSuggestion->removeRepeated();
 }
 

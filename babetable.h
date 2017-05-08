@@ -62,16 +62,15 @@ public:
 
     const QMap<int, QString> columnsNames{{TRACK, "track"}, {TITLE, "title"}, {ARTIST, "artist"},{ALBUM,"album"},{GENRE,"genre"},{LOCATION,"location"},{STARS,"stars"},{BABE,"babe"},{ART,"art"},{PLAYED,"played"},{PLAYLIST,"playlist"}};
     QStringList playlistsMenus;
-    QStringList colors = {"#F0FF01","#01FF5B","#3DAEFD","#B401FF","#E91E63"};
-
-    void populateTableView(QList<QMap<int,QString>> mapList, bool descriptiveTitle);
-    void populateTableView(QString indication, bool descriptiveTitle=false);
+    QStringList colors = BaeUtils::getMoodColors();
+    void populateTableView(QList<QMap<int,QString>> mapList, bool descriptiveTitle, bool coloring);
+    void populateTableView(QString indication, bool descriptiveTitle, bool coloring);
     void removeMissing(QStringList missingFiles);
     void setRating(int rate);
     void setTableOrder(int column, int order);
     void setVisibleColumn(int column);
-    void addRow(QMap<int, QString> map, bool descriptiveTooltip=false);
-    void addRowAt(int row,QMap<int, QString> map, bool descriptiveTooltip);
+    void addRow(QMap<int, QString> map, bool descriptiveTooltip,bool coloring);
+    void addRowAt(int row, QMap<int, QString> map, bool descriptiveTooltip, bool coloring);
     void passStyle(QString style);
     void passPlaylists();
     void populatePlaylist(QStringList urls, QString playlist);
@@ -114,6 +113,7 @@ public slots:
     QStringList getPlaylistMenus();
     void itemEdited(QMap<int, QString> map);
     void flushTable();
+    void colorizeRow(const int &row, const QString &color);
 
 private:
 
@@ -147,7 +147,7 @@ signals:
     void removeIt_clicked(int index);
     void createPlaylist_clicked();
     void refreshPlaylistsMenu(QStringList list);
-    void moodIt_clicked(QString color);
+    void moodIt_clicked(const int &row, const QString &color);
     void queueIt_clicked(QMap<int,QString> track);
     void infoIt_clicked(QString title, QString artist, QString album);
 

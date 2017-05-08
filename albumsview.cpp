@@ -5,6 +5,7 @@
 AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     QWidget(parent)
 {    
+    this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     auto layout = new QGridLayout();
     layout->setMargin(0);
     layout->setSpacing(0);
@@ -177,7 +178,7 @@ void AlbumsView::filterAlbum(QModelIndex index)
     QString album = index.data().toString();
     qDebug()<<album;
     albumTable->flushTable();
-    albumTable->populateTableView("SELECT * FROM tracks WHERE album = \""+album+"\" AND artist =\""+cover->getArtist()+"\" ORDER by album asc, track asc ");
+    albumTable->populateTableView("SELECT * FROM tracks WHERE album = \""+album+"\" AND artist =\""+cover->getArtist()+"\" ORDER by album asc, track asc ",false,false);
     cover->setTitle(cover->getArtist(),album);
 
     QSqlQuery queryCover = connection->getQuery("SELECT * FROM albums WHERE title = \""+album+"\" AND artist =\""+cover->getArtist()+"\"");
@@ -362,7 +363,7 @@ void AlbumsView::getArtistInfo(QMap<int,QString> info)
 
     albumTable->flushTable();
 
-    albumTable->populateTableView("SELECT * FROM tracks WHERE artist = \""+artist+"\" ORDER by album asc, track asc ");
+    albumTable->populateTableView("SELECT * FROM tracks WHERE artist = \""+artist+"\" ORDER by album asc, track asc",false,false);
 
     auto art = connection->getArtistArt(artist);
     if(!art.isEmpty()) cover->putPixmap(art);
@@ -383,7 +384,7 @@ void AlbumsView::getAlbumInfo(QMap<int,QString> info)
 
     albumTable->flushTable();
 
-    albumTable->populateTableView("SELECT * FROM tracks WHERE artist = \""+artist+"\" and album = \""+album+"\" ORDER by track asc");
+    albumTable->populateTableView("SELECT * FROM tracks WHERE artist = \""+artist+"\" and album = \""+album+"\" ORDER by track asc",false,false);
 
     auto art = connection->getAlbumArt(album,artist);
     art = art.isEmpty()? connection->getArtistArt(artist) : art;

@@ -132,7 +132,11 @@ static inline bool fileExists(QString url)
     else return false;
 }
 
+static inline QStringList getMoodColors ()
+{
+   return  {"#F0FF01","#01FF5B","#3DAEFD","#B401FF","#E91E63"};
 
+}
 }
 
 #endif // UTILS_H
