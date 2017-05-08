@@ -10,10 +10,10 @@ using namespace std;
 
 namespace BaeUtils
 {
-static inline QString getNameFromLocation(QString str)
+static inline QString getNameFromLocation(const QString &str)
 {
     QString ret;
-    int index;
+    int index = 0;
 
     for(int i = str.size() - 1; i >= 0; i--)
     {
@@ -40,12 +40,11 @@ static inline QString getExtensionFetchingPath() { return QStandardPaths::writab
 static inline QString getNotifyDir(){return QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);}
 
 
-static inline QString fixTitle(QString title,QString s,QString e)
+static inline QString fixTitle(const QString &title,const QString &s,const QString &e)
 {
     QString newTitle;
     for(int i=0; i<title.size();i++)
     {
-
         if(title.at(i)==s)
         {
             while(title.at(i)!=e)
@@ -53,20 +52,14 @@ static inline QString fixTitle(QString title,QString s,QString e)
                 if(i==title.size()-1) break;
                 else i++;
             }
-        }else
-        {
-            newTitle+=title.at(i);
-        }
+        }else newTitle+=title.at(i);
     }
-
-
-
 
     return newTitle.simplified();
 }
 
 
-static inline QString removeSubstring(QString newTitle, QString subString)
+static inline QString removeSubstring(const QString &newTitle, const QString &subString)
 {
     const int indexFt = newTitle.indexOf(subString, 0, Qt::CaseInsensitive);
 
@@ -78,33 +71,37 @@ static inline QString removeSubstring(QString newTitle, QString subString)
     }
 }
 
-static inline QString ucfirst(const QString str) {
-    if (str.size() < 1) {
-        return "";
-    }
+static inline QString ucfirst(const QString &str)
+{
+    if (str.isEmpty()) return "";
 
-    QStringList tokens = str.split(" ");
-   QStringList result;
+    QStringList tokens;
+    QStringList result;
+    QString output;
 
-    for(auto str : tokens)
+    if(str.contains(" "))
     {
-         if(!str.isEmpty())
-         {
-             str = str.toLower();
-             str[0] = str[0].toUpper();
-             result<<str;
-         }
-    }
+        tokens = str.split(" ");
+
+        for(auto str : tokens)
+        {
+            str = str.toLower();
+            str[0] = str[0].toUpper();
+            result<<str;
+        }
+
+        output = result.join(" ");
+    }else output = str;
 
 
-    return result.join(" ");
+    return output.simplified();
 }
 
-static inline QString fixString (QString title)
+static inline QString fixString (const QString &str)
 {
 
     //title.remove(QRegExp(QString::fromUtf8("[·-`~!@#$%^&*()_—+=|:;<>«»,.?/{}\'\"\\\[\\\]\\\\]")));
-
+    QString title=str;
 
     title=title.contains("(")&&title.contains(")")?fixTitle(title,"(",")"):title;
     title=title.contains("[")&&title.contains("]")?fixTitle(title,"[","]"):title;
@@ -125,7 +122,7 @@ static inline QString fixString (QString title)
     return ucfirst(title).simplified();
 }
 
-static inline bool fileExists(QString url)
+static inline bool fileExists(const QString &url)
 {
     QFileInfo path(url);
     if (path.exists()) return true;
@@ -134,7 +131,7 @@ static inline bool fileExists(QString url)
 
 static inline QStringList getMoodColors ()
 {
-   return  {"#F0FF01","#01FF5B","#3DAEFD","#B401FF","#E91E63"};
+    return  {"#F0FF01","#01FF5B","#3DAEFD","#B401FF","#E91E63"};
 
 }
 }

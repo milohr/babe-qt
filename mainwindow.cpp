@@ -320,8 +320,6 @@ void MainWindow::setUpCollectionViewer()
     leftFrame_layout->addWidget(line,1,2);
     leftFrame_layout->addWidget(utilsBar,2,2);
 
-
-
     mainLayout->addWidget(leftFrame, 0,0);
     mainLayout->addWidget(rightFrame,0,1, Qt::AlignRight);
 
@@ -362,14 +360,6 @@ void MainWindow::setUpPlaylist()
     seekBar->setContentsMargins(0,0,0,0);
     seekBar->setFixedHeight(5);
     seekBar->setStyleSheet(QString("QSlider { background:transparent;} QSlider::groove:horizontal {border: none; background: transparent; height: 5px; border-radius: 0; } QSlider::sub-page:horizontal { background: %1;border: none; height: 5px;border-radius: 0;} QSlider::add-page:horizontal {background: transparent; border: none; height: 5px; border-radius: 0; } QSlider::handle:horizontal {background: %1; width: 8px; } QSlider::handle:horizontal:hover {background: qlineargradient(x1:0, y1:0, x2:1, y2:1,stop:0 #fff, stop:1 #ddd);border: 1px solid #444;border-radius: 4px;}QSlider::sub-page:horizontal:disabled {background: transparent;border-color: #999;}QSlider::add-page:horizontal:disabled {background: transparent;border-color: #999;}QSlider::handle:horizontal:disabled {background: transparent;border: 1px solid #aaa;border-radius: 4px;}").arg(this->palette().color(QPalette::Highlight).name()));
-
-    /* addMusicImg = new QLabel();
-    addMusicImg->setPixmap(QPixmap(":Data/data/add.png").scaled(120,120,Qt::KeepAspectRatio));
-    // addMusicImg->setGeometry(45,40,120,120);
-    addMusicImg->setVisible(false);
-
-    int id = QFontDatabase::addApplicationFont(":Data/data/LilyScriptOne-Regular.ttf");
-    QString family = QFontDatabase::applicationFontFamilies(id).at(0);*/
 
     ui->filterBox->setVisible(false);
     ui->filter->setClearButtonEnabled(true);
@@ -529,24 +519,21 @@ void MainWindow::refreshTables() //tofix
 {
     collectionTable->flushTable();
     collectionTable->populateTableView("SELECT * FROM tracks",false,false);
-    // favoritesTable->flushTable();
-    //favoritesTable->populateTableView("SELECT * FROM tracks WHERE stars > \"0\" OR babe =  \"1\"");
-    //albumsTable->flushGrid();
+
     albumsTable->populateTableView(settings_widget->getCollectionDB().getQuery("SELECT * FROM albums ORDER by title asc"));
     albumsTable->hideAlbumFrame();
-    //artistsTable->flushGrid();
+
     artistsTable->populateTableViewHeads(settings_widget->getCollectionDB().getQuery("SELECT * FROM artists ORDER by title asc"));
     artistsTable->hideAlbumFrame();
 
     playlistTable->list->clear();
     playlistTable->setDefaultPlaylists();
     playlistTable->setPlaylistsMoods(BaeUtils::getMoodColors());
+
     QStringList playLists =settings_widget->getCollectionDB().getPlaylists();
     playlistTable->definePlaylists(playLists);
     playlistTable->setPlaylists(playLists);
-    /*QStringList playListsMoods =settings_widget->getCollectionDB().getPlaylistsMoods();
-    playlistTable->defineMoods(playListsMoods);
-    playlistTable->setPlaylistsMoods(playListsMoods);*/
+
 }
 
 void MainWindow::AlbumsViewOrder(QString order)
@@ -1637,13 +1624,8 @@ void MainWindow::on_rowInserted(QModelIndex model ,int x,int y)
 {
     //Q_UNUSED(model);
     //Q_UNUSED(x);Q_UNUSED(y);
-    //mainList->scrollToBottom();
-    //qDebug()<<x<<y;
+    mainList->scrollTo(mainList->model()->index(x,BabeTable::TITLE),QAbstractItemView::PositionAtCenter);
 
-    //mainList->scrollTo(mainList->model()->index(x,BabeTable::TITLE),QAbstractItemView::PositionAtCenter);
-
-    //qDebug()<<"indexes moved";
-    //addMusicImg->setVisible(false);
 }
 
 
