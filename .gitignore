@@ -1,0 +1,13 @@
+# Dolphin
+.directory 
+
+*.pro.user
+*.pro.user.*
+*.qbs.user
+*.qbs.user.*
+
+# QtCreator
+*.autosave
+
+# QtCtreator CMake
+CMakeLists.txt.user
