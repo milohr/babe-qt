@@ -4,7 +4,6 @@
 #
 #-------------------------------------------------
 
-
 install_it.path = $$OUT_PWD
 install_it.files = data/*
 
@@ -22,17 +21,12 @@ QT       += KConfigCore
 QT       += KNotifications
 QT       += KI18n
 
-
-
-
-
 CONFIG   += c++14
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = Babe
 TEMPLATE = app
-
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked as deprecated (the exact warnings
@@ -45,67 +39,78 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-
-
-SOURCES += main.cpp\
-        mainwindow.cpp \
-        playlist.cpp \
-        track.cpp \
-    settings.cpp \
-    collectionDB.cpp \
-    about.cpp \
-    babetable.cpp \
-    album.cpp \
-    albumsview.cpp \
-    scrolltext.cpp \
-    playlistsview.cpp \
-    taginfo.cpp \
-    infoview.cpp \
-    mpris2.cpp \
-    notify.cpp \
-    youtube.cpp \
-    metadataForm.cpp \
-    web_jgm90.cpp \
-    rabbitview.cpp \
-    pulpo/lyrics.cpp \
-    pulpo/pulpo.cpp \
-    pulpo/services/lastfmService.cpp \
-    pulpo/services/spotifyService.cpp \
-    pulpo/services/musicbrainzService.cpp
+SOURCES  += main.cpp\
+            mainwindow.cpp \
+            playlist.cpp \
+            track.cpp \
+            settings.cpp \
+            collectionDB.cpp \
+            about.cpp \
+            babetable.cpp \
+            album.cpp \
+            albumsview.cpp \
+            scrolltext.cpp \
+            playlistsview.cpp \
+            taginfo.cpp \
+            infoview.cpp \
+            mpris2.cpp \
+            notify.cpp \
+            youtube.cpp \
+            metadataForm.cpp \
+            web_jgm90.cpp \
+            rabbitview.cpp \
+            pulpo/lyrics.cpp \
+            pulpo/pulpo.cpp \
+            pulpo/services/lastfmService.cpp \
+            pulpo/services/spotifyService.cpp \
+            pulpo/services/musicbrainzService.cpp
+            database/albumsdb.cpp \
+            database/artistsdb.cpp \
+            database/basedb.cpp \
+            database/database.cpp \
+            database/playlistsdb.cpp \
+            database/tracksdb.cpp
 
 HEADERS  += mainwindow.h \
             playlist.h \
             track.h \
-    settings.h \
-    collectionDB.h \
-    about.h \
-    babetable.h \
-    album.h \
-    albumsview.h \
-    scrolltext.h \
-    playlistsview.h \
-    taginfo.h \
-    infoview.h \
-    mpris2.h \
-    notify.h \
-    youtube.h \
-    baeUtils.h \
-    metadataForm.h \
-    web_jgm90.h \
-    rabbitview.h \
-    pulpo/lyrics.h \
-    pulpo/pulpo.h \
-    pulpo/services/lastfmService.h \
-    pulpo/services/spotifyService.h \
-    pulpo/services/musicbrainzService.h
+            settings.h \
+            collectionDB.h \
+            about.h \
+            babetable.h \
+            album.h \
+            albumsview.h \
+            scrolltext.h \
+            playlistsview.h \
+            taginfo.h \
+            infoview.h \
+            mpris2.h \
+            notify.h \
+            youtube.h \
+            baeUtils.h \
+            metadataForm.h \
+            web_jgm90.h \
+            rabbitview.h \
+            pulpo/lyrics.h \
+            pulpo/pulpo.h \
+            pulpo/services/lastfmService.h \
+            pulpo/services/spotifyService.h \
+            pulpo/services/musicbrainzService.h \
+            database/albumsdb.h \
+            database/artistsdb.h \
+            database/basedb.h \
+            database/database.h \
+            database/playlistsdb.h \
+            database/tracksdb.h
 
 FORMS    += mainwindow.ui \
-    settings.ui \
-    about.ui \
-    infoview.ui \
-    metadataForm.ui
+            settings.ui \
+            about.ui \
+            infoview.ui \
+            metadataForm.ui
 
 RESOURCES += \
     data.qrc
+    database/database_resource.qrc
 
-
+OTHER_FILES += database/DatabaseTables.sql
