@@ -12,58 +12,30 @@
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software Foundation,
    Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
-
-   */
-
+*/
 
 #include "collectionDB.h"
 
-
-CollectionDB::CollectionDB()
+CollectionDB::CollectionDB(QObject *parent) : QObject(parent)
 {
-
 }
-
-/*CollectionDB::CollectionDB(bool connect)
-{
-    if(connect)
-    {
-        m_db = QSqlDatabase::addDatabase("QSQLITE");
-        m_db.setDatabaseName("../player/collection.db");
-        m_db.open();
-
-        if (!m_db.open())
-        {
-           qDebug() << "Error: connection with database fail";
-        }
-        else
-        {
-           qDebug() << "Database: connection ok";
-
-        }
-    }
-}*/
 
 void CollectionDB::closeConnection()
 {
     m_db.close();
 }
 
-void CollectionDB::openCollection(QString path)
+void CollectionDB::openCollection(const QString &path)
 {
     m_db = QSqlDatabase::addDatabase("QSQLITE");
     m_db.setDatabaseName(path);
 
-    if (!m_db.open())
-    {
+    if (!m_db.open()) {
         qDebug() << "Error: connection with database fail" <<m_db.lastError().text();
-    }
-    else
-    {
+    } else {
         qDebug() << "Database: connection ok";
     }
 }
-
 
 void CollectionDB::prepareCollectionDB()
 {
@@ -72,66 +44,47 @@ void CollectionDB::prepareCollectionDB()
     query.exec("CREATE TABLE albums(title text, artist text, art text, location text);");
     query.exec("CREATE TABLE playlists(title text, art text unique);");
     query.exec("CREATE TABLE artists(title text, art text, location text);");
-
-    //query.exec("CREATE TABLE tracks(title text, album text, artist text, location text, stars integer, babe integer);");
 }
 
-void CollectionDB::removePath(QString path)
+void CollectionDB::removePath(const QString &path)
 {
-
     qDebug()<<"trying to delete all from :"<< path;
     QSqlQuery queryTracks;
     queryTracks.prepare("DELETE FROM tracks  WHERE location LIKE \"%"+path+"%\"");
     bool success = queryTracks.exec();
-
-
     emit DBactionFinished(false);
-
-    if(!success)
-    {
+    if(!success) {
         qDebug() << "removePerson error: ";
-
     }
-
 }
 
-
-QString CollectionDB::getArtistArt(QString artist)
+QString CollectionDB::getArtistArt(const QString &artist)
 {
     QString artistHead;
-
     QSqlQuery queryHead("SELECT * FROM artists WHERE title = \""+artist+"\"");
-
     while (queryHead.next())
         if(!queryHead.value(1).toString().isEmpty()&&queryHead.value(1).toString()!="NULL")
             artistHead = queryHead.value(1).toString();
-
     return artistHead;
 }
 
-QString CollectionDB::getAlbumArt(QString album, QString artist)
+QString CollectionDB::getAlbumArt(const QString &album, const QString &artist)
 {
     QString albumCover;
-
     QSqlQuery queryCover ("SELECT * FROM albums WHERE title = \""+album+"\" AND artist = \""+artist+"\"");
     while (queryCover.next())
         if(!queryCover.value(2).toString().isEmpty()&&queryCover.value(2).toString()!="NULL")
             albumCover = queryCover.value(2).toString();
-
     return albumCover;
 }
 
 QList<QMap<int, QString>> CollectionDB::getTrackData(const QStringList &urls)
 {
     QList<QMap<int, QString>> mapList;
-
-    for(auto url:urls)
-    {
+    for(auto url : urls) {
         QSqlQuery query("SELECT * FROM tracks WHERE location =\""+url+"\"");
-        if(query.exec())
-        {
-            while(query.next())
-            {
+        if(query.exec()) {
+            while(query.next()) {
                 QString track = query.value(TRACK).toString();
                 QString title = query.value(TITLE).toString();
                 QString artist = query.value(ARTIST).toString();
@@ -143,14 +96,11 @@ QList<QMap<int, QString>> CollectionDB::getTrackData(const QStringList &urls)
                 QString art = query.value(ART).toString();
                 QString playlist = query.value(PLAYLIST).toString();
                 QString played = query.value(PLAYED).toString();
-
                 const QMap<int, QString> map{{TRACK,track}, {TITLE,title}, {ARTIST,artist},{ALBUM,album},{GENRE,genre},{LOCATION,location},{STARS,stars},{BABE,babe},{ART,art},{PLAYED,played},{PLAYLIST,playlist}};
-
                 mapList<<map;
             }
         }
     }
-
     return mapList;
 }
 
@@ -159,12 +109,8 @@ QList<QMap<int, QString>> CollectionDB::getTrackData(const QString &queryText)
     QList<QMap<int, QString>> mapList;
     QSqlQuery query;
     query.prepare(queryText);
-    // qDebug()<<queryText;
-    if(query.exec())
-    {
-        //qDebug()<<"getTrackData query passed";
-        while(query.next())
-        {
+    if (query.exec()) {
+        while(query.next()) {
             QString track = query.value(TRACK).toString();
             QString title = query.value(TITLE).toString();
             QString artist = query.value(ARTIST).toString();
@@ -176,31 +122,22 @@ QList<QMap<int, QString>> CollectionDB::getTrackData(const QString &queryText)
             QString art = query.value(ART).toString();
             QString playlist = query.value(PLAYLIST).toString();
             QString played = query.value(PLAYED).toString();
-
-            // qDebug()<<track<<title<<artist<<album;
-
             const QMap<int, QString> map{{TRACK,track}, {TITLE,title}, {ARTIST,artist},{ALBUM,album},{GENRE,genre},{LOCATION,location},{STARS,stars},{BABE,babe},{ART,art},{PLAYED,played},{PLAYLIST,playlist}};
-
             mapList<<map;
         }
     }
-
     return mapList;
 }
-
 
 void CollectionDB::cleanCollectionLists()
 {
     QSqlQuery queryArtists("SELECT * FROM artists");
-    if(queryArtists.exec())
-    {
-        while(queryArtists.next())
-        {
+    if (queryArtists.exec()) {
+        while (queryArtists.next()) {
             QString  oldArtists = queryArtists.value(0).toString();
-            if(artists.contains(oldArtists))
+            if (artists.contains(oldArtists)) {
                 continue;
-            else
-            {
+            } else {
                 qDebug()<<"artists list does not longer contains: "<<oldArtists;
                 QSqlQuery queryArtist_delete;
                 queryArtist_delete.prepare("DELETE FROM artists  WHERE title = \""+oldArtists+"\"");
@@ -208,17 +145,13 @@ void CollectionDB::cleanCollectionLists()
             }
         }
     }
-
     QSqlQuery queryAlbums("SELECT * FROM albums");
-    if(queryAlbums.exec())
-    {
-        while(queryAlbums.next())
-        {
+    if (queryAlbums.exec()) {
+        while (queryAlbums.next()) {
             QString  oldAlbum = queryAlbums.value(1).toString()+" "+queryAlbums.value(0).toString();
-            if(albums.contains(oldAlbum))
+            if (albums.contains(oldAlbum)) {
                 continue;
-            else
-            {
+            } else {
                 qDebug()<<"albums list does not longer contains: "<<oldAlbum;
                 QSqlQuery queryAlbum_delete;
                 queryAlbum_delete.prepare("DELETE FROM albums  WHERE title = \""+queryAlbums.value(0).toString()+"\"");
@@ -228,127 +161,97 @@ void CollectionDB::cleanCollectionLists()
     }
 }
 
-
-
-
-QSqlQuery CollectionDB::getQuery(QString queryTxt)
+QSqlQuery CollectionDB::getQuery(const QString &queryTxt)
 {
     QSqlQuery query(queryTxt);
     return query;
 }
 
-
-bool CollectionDB::removeQuery(QString queryTxt)
+bool CollectionDB::removeQuery(const QString &queryTxt)
 {
     QSqlQuery query;
     query.prepare(queryTxt);
-
-    if(!query.exec())
-    {
-        qDebug() << "removeQuery error: "<< query.lastError();
+    if (!query.exec()) {
+        qDebug() << "removeQuery error: " << query.lastError();
         return false;
-    }else return true;
+    } else {
+        return true;
+    }
 }
 
-bool CollectionDB::checkQuery(QString queryTxt)
+bool CollectionDB::checkQuery(const QString &queryTxt)
 {
     QSqlQuery query(queryTxt);
-
-    qDebug()<<"The Query is: "<<queryTxt;
-
+    qDebug() << "The Query is: " << queryTxt;
     if (query.exec())
-        if (query.next()) return true;
-        else return false;
-    else return false;
+        return query.next();
+    return false;
 }
 
 void CollectionDB::setCollectionLists()
 {
-    albums.clear(); artists.clear();
+    albums.clear();
+    artists.clear();
     QSqlQuery query ("SELECT * FROM tracks");
-    while (query.next())
-    {
+    while (query.next()) {
         QString artist = query.value(ARTIST).toString();
         QString album = query.value(ALBUM).toString();
-        //QString file = query.value(LOCATION).toString();
-
-        if(!albums.contains(artist+" "+album)) albums<<artist+" "+album;
-        if(!artists.contains(artist)) artists<<artist;
+        if (!albums.contains(artist+" "+album))
+            albums << artist + " " + album;
+        if (!artists.contains(artist))
+            artists << artist;
     }
-    // refreshArtistsTable();
-    /*qDebug()<<"artist in collection list::";
-    for(auto artist:artists)qDebug()<<artist;
-    qDebug()<<"albums in collection list::";
-    for(auto album:albums)qDebug()<<album;*/
 }
 
 void CollectionDB::refreshArtistsTable()
 {
     QSqlQuery query ("SELECT * FROM tracks");
-
-    qDebug()<<"updating artists table";
-
-    if(query.exec())
-    {
-        while(query.next())
-        {
-            //success = true;
+    qDebug() << "updating artists table";
+    if (query.exec()) {
+        while (query.next()) {
             QString artist = query.value(ARTIST).toString();
             QString file = query.value(LOCATION).toString();
-            if(!artists.contains(artist))
-            {
+            if (!artists.contains(artist)) {
                 query.prepare("INSERT INTO artists (title, art, location)" "VALUES (:title, :art, :location)");
                 query.bindValue(":title", artist);
                 query.bindValue(":art", "");
                 query.bindValue(":location", QFileInfo(file).dir().path());
-                if(query.exec()) artists<<artist;
+                if (query.exec())
+                    artists << artist;
             }
         }
     }
 }
 
-bool CollectionDB::addTrack(QStringList paths, int babe)
+bool CollectionDB::addTrack(const QStringList &paths, int babe)
 {
     bool success = false;
-
-    if(paths.isEmpty()) return false;
-
+    if (paths.isEmpty())
+        return false;
     QSqlQuery query;
-
-    if(query.exec("PRAGMA synchronous=OFF"))
-    {
-        success=true;
-
-        int i=0;
-        qDebug()<<"started writing to database...";
-        for(auto file:paths)
-        {
-            qDebug()<<file;
+    if (query.exec("PRAGMA synchronous=OFF")) {
+        success = true;
+        int i = 0;
+        qDebug() << "started writing to database...";
+        for (auto file : paths) {
+            qDebug() << file;
             TagInfo info(file);
-
-            QString  album;
+            QString album;
             int track;
-            QString title=BaeUtils::fixString(info.getTitle());
-            QString artist=BaeUtils::fixString(info.getArtist());
-            QString genre=info.getGenre();
-
-
-            qDebug()<<"on colelction adding new: "<<title<<artist;
-
-            if(info.getAlbum().isEmpty())
-            {
-                qDebug()<<"the album has not title, so i'm going to try and get it.";
+            QString title = BaeUtils::fixString(info.getTitle());
+            QString artist = BaeUtils::fixString(info.getArtist());
+            QString genre = info.getGenre();
+            qDebug() << "on colelction adding new: " << title << artist;
+            if (info.getAlbum().isEmpty()) {
+                qDebug() << "the album has not title, so i'm going to try and get it.";
                 info.writeData();
-                album=info.getAlbum();
-                track=info.getTrack();
-            }else
-            {
-                album=info.getAlbum();
-                track=info.getTrack();
+                album = info.getAlbum();
+                track = info.getTrack();
+            } else {
+                album = info.getAlbum();
+                track = info.getTrack();
             }
-
-            album=BaeUtils::fixString(album);
-
+            album = BaeUtils::fixString(album);
             query.prepare("INSERT INTO tracks (track, title, artist, album, genre, location, stars, babe, art, played)" "VALUES (:track, :title, :artist, :album, :genre, :location, :stars, :babe, :art, :played) ");
             query.bindValue(":track", track);
             query.bindValue(":title", title);
@@ -360,226 +263,150 @@ bool CollectionDB::addTrack(QStringList paths, int babe)
             query.bindValue(":babe", babe);
             query.bindValue(":art", "");
             query.bindValue(":played", 0);
-
-            if(query.exec())
-            {
+            if (query.exec()) {
                 success = true;
-                qDebug()<< "writting to db: "<< title;
-                if(!albums.contains(artist+" "+album))
-                {
+                qDebug() << "writting to db: " << title;
+                if (!albums.contains(artist+" "+album)) {
                     query.prepare("INSERT INTO albums (title, artist, art, location)" "VALUES (:title, :artist, :art, :location)");
                     query.bindValue(":title", album);
                     query.bindValue(":artist", artist);
                     query.bindValue(":art", "");
-                    // query.bindValue(":location", QFileInfo(file).dir().path());
-                    if(query.exec())
-                    {
-                        albums<<artist+" "+album;
+                    if (query.exec()) {
+                        albums << artist + " " + album;
                         success = true;
-                    }else
-                    {
+                    } else {
                         return false;
                     }
                 }
-
-                if(!artists.contains(artist))
-                {
+                if (!artists.contains(artist)) {
                     query.prepare("INSERT INTO artists (title, art, location)" "VALUES (:title, :art, :location)");
                     query.bindValue(":title", artist);
                     query.bindValue(":art", "");
-                    // query.bindValue(":location", QFileInfo(file).dir().path());
-                    if(query.exec()) artists<<artist;
+                    if (query.exec())
+                        artists << artist;
                 }
-
                 emit progress((i++)+1);
-            }
-            else
-            {
-                qDebug() << "adding track error:  "
-                         << query.lastError()
-                         <<info.getTitle();
-
+            } else {
+                qDebug() << "adding track error:  " << query.lastError() << info.getTitle();
             }
         }
-
-        qDebug()<<"finished wrrting to database";
+        qDebug() << "finished wrrting to database";
         emit DBactionFinished(true);
+        return success;
     }
-    else return false;
-
-    return success;
-}
-
-void CollectionDB::insertCoverArt(QString path,QStringList info)
-{
-    //UPDATE albums SET art = "lalaltest" WHERE title = "Starboy" AND artist = "The Weeknd"
-
-    qDebug()<<"the path:"<<path<<"the list:"<<info.at(0)<<info.at(1);
-    if(info.size()==2)
-    {
-
-        QSqlQuery query;
-        query.prepare("UPDATE albums SET art = (:art) WHERE title = (:title) AND artist = (:artist)" );
-        //query.prepare("SELECT * FROM "+tableName+" WHERE "+searchId+" = (:search)");
-        query.bindValue(":art",  path.isEmpty()?"NULL": path );
-        query.bindValue(":title", info.at(0));
-        query.bindValue(":artist", info.at(1));
-        if(query.exec())
-        {
-            qDebug()<<"Artwork[cover] inserted into DB"<<info.at(0)<<info.at(1);
-            if(!albums.contains(info.at(0))) albums<<info.at(1)+" "+info.at(0);
-            //qDebug()<<"insertInto<<"<<"UPDATE "+tableName+" SET "+column+" = "+ value + " WHERE location = "+location;
-        }else
-        {
-            qDebug()<<"COULDNT Artwork[cover] inerted into DB"<<info.at(0)<<info.at(1);
-        }
-    }
-
-}
-
-void CollectionDB::insertHeadArt(QString path, QStringList info)
-{
-    if(info.size()==1)
-    {
-        QSqlQuery query;
-        query.prepare("UPDATE artists SET art = (:art) WHERE title = (:title)" );
-        //query.prepare("SELECT * FROM "+tableName+" WHERE "+searchId+" = (:search)");
-        query.bindValue(":art", path.isEmpty()?"NULL": path );
-        query.bindValue(":title", info.at(0));
-        if(query.exec())
-        {
-            qDebug()<<"Artwork[head] inerted into DB"<<info.at(0);
-            if(!artists.contains(info.at(0)))artists<<info.at(0);
-            //qDebug()<<"insertInto<<"<<"UPDATE "+tableName+" SET "+column+" = "+ value + " WHERE location = "+location;
-        }
-    }
-}
-
-
-void CollectionDB::setTrackList(QList<Track> trackList)
-{
-    this->trackList=trackList;
-
-    /*for(auto tr:trackList)
-        {
-            qDebug()<<QString::fromStdString(tr.getTitle());
-        }*/
-}
-
-bool CollectionDB::check_existance(QString tableName, QString searchId, QString search)
-{
-    QSqlQuery query;
-    query.prepare("SELECT "+ searchId +" FROM "+tableName+" WHERE "+searchId+" = (:search)");
-    query.bindValue(":search", search);
-
-    if (query.exec())
-    {
-        if (query.next())
-        {
-            qDebug()<< "it exists";
-            return true;
-        }else
-        {
-            qDebug()<<"currnt song doesn't exists in db";
-            return false;
-        }
-
-
-    }else
-    {
-
-
-        return false;
-    }
-
-
-}
-
-bool CollectionDB::execQuery(QString queryTxt)
-{
-
-    QSqlQuery query;
-    query.prepare(queryTxt);
-    //query.prepare("SELECT * FROM "+tableName+" WHERE "+searchId+" = (:search)");
-
-    if(query.exec())
-    {
-        qDebug()<<"executing query: "<<queryTxt;
-
-        return true;
-    }else
-    {
-        return false;
-    }
-
-}
-
-bool CollectionDB::insertInto(QString tableName, QString column, QString location, int value)
-{
-    QSqlQuery query;
-
-    if(query.exec("PRAGMA synchronous=OFF"))
-    {
-        query.prepare("UPDATE "+tableName+" SET "+column+" = (:value) WHERE location = (:location)" );
-        //query.prepare("SELECT * FROM "+tableName+" WHERE "+searchId+" = (:search)");
-
-        query.bindValue(":value", value);
-        query.bindValue(":location", location);
-        if(query.exec())
-        {
-            qDebug()<<"insertInto<<"<<"UPDATE "+tableName+" SET "+column+" = "+ value + " WHERE location = "+location;
-
-            return true;
-        }else
-        {
-            return false;
-        }
-    }
-
     return false;
 }
 
-bool CollectionDB::insertInto(QString tableName, QString column, QString location, QString value)
+void CollectionDB::insertCoverArt(const QString &path, const QStringList &info)
 {
+    qDebug() << "the path:" << path << "the list:" << info.at(0) << info.at(1);
+    if (info.size() == 2) {
+        QSqlQuery query;
+        query.prepare("UPDATE albums SET art = (:art) WHERE title = (:title) AND artist = (:artist)");
+        query.bindValue(":art",  path.isEmpty() ? "NULL" : path);
+        query.bindValue(":title", info.at(0));
+        query.bindValue(":artist", info.at(1));
+        if (query.exec()) {
+            qDebug() << "Artwork[cover] inserted into DB" << info.at(0) << info.at(1);
+            if (!albums.contains(info.at(0)))
+                albums<<info.at(1) + " " + info.at(0);
+        } else {
+            qDebug()<<"COULDNT Artwork[cover] inerted into DB"<<info.at(0)<<info.at(1);
+        }
+    }
+}
 
+void CollectionDB::insertHeadArt(const QString &path, const QStringList &info)
+{
+    if(info.size() == 1) {
+        QSqlQuery query;
+        query.prepare("UPDATE artists SET art = (:art) WHERE title = (:title)" );
+        query.bindValue(":art", path.isEmpty()?"NULL": path );
+        query.bindValue(":title", info.at(0));
+        if  (query.exec()) {
+            qDebug() << "Artwork[head] inerted into DB" << info.at(0);
+            if (!artists.contains(info.at(0)))
+                artists<<info.at(0);
+        }
+    }
+}
+
+void CollectionDB::setTrackList(const QList<Track> &trackList)
+{
+    this->trackList = trackList;
+}
+
+bool CollectionDB::check_existance(const QString &tableName, const QString &searchId, const QString &search)
+{
     QSqlQuery query;
-    query.prepare("UPDATE "+tableName+" SET "+column+" = (:value) WHERE location = (:location)" );
-    //query.prepare("SELECT * FROM "+tableName+" WHERE "+searchId+" = (:search)");
+    query.prepare("SELECT "+ searchId + " FROM " + tableName + " WHERE " + searchId + " = (:search)");
+    query.bindValue(":search", search);
+    if (query.exec()) {
+        if (query.next()) {
+            qDebug() << "it exists";
+            return true;
+        } else {
+            qDebug() << "currnt song doesn't exists in db";
+            return false;
+        }
+    }
+    return false;
+}
 
-    query.bindValue(":value", value);
-    query.bindValue(":location", location);
-    if(query.exec())
-    {
-        qDebug()<<"insertInto<<"<<"UPDATE "+tableName+" SET "+column+" = "+ value + " WHERE location = "+location;
-
+bool CollectionDB::execQuery(const QString &queryTxt)
+{
+    QSqlQuery query;
+    query.prepare(queryTxt);
+    if (query.exec()) {
+        qDebug() << "executing query: " << queryTxt;
         return true;
-    }else
-    {
+    }
+    return false;
+}
+
+bool CollectionDB::insertInto(const QString &tableName, const QString &column, const QString &location, int value)
+{
+    QSqlQuery query;
+    if (query.exec("PRAGMA synchronous=OFF")) {
+        query.prepare("UPDATE "+tableName+" SET "+column+" = (:value) WHERE location = (:location)" );
+        query.bindValue(":value", value);
+        query.bindValue(":location", location);
+        if (query.exec()) {
+            qDebug() << "insertInto<<" << "UPDATE " + tableName + " SET " + column + " = " + value + " WHERE location = " + location;
+            return true;
+        }
         return false;
     }
-
+    return false;
 }
 
-
-void CollectionDB::createTable(QString tableName)
+bool CollectionDB::insertInto(const QString &tableName, const QString &column, const QString &location, const QString &value)
 {
-
     QSqlQuery query;
-    query.exec("CREATE TABLE "+tableName+"(track integer, title text, artist text, album text, genre text, location text unique, stars integer, babe integer, art text, played integer, playlist text);");
-
+    query.prepare("UPDATE " + tableName + " SET " + column + " = (:value) WHERE location = (:location)");
+    query.bindValue(":value", value);
+    query.bindValue(":location", location);
+    if (query.exec()) {
+        qDebug() << "insertInto << " << " UPDATE " + tableName + " SET " + column + " = " + value + " WHERE location = " + location;
+        return true;
+    }
+    return false;
 }
 
-void CollectionDB::insertPlaylist(QString name)
+void CollectionDB::createTable(const QString &tableName)
 {
-    if(!name.isEmpty())
-    {
+    QSqlQuery query;
+    query.exec("CREATE TABLE " + tableName + "(track integer, title text, artist text, album text, genre text, location text unique, stars integer, babe integer, art text, played integer, playlist text);");
+}
+
+void CollectionDB::insertPlaylist(const QString &name)
+{
+    if (!name.isEmpty()) {
         QSqlQuery query;
         query.prepare("INSERT INTO playlists (title)" "VALUES (:title) ");
-
         query.bindValue(":title", name);
-
-        if(query.exec())
-            qDebug()<<"playlist created<<"<< name ;
+        if (query.exec())
+            qDebug() << "playlist created << " << name;
     }
 }
 
@@ -588,28 +415,25 @@ QStringList CollectionDB::getPlaylists()
     QSqlQuery query;
     QStringList files;
     query.prepare("SELECT * FROM playlists");
-
-    if (query.exec())
-        while (query.next())
-            if(!query.value(0).toString().contains("mood")&&!query.value(0).toString().isEmpty())
+    if (query.exec()) {
+        while (query.next()) {
+            if (!query.value(0).toString().contains("mood") && !query.value(0).toString().isEmpty())
                 files << query.value(0).toString();
-
+        }
+    }
     return files;
-
 }
 
 QStringList CollectionDB::getPlaylistsMoods()
 {
     QStringList moods;
     QSqlQuery query;
-
     query.prepare("SELECT * FROM playlists order by title");
-
-    if (query.exec())
-        while (query.next())
-            if(!query.value(1).toString().isEmpty()&&query.value(0).toString().contains("mood"))
+    if (query.exec()) {
+        while (query.next()) {
+            if (!query.value(1).toString().isEmpty() && query.value(0).toString().contains("mood"))
                 moods << query.value(1).toString();
-
+        }
+    }
     return moods;
-
 }

@@ -1,18 +1,20 @@
 #ifndef COLLECTIONDB_H
 #define COLLECTIONDB_H
+
+#include <QDebug>
+#include <QDir>
+#include <QFileInfo>
+#include <QList>
 #include <QString>
 #include <QStringList>
-#include <QList>
 #include <QSqlDatabase>
+#include <QSqlDriver>
+#include <QSqlError>
+#include <QSqlQuery>
+#include <QSqlRecord>
 #include <QWidget>
 #include <typeinfo>
-#include <QDebug>
-#include <QSqlQuery>
-#include <QSqlError>
-#include <QSqlRecord>
-#include <QSqlDriver>
-#include <QFileInfo>
-#include <QDir>
+
 #include "track.h"
 #include "taginfo.h"
 
@@ -20,59 +22,52 @@ class CollectionDB : public QObject
 {
     Q_OBJECT
 public:
-
-    explicit CollectionDB();
-    //CollectionDB(bool connect);
+    explicit CollectionDB(QObject *parent = 0);
     ~CollectionDB(){}
-    void openCollection(QString path);
-    QSqlQuery getQuery(QString queryTxt);
-    bool checkQuery(QString queryTxt);
-    bool insertInto(QString tableName, QString column, QString location, int value);
-    bool insertInto(QString tableName, QString column, QString location, QString value);
-    void setTrackList(QList <Track>);
+    void openCollection(const QString &path);
+    QSqlQuery getQuery(const QString &queryTxt);
+    bool checkQuery(const QString &queryTxt);
+    bool insertInto(const QString &tableName, const QString &column, const QString &location, int value);
+    bool insertInto(const QString &tableName, const QString &column, const QString &location, const QString &value);
+    void setTrackList(const QList<Track> &trackList);
     void prepareCollectionDB();
-    bool removeQuery(QString queryTxt);
-    bool execQuery(QString queryTxt);
-    bool check_existance(QString tableName, QString searchId, QString search);
-    void createTable(QString tableName);
+    bool removeQuery(const QString &queryTxt);
+    bool execQuery(const QString &queryTxt);
+    bool check_existance(const QString &tableName, const QString &searchId, const QString &search);
+    void createTable(const QString &tableName);
 
     QList<QMap<int, QString>> getTrackData(const QStringList &urls);
     QList<QMap<int, QString>> getTrackData(const QString &queryText);
-    QString getArtistArt(QString artist);
-    QString getAlbumArt(QString album, QString artist);
+    QString getArtistArt(const QString &artist);
+    QString getAlbumArt(const QString &album, const QString &artist);
     QStringList getPlaylists();
     QStringList getPlaylistsMoods();
     QStringList albums;
     QStringList artists;
+
     enum colums
     {
-        TRACK,TITLE,ARTIST,ALBUM,GENRE,LOCATION,STARS,BABE,ART,PLAYED,PLAYLIST
+        TRACK, TITLE, ARTIST, ALBUM, GENRE, LOCATION, STARS, BABE, ART, PLAYED, PLAYLIST
     };
 
 private:
-
     QSqlDatabase m_db;
     QList <Track> trackList;
 
-
 public slots:
-    bool addTrack(QStringList paths, int babe=0);
+    bool addTrack(const QStringList &paths, int babe = 0);
     void closeConnection();
-    void insertPlaylist(QString name);
-
-    void removePath(QString path);
+    void insertPlaylist(const QString &name);
+    void removePath(const QString &path);
     void setCollectionLists();
     void refreshArtistsTable();
     void cleanCollectionLists();
-    void insertCoverArt(QString path, QStringList info);
-    void insertHeadArt(QString path, QStringList info);
-
+    void insertCoverArt(const QString &path, const QStringList &info);
+    void insertHeadArt(const QString &path, const QStringList &info);
 
 signals:
     void progress(int);
     void DBactionFinished(bool state);
-
 };
-
 
 #endif // COLLECTION_H
