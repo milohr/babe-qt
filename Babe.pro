@@ -110,7 +110,8 @@ FORMS    += mainwindow.ui \
             metadataForm.ui
 
 RESOURCES += \
-    data.qrc
+    data.qrc \
     database/database_resource.qrc
 
-OTHER_FILES += database/DatabaseTables.sql
+OTHER_FILES += \
+    database/DatabaseTables.sql

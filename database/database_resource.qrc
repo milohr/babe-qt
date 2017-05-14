@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/">
+    <qresource prefix="/database/">
         <file>DatabaseTables.sql</file>
     </qresource>
 </RCC>
