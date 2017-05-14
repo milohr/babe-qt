@@ -39,14 +39,13 @@ public:
     void build(bool forceRebuild = false);
     void setName();
     bool sqliteFileExists();
-    QSqlQuery qsqlQuery(const QString &queryTxt);
 
     QVariantList select(const QString &tableName, const QVariantMap &where = QVariantMap(), int limit = -1, int offset = 0, const QString &orderBy = QStringLiteral(""), bool descending = false, enum SELECT_TYPE select_type = All_Itens_Int, const QString &whereOperator = QStringLiteral("AND"), const QString &whereComparator = QStringLiteral("="));
     int insert(const QString &tableName, const QVariantMap &insertData);
     int remove(const QString &tableName, const QVariantMap &where, const QString &whereOperator = "=");
     int update(const QString &tableName, const QVariantMap &updateMap, const QVariantMap &where, const QString &whereOperator = "AND");
 
-    int lastInsertId();
+    int lastInsertId() const;
     int numRowsAffected() const;
     int lastRowId(const QString &tableName);
 
