@@ -63,7 +63,7 @@ SOURCES  += main.cpp\
             pulpo/pulpo.cpp \
             pulpo/services/lastfmService.cpp \
             pulpo/services/spotifyService.cpp \
-            pulpo/services/musicbrainzService.cpp
+            pulpo/services/musicbrainzService.cpp \
             database/albumsdb.cpp \
             database/artistsdb.cpp \
             database/basedb.cpp \
