@@ -20,6 +20,7 @@
 settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
 {
     ui->setupUi(this);
+
     qDebug() << "Getting collectionDB info from: " << collectionDBPath;
     qDebug() << "Getting settings info from: " << settingPath;
     qDebug() << "Getting artwork files from: " << cachePath;
@@ -50,13 +51,14 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
         youtubeCache_dir.mkpath(".");
 
     ytFetch = new YouTube(this);
-    connect(ytFetch,SIGNAL(youtubeTrackReady(bool)),this,SLOT(youtubeTrackReady(bool)));
+    connect(ytFetch,SIGNAL(youtubeTrackReady(bool)), this, SLOT(youtubeTrackReady(bool)));
     ytFetch->searchPendingFiles();
     extensionWatcher = new QFileSystemWatcher();
     extensionWatcher->addPath(extensionFetchingPath);
+
     connect(extensionWatcher, SIGNAL(directoryChanged(QString)), this, SLOT(handleDirectoryChanged_extension()));
     connect(this, SIGNAL(collectionPathChanged(QString)), this, SLOT(populateDB(QString)));
-    connect(&collection_db, SIGNAL(DBactionFinished(bool)), this, SLOT(finishedAddingTracks(bool)));
+    connect(&collection_db, SIGNAL(dbActionFinished(bool)), this, SLOT(finishedAddingTracks(bool)));
     connect(&collection_db, SIGNAL(progress(int)), ui->progressBar, SLOT(setValue(int)));
 
     ui->remove->setEnabled(false);
@@ -251,7 +253,7 @@ void settings::removeSettings(const QStringList &setting)
 
 void settings::addToWatcher(QStringList paths)
 {
-    qDebug() << "duplicated paths in watcher removd: " << paths.removeDuplicates();
+    qDebug() << "duplicated paths in watcher removed: " << paths.removeDuplicates();
     if (!paths.isEmpty())
         watcher->addPaths(paths);
 }
@@ -375,7 +377,7 @@ void settings::finishedAddingTracks(bool state)
     if (state) {
         ui->progressBar->hide();
         ui->progressBar->setValue(0);
-        nof.notify("Songs added to collection","finished writting new songs to the collection :)");
+        nof.notify("Songs added to collection", "finished writting new songs to the collection :)");
         qDebug() << "good to hear it finished yay! now going to fetch artwork";
         collectionWatcher();
         emit refreshTables();
@@ -390,13 +392,15 @@ void settings::fetchArt()
     nof.notify("Fetching art", "this might take some time depending on your collection size and internet connection speed...");
     ui->label->show();
     movie->start();
+
     QSqlQuery query_Covers = collection_db.getQuery("SELECT * FROM albums WHERE art = ''");
     QSqlQuery query_Heads = collection_db.getQuery("SELECT * FROM artists WHERE art = ''");
+
     while (query_Covers.next()) {
-        QString artist = query_Covers.value(1).toString();
         QString album = query_Covers.value(0).toString();
+        QString artist = query_Covers.value(1).toString();
         QString title;
-        QSqlQuery query_Title = collection_db.getQuery("SELECT * FROM tracks WHERE artist = \""+artist+"\" AND album = \""+album+"\"");
+        QSqlQuery query_Title = collection_db.getQuery("SELECT * FROM tracks WHERE artist = \"" + artist + "\" AND album = \"" + album + "\"");
         if (query_Title.next())
             title = query_Title.value(CollectionDB::TITLE).toString();
         collection_db.insertCoverArt("", {album, artist});
@@ -412,10 +416,10 @@ void settings::fetchArt()
         Pulpo art("", artist, "");
         connect(&art, &Pulpo::artistArtReady, [this, &art] (QByteArray array){ art.saveArt(array, this->cachePath); });
         connect(&art, &Pulpo::artSaved, &collection_db, &CollectionDB::insertHeadArt);
-       art.fetchArtistInfo(Pulpo::ArtistArt, Pulpo::LastFm);
+        art.fetchArtistInfo(Pulpo::ArtistArt, Pulpo::LastFm);
     }
 
-    nof.notify("Finished fetching art","the artwork for your collection is now ready :)");
+    nof.notify("Finished fetching art", "the artwork for your collection is now ready :)");
     movie->stop();
     ui->label->hide();
     emit collectionDBFinishedAdding(true);
