@@ -1,31 +1,30 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
-#include <QWidget>
-#include <QString>
-#include <QStringList>
+#include <fstream>
+#include <iostream>
+
 #include <QDebug>
 #include <QDir>
 #include <QDirIterator>
 #include <QFile>
 #include <QFileDialog>
 #include <QFileSystemWatcher>
+#include <QGridLayout>
 #include <QLabel>
 #include <QMovie>
-#include <QFileSystemWatcher>
+#include <QString>
+#include <QStringList>
 #include <QTimer>
-#include <QGridLayout>
-#include <fstream>
-#include <iostream>
+#include <QWidget>
 
-#include "notify.h"
-#include "baeUtils.h"
-#include "youtube.h"
-#include "playlist.h"
 #include "about.h"
+#include "baeUtils.h"
 #include "collectionDB.h"
+#include "notify.h"
+#include "playlist.h"
 #include "pulpo/pulpo.h"
-
+#include "youtube.h"
 
 namespace Ui {
 class settings;
@@ -34,105 +33,88 @@ class settings;
 class settings : public QWidget
 {
     Q_OBJECT
-
 public:
-
     explicit settings(QWidget *parent = 0);
     ~settings();
 
-    const QString settingPath= BaeUtils::getSettingPath();
-    const QString collectionDBPath=BaeUtils::getCollectionDBPath();
-    const QString cachePath=BaeUtils::getCachePath();
-    const QString youtubeCachePath=BaeUtils::getYoutubeCachePath();
-    const QString extensionFetchingPath=BaeUtils::getExtensionFetchingPath();
-    const QStringList formats {"*.mp4","*.mp3","*.wav","*.flac","*.ogg","*.m4a"};
+    const QString settingPath = BaeUtils::getSettingPath();
+    const QString collectionDBPath = BaeUtils::getCollectionDBPath();
+    const QString cachePath = BaeUtils::getCachePath();
+    const QString youtubeCachePath = BaeUtils::getYoutubeCachePath();
+    const QString extensionFetchingPath = BaeUtils::getExtensionFetchingPath();
+    const QStringList formats {"*.mp4", "*.mp3", "*.wav", "*.flac", "*.ogg", "*.m4a"};
+
     bool checkCollection();
     void createCollectionDB();
     CollectionDB &getCollectionDB();
 
-    int getToolbarIconSize()  {return iconSize;}
+    int getToolbarIconSize();
 
-    void setSettings(QStringList setting);
+    void setSettings(const QStringList &setting);
     void readSettings();
-    void removeSettings(QStringList setting);
+    void removeSettings(const QStringList &setting);
     void refreshCollectionPaths();
     void collectionWatcher();
     void addToWatcher(QStringList paths);
-    QStringList getCollectionPath() {return collectionPaths;}
+    QStringList getCollectionPath();
     CollectionDB collection_db;
-    bool youtubeTrackDone=false;
+    bool youtubeTrackDone = false;
 
     enum iconSizes
     {
-        s16,s22,s24
+        s16, s22, s24
     };
-    //enum albums { ALBUM_TITLE, ARTIST, ART};
-    // enum artists { ARTIST_TITLE, ART};
 
 private slots:
-
     void on_open_clicked();
     void on_toolbarIconSize_activated(const QString &arg1);
     void finishedAddingTracks(bool state);
     void on_pushButton_clicked();
-    void handleFileChanged(QString file);
-    void handleDirectoryChanged(QString dir);
+    void handleFileChanged(const QString &file);
+    void handleDirectoryChanged(const QString &dir);
     void on_collectionPath_clicked(const QModelIndex &index);
     void on_remove_clicked();
-
     void on_debugBtn_clicked();
-
     void on_ytBtn_clicked();
-
     void on_fetchBtn_clicked();
-
     void on_checkBox_stateChanged(int arg1);
 
 public slots:
-
-    void populateDB(QString path);
+    void populateDB(const QString &path);
     void fetchArt();
     void refreshWatchFiles();
     void youtubeTrackReady(bool state);
-    void handleDirectoryChanged_cache(QString dir);
+    void handleDirectoryChanged_cache(const QString &dir);
     void handleDirectoryChanged_extension();
 
-
 private:
-    Ui::settings *ui;
-
-
-    const QString notifyDir= BaeUtils::getNotifyDir();
+    const QString notifyDir = BaeUtils::getNotifyDir();
     const QString collectionDBName = "collection.db";
     const QString settingsName = "settings.conf";
-
-    Notify nof;
-    YouTube *ytFetch;
-
     int iconSize = 16;
-    QStringList collectionPaths={};
-    QLabel *artFetcherNotice;
-    QMovie *movie;
-    QString pathToRemove;
-    // QFileSystemWatcher watcher;
-    //QThread* thread;
-    About *about_ui;
-    QStringList files;
+    Notify nof;
     QStringList dirs;
+    QStringList files;
+    QString pathToRemove;
+    QStringList collectionPaths = {};
+
+    QMovie *movie;
+    About *about_ui;
+    Ui::settings *ui;
+    YouTube *ytFetch;
+    QTimer *cacheTimer;
+    QLabel *artFetcherNotice;
     QFileSystemWatcher *watcher;
     QFileSystemWatcher *extensionWatcher;
-    QTimer *cacheTimer;
 
 signals:
-
     void toolbarIconSizeChanged(int newSize);
-    void collectionPathChanged(QString newPath);
+    void collectionPathChanged(const QString &newPath);
     void collectionDBFinishedAdding(bool state);
-    void fileChanged(QString url);
-    void dirChanged(QString url,QString babe="0");
-    void collectionPathRemoved(QString url);
+    void fileChanged(const QString &url);
+    void dirChanged(const QString &url, const QString &babe = "0");
+    void collectionPathRemoved(const QString &url);
     void refreshTables();
-
 };
 
 #endif // SETTINGS_H
