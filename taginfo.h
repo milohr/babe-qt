@@ -1,22 +1,22 @@
 #ifndef TAGINFO_H
 #define TAGINFO_H
-#include <taglib/taglib.h>
-#include <taglib/tag.h>
+
 #include <taglib/fileref.h>
+#include <taglib/id3v2tag.h>
+#include <taglib/tag.h>
+#include <taglib/taglib.h>
+#include <taglib/mp4coverart.h>
+#include <taglib/mp4file.h>
 #include <taglib/mp4properties.h>
 #include <taglib/mp4tag.h>
-#include <taglib/mp4file.h>
-#include <taglib/mp4coverart.h>
-#include <taglib/id3v2tag.h>
 
 #include <QString>
 #include <QByteArray>
-#include "pulpo/pulpo.h"
 #include "baeUtils.h"
+#include "pulpo/pulpo.h"
 
 class TagInfo
 {
-
 public:
     TagInfo(QString file);
     QString getAlbum();
@@ -30,15 +30,14 @@ public:
     int getDuration();
     int getYear();
 
-    void setAlbum(QString album);
-    void setTitle(QString title);
+    void setAlbum(const QString &album);
+    void setTitle(const QString &title);
     void setTrack(int track);
-    void setArtist(QString artist);
-    void setGenre(QString genre);
-    void setComment(QString comment);
-    void setCover(QByteArray array);
+    void setArtist(const QString &artist);
+    void setGenre(const QString &genre);
+    void setComment(const QString &comment);
+    void setCover(const QByteArray &array);
     void writeData();
-
 
 private:
     TagLib::FileRef file;
