@@ -22,14 +22,6 @@ Database::Database(QObject *parent) : QObject(parent)
     build();
 }
 
-Database::Database(const Database &other) : QObject()
-    ,m_databaseName(other.m_databaseName)
-    ,m_applicationName(other.m_applicationName)
-    ,m_qsqlQuery(other.m_qsqlQuery)
-    ,m_qSqlDatabase(other.m_qSqlDatabase)
-{
-}
-
 Database::~Database()
 {
     if (m_qSqlDatabase.isOpen())
@@ -124,7 +116,7 @@ void Database::setName()
         fileName.prepend("../");
     } else {
         // is desktop
-        QString path(QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation)+"/"+QApplication::applicationName());
+        QString path(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation)+"/"+m_applicationName);
         QDir qdir(path);
         if (!qdir.exists())
             qdir.mkpath(path);
