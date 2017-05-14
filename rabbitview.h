@@ -1,53 +1,45 @@
 #ifndef RABITVIEW_H
 #define RABITVIEW_H
 
-#include <QObject>
+#include <QDebug>
+#include <QFrame>
 #include <QListWidget>
 #include <QListWidgetItem>
-#include <QDebug>
+#include <QObject>
+#include <QSplitter>
 #include <QString>
 #include <QStringList>
-#include <QFrame>
-#include <QSplitter>
 
-#include "collectionDB.h"
 #include "album.h"
 #include "babetable.h"
+#include "collectionDB.h"
 
 class RabbitView : public QWidget
 {
     Q_OBJECT
-
 public:
-
     explicit RabbitView(QWidget *parent = 0);   
 
     enum suggestionsTables
     {
-        SIMILAR,GENERAL,ALL
+        SIMILAR, GENERAL, ALL
     };
 
+    BabeTable* getTable();
     void flushSuggestions(suggestionsTables = ALL);
-    BabeTable * getTable() { return this->generalSuggestion; }
-
-private:
-
-    CollectionDB *connection;
-
-    QListWidget *artistSuggestion;
-    BabeTable *generalSuggestion;
 
 public slots:
-
-    void populateArtistSuggestion(QMap<QString, QByteArray> info);
-    void populateGeneralSuggestion(QList<QMap<int,QString>> mapList);
-
-    void filterByArtist(QMap<int, QString> albumMap);
+    void populateArtistSuggestion(const QMap<QString, QByteArray> &info);
+    void populateGeneralSuggestion(const QList<QMap<int, QString> > &mapList);
+    void filterByArtist(const QMap<int, QString> &albumMap);
 
 signals:
-    void playAlbum(QMap<int,QString> info);
+    void playAlbum(const QMap<int,QString> &info);
 
-
+private:
+    CollectionDB *connection;
+    BabeTable *generalSuggestion;
+    QListWidget *artistSuggestion;
 };
 
 #endif // RABITVIEW_H
