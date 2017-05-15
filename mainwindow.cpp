@@ -37,6 +37,8 @@ MainWindow::MainWindow(QWidget *parent) :
                 qApp->desktop()->availableGeometry().size()*0.7,
                 qApp->desktop()->availableGeometry()
             ));
+    this->move(this->loadSettings("POSITION","MAINWINDOW",this->pos()).toPoint());
+    this->resize(this->loadSettings("SIZE","MAINWINDOW",this->size()).toSize());
 
     defaultWindowFlags = this->windowFlags();
     //mpris = new Mpris(this);
@@ -85,7 +87,7 @@ MainWindow::MainWindow(QWidget *parent) :
     }
     setToolbarIconSize(settings_widget->getToolbarIconSize());
     mainList->setCurrentCell(0,BabeTable::TITLE);
-this->saveSettings();
+    this->saveSettings("GEOMETRY",this->geometry(),"MAINWINDOW");
     if(mainList->rowCount()>0)
     {
         loadTrack();
@@ -103,21 +105,23 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::saveSettings()
+void MainWindow::saveSettings(const QString &key, const QVariant &value, const QString &group)
 {
     QSettings setting("Babe","babe");
-    setting.beginGroup("MainWindow");
-    setting.setValue("geometry",this->geometry());
+    setting.beginGroup(group);
+    setting.setValue(key,value);
     setting.endGroup();
 }
 
-void MainWindow::loadSettings()
+QVariant MainWindow::loadSettings(const QString &key, const QString &group, const QVariant &defaultValue)
 {
+    QVariant variant;
     QSettings setting("Babe","babe");
-    setting.beginGroup("MainWindow");
-    QRect geometry = setting.value("geometry",this->geometry()).toRect();
-    this->setGeometry(geometry);
+    setting.beginGroup(group);
+    variant = setting.value(key,defaultValue);
     setting.endGroup();
+
+    return variant;
 }
 
 //*HERE THE MAIN VIEWS GET SETUP WITH THEIR SIGNALS AND SLOTS**//
@@ -516,6 +520,15 @@ void MainWindow::addToPlayed(QString url)
     }
 }
 
+void MainWindow::closeEvent(QCloseEvent* event)
+{
+
+    this->saveSettings("POSITION",this->pos(),"MAINWINDOW");
+    this->saveSettings("SIZE",this->size(),"MAINWINDOW");
+
+    QMainWindow::closeEvent(event);
+}
+
 void MainWindow::resizeEvent(QResizeEvent* event)
 {
     if(this->viewMode == FULLMODE && rightFrame->size().width() < 200)
@@ -824,7 +837,7 @@ void MainWindow::expand()
     this->setMaximumSize(QWIDGETSIZE_MAX,QWIDGETSIZE_MAX);
     this->setMinimumSize(200,0);
 
-    this->loadSettings();
+    this->setGeometry(this->loadSettings("GEOMETRY","MAINWINDOW",this->geometry()).toRect());
     //this->resize(700,500);
     /*this->setWindowFlags(defaultWindowFlags);
     this->show();*/
@@ -936,7 +949,9 @@ void MainWindow::on_hide_sidebar_btn_clicked()
 {
     switch(this->viewMode)
     {
-    case FULLMODE: this->saveSettings(); go_playlistMode(); break;
+    case FULLMODE:
+        this->saveSettings("GEOMETRY",this->geometry(),"MAINWINDOW");
+        go_playlistMode(); break;
 
     case PLAYLISTMODE: go_mini(); break;
 
@@ -1060,7 +1075,7 @@ void MainWindow::loadTrack()
         player->setMedia(QUrl::fromLocalFile(current_song[BabeTable::LOCATION]));
         player->play();
 
-        timer->start(3000);
+
 
         ui->play_btn->setIcon(QIcon(":Data/data/media-playback-pause.svg"));
 

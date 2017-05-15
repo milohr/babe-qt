@@ -22,6 +22,7 @@
 #include <QFrame>
 #include <QSize>
 #include <QSettings>
+#include <QVariant>
 
 #include <QPixmap>
 #include <QDir>
@@ -82,6 +83,7 @@ protected:
 
     virtual void enterEvent(QEvent *event);
     virtual void leaveEvent(QEvent *event);
+    virtual void closeEvent(QCloseEvent *event);
     virtual void dragEnterEvent(QDragEnterEvent *event);
     virtual void dragLeaveEvent(QDragLeaveEvent *event);
     virtual void dragMoveEvent(QDragMoveEvent *event);
@@ -229,8 +231,8 @@ private:
     void clearCurrentList();
     bool isBabed(QMap<int, QString> track);
     void feedRabbit();
-    void saveSettings();
-    void loadSettings();
+    void saveSettings(const QString &key, const QVariant &value,const QString &group);
+    QVariant loadSettings(const QString &key, const QString &group, const QVariant &defaultValue = QVariant());
 
     /*the streaming */
     QMediaPlayer *player = new QMediaPlayer();
