@@ -42,8 +42,8 @@ public:
     QString getAlbumArt(const QString &album, const QString &artist);
     QStringList getPlaylists();
     QStringList getPlaylistsMoods();
-    QStringList albums;
-    QStringList artists;
+    QList<QString> albums;
+    QList<QString> artists;
 
     enum colums
     {
@@ -67,7 +67,7 @@ public slots:
 
 signals:
     void progress(int);
-    void DBactionFinished(bool state);
+    void dbActionFinished(bool state);
 };
 
 #endif // COLLECTION_H
