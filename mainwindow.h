@@ -31,6 +31,7 @@
 #include "albumsview.h"
 #include "babetable.h"
 #include "collectionDB.h"
+#include "database/database.h"
 #include "infoview.h"
 #include "mpris2.h"
 #include "notify.h"
@@ -93,7 +94,7 @@ private slots:
     void on_hide_sidebar_btn_clicked();
     void on_shuffle_btn_clicked();
     void on_open_btn_clicked();
-    void on_mainList_clicked(QList<QMap<int, QString>> list);
+    void on_mainList_clicked(const QList<QMap<int, QString>> &list);
     void update();
     void on_seekBar_sliderMoved(int position);
     void on_play_btn_clicked();
@@ -151,6 +152,7 @@ private slots:
     void on_playAll_clicked();
 
 private:
+    Database *m_database;
     Ui::MainWindow *ui;
     CollectionDB connection;
     const QString stylePath = BaeUtils::getSettingPath() + "style.qss";

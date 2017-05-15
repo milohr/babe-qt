@@ -17,10 +17,11 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
+    ,m_database(Database::instance())
+    ,ui(new Ui::MainWindow)
 {
+    m_database->setParent(this);
     ui->setupUi(this);
     this->setWindowTitle(" Babe ... \xe2\x99\xa1  \xe2\x99\xa1 \xe2\x99\xa1 ");
     this->setAcceptDrops(true);
@@ -119,8 +120,8 @@ void MainWindow::setUpViews()
     mainList->setMaximumWidth(200);
     mainList->setMinimumHeight(200);
     mainList->setAddMusicMsg("\nDrag and drop music here!");
-    connect(mainList, &BabeTable::tableWidget_doubleClicked, this, &MainWindow::on_mainList_clicked);
 
+    connect(mainList, &BabeTable::tableWidget_doubleClicked, this, &MainWindow::on_mainList_clicked);
     connect(mainList, &BabeTable::removeIt_clicked, this, &MainWindow::removeSong);
     connect(mainList, &BabeTable::babeIt_clicked, this, &MainWindow::babeIt);
     connect(mainList, &BabeTable::queueIt_clicked, this, &MainWindow::addToQueue);
@@ -888,7 +889,7 @@ void MainWindow::updateList()
         mainList->addRow(list, true, true);
 }
 
-void MainWindow::on_mainList_clicked(QList<QMap<int, QString>> list)
+void MainWindow::on_mainList_clicked(const QList<QMap<int, QString>> &list)
 {
     Q_UNUSED(list);
     lCounter = mainList->getIndex();
@@ -903,15 +904,13 @@ void MainWindow::removeSong(const int &index)
     QObject* obj = sender();
     if (index != -1) {
         qDebug() << "ehat was in current list:";
-        for (auto a: currentList) {
-            qDebug()<<a[BabeTable::TITLE];
-        }
+        for (auto a : currentList)
+            qDebug() << a[BabeTable::TITLE];
         if (obj == mainList)
             currentList.removeAt(index);
         qDebug() << "in current list:";
-        for (auto a: currentList) {
-            qDebug()<<a[BabeTable::TITLE];
-        }
+        for (auto a : currentList)
+            qDebug() << a[BabeTable::TITLE];
         if (shuffle)
             shufflePlaylist();
     }
@@ -930,7 +929,7 @@ void MainWindow::loadTrack()
         player->play();
         timer->start(3000);
         ui->play_btn->setIcon(QIcon(":Data/data/media-playback-pause.svg"));
-        this->setWindowTitle(current_song[BabeTable::TITLE] + " \xe2\x99\xa1 "+ current_song[BabeTable::ARTIST]);
+        this->setWindowTitle(current_song[BabeTable::TITLE] + " \xe2\x99\xa1 " + current_song[BabeTable::ARTIST]);
         album_art->setTitle(current_song[BabeTable::ARTIST], current_song[BabeTable::ALBUM]);
 
         //CHECK IF THE SONG IS BABED IT OR IT ISN'T
@@ -954,7 +953,7 @@ void MainWindow::feedRabbit()
     Pulpo rabbitInfo(current_song[BabeTable::TITLE], current_song[BabeTable::ARTIST], current_song[BabeTable::ALBUM]);
     rabbitTable->flushSuggestions();
     rabbitTable->populateGeneralSuggestion(connection.getTrackData(QString("SELECT * FROM tracks WHERE artist = \""+current_song[BabeTable::ARTIST]+"\"")));
-    connect(&rabbitInfo, &Pulpo::artistSimilarReady, [this] (QMap<QString,QByteArray> info)
+    connect(&rabbitInfo, &Pulpo::artistSimilarReady, [this] (QMap<QString, QByteArray> info)
     {
         rabbitTable->populateArtistSuggestion(info);
         QStringList query;
@@ -977,7 +976,7 @@ void MainWindow::feedRabbit()
 
 bool MainWindow::isBabed(QMap<int, QString> track)
 {
-    return settings_widget->getCollectionDB().checkQuery("SELECT * FROM tracks WHERE location = \""+track[BabeTable::LOCATION]+"\" AND babe = \"1\"");
+    return settings_widget->getCollectionDB().checkQuery("SELECT * FROM tracks WHERE location = \"" + track[BabeTable::LOCATION] + "\" AND babe = \"1\"");
 }
 
 void MainWindow::loadMood()
@@ -1285,7 +1284,7 @@ void MainWindow::addToPlaylist(QList<QMap<int, QString>> mapList, bool notRepeat
     if (notRepeated) {
         QList<QMap<int, QString>> newList;
         QStringList alreadyInList = mainList->getTableColumnContent(BabeTable::LOCATION);
-        for (auto track: mapList) {
+        for (auto track : mapList) {
             if (!alreadyInList.contains(track[BabeTable::LOCATION])) {
                 newList<<track;
                 mainList->addRow(track, true, true);
@@ -1505,7 +1504,7 @@ void MainWindow::calibrateMainList()
     mainList->scrollToTop();
     if (mainList->rowCount() > 0) {
         mainList->setCurrentCell(0, BabeTable::TITLE);
-        lCounter=0;
+        lCounter = 0;
         loadTrack();
     }
 }
