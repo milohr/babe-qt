@@ -340,7 +340,8 @@ bool settings::checkCollection()
 {
     if (BaeUtils::fileExists(collectionDBPath + collectionDBName)) {
         qDebug() << "The CollectionDB does exists.";
-        collection_db.openCollection(collectionDBPath + collectionDBName);
+        qDebug() << "collectionDBPath " << collectionDBPath << "collectionDBName: " << collectionDBName;
+        collection_db.openCollection(collectionDBPath + "/" + collectionDBName);
         collectionWatcher();
         return true;
     }
@@ -350,7 +351,7 @@ bool settings::checkCollection()
 void settings::createCollectionDB()
 {
     qDebug() << "The CollectionDB doesn't exists. Going to create the database and tables";
-    collection_db.openCollection(collectionDBPath + collectionDBName);
+    collection_db.openCollection(collectionDBPath + "/" + collectionDBName);
     collection_db.prepareCollectionDB();
 }
 
