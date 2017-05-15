@@ -57,7 +57,7 @@ private:
     QWidget *albumBox_frame;
     QFrame *line_h;
     Album *cover;
-    CollectionDB *connection;
+    CollectionDB connection;
     Playlist *playlist;
     QListWidget *artistList;
     QToolButton *closeBtn;

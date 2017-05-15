@@ -181,7 +181,7 @@ void AlbumsView::filterAlbum(QModelIndex index)
     albumTable->populateTableView("SELECT * FROM tracks WHERE album = \""+album+"\" AND artist =\""+cover->getArtist()+"\" ORDER by album asc, track asc ",false,false);
     cover->setTitle(cover->getArtist(),album);
 
-    QSqlQuery queryCover = connection->getQuery("SELECT * FROM albums WHERE title = \""+album+"\" AND artist =\""+cover->getArtist()+"\"");
+    QSqlQuery queryCover = connection.getQuery("SELECT * FROM albums WHERE title = \""+album+"\" AND artist =\""+cover->getArtist()+"\"");
     while (queryCover.next())
         if(!queryCover.value(2).toString().isEmpty()&&queryCover.value(2).toString()!="NULL") cover->putPixmap( queryCover.value(2).toString());
 
@@ -233,7 +233,7 @@ void AlbumsView::populateTableView(QSqlQuery query)
             //qDebug()<<"creating a new album[cover] for<<"<<album+" "+artist;
             if(!query.value(ART).toString().isEmpty()&&query.value(ART).toString()!="NULL")
                 art = query.value(ART).toString();
-            else art = connection->getArtistArt(artist);
+            else art = connection.getArtistArt(artist);
 
             auto artwork= new Album(art,albumSize,4,true,this);
             albumsList.push_back(artwork);
@@ -340,7 +340,7 @@ void AlbumsView::changedArt_cover(QMap<int,QString> info)
     QString album = info[Album::ALBUM];
     QString path = info[Album::ART];
 
-    connection->execQuery(QString("UPDATE albums SET art = \"%1\" WHERE title = \"%2\" AND artist = \"%3\"").arg(path,album,artist));
+    connection.execQuery(QString("UPDATE albums SET art = \"%1\" WHERE title = \"%2\" AND artist = \"%3\"").arg(path,album,artist));
 
 }
 
@@ -348,7 +348,7 @@ void AlbumsView::changedArt_head(QMap<int,QString> info)
 {
     QString artist =info[Album::ARTIST];
     QString path = info[Album::ART];
-    connection->execQuery(QString("UPDATE artists SET art = \"%1\" WHERE title = \"%2\" ").arg(path,artist) );
+    connection.execQuery(QString("UPDATE artists SET art = \"%1\" WHERE title = \"%2\" ").arg(path,artist) );
 
 }
 
@@ -364,11 +364,11 @@ void AlbumsView::getArtistInfo(QMap<int,QString> info)
 
     albumTable->populateTableView("SELECT * FROM tracks WHERE artist = \""+artist+"\" ORDER by album asc, track asc",false,false);
 
-    auto art = connection->getArtistArt(artist);
+    auto art = connection.getArtistArt(artist);
     if(!art.isEmpty()) cover->putPixmap(art);
     else cover->putDefaultPixmap();
 
-    if(extraList) populateExtraList(connection->getQuery("SELECT * FROM albums WHERE artist = \""+artist+"\" ORDER by title asc"));
+    if(extraList) populateExtraList(connection.getQuery("SELECT * FROM albums WHERE artist = \""+artist+"\" ORDER by title asc"));
 
 }
 
@@ -385,8 +385,8 @@ void AlbumsView::getAlbumInfo(QMap<int,QString> info)
 
     albumTable->populateTableView("SELECT * FROM tracks WHERE artist = \""+artist+"\" and album = \""+album+"\" ORDER by track asc",false,false);
 
-    auto art = connection->getAlbumArt(album,artist);
-    art = art.isEmpty()? connection->getArtistArt(artist) : art;
+    auto art = connection.getAlbumArt(album,artist);
+    art = art.isEmpty()? connection.getArtistArt(artist) : art;
 
     cover->putPixmap(art); if(!art.isEmpty()) cover->putPixmap(art);
     else cover->putDefaultPixmap();

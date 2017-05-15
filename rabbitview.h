@@ -32,8 +32,6 @@ public:
 
 private:
 
-    CollectionDB *connection;
-
     QListWidget *artistSuggestion;
     BabeTable *generalSuggestion;
 
