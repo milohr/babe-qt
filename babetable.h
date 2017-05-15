@@ -54,7 +54,7 @@ public:
         BABEIT, QUEUEIT, INFOIT, EDITIT, SAVETO, REMOVEIT, RATEIT, MOODIT, SENDIT, ADDTO
     };
 
-    CollectionDB *connection;
+    CollectionDB *connection = new CollectionDB;
 
     const QMap<int, QString> columnsNames{{TRACK, "track"}, {TITLE, "title"}, {ARTIST, "artist"}, {ALBUM, "album"}, {GENRE, "genre"}, {LOCATION, "location"}, {STARS, "stars"}, {BABE, "babe"}, {ART, "art"}, {PLAYED, "played"}, {PLAYLIST, "playlist"}};
     QStringList playlistsMenus;
@@ -127,7 +127,7 @@ private:
     QString addMusicMsg = "oops... :(\nnothing here";
 
 signals:
-    void tableWidget_doubleClicked(QList<QMap<int, QString>> mapList);
+    void tableWidget_doubleClicked(const QList<QMap<int, QString>> &mapList);
     void songRated(QStringList list);
     void enteredTable();
     void leftTable();

@@ -306,7 +306,7 @@ void BabeTable::populateTableView(const QList<QMap<int,QString>> &mapList, bool 
                 addRow(trackMap,descriptiveTitle,coloring);
             }
         }
-        if (missing)
+        if (missing && missingFiles.size())
             removeMissing(missingFiles);
         this->setSortingEnabled(true);
         emit finishedPopulating();
@@ -372,7 +372,7 @@ void BabeTable::populateTableView(const QString &indication, bool descriptiveTit
                 }
                 if (query.value(BABE).toInt() == 1)
                     rating = "\xe2\x99\xa1 ";
-                QString stars =  rating;
+                QString stars = rating;
                 QString bb;
                 switch (query.value((BABE)).toInt()) {
                 case 0:
@@ -384,10 +384,10 @@ void BabeTable::populateTableView(const QString &indication, bool descriptiveTit
                 }
                 QString babe = bb;
                 QString art = query.value(ART).toString();
-                QString played =query.value(PLAYED).toString();
-                QString playlist =query.value(PLAYLIST).toString();
+                QString played = query.value(PLAYED).toString();
+                QString playlist = query.value(PLAYLIST).toString();
                 const QMap<int, QString> map{{TRACK, track}, {TITLE, title}, {ARTIST, artist}, {ALBUM, album}, {GENRE, genre}, {LOCATION, location}, {STARS, stars}, {BABE, babe}, {ART, art}, {PLAYED, played}, {PLAYLIST, playlist}};
-                addRow(map,descriptiveTitle, coloring);
+                addRow(map, descriptiveTitle, coloring);
             }
         }
         if (missingDialog)
@@ -496,11 +496,12 @@ void BabeTable::setUpContextMenu(const int row, const int column)
     int rate = 0;
     bool babe = false;
     this->rRow = row;
-    this->rColumn= column;
+    this->rColumn = column;
     playlistsMenu->clear();
     for (auto playlist : connection->getPlaylists())
         playlistsMenu->addAction(playlist);
     sendToMenu->clear();
+
     QMapIterator<QString, QString> i(getKdeConnectDevices());
     while (i.hasNext()) {
         i.next();
@@ -613,8 +614,16 @@ void BabeTable::rateGroup(int id)
 
 QMap<int, QString> BabeTable::getRowData(int row)
 {  
+    QMap<int, QString> map;
+    QList<QMap<int, QString>> mapList;
     QString location = this->model()->data(this->model()->index(row, LOCATION)).toString();
-    return connection->getTrackData("SELECT * FROM tracks WHERE location = \"" + location + "\"").first();
+    qDebug() << "location: " << location;
+    if (!location.isEmpty()) {
+        mapList = connection->getTrackData("SELECT * FROM tracks WHERE location = \"" + location + "\"");
+        if (!mapList.isEmpty())
+            return mapList.first();
+    }
+    return map;
 }
 
 void BabeTable::on_tableWidget_doubleClicked(const QModelIndex &index)
