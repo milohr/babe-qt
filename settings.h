@@ -89,7 +89,7 @@ public slots:
 
 private:
     const QString notifyDir = BaeUtils::getNotifyDir();
-    const QString collectionDBName = "collection.db";
+    const QString collectionDBName = "Babe.db";
     const QString settingsName = "settings.conf";
     int iconSize = 16;
     Notify nof;
