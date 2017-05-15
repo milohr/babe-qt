@@ -56,9 +56,6 @@ void Notify::notifySong(const QMap<int, QString> &trackMap,  const QPixmap &pix)
 
     connect(notification, SIGNAL(activated(uint)), SLOT(babeIt()));
 
-
-    //connect(notification, SIGNAL(ac), this, SLOT(notify()));
-
     notification->sendEvent();
 
 }

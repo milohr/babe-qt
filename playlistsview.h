@@ -44,6 +44,8 @@ private:
 
     QFrame *frame;
 
+    CollectionDB connection;
+
 public slots:
 
     void createPlaylist();

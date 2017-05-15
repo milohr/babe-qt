@@ -215,7 +215,6 @@ private:
     void setUpCollectionViewer();
     void setUpPlaylist();
     void setUpRightFrame();
-    void setUpActions();
 
     void loadTrack();
     void next();

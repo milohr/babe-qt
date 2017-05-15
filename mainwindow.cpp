@@ -44,7 +44,6 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setUpPlaylist();
     this->setUpRightFrame();
     this->setUpCollectionViewer();
-    this->setUpActions();
 
     //* CHECK FOR DATABASE *//
     if(settings_widget->checkCollection())
@@ -344,8 +343,6 @@ void MainWindow::setUpPlaylist()
     connect(album_art,&Album::babeAlbum_clicked,this,&MainWindow::babeAlbum);
 
     album_art->setFixedSize(200,200);
-    // album_art->setFixedHeight(200);
-    // album_art->setMaximumWidth(200);
     album_art->setTitleGeometry(0,0,200,30);
     album_art->titleVisible(false);
 
@@ -382,12 +379,7 @@ void MainWindow::setUpPlaylist()
     calibrateBtn_menu->addAction(clearIt);
 
     auto cleanIt = new QAction("Clean...");
-    connect(cleanIt, &QAction::triggered, [this]()
-    {
-        mainList->removeRepeated();
-
-    });
-
+    connect(cleanIt, &QAction::triggered, [this]() { mainList->removeRepeated(); });
     calibrateBtn_menu->addAction(cleanIt);
 
     auto saveIt = new QAction("Save as playlist...");
@@ -419,10 +411,6 @@ void MainWindow::setUpRightFrame()
     rightFrame_layout->addWidget(playlistWidget,0,0);
 }
 
-void MainWindow::setUpActions()
-{
-
-}
 
 void MainWindow::changedArt(QMap<int,QString> info)
 {
@@ -464,9 +452,7 @@ void MainWindow::putAlbumOnPlay(QMap<int,QString> info)
         else if(!album.isEmpty()&&!artist.isEmpty())
             mapList = settings_widget->getCollectionDB().getTrackData(QString("SELECT * FROM tracks WHERE artist = \""+artist+"\" AND album = \""+album+"\" ORDER by track asc"));
 
-        if(!mapList.isEmpty())
-            this->putOnPlay(mapList);
-
+        if(!mapList.isEmpty()) this->putOnPlay(mapList);
     }
 
 }

@@ -58,7 +58,6 @@ public:
         BABEIT, QUEUEIT, INFOIT, EDITIT, SAVETO, REMOVEIT, RATEIT, MOODIT, SENDIT, ADDTO
     };
 
-    CollectionDB *connection;
 
     const QMap<int, QString> columnsNames{{TRACK, "track"}, {TITLE, "title"}, {ARTIST, "artist"},{ALBUM,"album"},{GENRE,"genre"},{LOCATION,"location"},{STARS,"stars"},{BABE,"babe"},{ART,"art"},{PLAYED,"played"},{PLAYLIST,"playlist"}};
     QStringList playlistsMenus;
@@ -116,6 +115,8 @@ public slots:
     void colorizeRow(const int &row, const QString &color);
 
 private:
+
+    CollectionDB connection;
 
     Notify nof;
     QToolButton *fav1;

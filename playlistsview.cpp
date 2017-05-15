@@ -207,12 +207,12 @@ void PlaylistsView::removePlaylist()
     {
 
     } else if (currentPlaylist == "Favorites") {
-        table->connection->execQuery("UPDATE tracks SET stars = \"0\" WHERE stars > \"0\"");
+        connection.execQuery("UPDATE tracks SET stars = \"0\" WHERE stars > \"0\"");
         table->flushTable();
         query = "SELECT * FROM tracks WHERE stars > \"0\" ORDER  by stars desc";
 
     } else if (currentPlaylist == "Babes") {
-        table->connection->execQuery("UPDATE tracks SET babe = \"0\" WHERE babe > \"0\"");
+       connection.execQuery("UPDATE tracks SET babe = \"0\" WHERE babe > \"0\"");
         table->flushTable();
         query = "SELECT * FROM tracks WHERE babe = \"1\" ORDER  by played desc";
     }else if (currentPlaylist == "Online") {
@@ -227,10 +227,10 @@ void PlaylistsView::removePlaylist()
     }else if (currentPlaylist.contains("#")) {
 
 
-        table->connection->execQuery("UPDATE tracks SET art = \"\" WHERE art = \"" +
+        connection.execQuery("UPDATE tracks SET art = \"\" WHERE art = \"" +
                                      currentPlaylist + "\"");
 
-        table->connection->execQuery("DELETE FROM playlists  WHERE art = \""+currentPlaylist+"\"");
+        connection.execQuery("DELETE FROM playlists  WHERE art = \""+currentPlaylist+"\"");
         table->flushTable();
 
         query = "SELECT * FROM tracks WHERE art = \"" + currentPlaylist+ "\"";

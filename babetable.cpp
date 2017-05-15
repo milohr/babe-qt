@@ -21,8 +21,6 @@
 
 BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
 
-    /* connection = new CollectionDB();
-  connection->openCollection("../player/collection.db");*/
 
     connect(this, SIGNAL(doubleClicked(QModelIndex)), this,
             SLOT(on_tableWidget_doubleClicked(QModelIndex)));
@@ -255,7 +253,7 @@ void BabeTable::populatePlaylist(QStringList urls, QString playlist)  //this nee
         // ui->fav_btn->setIcon(QIcon::fromTheme("face-in-love"));
         qDebug() << "Song to add: " << location << " to: " << playlist;
 
-        QSqlQuery query = connection->getQuery(
+        QSqlQuery query = connection.getQuery(
                     "SELECT * FROM tracks WHERE location = \"" + location + "\"");
 
         QString list;
@@ -264,7 +262,7 @@ void BabeTable::populatePlaylist(QStringList urls, QString playlist)  //this nee
         list += " " + playlist;
         // qDebug()<<played;
 
-        if (connection->insertInto("tracks", "playlist", location, list))
+        if (connection.insertInto("tracks", "playlist", location, list))
             qDebug() << list;
 
     }
@@ -372,12 +370,12 @@ void BabeTable::removeMissing(QStringList missingFiles)
     {
         QString parentDir = QFileInfo(QFileInfo(file_r)).dir().path();
 
-        if (!BaeUtils::fileExists(parentDir)) connection->removePath(parentDir);
-        else connection->removePath(file_r);
+        if (!BaeUtils::fileExists(parentDir)) connection.removePath(parentDir);
+        else connection.removePath(file_r);
     }
 
-    connection->setCollectionLists();
-    connection->cleanCollectionLists();
+    connection.setCollectionLists();
+    connection.cleanCollectionLists();
 }
 
 void BabeTable::populateTableView(QString indication, bool descriptiveTitle, bool coloring)
@@ -388,7 +386,7 @@ void BabeTable::populateTableView(QString indication, bool descriptiveTitle, boo
     this->setSortingEnabled(false);
     bool missingDialog = false;
     QStringList missingFiles;
-    QSqlQuery query = connection->getQuery(indication);
+    QSqlQuery query = connection.getQuery(indication);
 
     if(query.exec())
     {
@@ -597,7 +595,7 @@ void BabeTable::setUpContextMenu(const int row, const int column)
 
     playlistsMenu->clear();
 
-    for (auto playlist : connection->getPlaylists())
+    for (auto playlist : connection.getPlaylists())
         playlistsMenu->addAction(playlist);
 
     // playlistsMenu->addAction("Create new...");
@@ -612,7 +610,7 @@ void BabeTable::setUpContextMenu(const int row, const int column)
 
     QString url = this->getRowData(rRow)[LOCATION];
 
-    QSqlQuery query = connection->getQuery(
+    QSqlQuery query = connection.getQuery(
                 "SELECT * FROM tracks WHERE location = \"" + url + "\"");
 
     while (query.next())
@@ -636,7 +634,7 @@ QStringList BabeTable::getPlaylistMenus()
 {
 
     playlistsMenus.clear();
-    for (auto playlist : connection->getPlaylists()) {
+    for (auto playlist : connection.getPlaylists()) {
         playlistsMenus << playlist;
     }
     return playlistsMenus;
@@ -711,7 +709,7 @@ void BabeTable::rateGroup(int id)
     // int row= this->currentIndex().row();
     QString location = this->getRowData(rRow)[LOCATION];
 
-    QSqlQuery query = connection->getQuery(
+    QSqlQuery query = connection.getQuery(
                 "SELECT * FROM tracks WHERE location = \"" + location + "\"");
 
     int rate = 0;
@@ -719,9 +717,9 @@ void BabeTable::rateGroup(int id)
     while (query.next())
         rate = query.value(STARS).toInt();
 
-    if (connection->check_existance("tracks", "location", location))
+    if (connection.check_existance("tracks", "location", location))
     {
-        if (connection->insertInto("tracks", "stars", location, id))
+        if (connection.insertInto("tracks", "stars", location, id))
             setRating(id);
 
         QString stars;
@@ -758,7 +756,7 @@ QMap<int, QString> BabeTable::getRowData(int row)
 {  
     QString location = this->model()->data(this->model()->index(row, LOCATION)).toString();
 
-    return connection->getTrackData("SELECT * FROM tracks WHERE location = \"" + location + "\"").first();
+    return connection.getTrackData("SELECT * FROM tracks WHERE location = \"" + location + "\"").first();
 }
 
 
@@ -827,7 +825,7 @@ void BabeTable::itemEdited(QMap<int, QString> map)
     this->item(rRow,ALBUM)->setText(map[ALBUM]);
     this->item(rRow,GENRE)->setText(map[GENRE]);
 
-    //connection->insertInto("tracks",column,this->model()->index(newIndex.row(),LOCATION).data().toString(),newIndex.data().toString());
+    //connection.insertInto("tracks",column,this->model()->index(newIndex.row(),LOCATION).data().toString(),newIndex.data().toString());
 
 }
 
@@ -885,12 +883,7 @@ void BabeTable::colorizeRow(const int &row, const QString &color)
 
 void BabeTable::queueIt_action()
 {
-    qDebug() << "queueIt clicked!";
-    // int row= this->currentIndex().row();
-    QString url = this->model()->data(this->model()->index(rRow, LOCATION)).toString();
-    qDebug()<<url;
-
-    emit queueIt_clicked(getRowData(rRow));
+   emit queueIt_clicked(getRowData(rRow));
 }
 
 void BabeTable::flushTable()
@@ -924,5 +917,5 @@ void BabeTable::removeRepeated()//tofix
     auto list = this->getTableColumnContent(BabeTable::LOCATION);
     list.removeDuplicates();
     this->flushTable();
-    this->populateTableView(connection->getTrackData(list),true,true);
+    this->populateTableView(connection.getTrackData(list),true,true);
 }

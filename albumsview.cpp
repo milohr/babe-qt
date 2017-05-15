@@ -28,8 +28,8 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
         if(albumSize+5<=200)
         {
             this->setAlbumsSize(albumSize+5);
-            slider->setValue(albumSize+5);
-            slider->setSliderPosition(albumSize+5);
+           /* slider->setValue(albumSize+5);
+            slider->setSliderPosition(albumSize+5);*/
         }
     });
 
@@ -38,8 +38,8 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     connect(zoomOut, &QAction::triggered,[this](){
         if(albumSize-5>=80){
             this->setAlbumsSize(albumSize-5);
-            slider->setValue(albumSize-5);
-            slider->setSliderPosition(albumSize-5);
+           /* slider->setValue(albumSize-5);
+            slider->setSliderPosition(albumSize-5);*/
         }
     });
 
@@ -56,13 +56,13 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     utilsFrame->setFrameShadow(QFrame::Plain);
     utilsFrame->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Minimum);
 
-    slider = new QSlider();
+    /*slider = new QSlider();
     connect(slider,SIGNAL(sliderMoved(int)),this,SLOT(setAlbumsSize(int)));
     slider->setMaximum(200);
     slider->setMinimum(80);
     slider->setValue(albumSize);
     slider->setSliderPosition(albumSize);
-    slider->setOrientation(Qt::Orientation::Horizontal);
+    slider->setOrientation(Qt::Orientation::Horizontal);*/
 
     order = new QComboBox();
     connect(order, SIGNAL(currentIndexChanged(QString)),this,SLOT(orderChanged(QString)));
@@ -190,8 +190,8 @@ void AlbumsView::filterAlbum(QModelIndex index)
 void AlbumsView::setAlbumsSize(int value)
 {
     albumSize=value;
-    slider->setToolTip(QString::number(value));
-    QToolTip::showText( slider->mapToGlobal( QPoint( 0, 0 ) ), QString::number(value) );
+    /*slider->setToolTip(QString::number(value));
+    QToolTip::showText( slider->mapToGlobal( QPoint( 0, 0 ) ), QString::number(value) );*/
     for(auto album : albumsList)
     {
         album->setSize(albumSize);
@@ -223,7 +223,6 @@ void AlbumsView::populateTableView(QSqlQuery query)
 
     while (query.next())
     {
-
         QString artist = query.value(ARTIST).toString();
         QString album = query.value(TITLE).toString();
         QString art=":Data/data/cover.svg";

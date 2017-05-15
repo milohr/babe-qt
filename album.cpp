@@ -11,19 +11,13 @@ Album::Album(QString imagePath, int widgetSize, int widgetRadius, bool isDraggab
 
     if (!imagePath.isEmpty()) this->putPixmap(imagePath);
     else this->putDefaultPixmap();
-    //image.scaled(120,120,Qt::KeepAspectRatio);
-    //this->setPixmap(image.scaled(size,size,Qt::KeepAspectRatio));
-    //this->setToolTip(getTitle());
+
     auto layout = new QHBoxLayout();
     widget = new QWidget(this);
     widget->setLayout(layout);
     widget->setMinimumWidth(size-2);
     widget->setGeometry(1,size-31,size-2,30);
-    //widget->setStyleSheet("background-color: rgba(0,0,0,150)");
-    //widget->setStyleSheet( QString(" background: qlineargradient(x1:0, y1:0, x2:0, y2:1,stop:0 rgba(0, 0, 0, 200), stop: 0.4 rgba(0, 0, 0, 150), stop:1 rgb(0, 0, 0, 40)); border-top: 1px solid #333; border-top-left-radius:0; border-top-right-radius:0; border-bottom-right-radius:%1px; border-bottom-left-radius:%2px;").arg( QString::number(border_radius),QString::number(border_radius)));
     widget->setStyleSheet( QString(" background: rgba(0,0,0,150); border-top: 1px solid rgba(%1,%1,%1,120); border-top-left-radius:0; border-top-right-radius:0; border-bottom-right-radius:%2px; border-bottom-left-radius:%3px;").arg( QString::number(this->palette().color(QPalette::WindowText).blue()), QString::number(border_radius-1),QString::number(border_radius-1)));
-    //widget->setStyleSheet("background-color: rgba(0,0,0,150); border-top: 1px solid #333;");
-    //this->titleVisible(false);
 
     title = new ScrollText(this);
     title->setMaxSize(size+10);
@@ -42,7 +36,6 @@ Album::Album(QString imagePath, int widgetSize, int widgetRadius, bool isDraggab
     layout->addWidget(title);
     layout->addWidget(right_spacer);
 
-
     playBtn = new QToolButton(this);
     playBtn->installEventFilter(this);
     connect(playBtn,SIGNAL(clicked()),this,SLOT(playBtn_clicked()));
@@ -50,10 +43,8 @@ Album::Album(QString imagePath, int widgetSize, int widgetRadius, bool isDraggab
     playBtn->setIconSize(QSize(48,48));
     playBtn->setGeometry((size/2)-24,(size/2)-24,playBtn->iconSize().width(),playBtn->iconSize().width());
     playBtn->setStyleSheet("QToolButton{border:none;}");
-    //playBtn->setStyleSheet("QToolButton{ } QToolButton:hover{background: #333; border:1px solid black; border-radius:24px; } ");
     playBtn->setAutoRaise(true);
     playBtn->setVisible(false);
-
 
     auto contextMenu = new QMenu(this);
     this->setContextMenuPolicy(Qt::ActionsContextMenu);
@@ -129,12 +120,11 @@ void Album::paintEvent(QPaintEvent *event)
     if(!image.isNull())
         brush.setTexture(image.scaled(size,size,Qt::KeepAspectRatio));
 
-    // brush.setStyle(Qt::no);
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
     painter.setBrush(brush);
-    if (!borderColor)painter.setPen(Qt::NoPen);
 
+    if(!borderColor) painter.setPen(Qt::NoPen);
     painter.drawRoundedRect(0,0, size, size, border_radius, border_radius);
 }
 
