@@ -28,7 +28,7 @@ static inline QString getNameFromLocation(const QString &str)
 
 static inline QString getSettingPath()
 {
-    return QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QApplication::applicationName();
+    return QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + "/" + QApplication::applicationName();
 }
 
 static inline QString getCollectionDBPath()
@@ -38,12 +38,12 @@ static inline QString getCollectionDBPath()
 
 static inline QString getCachePath()
 {
-    return QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation) + QApplication::applicationName();
+    return QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation) + "/" + QApplication::applicationName();
 }
 
 static inline QString getYoutubeCachePath()
 {
-    return QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation) + QApplication::applicationName() + "/youtube/";
+    return QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation) + "/" + QApplication::applicationName() + "/youtube/";
 }
 
 static inline QString getExtensionFetchingPath()
