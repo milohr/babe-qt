@@ -18,7 +18,7 @@
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-
+#include <QDesktopWidget>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -29,7 +29,14 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setAcceptDrops(true);
     this->setWindowIcon(QIcon(":Data/data/babe_48.svg"));
     this->setWindowIconText("Babe...");
-    this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
+    this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    this->setMinimumSize(200,0);
+    this->setGeometry(QStyle::alignedRect(
+                Qt::LeftToRight,
+                Qt::AlignCenter,
+                qApp->desktop()->availableGeometry().size()*0.7,
+                qApp->desktop()->availableGeometry()
+            ));
 
     defaultWindowFlags = this->windowFlags();
     //mpris = new Mpris(this);
@@ -78,7 +85,7 @@ MainWindow::MainWindow(QWidget *parent) :
     }
     setToolbarIconSize(settings_widget->getToolbarIconSize());
     mainList->setCurrentCell(0,BabeTable::TITLE);
-
+this->saveSettings();
     if(mainList->rowCount()>0)
     {
         loadTrack();
@@ -96,6 +103,22 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::saveSettings()
+{
+    QSettings setting("Babe","babe");
+    setting.beginGroup("MainWindow");
+    setting.setValue("geometry",this->geometry());
+    setting.endGroup();
+}
+
+void MainWindow::loadSettings()
+{
+    QSettings setting("Babe","babe");
+    setting.beginGroup("MainWindow");
+    QRect geometry = setting.value("geometry",this->geometry()).toRect();
+    this->setGeometry(geometry);
+    setting.endGroup();
+}
 
 //*HERE THE MAIN VIEWS GET SETUP WITH THEIR SIGNALS AND SLOTS**//
 void MainWindow::setUpViews()
@@ -495,7 +518,7 @@ void MainWindow::addToPlayed(QString url)
 
 void MainWindow::resizeEvent(QResizeEvent* event)
 {
-    if(this->viewMode == FULLMODE && event->size().width() < this->minimumSize().width()+20)
+    if(this->viewMode == FULLMODE && rightFrame->size().width() < 200)
         go_playlistMode();
 
     QMainWindow::resizeEvent(event);
@@ -799,9 +822,10 @@ void MainWindow::expand()
     mainLayout->setContentsMargins(6,6,6,6);
 
     this->setMaximumSize(QWIDGETSIZE_MAX,QWIDGETSIZE_MAX);
-    this->setMinimumSize(0,0);
+    this->setMinimumSize(200,0);
 
-    this->resize(700,500);
+    this->loadSettings();
+    //this->resize(700,500);
     /*this->setWindowFlags(defaultWindowFlags);
     this->show();*/
 
@@ -842,6 +866,7 @@ void MainWindow::go_mini()
 void MainWindow::go_playlistMode()
 {
 
+
     QString icon;
     switch(prevIndex)
     {
@@ -874,7 +899,8 @@ void MainWindow::go_playlistMode()
     int oldHeigh = this->size().height();
 
     this->resize(200,oldHeigh);
-    this->setMinimumSize(0,0);
+    this->setMaximumSize(200,QWIDGETSIZE_MAX);
+    this->setMinimumSize(200,0);
     this->setFixedWidth(200);
 
     //this->adjustSize();
@@ -910,7 +936,7 @@ void MainWindow::on_hide_sidebar_btn_clicked()
 {
     switch(this->viewMode)
     {
-    case FULLMODE: go_playlistMode(); break;
+    case FULLMODE: this->saveSettings(); go_playlistMode(); break;
 
     case PLAYLISTMODE: go_mini(); break;
 

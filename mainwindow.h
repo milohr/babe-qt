@@ -21,7 +21,7 @@
 #include <QMenu>
 #include <QFrame>
 #include <QSize>
-#include <QDockWidget>
+#include <QSettings>
 
 #include <QPixmap>
 #include <QDir>
@@ -182,11 +182,9 @@ private:
     QGridLayout * mainLayout;
     QStackedWidget *views;
 
-    QDockWidget *leftDock;
     QFrame *leftFrame;
     QGridLayout *leftFrame_layout;
 
-    QDockWidget *rightDock;
     QFrame *rightFrame;
     QFrame *line;
     QFrame *lineV;
@@ -231,6 +229,8 @@ private:
     void clearCurrentList();
     bool isBabed(QMap<int, QString> track);
     void feedRabbit();
+    void saveSettings();
+    void loadSettings();
 
     /*the streaming */
     QMediaPlayer *player = new QMediaPlayer();
