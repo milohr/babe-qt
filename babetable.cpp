@@ -756,7 +756,27 @@ QMap<int, QString> BabeTable::getRowData(int row)
 {  
     QString location = this->model()->data(this->model()->index(row, LOCATION)).toString();
 
-    return connection.getTrackData("SELECT * FROM tracks WHERE location = \"" + location + "\"").first();
+    if(connection.check_existance("tracks","location",location))
+        return connection.getTrackData("SELECT * FROM tracks WHERE location = \"" + location + "\"").first();
+    else
+    {
+        QMap<int,QString> data;
+
+        QString track = this->model()->data(this->model()->index(row, TRACK)).toString();
+        QString title = this->model()->data(this->model()->index(row, TITLE)).toString();
+        QString artist = this->model()->data(this->model()->index(row, ARTIST)).toString();
+        QString album = this->model()->data(this->model()->index(row, ALBUM)).toString();
+        QString genre = this->model()->data(this->model()->index(row, GENRE)).toString();
+        QString location = this->model()->data(this->model()->index(row, LOCATION)).toString();
+        QString stars = this->model()->data(this->model()->index(row, STARS)).toString();
+        QString babe = this->model()->data(this->model()->index(row, BABE)).toString();
+        QString playlist = this->model()->data(this->model()->index(row, PLAYLIST)).toString();
+        QString played = this->model()->data(this->model()->index(row, PLAYED)).toString();
+        QString art = this->model()->data(this->model()->index(row, ART)).toString();
+
+        const  QMap<int, QString> map{{TRACK,track}, {TITLE,title}, {ARTIST,artist},{ALBUM,album},{GENRE,genre},{LOCATION,location},{STARS,stars},{BABE,babe},{ART,art},{PLAYED,played},{PLAYLIST,playlist}};
+        return map;
+    }
 }
 
 
@@ -883,7 +903,7 @@ void BabeTable::colorizeRow(const int &row, const QString &color)
 
 void BabeTable::queueIt_action()
 {
-   emit queueIt_clicked(getRowData(rRow));
+    emit queueIt_clicked(getRowData(rRow));
 }
 
 void BabeTable::flushTable()

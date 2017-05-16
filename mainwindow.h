@@ -122,7 +122,7 @@ private slots:
     void settingsView();
 
     /*the view stacked actions*/
-    bool addToCollectionDB(const QStringList &url,const QString &babe=0);
+    bool addToCollectionDB(const QStringList &url,const QString &babe="0");
     void scanNewDir(const QString &url,const QString &babe="0");
     void setToolbarIconSize(const int &iconSize);
     void collectionDBFinishedAdding(bool state);

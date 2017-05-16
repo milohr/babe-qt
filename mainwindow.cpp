@@ -644,9 +644,9 @@ void MainWindow::dropEvent(QDropEvent *event)
         if(infoList.size()==2)
         {
             //qDebug()<<"album: " << infoList.at(0) << "artist: "<< infoList.at(1);
-            QString _artist = infoList.at(1).simplified();
-            QString _album = infoList.at(0).simplified();
-            mapList = settings_widget->getCollectionDB().getTrackData(QString("SELECT * FROM tracks WHERE artist = \""+_artist+"\" and album = \""+_album+"\" ORDER by track asc "));
+            QString artist_ = infoList.at(1).simplified();
+            QString album_ = infoList.at(0).simplified();
+            mapList = settings_widget->getCollectionDB().getTrackData(QString("SELECT * FROM tracks WHERE artist = \""+artist_+"\" and album = \""+album_+"\" ORDER by track asc "));
 
         }else
             mapList = settings_widget->getCollectionDB().getTrackData(QString("SELECT * FROM tracks WHERE artist = \""+info+"\" ORDER by album asc, track asc "));
@@ -683,7 +683,7 @@ void MainWindow::setCoverArt(const QString &artist, const QString &album,const Q
     qDebug()<<"Trying to retieve the cover art from Pulpo for"<< title << artist << album;
     Pulpo coverArt(title,artist,album);
     connect(&coverArt,&Pulpo::albumArtReady,this,&MainWindow::putPixmap);
-    coverArt.fetchAlbumInfo(Pulpo::AlbumArt,Pulpo::Spotify);
+    coverArt.fetchAlbumInfo(Pulpo::AlbumArt,Pulpo::LastFm);
 }
 
 void MainWindow::putPixmap(const QByteArray &array)
@@ -1271,6 +1271,7 @@ void MainWindow::update()
 
     }else
     {
+        qDebug()<<"no song to play";
         seekBar->setValue(0);
         seekBar->setEnabled(false);
     }
@@ -1469,16 +1470,13 @@ bool MainWindow::babeIt(const QMap<int, QString> &track)
             if(addToCollectionDB({url},"1"))
             {
                 nof.notify("Song Babe'd it",track[BabeTable::TITLE]+" by "+track[BabeTable::ARTIST]);
+                ui->fav_btn->setEnabled(true);
                 return true;
-            }
-            else return false;
+            }else return false;
 
-            ui->fav_btn->setEnabled(true);
         }
 
     }
-
-    return true;
 }
 
 void  MainWindow::infoIt(const QString &title, const QString &artist, const QString &album)
@@ -1661,12 +1659,12 @@ void MainWindow::on_rowInserted(QModelIndex model ,int x,int y)
 
 void MainWindow::clearMainList()
 {
-    album_art->putDefaultPixmap();
-    currentList.clear();
-    current_song.clear();
+    this->album_art->putDefaultPixmap();
+    this->currentList.clear();
+    this->current_song.clear();
     this->mainList->flushTable();
-    lCounter=-1;
-    player->stop();
+    this->lCounter=-1;
+    this->player->stop();
 }
 
 void MainWindow::on_tracks_view_2_clicked()
