@@ -33,10 +33,9 @@ void CollectionDB::removePath(const QString &path)
 {
     if (path.isEmpty())
         return;
-    qDebug() << "trying to delete all from: " << path;
-    QSqlQuery queryTracks;
-    queryTracks.prepare("DELETE FROM tracks WHERE location LIKE \"%" + path + "%\"");
-    bool success = queryTracks.exec();
+    QVariantMap where;
+    where.insert("location", path);
+    bool success = m_tracksDB->remove(where, "LIKE") > 0;
     emit dbActionFinished(success);
     if (!success)
         qDebug() << "removePerson error: ";
