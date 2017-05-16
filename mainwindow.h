@@ -168,7 +168,7 @@ private:
 
     Ui::MainWindow *ui;
 
-    int PLAYLIST_SIZE = BaeUtils::getWidgetSizeHint(BaeUtils::BIG_ALBUM_FACTOR,BaeUtils::BIG_ALBUM);
+    int ALBUM_SIZE = BaeUtils::getWidgetSizeHint(BaeUtils::BIG_ALBUM_FACTOR,BaeUtils::BIG_ALBUM);
 
     CollectionDB connection;
 

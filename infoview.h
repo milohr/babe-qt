@@ -31,7 +31,7 @@ public:
 private:
 
     Ui::InfoView *ui;
-
+    Pulpo info;
     int ALBUM_SIZE_BIG = BaeUtils::getWidgetSizeHint(BaeUtils::BIG_ALBUM_FACTOR,BaeUtils::BIG_ALBUM);
     int ALBUM_SIZE_MEDIUM = BaeUtils::getWidgetSizeHint(BaeUtils::MEDIUM_ALBUM_FACTOR,BaeUtils::MEDIUM_ALBUM);
 
@@ -49,7 +49,7 @@ public slots:
     void setArtistArt(const QString &url);
     void setLyrics(QString lyrics);
     void setArtistInfo(const QString &info);
-    void setArtistTagInfo(QStringList tags);
+    void setArtistTagInfo(const QStringList &tags);
     void setTagsInfo(QStringList);
     QStringList getTags();
     QStringList getSimilarArtistTags();

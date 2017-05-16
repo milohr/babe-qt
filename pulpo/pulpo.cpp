@@ -27,6 +27,14 @@ Pulpo::Pulpo(QString title_, QString artist_, QString album_, QObject *parent)
 
 Pulpo::~Pulpo() {}
 
+void Pulpo::feed(const QString &title, const QString &artist, const QString &album)
+{
+    this->album=BaeUtils::fixString(album);
+    this->artist=BaeUtils::fixString(artist);
+   this->title=BaeUtils::fixString(title);
+
+}
+
 bool Pulpo::fetchArtistInfo(const ArtistInfo &infoType, const InfoServices &service, const bool &recursive)
 {
     if(!this->artist.isEmpty())

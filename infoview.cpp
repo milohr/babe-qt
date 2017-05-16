@@ -147,8 +147,8 @@ void InfoView::hideArtistInfo()
     }
 }
 
-void InfoView::setArtistTagInfo(QStringList tags)
-{    
+void InfoView::setArtistTagInfo(const QStringList &tags)
+{
     if(!tags.isEmpty())
     {
         ui->similarArtistInfo->setVisible(true);
@@ -238,9 +238,10 @@ void InfoView::getTrackInfo(const QString &title_, const QString &artist_, const
     {
         this->artist->setArtist(artist_);
         //this->album->setAlbum(album);
+        info.removeEventFilter(&info);
+        info.feed(title_,artist_,album_);
 
-        Pulpo info(title_,artist_,album_);
-        connect(&info, &Pulpo::albumWikiReady, this, &InfoView::setAlbumInfo);
+        connect(&info, &Pulpo::albumWikiReady, this, &InfoView::setAlbumInfo, Qt::UniqueConnection);
         connect(&info, &Pulpo::artistWikiReady, this, &InfoView::setArtistInfo);
         connect(&info, &Pulpo::artistSimilarReady, [this] (QMap<QString,QByteArray> info)
         {

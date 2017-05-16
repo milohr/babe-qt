@@ -32,7 +32,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setWindowIcon(QIcon(":Data/data/babe_48.svg"));
     this->setWindowIconText("Babe...");
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    this->setMinimumSize(PLAYLIST_SIZE,0);
+    this->setMinimumSize(ALBUM_SIZE,0);
     this->setGeometry(QStyle::alignedRect(
                           Qt::LeftToRight,
                           Qt::AlignCenter,
@@ -158,8 +158,8 @@ void MainWindow::setUpViews()
     mainList->hideColumn(BabeTable::ARTIST);
     mainList->horizontalHeader()->setVisible(false);
     //mainList->setFixedWidth(200);
-    mainList->setMaximumWidth(PLAYLIST_SIZE);
-    mainList->setMinimumHeight(PLAYLIST_SIZE);
+    mainList->setMaximumWidth(ALBUM_SIZE);
+    mainList->setMinimumHeight(ALBUM_SIZE);
     mainList->setAddMusicMsg("\nDrag and drop music here!");
     connect(mainList, &BabeTable::tableWidget_doubleClicked, this, &MainWindow::on_mainList_clicked);
     //connect(mainList,SIGNAL(tableWidget_doubleClicked(QList<QMap<int, QString>>)),this,SLOT(on_mainList_clicked(QList<QMap<int, QString>>)));
@@ -368,17 +368,17 @@ void MainWindow::setUpPlaylist()
     playlistWidget = new QWidget(this);
     playlistWidget->setLayout(playlistWidget_layout);
 
-    album_art = new Album(":Data/data/babe.png",PLAYLIST_SIZE,0,false);
+    album_art = new Album(":Data/data/babe.png",ALBUM_SIZE,0,false);
     connect(album_art,&Album::playAlbum,this,&MainWindow::putAlbumOnPlay);
     connect(album_art,&Album::changedArt,this,&MainWindow::changedArt);
     connect(album_art,&Album::babeAlbum_clicked,this,&MainWindow::babeAlbum);
 
-    album_art->setFixedSize(PLAYLIST_SIZE,PLAYLIST_SIZE);
-    album_art->setTitleGeometry(0,0,PLAYLIST_SIZE,static_cast<int>(PLAYLIST_SIZE*0.15));
+    album_art->setFixedSize(ALBUM_SIZE,ALBUM_SIZE);
+    album_art->setTitleGeometry(0,0,ALBUM_SIZE,static_cast<int>(ALBUM_SIZE*0.15));
     album_art->titleVisible(false);
 
     ui->controls->setParent(album_art);
-    ui->controls->setGeometry(0,PLAYLIST_SIZE-static_cast<int>(PLAYLIST_SIZE*0.25),PLAYLIST_SIZE,static_cast<int>(PLAYLIST_SIZE*0.25));
+    ui->controls->setGeometry(0,ALBUM_SIZE-static_cast<int>(ALBUM_SIZE*0.25),ALBUM_SIZE,static_cast<int>(ALBUM_SIZE*0.25));
 
     seekBar = new QSlider(this);
     connect(seekBar,SIGNAL(sliderMoved(int)),this,SLOT(on_seekBar_sliderMoved(int)));
@@ -419,7 +419,6 @@ void MainWindow::setUpPlaylist()
         this->addToPlaylist(searchFor(infoTable->getSimilarArtistTags()),true);
         this->addToPlaylist(searchFor(infoTable->getTags()),true);
     });
-
     calibrateBtn_menu->addAction(similarIt);
 
     auto saveIt = new QAction("Save as playlist...");
@@ -552,7 +551,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
 
 void MainWindow::resizeEvent(QResizeEvent* event)
 {
-    if(this->viewMode == FULLMODE && rightFrame->size().width() < PLAYLIST_SIZE)
+    if(this->viewMode == FULLMODE && rightFrame->size().width() < ALBUM_SIZE)
         go_playlistMode();
 
     QMainWindow::resizeEvent(event);
@@ -856,7 +855,7 @@ void MainWindow::expand()
     mainLayout->setContentsMargins(6,6,6,6);
 
     this->setMaximumSize(QWIDGETSIZE_MAX,QWIDGETSIZE_MAX);
-    this->setMinimumSize(PLAYLIST_SIZE,0);
+    this->setMinimumSize(ALBUM_SIZE,0);
 
     this->setGeometry(this->loadSettings("GEOMETRY","MAINWINDOW",this->geometry()).toRect());
     //this->resize(700,500);
@@ -884,8 +883,8 @@ void MainWindow::go_mini()
     rightFrame->setFrameShadow(QFrame::Plain);
     rightFrame->setFrameShape(QFrame::NoFrame);
 
-    this->resize(PLAYLIST_SIZE,PLAYLIST_SIZE);
-    this->setFixedSize(PLAYLIST_SIZE,PLAYLIST_SIZE);
+    this->resize(ALBUM_SIZE,ALBUM_SIZE);
+    this->setFixedSize(ALBUM_SIZE,ALBUM_SIZE);
     mainLayout->setContentsMargins(0,0,0,0);
 
     /*this->setWindowFlags(this->windowFlags() | Qt::Tool | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
@@ -933,10 +932,10 @@ void MainWindow::go_playlistMode()
 
     int oldHeigh = this->size().height();
 
-    this->resize(PLAYLIST_SIZE,oldHeigh);
-    this->setMaximumSize(PLAYLIST_SIZE,QWIDGETSIZE_MAX);
-    this->setMinimumSize(PLAYLIST_SIZE,0);
-    this->setFixedWidth(PLAYLIST_SIZE);
+    this->resize(ALBUM_SIZE,oldHeigh);
+    this->setMaximumSize(ALBUM_SIZE,QWIDGETSIZE_MAX);
+    this->setMinimumSize(ALBUM_SIZE,0);
+    this->setFixedWidth(ALBUM_SIZE);
 
     //this->adjustSize();
     //this->setWindowFlags(defaultWindowFlags);

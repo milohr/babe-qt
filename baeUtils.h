@@ -23,6 +23,15 @@ static const double BIG_ALBUM_FACTOR = 0.039;
 static const double MEDIUM_ALBUM_FACTOR = 0.013;
 static const double SMALL_ALBUM_FACTOR = 0.006;
 
+static inline int getWidgetSizeHint(const double &factor, const int &deafultValue)
+{
+    int ALBUM_SIZE = deafultValue;
+    auto screenSize = QApplication::desktop()->availableGeometry().size();
+    int albumSizeHint =  static_cast<int>(sqrt((screenSize.height()*screenSize.width())*factor));
+    ALBUM_SIZE = albumSizeHint > ALBUM_SIZE? albumSizeHint : ALBUM_SIZE;
+    return ALBUM_SIZE;
+}
+
 static inline QString getNameFromLocation(const QString &str)
 {
     QString ret;
@@ -143,14 +152,7 @@ static inline bool fileExists(const QString &url)
     else return false;
 }
 
-static inline int getWidgetSizeHint(const double &factor, const int &deafultValue)
-{
-    int ALBUM_SIZE = deafultValue;
-    auto screenSize = QApplication::desktop()->availableGeometry().size();
-    int playlistSizeHint =  static_cast<int>(sqrt((screenSize.height()*screenSize.width())*factor));
-    ALBUM_SIZE = playlistSizeHint > ALBUM_SIZE? playlistSizeHint : ALBUM_SIZE;
-   return ALBUM_SIZE;
-}
+
 }
 
 #endif // UTILS_H

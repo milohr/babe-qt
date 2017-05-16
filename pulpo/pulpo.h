@@ -64,6 +64,7 @@ public:
     explicit Pulpo(QString title="", QString artist ="", QString album="", QObject *parent = 0);
     ~Pulpo();
 
+    void feed(const QString &title, const QString &artist, const QString &album);
     QVariant getStaticAlbumInfo(const AlbumInfo &infoType);
     QVariant getStaticArtistInfo(const ArtistInfo &infoType);
     QVariant getStaticTrackInfo(const TrackInfo &infoType);
