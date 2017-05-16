@@ -264,7 +264,11 @@ int Database::remove(const QString &tableName, const QVariantMap &where, const Q
         whereStr += QString("%1%2 %3 '%4'").arg(separator).arg(j.key()).arg(whereOperator).arg(j.value().toString());
         ++j;
     }
-    if (queryExec(QString(QStringLiteral("DELETE FROM %1 WHERE %2")).arg(tableName).arg(whereStr)))
+    QString query(QStringLiteral("DELETE FROM %1"));
+    query.arg(tableName);
+    if (!where.isEmpty())
+        query.append(QStringLiteral("WHERE ") + whereStr);
+    if (queryExec(query))
         return numRowsAffected();
     return 0;
 }
