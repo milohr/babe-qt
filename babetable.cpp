@@ -16,6 +16,8 @@
 
 #include "babetable.h"
 
+#include <database/tracksdb.h>
+
 BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent)
 {
     connect(this, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(on_tableWidget_doubleClicked(QModelIndex)));
@@ -311,7 +313,7 @@ void BabeTable::populateTableView(const QList<QMap<int,QString>> &mapList, bool 
         this->setSortingEnabled(true);
         emit finishedPopulating();
     } else {
-        qDebug() << "Error: the mapList was empty";
+        qDebug() << "Error: the mapList is empty";
     }
 }
 
@@ -331,7 +333,7 @@ void BabeTable::removeMissing(const QStringList &missingFiles)
 
 void BabeTable::populateTableView(const QString &indication, bool descriptiveTitle, bool coloring)
 {
-    qDebug() << "ON POPULATE:"<<indication;
+    qDebug() << "ON POPULATE:" << indication;
     this->setSortingEnabled(false);
     bool missingDialog = false;
     QStringList missingFiles;

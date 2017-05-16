@@ -1220,7 +1220,8 @@ bool MainWindow::babeIt(const QMap<int, QString> &track)
     if (isBabed(track))
         return unbabeIt(track);
     QString url = track[BabeTable::LOCATION];
-
+    for (int i = 0; i < track.size(); i++)
+        qDebug() << "babeIt map index " << track.value(i);
     if (settings_widget->getCollectionDB().check_existance("tracks", "location", url)) {
         if (settings_widget->getCollectionDB().insertInto("tracks", "babe", url, 1)) {
             nof.notify("Song Babe'd it", track[BabeTable::TITLE] + " by " + track[BabeTable::ARTIST]);
@@ -1267,6 +1268,7 @@ void MainWindow::scanNewDir(QString url, QString babe)
 
 bool MainWindow::addToCollectionDB(QStringList url, QString babe)
 {
+    qDebug() << "addToCollectionDB(QStringList url, QString babe): " << url.at(0);
     if (settings_widget->getCollectionDB().addTrack(url, babe.toInt())) {
         if (babe.contains("1")) {
             for (auto track : url) {

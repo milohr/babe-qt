@@ -133,13 +133,13 @@ signals:
     void leftTable();
     void finishedPopulating();
     void rightClicked(const int row, const int column);
-    void babeIt_clicked(QMap<int, QString> track);
+    void babeIt_clicked(const QMap<int, QString> &track);
     void removeIt_clicked(int index);
     void createPlaylist_clicked();
     void refreshPlaylistsMenu(QStringList list);
     void moodIt_clicked(const int &row, const QString &color);
-    void queueIt_clicked(QMap<int, QString> track);
-    void infoIt_clicked(QString title, QString artist, QString album);
+    void queueIt_clicked(const QMap<int, QString> &track);
+    void infoIt_clicked(const QString &title, const QString &artist, const QString &album);
 };
 
 #endif // BABETABLE_H
