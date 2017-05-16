@@ -94,10 +94,10 @@ protected:
 
 public slots:
 
-    void addToPlaylist(QList<QMap<int,QString>> mapList, bool notRepeated=false);
+    void addToPlaylist(const QList<QMap<int,QString>> &mapList, const bool &notRepeated=false);
     void putPixmap(const QByteArray &array);
-    void populateResultsTable(QList<QMap<int,QString>> mapList);
-    QList<QMap<int,QString>> searchFor(QStringList queries);
+    void populateResultsTable(const QList<QMap<int,QString>> &mapList);
+    QList<QMap<int,QString>> searchFor(const QStringList &queries);
     void dummy();
 
 private slots:
@@ -105,9 +105,9 @@ private slots:
     void on_hide_sidebar_btn_clicked();
     void on_shuffle_btn_clicked();
     void on_open_btn_clicked();
-    void on_mainList_clicked(QList<QMap<int, QString>> list);
+    void on_mainList_clicked(const QList<QMap<int, QString>> &list);
     void update();
-    void on_seekBar_sliderMoved(int position);
+    void on_seekBar_sliderMoved(const int &position);
     void on_play_btn_clicked();
     void on_backward_btn_clicked();
     void on_foward_btn_clicked();
@@ -122,8 +122,8 @@ private slots:
     void settingsView();
 
     /*the view stacked actions*/
-    bool addToCollectionDB(QStringList url,QString babe=0);
-    void scanNewDir(QString url,QString babe="0");
+    bool addToCollectionDB(const QStringList &url,const QString &babe=0);
+    void scanNewDir(const QString &url,const QString &babe="0");
     void setToolbarIconSize(const int &iconSize);
     void collectionDBFinishedAdding(bool state);
     void on_fav_btn_clicked();
@@ -139,28 +139,27 @@ private slots:
 
     void AlbumsViewOrder(QString order);
     void refreshTables();
-    void addToPlayed(QString url);
+    void addToPlayed(const QString &url);
     void on_tracks_view_2_clicked();
     void on_addAll_clicked();
     void saveResultsTo(QAction *action);
     void on_saveResults_clicked();
 
     void removeSong(const int &index);
-    void putAlbumOnPlay(QMap<int,QString> info);
+    void putAlbumOnPlay(const QMap<int,QString> &info);
     void putOnPlay(const QList<QMap<int,QString>> &mapList);
-    void changedArt(QMap<int, QString> info);
-    void babeAlbum(QMap<int, QString> info);
+    void changedArt(const QMap<int, QString> &info);
+    void babeAlbum(const QMap<int, QString> &info);
     bool loadCover(const QString &artist, const QString &album, const QString &title);
     bool babeIt(const QMap<int, QString> &track);
-    bool unbabeIt(QMap<int, QString> track);
+    bool unbabeIt(const QMap<int, QString> &track);
     void loadMood();
-    bool removeQueuedTrack(QMap<int, QString> track);
-    void addToQueue(QMap<int,QString> track);
+    bool removeQueuedTrack(const QMap<int, QString> &track);
+    void addToQueue(const QMap<int,QString> &track);
     void on_filterBtn_clicked();
     void on_filter_textChanged(const QString &arg1);
-    void infoIt(QString title, QString artist, QString album);
-    void albumDoubleClicked(QMap<int, QString> info);
-
+    void infoIt(const QString &title, const QString &artist, const QString &album);
+    void albumDoubleClicked(const QMap<int, QString> &info);
     void on_playAll_clicked();
 
 private:
@@ -232,7 +231,7 @@ private:
     void updateList();
     void populateMainList();
     void clearCurrentList();
-    bool isBabed(QMap<int, QString> track);
+    bool isBabed(const QMap<int, QString> &track);
     void feedRabbit();
     void saveSettings(const QString &key, const QVariant &value,const QString &group);
     QVariant loadSettings(const QString &key, const QString &group, const QVariant &defaultValue = QVariant());
@@ -267,9 +266,9 @@ private:
 
 
 signals:
-    void finishedPlayingSong(QString url);
+    void finishedPlayingSong(const QString &url);
     void collectionChecked();
-    void fetchCover(QString artist, QString album, QString title);
+    void fetchCover(const QString &artist, const QString &album,const QString &title);
 
 };
 

@@ -14,7 +14,10 @@ using namespace std;
 namespace BaeUtils
 {
 
-enum widgetSizeHint {BIG_ALBUM=200,MEDIUM_ALBUM=120,SMALL_ALBUM=80};
+enum ALbumSizeHint {BIG_ALBUM=200,MEDIUM_ALBUM=120,SMALL_ALBUM=80};
+
+static const int MAX_ALBUM_SIZE=300;
+static const int MIN_ALBUM_SIZE=80;
 
 static const double BIG_ALBUM_FACTOR = 0.039;
 static const double MEDIUM_ALBUM_FACTOR = 0.013;
@@ -140,16 +143,13 @@ static inline bool fileExists(const QString &url)
     else return false;
 }
 
-
-
-
-static inline int getWidgetSizeHint(double factor, int deafultValue)
+static inline int getWidgetSizeHint(const double &factor, const int &deafultValue)
 {
-    int PLAYLIST_SIZE = deafultValue;
+    int ALBUM_SIZE = deafultValue;
     auto screenSize = QApplication::desktop()->availableGeometry().size();
     int playlistSizeHint =  static_cast<int>(sqrt((screenSize.height()*screenSize.width())*factor));
-    PLAYLIST_SIZE = playlistSizeHint > PLAYLIST_SIZE? playlistSizeHint : PLAYLIST_SIZE;
-   return PLAYLIST_SIZE;
+    ALBUM_SIZE = playlistSizeHint > ALBUM_SIZE? playlistSizeHint : ALBUM_SIZE;
+   return ALBUM_SIZE;
 }
 }
 

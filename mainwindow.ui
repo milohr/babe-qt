@@ -40,7 +40,7 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>0</y>
+      <y>30</y>
       <width>32</width>
       <height>32</height>
      </rect>
@@ -336,7 +336,7 @@
     <property name="geometry">
      <rect>
       <x>70</x>
-      <y>10</y>
+      <y>60</y>
       <width>171</width>
       <height>28</height>
      </rect>
@@ -489,6 +489,14 @@
     </layout>
    </widget>
    <widget class="QWidget" name="playlistUtils" native="true">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>217</width>
+      <height>23</height>
+     </rect>
+    </property>
     <property name="sizePolicy">
      <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
       <horstretch>0</horstretch>
@@ -968,6 +976,21 @@ border-top: 1px solid #333;
      </item>
     </layout>
    </widget>
+   <zorder>playlists_view</zorder>
+   <zorder>artists_view</zorder>
+   <zorder>rabbit_view</zorder>
+   <zorder>settings_view</zorder>
+   <zorder>albums_view</zorder>
+   <zorder>tracks_view</zorder>
+   <zorder>info_view</zorder>
+   <zorder>searchWidget</zorder>
+   <zorder>collectionUtils</zorder>
+   <zorder>playlistUtils</zorder>
+   <zorder>frame_4</zorder>
+   <zorder>frame_5</zorder>
+   <zorder>frame_6</zorder>
+   <zorder>controls</zorder>
+   <zorder>search</zorder>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <property name="styleSheet">

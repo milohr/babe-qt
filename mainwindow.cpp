@@ -258,9 +258,9 @@ void MainWindow::setUpSidebar()
     auto *right_spacer = new QWidget(this);
     right_spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    ui->mainToolBar->setContentsMargins(0,0,0,0);
+    /*ui->mainToolBar->setContentsMargins(0,0,0,0);
     ui->mainToolBar->layout()->setMargin(0);
-    ui->mainToolBar->layout()->setSpacing(0);
+    ui->mainToolBar->layout()->setSpacing(0);*/
     ui->mainToolBar->setStyleSheet(QString("QToolBar {margin:0; background-color:rgba( 0, 0, 0, 0); background-image:url('%1');} QToolButton{ border-radius:0;}"
                                            " QToolButton:checked{border-radius:0; background: %2}").arg(":Data/data/pattern.png",this->palette().color(QPalette::Highlight).name()));
 
@@ -441,7 +441,7 @@ void MainWindow::setUpRightFrame()
 }
 
 
-void MainWindow::changedArt(QMap<int,QString> info)
+void MainWindow::changedArt(const QMap<int, QString> &info)
 {
     QString artist =info[Album::ARTIST];
     QString album = info[Album::ALBUM];
@@ -449,7 +449,7 @@ void MainWindow::changedArt(QMap<int,QString> info)
     settings_widget->getCollectionDB().execQuery(QString("UPDATE albums SET art = \"%1\" WHERE title = \"%2\" AND artist = \"%3\"").arg(path,album,artist) );
 }
 
-void MainWindow::albumDoubleClicked(QMap<int, QString> info)
+void MainWindow::albumDoubleClicked(const QMap<int, QString> &info)
 {
     QString artist =info[Album::ARTIST];
     QString album = info[Album::ALBUM];
@@ -465,7 +465,7 @@ void MainWindow::albumDoubleClicked(QMap<int, QString> info)
 
 }
 
-void MainWindow::putAlbumOnPlay(QMap<int,QString> info)
+void MainWindow::putAlbumOnPlay(const QMap<int,QString> &info)
 {
     QString artist =info[Album::ARTIST];
     QString album = info[Album::ALBUM];
@@ -504,7 +504,7 @@ void MainWindow::putOnPlay(const QList<QMap<int,QString>> &mapList)
     }
 }
 
-void MainWindow::addToPlayed(QString url)
+void MainWindow::addToPlayed(const QString &url)
 {
     if(settings_widget->getCollectionDB().checkQuery("SELECT * FROM tracks WHERE location = \""+url+"\""))
     {
@@ -1022,7 +1022,7 @@ void MainWindow::updateList()
 }
 
 
-void MainWindow::on_mainList_clicked(QList<QMap<int,QString>> list)
+void MainWindow::on_mainList_clicked(const QList<QMap<int, QString> > &list)
 {
     Q_UNUSED(list);
     lCounter = mainList->getIndex();
@@ -1145,7 +1145,7 @@ void MainWindow::feedRabbit()
 
 }
 
-bool MainWindow::isBabed(QMap<int,QString> track)
+bool MainWindow::isBabed(const QMap<int, QString> &track)
 {
     if(settings_widget->getCollectionDB().checkQuery("SELECT * FROM tracks WHERE location = \""+track[BabeTable::LOCATION]+"\" AND babe = \"1\""))
         return true;
@@ -1231,7 +1231,7 @@ bool MainWindow::loadCover(const QString &artist, const QString &album, const QS
     }
 }
 
-void MainWindow::addToQueue(QMap<int,QString> track)
+void MainWindow::addToQueue(const QMap<int, QString> &track)
 {
     queued_song_pos = queued_song_pos > 0 ? queued_song_pos+1 : current_song_pos+1;
     queued_songs.insert(track[BabeTable::LOCATION],track);
@@ -1243,7 +1243,7 @@ void MainWindow::addToQueue(QMap<int,QString> track)
 
 }
 
-void MainWindow::on_seekBar_sliderMoved(int position)
+void MainWindow::on_seekBar_sliderMoved(const int &position)
 {
     player->setPosition(player->duration() / 1000 * position);
 }
@@ -1277,7 +1277,7 @@ void MainWindow::update()
 }
 
 
-bool MainWindow::removeQueuedTrack(QMap<int, QString> track)
+bool MainWindow::removeQueuedTrack(const QMap<int, QString> &track)
 {
     if(queued_songs.contains(track[BabeTable::LOCATION]))
         if(mainList->item(current_song_pos,BabeTable::TITLE)->icon().name()=="clock")
@@ -1415,7 +1415,7 @@ void MainWindow::on_fav_btn_clicked()
     }
 }
 
-void MainWindow::babeAlbum(QMap<int,QString> info)
+void MainWindow::babeAlbum(const QMap<int, QString> &info)
 {
     QString artist =info[Album::ARTIST];
     QString album = info[Album::ALBUM];
@@ -1431,7 +1431,7 @@ void MainWindow::babeAlbum(QMap<int,QString> info)
 
 }
 
-bool MainWindow::unbabeIt(QMap<int,QString> track)
+bool MainWindow::unbabeIt(const QMap<int, QString> &track)
 {
     if(settings_widget->getCollectionDB().insertInto("tracks","babe",track[BabeTable::LOCATION],0))
     {
@@ -1481,7 +1481,7 @@ bool MainWindow::babeIt(const QMap<int, QString> &track)
     return true;
 }
 
-void  MainWindow::infoIt(QString title, QString artist, QString album)
+void  MainWindow::infoIt(const QString &title, const QString &artist, const QString &album)
 {
     //views->setCurrentIndex(INFO);
     infoView();
@@ -1489,7 +1489,7 @@ void  MainWindow::infoIt(QString title, QString artist, QString album)
 
 }
 
-void MainWindow::scanNewDir(QString url,QString babe)
+void MainWindow::scanNewDir(const QString &url, const QString &babe)
 {
     QStringList list;
     qDebug()<<"scanning new dir: "<<url;
@@ -1514,7 +1514,7 @@ void MainWindow::scanNewDir(QString url,QString babe)
 }
 
 
-bool MainWindow::addToCollectionDB(QStringList url, QString babe)
+bool MainWindow::addToCollectionDB(const QStringList &url, const QString &babe)
 {
     if(settings_widget->getCollectionDB().addTrack(url,babe.toInt()))
     {
@@ -1527,7 +1527,7 @@ bool MainWindow::addToCollectionDB(QStringList url, QString babe)
 }
 
 
-void MainWindow::addToPlaylist(QList<QMap<int,QString>> mapList, bool notRepeated)
+void MainWindow::addToPlaylist(const QList<QMap<int, QString> > &mapList, const bool &notRepeated)
 {
     //currentList.clear();
     qDebug()<<"Adding mapList to mainPlaylist";
@@ -1594,7 +1594,7 @@ void MainWindow::on_search_textChanged(const QString &arg1)
 
 }
 
-void MainWindow::populateResultsTable(QList<QMap<int,QString>> mapList)
+void MainWindow::populateResultsTable(const QList<QMap<int, QString> > &mapList)
 {
     views->setCurrentIndex(RESULTS);
     utilsBar->actions().at(ALBUMS_UB)->setVisible(false);
@@ -1602,7 +1602,7 @@ void MainWindow::populateResultsTable(QList<QMap<int,QString>> mapList)
     resultsTable->populateTableView(mapList,false,false);
 }
 
-QList<QMap<int, QString> > MainWindow::searchFor(QStringList queries)
+QList<QMap<int, QString> > MainWindow::searchFor(const QStringList &queries)
 {
     QList<QMap<int,QString>> mapList;
 
