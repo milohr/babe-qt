@@ -78,7 +78,7 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent) {
     line->setMaximumWidth(1);
 
     btnContainer = new QWidget();
-    btnContainer->setFixedWidth(120);
+    btnContainer->setFixedWidth(ALBUM_SIZE_MEDIUM);
     // btnContainer->setGeometry(0,150,150,30);
     auto *left_spacer = new QWidget();
     left_spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);

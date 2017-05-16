@@ -40,11 +40,11 @@ public:
     explicit settings(QWidget *parent = 0);
     ~settings();
 
-    const QString settingPath= BaeUtils::getSettingPath();
-    const QString collectionDBPath=BaeUtils::getCollectionDBPath();
-    const QString cachePath=BaeUtils::getCachePath();
-    const QString youtubeCachePath=BaeUtils::getYoutubeCachePath();
-    const QString extensionFetchingPath=BaeUtils::getExtensionFetchingPath();
+    const QString settingPath= BaeUtils::SettingPath;
+    const QString collectionDBPath=BaeUtils::CollectionDBPath;
+    const QString cachePath=BaeUtils::CachePath;
+    const QString youtubeCachePath=BaeUtils::YoutubeCachePath;
+    const QString extensionFetchingPath=BaeUtils::ExtensionFetchingPath;
     const QStringList formats {"*.mp4","*.mp3","*.wav","*.flac","*.ogg","*.m4a"};
     bool checkCollection();
     void createCollectionDB();
@@ -102,7 +102,7 @@ private:
     Ui::settings *ui;
 
 
-    const QString notifyDir= BaeUtils::getNotifyDir();
+    const QString notifyDir= BaeUtils::NotifyDir;
     const QString collectionDBName = "collection.db";
     const QString settingsName = "settings.conf";
 

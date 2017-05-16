@@ -37,12 +37,6 @@
        <height>0</height>
       </size>
      </property>
-     <property name="maximumSize">
-      <size>
-       <width>200</width>
-       <height>16777215</height>
-      </size>
-     </property>
      <property name="frameShape">
       <enum>QFrame::NoFrame</enum>
      </property>
@@ -94,7 +88,7 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>200</width>
+           <width>331</width>
            <height>441</height>
           </rect>
          </property>

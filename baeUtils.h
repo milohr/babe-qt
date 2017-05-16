@@ -6,10 +6,20 @@
 #include <QDebug>
 #include <QStandardPaths>
 #include <QFileInfo>
+#include <QApplication>
+#include <QDesktopWidget>
+#include <cmath>
 using namespace std;
 
 namespace BaeUtils
 {
+
+enum widgetSizeHint {BIG_ALBUM=200,MEDIUM_ALBUM=120,SMALL_ALBUM=80};
+
+static const double BIG_ALBUM_FACTOR = 0.039;
+static const double MEDIUM_ALBUM_FACTOR = 0.013;
+static const double SMALL_ALBUM_FACTOR = 0.006;
+
 static inline QString getNameFromLocation(const QString &str)
 {
     QString ret;
@@ -32,12 +42,13 @@ static inline QString getNameFromLocation(const QString &str)
     return ret;
 }
 
-static inline QString getSettingPath() { return QStandardPaths::writableLocation(QStandardPaths::ConfigLocation)+"/babe/";}
-static inline QString getCollectionDBPath() { return QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation)+"/babe/";}
-static inline QString getCachePath() {return QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation)+"/babe/";}
-static inline QString getYoutubeCachePath() { return QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation)+"/babe/youtube/";}
-static inline QString getExtensionFetchingPath() { return QStandardPaths::writableLocation(QStandardPaths::DownloadLocation); }
-static inline QString getNotifyDir(){return QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);}
+static const QString SettingPath = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation)+"/babe/";
+static const QString CollectionDBPath = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation)+"/babe/";
+static const QString CachePath = QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation)+"/babe/";
+static const QString YoutubeCachePath = QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation)+"/babe/youtube/";
+static const QString ExtensionFetchingPath = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
+static const QString NotifyDir = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
+static const QStringList MoodColors = {"#F0FF01","#01FF5B","#3DAEFD","#B401FF","#E91E63"};
 
 
 static inline QString fixTitle(const QString &title,const QString &s,const QString &e)
@@ -129,10 +140,16 @@ static inline bool fileExists(const QString &url)
     else return false;
 }
 
-static inline QStringList getMoodColors ()
-{
-    return  {"#F0FF01","#01FF5B","#3DAEFD","#B401FF","#E91E63"};
 
+
+
+static inline int getWidgetSizeHint(double factor, int deafultValue)
+{
+    int PLAYLIST_SIZE = deafultValue;
+    auto screenSize = QApplication::desktop()->availableGeometry().size();
+    int playlistSizeHint =  static_cast<int>(sqrt((screenSize.height()*screenSize.width())*factor));
+    PLAYLIST_SIZE = playlistSizeHint > PLAYLIST_SIZE? playlistSizeHint : PLAYLIST_SIZE;
+   return PLAYLIST_SIZE;
 }
 }
 

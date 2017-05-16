@@ -47,8 +47,11 @@ public:
 
 private:
 
+    int ALBUM_SIZE_BIG = BaeUtils::getWidgetSizeHint(BaeUtils::BIG_ALBUM_FACTOR,BaeUtils::BIG_ALBUM);
+    int ALBUM_SIZE_MEDIUM = BaeUtils::getWidgetSizeHint(BaeUtils::MEDIUM_ALBUM_FACTOR,BaeUtils::MEDIUM_ALBUM);
+
     int gridSize;
-    int albumSize=120;
+    int albumSize=BaeUtils::getWidgetSizeHint(BaeUtils::MEDIUM_ALBUM_FACTOR,BaeUtils::MEDIUM_ALBUM);
     bool extraList=false;
     QList<Album*> albumsList;
     QList<QListWidgetItem*> itemsList;

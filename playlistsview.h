@@ -31,12 +31,14 @@ public:
     QWidget *btnContainer;
     QString currentPlaylist;
     QStringList playlists;
-    QStringList moods = BaeUtils::getMoodColors();
-    QString youtubeCachePath=BaeUtils::getYoutubeCachePath();
+    QStringList moods = BaeUtils::MoodColors;
+    QString youtubeCachePath=BaeUtils::YoutubeCachePath;
 
    // QToolButton *removeBtn;
 
 private:
+
+    int ALBUM_SIZE_MEDIUM = BaeUtils::getWidgetSizeHint(BaeUtils::MEDIUM_ALBUM_FACTOR,BaeUtils::MEDIUM_ALBUM);
 
     QToolButton *addBtn;
     QToolButton *removeBtn;

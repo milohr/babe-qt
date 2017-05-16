@@ -24,7 +24,7 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView)
 {
     ui->setupUi(this);
 
-    artist = new Album(":Data/data/cover.png", 120, 100,false,this);
+    artist = new Album(":Data/data/cover.png", ALBUM_SIZE_MEDIUM, 100,false,this);
     connect(artist,&Album::playAlbum,this,&InfoView::playAlbum_clicked);
 
     /* ui->lyricsText->setLineWrapMode(QTextEdit::NoWrap);
@@ -48,18 +48,18 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView)
 
     auto *right_spacer = new QWidget();
     right_spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    ui->artistFrame->setMaximumWidth(ALBUM_SIZE_BIG);
 
     artistCLayout->addWidget(left_spacer);
     artistCLayout->addWidget(artist);
     artistCLayout->addWidget(right_spacer);
     artistContainer->setLayout(artistCLayout);
-    artistContainer->setMaximumSize(200, 128);
     ui->artistLayout->insertWidget(0, artistContainer);
 
     infoUtils = new QWidget();
     // artistContainer->setStyleSheet("QWidget{background-color: #575757;
     // color:white;}");
-    infoUtils->setMaximumWidth(200);
+    infoUtils->setMaximumWidth(ALBUM_SIZE_BIG);
     auto infoUtils_layout = new QHBoxLayout();
     infoUtils_layout->setContentsMargins(0, 0, 0, 0);
     infoUtils_layout->setSpacing(0);

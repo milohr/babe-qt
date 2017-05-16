@@ -12,8 +12,8 @@ RabbitView::RabbitView(QWidget *parent) : QWidget(parent)
     line->setMaximumHeight(1);
 
     artistSuggestion = new QListWidget(this);
-    artistSuggestion->setGridSize(QSize(80+10,80+10));
-    artistSuggestion->setFixedHeight(120);
+    artistSuggestion->setGridSize(QSize(ALBUM_SIZE_SMALL+10,ALBUM_SIZE_SMALL+10));
+    artistSuggestion->setFixedHeight(ALBUM_SIZE_MEDIUM);
     artistSuggestion->setFrameShape(QFrame::NoFrame);
     artistSuggestion->setViewMode(QListWidget::IconMode);
     artistSuggestion->setResizeMode(QListWidget::Adjust);
@@ -45,7 +45,7 @@ void RabbitView::populateArtistSuggestion(QMap<QString,QByteArray> info)
 {
     for(auto tag: info.keys())
     {
-        auto art = new Album("",80,2,true,this);
+        auto art = new Album("",ALBUM_SIZE_SMALL,2,true,this);
         connect(art, &Album::albumCoverClicked,this,&RabbitView:: filterByArtist);
         connect(art,&Album::playAlbum, [this] (QMap<int,QString> info) { emit playAlbum(info); });
         // connect(art,&Album::changedArt,this,&RabbitView::changedArt_cover);
@@ -56,7 +56,7 @@ void RabbitView::populateArtistSuggestion(QMap<QString,QByteArray> info)
         art->setTitle(BaeUtils::fixString(tag));
         art->titleVisible(false);
         auto item = new QListWidgetItem();
-        item->setSizeHint(QSize(80,80));
+        item->setSizeHint(QSize(ALBUM_SIZE_SMALL,ALBUM_SIZE_SMALL));
         artistSuggestion->addItem(item);
         artistSuggestion->setItemWidget(item, art);
     }

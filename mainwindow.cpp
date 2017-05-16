@@ -18,25 +18,27 @@
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include <QDesktopWidget>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+
+
     this->setWindowTitle(" Babe ... \xe2\x99\xa1  \xe2\x99\xa1 \xe2\x99\xa1 ");
     this->setAcceptDrops(true);
     this->setWindowIcon(QIcon(":Data/data/babe_48.svg"));
     this->setWindowIconText("Babe...");
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    this->setMinimumSize(200,0);
+    this->setMinimumSize(PLAYLIST_SIZE,0);
     this->setGeometry(QStyle::alignedRect(
-                Qt::LeftToRight,
-                Qt::AlignCenter,
-                qApp->desktop()->availableGeometry().size()*0.7,
-                qApp->desktop()->availableGeometry()
-            ));
+                          Qt::LeftToRight,
+                          Qt::AlignCenter,
+                          qApp->desktop()->availableGeometry().size()*0.7,
+                          qApp->desktop()->availableGeometry()
+                          ));
     this->move(this->loadSettings("POSITION","MAINWINDOW",this->pos()).toPoint());
     this->resize(this->loadSettings("SIZE","MAINWINDOW",this->size()).toSize());
 
@@ -154,8 +156,8 @@ void MainWindow::setUpViews()
     mainList->hideColumn(BabeTable::ARTIST);
     mainList->horizontalHeader()->setVisible(false);
     //mainList->setFixedWidth(200);
-    mainList->setMaximumWidth(200);
-    mainList->setMinimumHeight(200);
+    mainList->setMaximumWidth(PLAYLIST_SIZE);
+    mainList->setMinimumHeight(PLAYLIST_SIZE);
     mainList->setAddMusicMsg("\nDrag and drop music here!");
     connect(mainList, &BabeTable::tableWidget_doubleClicked, this, &MainWindow::on_mainList_clicked);
     //connect(mainList,SIGNAL(tableWidget_doubleClicked(QList<QMap<int, QString>>)),this,SLOT(on_mainList_clicked(QList<QMap<int, QString>>)));
@@ -364,17 +366,17 @@ void MainWindow::setUpPlaylist()
     playlistWidget = new QWidget(this);
     playlistWidget->setLayout(playlistWidget_layout);
 
-    album_art = new Album(":Data/data/babe.png",200,0,false);
+    album_art = new Album(":Data/data/babe.png",PLAYLIST_SIZE,0,false);
     connect(album_art,&Album::playAlbum,this,&MainWindow::putAlbumOnPlay);
     connect(album_art,&Album::changedArt,this,&MainWindow::changedArt);
     connect(album_art,&Album::babeAlbum_clicked,this,&MainWindow::babeAlbum);
 
-    album_art->setFixedSize(200,200);
-    album_art->setTitleGeometry(0,0,200,30);
+    album_art->setFixedSize(PLAYLIST_SIZE,PLAYLIST_SIZE);
+    album_art->setTitleGeometry(0,0,PLAYLIST_SIZE,static_cast<int>(PLAYLIST_SIZE*0.15));
     album_art->titleVisible(false);
 
     ui->controls->setParent(album_art);
-    ui->controls->setGeometry(0,200-50,200,50);
+    ui->controls->setGeometry(0,PLAYLIST_SIZE-static_cast<int>(PLAYLIST_SIZE*0.25),PLAYLIST_SIZE,static_cast<int>(PLAYLIST_SIZE*0.25));
 
     seekBar = new QSlider(this);
     connect(seekBar,SIGNAL(sliderMoved(int)),this,SLOT(on_seekBar_sliderMoved(int)));
@@ -531,8 +533,8 @@ void MainWindow::closeEvent(QCloseEvent* event)
 
 void MainWindow::resizeEvent(QResizeEvent* event)
 {
-    if(this->viewMode == FULLMODE && rightFrame->size().width() < 200)
-        go_playlistMode();
+    /*if(this->viewMode == FULLMODE && rightFrame->size().width() < PLAYLIST_SIZE)
+        go_playlistMode();*/
 
     QMainWindow::resizeEvent(event);
 }
@@ -550,7 +552,7 @@ void MainWindow::refreshTables() //tofix
 
     playlistTable->list->clear();
     playlistTable->setDefaultPlaylists();
-    playlistTable->setPlaylistsMoods(BaeUtils::getMoodColors());
+    playlistTable->setPlaylistsMoods(BaeUtils::MoodColors);
 
     QStringList playLists =settings_widget->getCollectionDB().getPlaylists();
     playlistTable->definePlaylists(playLists);
@@ -835,7 +837,7 @@ void MainWindow::expand()
     mainLayout->setContentsMargins(6,6,6,6);
 
     this->setMaximumSize(QWIDGETSIZE_MAX,QWIDGETSIZE_MAX);
-    this->setMinimumSize(200,0);
+    this->setMinimumSize(PLAYLIST_SIZE,0);
 
     this->setGeometry(this->loadSettings("GEOMETRY","MAINWINDOW",this->geometry()).toRect());
     //this->resize(700,500);
@@ -862,8 +864,8 @@ void MainWindow::go_mini()
     rightFrame->setFrameShadow(QFrame::Plain);
     rightFrame->setFrameShape(QFrame::NoFrame);
 
-    this->resize(200,200);
-    this->setFixedSize(200,200);
+    this->resize(PLAYLIST_SIZE,PLAYLIST_SIZE);
+    this->setFixedSize(PLAYLIST_SIZE,PLAYLIST_SIZE);
     mainLayout->setContentsMargins(0,0,0,0);
 
     /*this->setWindowFlags(this->windowFlags() | Qt::Tool | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
@@ -911,10 +913,10 @@ void MainWindow::go_playlistMode()
 
     int oldHeigh = this->size().height();
 
-    this->resize(200,oldHeigh);
-    this->setMaximumSize(200,QWIDGETSIZE_MAX);
-    this->setMinimumSize(200,0);
-    this->setFixedWidth(200);
+    this->resize(PLAYLIST_SIZE,oldHeigh);
+    this->setMaximumSize(PLAYLIST_SIZE,QWIDGETSIZE_MAX);
+    this->setMinimumSize(PLAYLIST_SIZE,0);
+    this->setFixedWidth(PLAYLIST_SIZE);
 
     //this->adjustSize();
     //this->setWindowFlags(defaultWindowFlags);
@@ -1075,7 +1077,8 @@ void MainWindow::loadTrack()
         player->setMedia(QUrl::fromLocalFile(current_song[BabeTable::LOCATION]));
         player->play();
 
-
+        timer->stop();
+        timer->start(3000);
 
         ui->play_btn->setIcon(QIcon(":Data/data/media-playback-pause.svg"));
 

@@ -32,6 +32,9 @@ public:
 
 private:
 
+    int ALBUM_SIZE_MEDIUM = BaeUtils::getWidgetSizeHint(BaeUtils::MEDIUM_ALBUM_FACTOR,BaeUtils::MEDIUM_ALBUM);
+    int ALBUM_SIZE_SMALL = BaeUtils::getWidgetSizeHint(BaeUtils::SMALL_ALBUM_FACTOR,BaeUtils::SMALL_ALBUM);
+
     QListWidget *artistSuggestion;
     BabeTable *generalSuggestion;
 

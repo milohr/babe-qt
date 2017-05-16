@@ -23,6 +23,7 @@
 #include <QSize>
 #include <QSettings>
 #include <QVariant>
+#include <QDesktopWidget>
 
 #include <QPixmap>
 #include <QDir>
@@ -166,9 +167,11 @@ private:
 
     Ui::MainWindow *ui;
 
+    int PLAYLIST_SIZE = BaeUtils::getWidgetSizeHint(BaeUtils::BIG_ALBUM_FACTOR,BaeUtils::BIG_ALBUM);
+
     CollectionDB connection;
 
-    const QString stylePath = BaeUtils::getSettingPath()+"style.qss";
+    const QString stylePath = BaeUtils::SettingPath+"style.qss";
 
     int viewMode = FULLMODE;
 
