@@ -99,8 +99,8 @@ void MainWindow::setUpViews()
     connect(playlistTable, SIGNAL(playlistCreated(QString)), &settings_widget->getCollectionDB(), SLOT(insertPlaylist(QString)));
     connect(playlistTable->table, SIGNAL(tableWidget_doubleClicked(QList<QMap<int, QString>>)), this, SLOT(addToPlaylist(QList<QMap<int, QString>>)));
     connect(playlistTable->table, SIGNAL(removeIt_clicked(int)), this, SLOT(removeSong(int)));
-    connect(playlistTable->table, &BabeTable::babeIt_clicked, this, &MainWindow::babeIt);
-    connect(playlistTable->table, &BabeTable::queueIt_clicked, this, &MainWindow::addToQueue);
+    connect(playlistTable->table, SIGNAL(babeIt_clicked(QMap<int, QString>)), this, SLOT(babeIt(QMap<int, QString>)));
+    connect(playlistTable->table, SIGNAL(queueIt_clicked(QMap<int, QString>)), this, SLOT(addToQueue(QMap<int, QString>)));
     connect(playlistTable->table, SIGNAL(infoIt_clicked(QString, QString, QString)), this, SLOT(infoIt(QString, QString, QString)));
 
     collectionTable = new BabeTable(this);
@@ -109,8 +109,8 @@ void MainWindow::setUpViews()
     connect(collectionTable, SIGNAL(leftTable()), this, SLOT(showControls()));
     connect(collectionTable, SIGNAL(finishedPopulating()), this, SLOT(orderTables()));
     connect(collectionTable, SIGNAL(removeIt_clicked(int)), this, SLOT(removeSong(int)));
-    connect(collectionTable, &BabeTable::babeIt_clicked, this, &MainWindow::babeIt);
-    connect(collectionTable, &BabeTable::queueIt_clicked, this, &MainWindow::addToQueue);
+    connect(collectionTable, SIGNAL(babeIt_clicked(QMap<int, QString>)), this, SLOT(babeIt(QMap<int, QString>)));
+    connect(collectionTable, SIGNAL(queueIt_clicked(QMap<int, QString>)), this, SLOT(addToQueue(QMap<int, QString>)));
     connect(collectionTable, SIGNAL(infoIt_clicked(QString, QString, QString)), this, SLOT(infoIt(QString, QString, QString)));
 
     mainList = new BabeTable(this);
@@ -123,7 +123,7 @@ void MainWindow::setUpViews()
 
     connect(mainList, &BabeTable::tableWidget_doubleClicked, this, &MainWindow::on_mainList_clicked);
     connect(mainList, &BabeTable::removeIt_clicked, this, &MainWindow::removeSong);
-    connect(mainList, &BabeTable::babeIt_clicked, this, &MainWindow::babeIt);
+    connect(mainList, SIGNAL(babeIt_clicked(QMap<int, QString>)), this, SLOT(babeIt(QMap<int, QString>)));
     connect(mainList, &BabeTable::queueIt_clicked, this, &MainWindow::addToQueue);
     connect(mainList, &BabeTable::moodIt_clicked, mainList, &BabeTable::colorizeRow);
     connect(mainList, SIGNAL(infoIt_clicked(QString, QString, QString)), this, SLOT(infoIt(QString, QString, QString)));
@@ -139,7 +139,7 @@ void MainWindow::setUpViews()
     connect(resultsTable, SIGNAL(enteredTable()), this, SLOT(hideControls()));
     connect(resultsTable, SIGNAL(leftTable()), this, SLOT(showControls()));
     connect(resultsTable, SIGNAL(removeIt_clicked(int)), this, SLOT(removeSong(int)));
-    connect(resultsTable, &BabeTable::babeIt_clicked, this, &MainWindow::babeIt);
+    connect(resultsTable, SIGNAL(babeIt_clicked(QMap<int, QString>)), this, SLOT(babeIt(QMap<int, QString>)));
     connect(resultsTable, &BabeTable::queueIt_clicked, this, &MainWindow::addToQueue);
     connect(resultsTable, SIGNAL(infoIt_clicked(QString, QString, QString)), this, SLOT(infoIt(QString, QString, QString)));
 
@@ -147,14 +147,14 @@ void MainWindow::setUpViews()
     connect(rabbitTable, &RabbitView::playAlbum, this, &MainWindow::putAlbumOnPlay);
     connect(rabbitTable->getTable(), SIGNAL(tableWidget_doubleClicked(QList<QMap<int, QString>>)), this, SLOT(addToPlaylist(QList<QMap<int, QString>>)));
     connect(rabbitTable->getTable(), &BabeTable::queueIt_clicked, this, &MainWindow::addToQueue);
-    connect(rabbitTable->getTable(), &BabeTable::babeIt_clicked, this, &MainWindow::babeIt);
+    connect(rabbitTable->getTable(), SIGNAL(babeIt_clicked(QMap<int, QString>)), this, SLOT(babeIt(QMap<int, QString>)));
     connect(rabbitTable->getTable(), &BabeTable::infoIt_clicked, this, &MainWindow::infoIt);
 
     albumsTable = new AlbumsView(false, this);
     connect(albumsTable, SIGNAL(albumOrderChanged(QString)), this, SLOT(AlbumsViewOrder(QString)));
     connect(albumsTable->albumTable, SIGNAL(tableWidget_doubleClicked(QList<QMap<int, QString>>)), this, SLOT(addToPlaylist(QList<QMap<int, QString>>)));
     connect(albumsTable->albumTable, SIGNAL(removeIt_clicked(int)), this, SLOT(removeSong(int)));
-    connect(albumsTable->albumTable, &BabeTable::babeIt_clicked, this, &MainWindow::babeIt);
+    connect(albumsTable->albumTable, SIGNAL(babeIt_clicked(QMap<int, QString>)), this, SLOT(babeIt(QMap<int, QString>)));
     connect(albumsTable->albumTable, &BabeTable::queueIt_clicked, this, &MainWindow::addToQueue);
     connect(albumsTable->albumTable, SIGNAL(infoIt_clicked(QString, QString, QString)), this, SLOT(infoIt(QString, QString, QString)));
     connect(albumsTable, &AlbumsView::playAlbum, this, &MainWindow::putAlbumOnPlay);
@@ -166,7 +166,7 @@ void MainWindow::setUpViews()
     artistsTable->albumTable->showColumn(BabeTable::ALBUM);
     connect(artistsTable->albumTable, SIGNAL(tableWidget_doubleClicked(QList<QMap<int, QString>>)), this, SLOT(addToPlaylist(QList<QMap<int, QString>>)));
     connect(artistsTable->albumTable, SIGNAL(removeIt_clicked(int)), this, SLOT(removeSong(int)));
-    connect(artistsTable->albumTable, &BabeTable::babeIt_clicked, this, &MainWindow::babeIt);
+    connect(artistsTable->albumTable, SIGNAL(babeIt_clicked(QMap<int, QString>)), this, SLOT(babeIt(QMap<int, QString>)));
     connect(artistsTable->albumTable, &BabeTable::queueIt_clicked, this, &MainWindow::addToQueue);
     connect(artistsTable->albumTable, SIGNAL(infoIt_clicked(QString, QString, QString)), this, SLOT(infoIt(QString, QString, QString)));
     connect(artistsTable, &AlbumsView::playAlbum, this, &MainWindow::putAlbumOnPlay);
@@ -183,7 +183,7 @@ void MainWindow::setUpViews()
     settings_widget->readSettings();
     connect(settings_widget, SIGNAL(toolbarIconSizeChanged(int)), this, SLOT(setToolbarIconSize(int)));
     connect(settings_widget, SIGNAL(collectionDBFinishedAdding(bool)), this, SLOT(collectionDBFinishedAdding(bool)));
-    connect(settings_widget, SIGNAL(dirChanged(QString,QString)), this, SLOT(scanNewDir(QString, QString)));
+    connect(settings_widget, SIGNAL(dirChanged(QString, QString)), this, SLOT(scanNewDir(QString, QString)));
     connect(settings_widget, SIGNAL(refreshTables()), this, SLOT(refreshTables()));
 
     /* THE BUTTONS VIEWS */
@@ -484,7 +484,7 @@ void MainWindow::refreshTables() //tofix
     playlistTable->setDefaultPlaylists();
     playlistTable->setPlaylistsMoods(BaeUtils::getMoodColors());
 
-    QStringList playLists =settings_widget->getCollectionDB().getPlaylists();
+    QStringList playLists = settings_widget->getCollectionDB().getPlaylists();
     playlistTable->definePlaylists(playLists);
     playlistTable->setPlaylists(playLists);
 }
@@ -579,7 +579,7 @@ void MainWindow::dummy()
 
 void MainWindow::setCoverArt(const QString &artist, const QString &album, const QString &title)
 {
-    qDebug() << "Trying to retieve the cover art from Pulpo for"<< title << artist << album;
+    qDebug() << "Trying to retieve the cover art from Pulpo for" << title << artist << album;
     Pulpo coverArt(title, artist, album);
     connect(&coverArt, &Pulpo::albumArtReady, this, &MainWindow::putPixmap);
     coverArt.fetchAlbumInfo(Pulpo::AlbumArt, Pulpo::Spotify);
@@ -595,7 +595,7 @@ void MainWindow::putPixmap(const QByteArray &array)
 
 void MainWindow::setToolbarIconSize(const int &iconSize) //tofix
 {
-    qDebug()<< "Toolbar icons size changed";
+    qDebug() << "Toolbar icons size changed";
     ui->mainToolBar->setIconSize(QSize(iconSize, iconSize));
     ui->mainToolBar->update();
 }
