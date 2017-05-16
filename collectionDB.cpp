@@ -43,12 +43,12 @@ void CollectionDB::removePath(const QString &path)
 
 QString CollectionDB::getArtistArt(const QString &artist)
 {
-    QString artistHead;
-    QSqlQuery queryHead("SELECT * FROM artists WHERE title = \""+artist+"\"");
-    while (queryHead.next())
-        if(!queryHead.value(1).toString().isEmpty()&&queryHead.value(1).toString()!="NULL")
-            artistHead = queryHead.value(1).toString();
-    return artistHead;
+    QVariantMap where;
+    where.insert("title", artist);
+    QVariantMap result = m_artistsDB->loadItem(where);
+    if (result.isEmpty())
+        return QStringLiteral("");
+    return result.value("art").toString();
 }
 
 QString CollectionDB::getAlbumArt(const QString &album, const QString &artist)
