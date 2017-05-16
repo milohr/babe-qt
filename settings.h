@@ -43,12 +43,8 @@ public:
     const QString youtubeCachePath = BaeUtils::getYoutubeCachePath();
     const QString extensionFetchingPath = BaeUtils::getExtensionFetchingPath();
     const QStringList formats {"*.mp4", "*.mp3", "*.wav", "*.flac", "*.ogg", "*.m4a"};
-
-    bool checkCollection();
-    void createCollectionDB();
-    CollectionDB &getCollectionDB();
-
     int getToolbarIconSize();
+    CollectionDB &getCollectionDB();
 
     void setSettings(const QStringList &setting);
     void readSettings();

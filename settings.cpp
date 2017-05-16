@@ -336,25 +336,6 @@ void settings::readSettings()
     }
 }
 
-bool settings::checkCollection()
-{
-    if (BaeUtils::fileExists(collectionDBPath + collectionDBName)) {
-        qDebug() << "The CollectionDB does exists.";
-        qDebug() << "collectionDBPath " << collectionDBPath << "collectionDBName: " << collectionDBName;
-        collection_db.openCollection(collectionDBPath + "/" + collectionDBName);
-        collectionWatcher();
-        return true;
-    }
-    return false;
-}
-
-void settings::createCollectionDB()
-{
-    qDebug() << "The CollectionDB doesn't exists. Going to create the database and tables";
-    collection_db.openCollection(collectionDBPath + "/" + collectionDBName);
-    collection_db.prepareCollectionDB();
-}
-
 void settings::populateDB(const QString &path)
 {
     qDebug() << "Function Name: " << Q_FUNC_INFO << " new path for database action: " << path;
