@@ -24,6 +24,8 @@
 #include <QSettings>
 #include <QVariant>
 #include <QDesktopWidget>
+#include <QPoint>
+#include <QSize>
 
 #include <QPixmap>
 #include <QDir>
@@ -173,7 +175,8 @@ private:
     const QString stylePath = BaeUtils::SettingPath+"style.qss";
 
     int viewMode = FULLMODE;
-
+    QPoint expandedPos;
+    QSize expandedSize;
     int prevIndex;
 
     Qt::WindowFlags defaultWindowFlags;

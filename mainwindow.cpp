@@ -39,8 +39,10 @@ MainWindow::MainWindow(QWidget *parent) :
                           qApp->desktop()->availableGeometry().size()*0.7,
                           qApp->desktop()->availableGeometry()
                           ));
-    this->move(this->loadSettings("POSITION","MAINWINDOW",this->pos()).toPoint());
-    this->resize(this->loadSettings("SIZE","MAINWINDOW",this->size()).toSize());
+    expandedPos = this->loadSettings("POSITION","MAINWINDOW",this->pos()).toPoint();
+    expandedSize = this->loadSettings("SIZE","MAINWINDOW",this->size()).toSize();
+    this->move(expandedPos);
+    this->resize(expandedSize);
 
     defaultWindowFlags = this->windowFlags();
     //mpris = new Mpris(this);
@@ -525,16 +527,24 @@ void MainWindow::addToPlayed(const QString &url)
 void MainWindow::closeEvent(QCloseEvent* event)
 {
 
-    this->saveSettings("POSITION",this->pos(),"MAINWINDOW");
-    this->saveSettings("SIZE",this->size(),"MAINWINDOW");
+    if(viewMode == FULLMODE )
+    {
+        this->saveSettings("POSITION",this->pos(),"MAINWINDOW");
+        this->saveSettings("SIZE",this->size(),"MAINWINDOW");
+    }
+    else
+    {
+        this->saveSettings("POSITION",expandedPos,"MAINWINDOW");
+        this->saveSettings("SIZE",expandedSize,"MAINWINDOW");
+    }
 
     QMainWindow::closeEvent(event);
 }
 
 void MainWindow::resizeEvent(QResizeEvent* event)
 {
-    /*if(this->viewMode == FULLMODE && rightFrame->size().width() < PLAYLIST_SIZE)
-        go_playlistMode();*/
+    if(this->viewMode == FULLMODE && rightFrame->size().width() < PLAYLIST_SIZE)
+        go_playlistMode();
 
     QMainWindow::resizeEvent(event);
 }
@@ -846,7 +856,8 @@ void MainWindow::expand()
 
     ui->hide_sidebar_btn->setToolTip("Go Mini");
     ui->hide_sidebar_btn->setIcon(QIcon(":Data/data/mini_mode.svg"));
-
+    expandedPos= this->pos();
+    expandedSize = this->size();
     this->viewMode=FULLMODE;
 }
 
