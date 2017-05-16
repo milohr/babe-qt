@@ -293,3 +293,14 @@ void InfoView::on_similarArtistInfo_anchorClicked(const QUrl &arg1)
     QString query = "artist:"+arg1.toString();
     emit similarArtistTagClicked(query);
 }
+
+QStringList InfoView::getTags()
+{
+    return ui->tagsInfo->toPlainText().split(",");
+}
+
+QStringList InfoView::getSimilarArtistTags()
+{
+    return ui->similarArtistInfo->toPlainText().split(",");
+
+}

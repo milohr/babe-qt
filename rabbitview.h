@@ -30,6 +30,7 @@ public:
     void flushSuggestions(suggestionsTables = ALL);
     BabeTable * getTable() { return this->generalSuggestion; }
 
+
 private:
 
     int ALBUM_SIZE_MEDIUM = BaeUtils::getWidgetSizeHint(BaeUtils::MEDIUM_ALBUM_FACTOR,BaeUtils::MEDIUM_ALBUM);
