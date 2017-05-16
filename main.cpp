@@ -20,8 +20,8 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    a.setApplicationName("Babe");
-    a.setDesktopFileName("Babe");
+    a.setApplicationName("babe");
+    a.setDesktopFileName("babe");
     MainWindow w;
     w.show();
     return a.exec();
