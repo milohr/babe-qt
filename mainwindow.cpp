@@ -44,13 +44,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     this->setUpActions();
 
     //* CHECK FOR DATABASE *//
-    if (settings_widget->checkCollection()) {
-        settings_widget->getCollectionDB().setCollectionLists();
-        populateMainList();
-        emit collectionChecked();
-    } else {
-        settings_widget->createCollectionDB();
-    }
+    //* In this step, database will be created! *//
+    settings_widget->getCollectionDB().setCollectionLists();
+    populateMainList();
+    emit collectionChecked();
 
     timer = new QTimer(this);
     connect(timer, &QTimer::timeout, [this]()
