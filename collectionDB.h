@@ -18,23 +18,25 @@
 #include "track.h"
 #include "taginfo.h"
 
+class AlbumsDB;
+class ArtistsDB;
+class TracksDB;
+class PlaylistsDB;
+
 class CollectionDB : public QObject
 {
     Q_OBJECT
 public:
     explicit CollectionDB(QObject *parent = 0);
     ~CollectionDB(){}
-    void openCollection(const QString &path);
     QSqlQuery getQuery(const QString &queryTxt);
     bool checkQuery(const QString &queryTxt);
     bool insertInto(const QString &tableName, const QString &column, const QString &location, int value);
     bool insertInto(const QString &tableName, const QString &column, const QString &location, const QString &value);
     void setTrackList(const QList<Track> &trackList);
-    void prepareCollectionDB();
     bool removeQuery(const QString &queryTxt);
     bool execQuery(const QString &queryTxt);
     bool check_existance(const QString &tableName, const QString &searchId, const QString &search);
-    void createTable(const QString &tableName);
 
     QList<QMap<int, QString>> getTrackData(const QStringList &urls);
     QList<QMap<int, QString>> getTrackData(const QString &queryText);
@@ -51,12 +53,15 @@ public:
     };
 
 private:
+    AlbumsDB *m_albumsdb;
+    ArtistsDB *m_artistsDB;
+    TracksDB *m_tracksDB;
+    PlaylistsDB *m_playlistsdb;
     QSqlDatabase m_db;
     QList <Track> trackList;
 
 public slots:
     bool addTrack(const QStringList &paths, int babe = 0);
-    void closeConnection();
     void insertPlaylist(const QString &name);
     void removePath(const QString &path);
     void setCollectionLists();
