@@ -13,6 +13,8 @@ public:
 
     int save(const QVariantMap &data);
     int update(const QVariantMap &data, const QVariantMap &where);
+    int remove(const QVariantMap &where, const QString whereOperator = QStringLiteral("="));
+    int resetTable();
 
     QVariantMap loadItem(const QVariantMap &filter, const QString &whereOperator = QStringLiteral("AND"), const QString &whereComparator = QStringLiteral("="));
     QVariantList loadList(const QVariantMap &filter, int limit = -1, int offset = 0, const QString &orderBy = QStringLiteral(""), bool descending = false, const QString &whereOperator = QStringLiteral("AND"), const QString &whereComparator = QStringLiteral("="));

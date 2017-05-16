@@ -15,9 +15,6 @@ private:
 
 public:
     static TracksDB* instance();
-    int save(const QVariantMap &trackData);
-    int update(const QVariantMap &trackData, const QVariantMap &where);
-
     QVariantMap loadTrack(const QVariantMap &filter, const QString &whereOperator = QStringLiteral("AND"), const QString &whereComparator = QStringLiteral("="));
     QVariantList loadTracks(const QVariantMap &filter, int limit = -1, int offset = 0, const QString &orderBy = QStringLiteral(""), bool descending = false, const QString &whereOperator = QStringLiteral("AND"), const QString &whereComparator = QStringLiteral("="));
 

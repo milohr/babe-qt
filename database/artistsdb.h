@@ -15,9 +15,6 @@ private:
 
 public:
     static ArtistsDB* instance();
-    int save(const QVariantMap &artistData);
-    int update(const QVariantMap &artistData, const QVariantMap &where);
-
     QVariantMap loadArtist(const QVariantMap &filter, const QString &whereOperator = QStringLiteral("AND"), const QString &whereComparator = QStringLiteral("="));
     QVariantList loadArtists(const QVariantMap &filter, int limit = -1, int offset = 0, const QString &orderBy = QStringLiteral(""), bool descending = false, const QString &whereOperator = QStringLiteral("AND"), const QString &whereComparator = QStringLiteral("="));
 

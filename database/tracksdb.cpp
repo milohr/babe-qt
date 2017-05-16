@@ -15,16 +15,6 @@ TracksDB *TracksDB::instance()
     return m_instance;
 }
 
-int TracksDB::save(const QVariantMap &trackData)
-{
-    return BaseDB::save(trackData);
-}
-
-int TracksDB::update(const QVariantMap &trackData, const QVariantMap &where)
-{
-    return BaseDB::update(trackData, where);
-}
-
 QVariantMap TracksDB::loadTrack(const QVariantMap &filter, const QString &whereOperator, const QString &whereComparator)
 {
     return BaseDB::loadItem(filter, whereOperator, whereComparator);

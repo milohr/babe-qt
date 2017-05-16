@@ -15,16 +15,6 @@ AlbumsDB *AlbumsDB::instance()
     return m_instance;
 }
 
-int AlbumsDB::save(const QVariantMap &albumData)
-{
-    return BaseDB::save(albumData);
-}
-
-int AlbumsDB::update(const QVariantMap &albumData, const QVariantMap &where)
-{
-    return BaseDB::update(albumData, where);
-}
-
 QVariantMap AlbumsDB::loadAlbum(const QVariantMap &filter, const QString &whereOperator, const QString &whereComparator)
 {
     return BaseDB::loadItem(filter, whereOperator, whereComparator);

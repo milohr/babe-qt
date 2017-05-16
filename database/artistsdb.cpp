@@ -15,16 +15,6 @@ ArtistsDB *ArtistsDB::instance()
     return m_instance;
 }
 
-int ArtistsDB::save(const QVariantMap &artistData)
-{
-    return BaseDB::save(artistData);
-}
-
-int ArtistsDB::update(const QVariantMap &artistData, const QVariantMap &where)
-{
-    return BaseDB::update(artistData, where);
-}
-
 QVariantMap ArtistsDB::loadArtist(const QVariantMap &filter, const QString &whereOperator, const QString &whereComparator)
 {
     return BaseDB::loadItem(filter, whereOperator, whereComparator);

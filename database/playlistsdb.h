@@ -15,9 +15,6 @@ private:
 
 public:
     static PlaylistsDB* instance();
-    int save(const QVariantMap &playlistsData);
-    int update(const QVariantMap &playlistsData, const QVariantMap &where);
-
     QVariantMap loadPlaylist(const QVariantMap &filter, const QString &whereOperator = QStringLiteral("AND"), const QString &whereComparator = QStringLiteral("="));
     QVariantList loadPlaylists(const QVariantMap &filter, int limit = -1, int offset = 0, const QString &orderBy = QStringLiteral(""), bool descending = false, const QString &whereOperator = QStringLiteral("AND"), const QString &whereComparator = QStringLiteral("="));
 

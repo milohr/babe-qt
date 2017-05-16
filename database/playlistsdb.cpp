@@ -15,16 +15,6 @@ PlaylistsDB *PlaylistsDB::instance()
     return m_instance;
 }
 
-int PlaylistsDB::save(const QVariantMap &playlistsData)
-{
-    return BaseDB::save(playlistsData);
-}
-
-int PlaylistsDB::update(const QVariantMap &playlistsData, const QVariantMap &where)
-{
-    return BaseDB::update(playlistsData, where);
-}
-
 QVariantMap PlaylistsDB::loadPlaylist(const QVariantMap &filter, const QString &whereOperator, const QString &whereComparator)
 {
     return BaseDB::loadItem(filter, whereOperator, whereComparator);

@@ -15,9 +15,6 @@ private:
 
 public:
     static AlbumsDB* instance();
-    int save(const QVariantMap &albumData);
-    int update(const QVariantMap &albumData, const QVariantMap &where);
-
     QVariantMap loadAlbum(const QVariantMap &filter, const QString &whereOperator = QStringLiteral("AND"), const QString &whereComparator = QStringLiteral("="));
     QVariantList loadAlbums(const QVariantMap &filter, int limit = -1, int offset = 0, const QString &orderBy = QStringLiteral(""), bool descending = false, const QString &whereOperator = QStringLiteral("AND"), const QString &whereComparator = QStringLiteral("="));
 
