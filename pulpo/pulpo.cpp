@@ -20,6 +20,7 @@
 #include "../baeUtils.h"
 #include "pulpo/services/lastfmService.h"
 #include "pulpo/services/spotifyService.h"
+#include "pulpo/services/lyricwikiaService.h"
 
 
 Pulpo::Pulpo(QString title_, QString artist_, QString album_, QObject *parent)
@@ -31,7 +32,7 @@ void Pulpo::feed(const QString &title, const QString &artist, const QString &alb
 {
     this->album=BaeUtils::fixString(album);
     this->artist=BaeUtils::fixString(artist);
-   this->title=BaeUtils::fixString(title);
+    this->title=BaeUtils::fixString(title);
 
 }
 
@@ -160,7 +161,6 @@ bool Pulpo::fetchTrackInfo(const Pulpo::TrackInfo &infoType, const Pulpo::LyricS
 {
     QByteArray array;
     lastfm lastfm(this->title,this->artist,this->album);
-    connect(&lastfm,&lastfm::trackLyricsReady,[this] (QString wiki) { emit Pulpo::trackLyricsReady(wiki);});
     connect(&lastfm,&lastfm::trackWikiReady,[this] (QString wiki) { emit Pulpo::trackWikiReady(wiki);});
     connect(&lastfm,&lastfm::trackTagsReady,[this] (QStringList tags) { emit Pulpo::trackTagsReady(tags);});
     connect(&lastfm,&lastfm::trackAlbumReady,[this] (QString album) { emit Pulpo::trackAlbumReady(album);});
@@ -170,7 +170,11 @@ bool Pulpo::fetchTrackInfo(const Pulpo::TrackInfo &infoType, const Pulpo::LyricS
     connect(&spotify,&spotify::trackWikiReady,[this] (QString wiki) { emit Pulpo::albumWikiReady(wiki);});
     connect(&spotify,&spotify::trackTagsReady,[this] (QStringList tags) { emit Pulpo::albumTagsReady(tags);});
 
-    if(!this->artist.isEmpty() && !this->album.isEmpty())
+    lyricWikia lyricWikia(this->title,this->artist,this->album);
+    connect(&lyricWikia,&lyricWikia::trackLyricsReady,[this] (QString lyric) { emit Pulpo::trackLyricsReady(lyric);});
+
+
+    if(!this->artist.isEmpty() && !this->album.isEmpty() && service!= Pulpo::NoneInfoService)
     {
 
         switch(service)
@@ -200,19 +204,31 @@ bool Pulpo::fetchTrackInfo(const Pulpo::TrackInfo &infoType, const Pulpo::LyricS
         case iTunes: break;
         case infoCRAWL: break;
         case AllInfoServices: break;
+        case NoneInfoService: break;
 
         }
 
 
-    }else if(!this->title.isEmpty() && !this->artist.isEmpty())
+    }
+
+    if(!this->title.isEmpty() && !this->artist.isEmpty() && lyricService!=Pulpo::NoneLyricService)
     {
         switch(lyricService)
         {
         case WikiLyrics: break;
-        case LyricWikia: break;
+        case LyricWikia:
+            array = startConnection(lyricWikia.setUpService());
+            if(!array.isEmpty())
+            {
+                if(lyricWikia.parseLyrics(array)) return true;
+                else return false;
+
+            }else return false;
+            break;
         case Lyrics: break;
         case lyricCRAWL: break;
         case AllLyricServices: break;
+        case NoneLyricService: break;
         }
     }else return false;
 
@@ -222,7 +238,7 @@ bool Pulpo::fetchTrackInfo(const Pulpo::TrackInfo &infoType, const Pulpo::LyricS
 
 QVariant Pulpo::getStaticAlbumInfo(const AlbumInfo &infoType)
 {
-return QVariant ();
+    return QVariant ();
 }
 
 QVariant Pulpo::getStaticArtistInfo(const ArtistInfo &infoType)

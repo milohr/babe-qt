@@ -33,12 +33,12 @@ public:
 
     enum InfoServices
     {
-        LastFm,Spotify,iTunes,AllInfoServices, infoCRAWL
+        LastFm,Spotify,iTunes,AllInfoServices, infoCRAWL, NoneInfoService
     };
 
     enum LyricServices
     {
-        LyricWikia,WikiLyrics,Lyrics,AllLyricServices, lyricCRAWL
+        LyricWikia,WikiLyrics,Lyrics,AllLyricServices, lyricCRAWL, NoneLyricService
     };
 
     enum ArtistInfo
@@ -53,7 +53,7 @@ public:
 
     enum TrackInfo
     {
-        TrackLyrics,TrackAlbum,TrackPosition, TrackWiki,TrackTags,AllTrackInfo,
+        TrackLyrics,TrackAlbum,TrackPosition, TrackWiki,TrackTags,AllTrackInfo,NoneTrackInfo
     };
 
     enum ResponseType

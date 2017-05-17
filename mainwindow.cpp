@@ -71,7 +71,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(timer, &QTimer::timeout, [this]()
     {
         timer->stop();
-        feedRabbit();
+
         infoTable->getTrackInfo(current_song[BabeTable::TITLE],current_song[BabeTable::ARTIST],current_song[BabeTable::ALBUM]);
 
     });
@@ -193,6 +193,8 @@ void MainWindow::setUpViews()
     connect(rabbitTable->getTable(),&BabeTable::babeIt_clicked,this,&MainWindow::babeIt);
     connect(rabbitTable->getTable(),&BabeTable::infoIt_clicked,this,&MainWindow::infoIt);
 
+
+
     albumsTable = new AlbumsView(false,this);
     connect(albumsTable,SIGNAL(albumOrderChanged(QString)),this,SLOT(AlbumsViewOrder(QString)));
     connect(albumsTable->albumTable,SIGNAL(tableWidget_doubleClicked(QList<QMap<int, QString>>)),this,SLOT(addToPlaylist(QList<QMap<int, QString>>)));
@@ -222,6 +224,23 @@ void MainWindow::setUpViews()
     connect(infoTable,&InfoView::tagsBtnClicked,[this](QStringList queries) { this->ui->search->setText(queries.join(",")); });
     connect(infoTable,&InfoView::tagClicked,[this](QString query) { this->ui->search->setText(query);});
     connect(infoTable,&InfoView::similarArtistTagClicked,[this](QString query) { this->ui->search->setText(query);});
+    connect(infoTable,&InfoView::artistSimilarReady, [this] (const QMap<QString,QByteArray> &info)
+    {
+        rabbitTable->flushSuggestions(RabbitView::SIMILAR);
+        qDebug()<<"&InfoView::artistSimilarReady:"<<info.keys();
+        rabbitTable->populateArtistSuggestion(info);
+        QStringList query;
+        for (auto tag : info.keys()) query << QString("artist:"+tag).trimmed();
+        auto searchResults = this->searchFor(query);
+        if(!searchResults.isEmpty()) rabbitTable->populateGeneralSuggestion(searchResults);
+    });
+
+    connect(infoTable,&InfoView::albumTagsReady, [this] (QStringList tags)
+    {
+        auto searchResults = this->searchFor(tags);
+        if(!searchResults.isEmpty()) rabbitTable->populateGeneralSuggestion(searchResults);
+    });
+
 
     settings_widget->readSettings();
     connect(settings_widget, SIGNAL(toolbarIconSizeChanged(int)), this, SLOT(setToolbarIconSize(int)));
@@ -1076,6 +1095,13 @@ void MainWindow::removeSong(const int &index)
     }
 }
 
+void MainWindow::feedRabbit()
+{
+    rabbitTable->flushSuggestions();
+    rabbitTable->populateGeneralSuggestion(connection.getTrackData(QString("SELECT * FROM tracks WHERE artist = \""+current_song[BabeTable::ARTIST]+"\"")));
+    //    rabbitTable->populateGeneralSuggestion(connection.getTrackData(QString("SELECT * FROM tracks WHERE genre = \""+current_song[BabeTable::GENRE]+"\"")));
+}
+
 void MainWindow::loadTrack()
 {
     //mainList->item(current_song_pos,BabeTable::TITLE)->setIcon(QIcon());
@@ -1105,6 +1131,8 @@ void MainWindow::loadTrack()
 
         album_art->setTitle(current_song[BabeTable::ARTIST],current_song[BabeTable::ALBUM]);
 
+        feedRabbit();
+
         //CHECK IF THE SONG IS BABED IT OR IT ISN'T
         if(isBabed(current_song))
             ui->fav_btn->setIcon(QIcon(":Data/data/loved.svg"));
@@ -1124,45 +1152,7 @@ void MainWindow::loadTrack()
 
 }
 
-void MainWindow::feedRabbit()
-{
-    rabbitTable->flushSuggestions(RabbitView::GENERAL);
 
-    Pulpo rabbitInfo(current_song[BabeTable::TITLE],current_song[BabeTable::ARTIST],current_song[BabeTable::ALBUM]);
-
-    //if(prev_song[BabeTable::ARTIST] != current_song[BabeTable::ARTIST])
-
-    rabbitTable->flushSuggestions();
-    rabbitTable->populateGeneralSuggestion(connection.getTrackData(QString("SELECT * FROM tracks WHERE artist = \""+current_song[BabeTable::ARTIST]+"\"")));
-
-    connect(&rabbitInfo, &Pulpo::artistSimilarReady, [this] (QMap<QString,QByteArray> info)
-    {
-        rabbitTable->populateArtistSuggestion(info);
-        QStringList query;
-        for (auto tag : info.keys()) query << QString("artist:"+tag).trimmed();
-        auto searchResults = this->searchFor(query);
-
-        if(!searchResults.isEmpty()) rabbitTable->populateGeneralSuggestion(searchResults);
-
-    });
-
-
-    connect(&rabbitInfo, &Pulpo::albumTagsReady, [this] (QStringList tags)
-    {
-
-        auto searchResults = this->searchFor(tags);
-
-        if(!searchResults.isEmpty()) rabbitTable->populateGeneralSuggestion(searchResults);
-
-    });
-
-    rabbitInfo.fetchAlbumInfo(Pulpo::AlbumTags,Pulpo::LastFm);
-    rabbitInfo.fetchArtistInfo(Pulpo::ArtistSimilar,Pulpo::LastFm);
-
-
-    // rabbitTable->populateGeneralSuggestion(searchFor({"genre:"+current_song[BabeTable::GENRE]}));
-
-}
 
 bool MainWindow::isBabed(const QMap<int, QString> &track)
 {

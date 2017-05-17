@@ -67,11 +67,11 @@ SOURCES += main.cpp\
     metadataForm.cpp \
     web_jgm90.cpp \
     rabbitview.cpp \
-    pulpo/lyrics.cpp \
     pulpo/pulpo.cpp \
     pulpo/services/lastfmService.cpp \
     pulpo/services/spotifyService.cpp \
-    pulpo/services/musicbrainzService.cpp
+    pulpo/services/musicbrainzService.cpp \
+    pulpo/services/lyricwikiaService.cpp
 
 HEADERS  += mainwindow.h \
             playlist.h \
@@ -93,11 +93,11 @@ HEADERS  += mainwindow.h \
     metadataForm.h \
     web_jgm90.h \
     rabbitview.h \
-    pulpo/lyrics.h \
     pulpo/pulpo.h \
     pulpo/services/lastfmService.h \
     pulpo/services/spotifyService.h \
-    pulpo/services/musicbrainzService.h
+    pulpo/services/musicbrainzService.h \
+    pulpo/services/lyricwikiaService.h
 
 FORMS    += mainwindow.ui \
     settings.ui \

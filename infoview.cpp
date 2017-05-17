@@ -33,8 +33,6 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView)
     ui->albumText->setStyleSheet("QTextBrowser{background-color: #575757; color:white;}");
     ui->tagsInfo->setStyleSheet("QTextBrowser{background-color: #575757; color:white;}");*/
 
-    lyrics = new Lyrics();
-    connect(lyrics,SIGNAL(lyricsReady(QString)),this,SLOT(setLyrics(QString)));
 
     artist->titleVisible(false);
     artist->borderColor = true;
@@ -238,27 +236,33 @@ void InfoView::getTrackInfo(const QString &title_, const QString &artist_, const
     {
         this->artist->setArtist(artist_);
         //this->album->setAlbum(album);
-        info.removeEventFilter(&info);
-        info.feed(title_,artist_,album_);
-
+        Pulpo info(title_,artist_,album_);
+        connect(&info, &Pulpo::trackLyricsReady, this, &InfoView::setLyrics, Qt::UniqueConnection);
         connect(&info, &Pulpo::albumWikiReady, this, &InfoView::setAlbumInfo, Qt::UniqueConnection);
         connect(&info, &Pulpo::artistWikiReady, this, &InfoView::setArtistInfo);
         connect(&info, &Pulpo::artistSimilarReady, [this] (QMap<QString,QByteArray> info)
         {
             this->setArtistTagInfo(info.keys());
+            emit artistSimilarReady(info);
         });
 
-        connect(&info, &Pulpo::albumTagsReady, this, &InfoView::setTagsInfo);
+        connect(&info, &Pulpo::albumTagsReady, [this] (QStringList tags)
+        {
+            this->setTagsInfo(tags);
+            emit albumTagsReady(tags);
+        });
+
         connect(&info, &Pulpo::artistArtReady,[this](QByteArray array){this->setArtistArt(array);});
 
         info.fetchAlbumInfo(Pulpo::AllAlbumInfo,Pulpo::LastFm);
         info.fetchArtistInfo(Pulpo::AllArtistInfo,Pulpo::LastFm);
 
-        //info.fetchTrackInfo(Pulpo::TrackTags,Pulpo::LyricWikia,Pulpo::LastFm);
 
+
+        //        QCoreApplication::removePostedEvents(QObject *receiver, int eventType = 0)
         if(!title_.isEmpty())
         {
-            lyrics->setData(artist_,title_);
+            info.fetchTrackInfo(Pulpo::NoneTrackInfo,Pulpo::LyricWikia,Pulpo::NoneInfoService);
             ui->artistLine->setText(artist_);
             ui->titleLine->setText(title_);
         }
@@ -277,9 +281,11 @@ void InfoView::on_toolButton_clicked()
 {
     QString artist=ui->artistLine->text();
     QString title=ui->titleLine->text();
+    Pulpo info(title,artist,"");
+    connect(&info, &Pulpo::trackLyricsReady, this, &InfoView::setLyrics, Qt::UniqueConnection);
 
-    if(!artist.isEmpty()&&!title.isEmpty())
-        lyrics->setData(artist,title);
+    info.fetchTrackInfo(Pulpo::NoneTrackInfo,Pulpo::LyricWikia,Pulpo::NoneInfoService);
+
 }
 
 

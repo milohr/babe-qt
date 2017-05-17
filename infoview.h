@@ -8,7 +8,6 @@
 #include <QToolButton>
 #include "album.h"
 #include "pulpo/pulpo.h"
-#include "pulpo/lyrics.h"
 
 namespace Ui {
 class InfoView;
@@ -31,11 +30,9 @@ public:
 private:
 
     Ui::InfoView *ui;
-    Pulpo info;
     int ALBUM_SIZE_BIG = BaeUtils::getWidgetSizeHint(BaeUtils::BIG_ALBUM_FACTOR,BaeUtils::BIG_ALBUM);
     int ALBUM_SIZE_MEDIUM = BaeUtils::getWidgetSizeHint(BaeUtils::MEDIUM_ALBUM_FACTOR,BaeUtils::MEDIUM_ALBUM);
 
-    Lyrics *lyrics;
     QToolButton *hideBtn;
     bool hide= false;
     bool customsearch = false;
@@ -65,6 +62,9 @@ signals:
     void similarArtistTagClicked(QString tag);
     void similarBtnClicked(QStringList similar);
     void tagsBtnClicked(QStringList similar);
+
+    void artistSimilarReady(const QMap<QString,QByteArray> &info);
+    void albumTagsReady(const QStringList &tags);
 
 
 private slots:
