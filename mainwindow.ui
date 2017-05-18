@@ -2,14 +2,6 @@
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>334</width>
-    <height>303</height>
-   </rect>
-  </property>
   <property name="minimumSize">
    <size>
     <width>0</width>
@@ -976,21 +968,6 @@ border-top: 1px solid #333;
      </item>
     </layout>
    </widget>
-   <zorder>playlists_view</zorder>
-   <zorder>artists_view</zorder>
-   <zorder>rabbit_view</zorder>
-   <zorder>settings_view</zorder>
-   <zorder>albums_view</zorder>
-   <zorder>tracks_view</zorder>
-   <zorder>info_view</zorder>
-   <zorder>searchWidget</zorder>
-   <zorder>collectionUtils</zorder>
-   <zorder>playlistUtils</zorder>
-   <zorder>frame_4</zorder>
-   <zorder>frame_5</zorder>
-   <zorder>frame_6</zorder>
-   <zorder>controls</zorder>
-   <zorder>search</zorder>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <property name="styleSheet">

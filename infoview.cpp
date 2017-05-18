@@ -236,6 +236,8 @@ void InfoView::getTrackInfo(const QString &title_, const QString &artist_, const
     {
         this->artist->setArtist(artist_);
         //this->album->setAlbum(album);
+        //        QCoreApplication::removePostedEvents(QObject *receiver, int eventType = 0)
+
         Pulpo info(title_,artist_,album_);
         connect(&info, &Pulpo::trackLyricsReady, this, &InfoView::setLyrics, Qt::UniqueConnection);
         connect(&info, &Pulpo::albumWikiReady, this, &InfoView::setAlbumInfo, Qt::UniqueConnection);
@@ -259,7 +261,6 @@ void InfoView::getTrackInfo(const QString &title_, const QString &artist_, const
 
 
 
-        //        QCoreApplication::removePostedEvents(QObject *receiver, int eventType = 0)
         if(!title_.isEmpty())
         {
             info.fetchTrackInfo(Pulpo::NoneTrackInfo,Pulpo::LyricWikia,Pulpo::NoneInfoService);

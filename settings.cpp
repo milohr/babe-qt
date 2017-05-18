@@ -551,7 +551,10 @@ void settings::fetchArt() {
         connect(&art, &Pulpo::albumArtReady,[this,&art] (QByteArray array){ art.saveArt(array,this->cachePath); });
         connect(&art, &Pulpo::artSaved, &collection_db, &CollectionDB::insertCoverArt);
 
-        art.fetchAlbumInfo(Pulpo::AlbumArt,Pulpo::LastFm,true);
+        if (art.fetchAlbumInfo(Pulpo::AlbumArt,Pulpo::LastFm)) qDebug()<<"using lastfm";
+        else if(art.fetchAlbumInfo(Pulpo::AlbumArt,Pulpo::Spotify)) qDebug()<<"using spotify";
+        else if(art.fetchAlbumInfo(Pulpo::AlbumArt,Pulpo::GeniusInfo)) qDebug()<<"using genius";
+        else art.albumArtReady(QByteArray());
 
     }
 

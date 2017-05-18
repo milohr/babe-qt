@@ -32,7 +32,7 @@ private:
     Ui::InfoView *ui;
     int ALBUM_SIZE_BIG = BaeUtils::getWidgetSizeHint(BaeUtils::BIG_ALBUM_FACTOR,BaeUtils::BIG_ALBUM);
     int ALBUM_SIZE_MEDIUM = BaeUtils::getWidgetSizeHint(BaeUtils::MEDIUM_ALBUM_FACTOR,BaeUtils::MEDIUM_ALBUM);
-
+    Pulpo info;
     QToolButton *hideBtn;
     bool hide= false;
     bool customsearch = false;

@@ -21,6 +21,7 @@
 #include "pulpo/services/lastfmService.h"
 #include "pulpo/services/spotifyService.h"
 #include "pulpo/services/lyricwikiaService.h"
+#include "pulpo/services/geniusService.h"
 
 
 Pulpo::Pulpo(QString title_, QString artist_, QString album_, QObject *parent)
@@ -99,11 +100,11 @@ bool Pulpo::fetchAlbumInfo(const AlbumInfo &infoType, const InfoServices &servic
     QByteArray array;
     lastfm lastfm(this->title,this->artist,this->album);
 
-    connect(&lastfm,&lastfm::albumArtReady,[this,infoType,recursive] (QByteArray array)
+    connect(&lastfm,&lastfm::albumArtReady,[this, infoType] (QByteArray array)
     {
-        if((array.isEmpty() || array.isNull()) && recursive == true)
+        if((array.isEmpty() || array.isNull()))
         {
-            this->fetchAlbumInfo(infoType,Spotify,false);
+            this->fetchAlbumInfo(infoType,Spotify);
         }else
         {
             emit Pulpo::albumArtReady(array);
@@ -115,9 +116,21 @@ bool Pulpo::fetchAlbumInfo(const AlbumInfo &infoType, const InfoServices &servic
     connect(&lastfm,&lastfm::albumTagsReady,[this] (QStringList tags) { emit Pulpo::albumTagsReady(tags);});
 
     spotify spotify(this->title,this->artist,this->album);
-    connect(&spotify,&spotify::albumArtReady,[this] (QByteArray array) { emit Pulpo::albumArtReady(array);});
+    connect(&spotify,&spotify::albumArtReady,[this,infoType] (QByteArray array)
+    {
+        if((array.isEmpty() || array.isNull()))
+        {
+            this->fetchAlbumInfo(infoType,GeniusInfo);
+        }else
+        {
+            emit Pulpo::albumArtReady(array);
+        }
+    });
     connect(&spotify,&spotify::albumWikiReady,[this] (QString wiki) { emit Pulpo::albumWikiReady(wiki);});
     connect(&spotify,&spotify::albumTagsReady,[this] (QStringList tags) { emit Pulpo::albumTagsReady(tags);});
+
+    genius genius(this->title,this->artist,this->album);
+    connect(&genius,&genius::albumArtReady,[this] (QByteArray array) { emit Pulpo::albumArtReady(array); });
 
     if(!this->artist.isEmpty() && !this->album.isEmpty())
     {
@@ -143,7 +156,19 @@ bool Pulpo::fetchAlbumInfo(const AlbumInfo &infoType, const InfoServices &servic
                 if(spotify.parseSpotifyAlbum(array, infoType)) return true;
                 else return false;
 
-            }else return false;
+            }else return false; break;
+
+        case GeniusInfo:
+            array = startConnection(genius.setUpService());
+            if(!array.isEmpty())
+            {
+                genius.parseAlbumArt(array);
+                return true;
+
+
+            }else return false; break;
+            break;
+
 
 
         case iTunes: break;
@@ -171,8 +196,14 @@ bool Pulpo::fetchTrackInfo(const Pulpo::TrackInfo &infoType, const Pulpo::LyricS
     connect(&spotify,&spotify::trackTagsReady,[this] (QStringList tags) { emit Pulpo::albumTagsReady(tags);});
 
     lyricWikia lyricWikia(this->title,this->artist,this->album);
-    connect(&lyricWikia,&lyricWikia::trackLyricsReady,[this] (QString lyric) { emit Pulpo::trackLyricsReady(lyric);});
+    connect(&lyricWikia,&lyricWikia::trackLyricsReady,[this] (QString lyric)
+    {
+        if(!lyric.isEmpty()) emit Pulpo::trackLyricsReady(lyric);
+        else fetchTrackInfo(Pulpo::NoneTrackInfo,Pulpo::Genius,Pulpo::NoneInfoService);
+    });
 
+    genius genius(this->title,this->artist,this->album);
+    connect(&genius,&genius::trackLyricsReady,[this] (QString lyric) { emit Pulpo::trackLyricsReady(lyric);});
 
     if(!this->artist.isEmpty() && !this->album.isEmpty() && service!= Pulpo::NoneInfoService)
     {
@@ -226,6 +257,17 @@ bool Pulpo::fetchTrackInfo(const Pulpo::TrackInfo &infoType, const Pulpo::LyricS
             }else return false;
             break;
         case Lyrics: break;
+        case Genius:
+            array = startConnection(genius.setUpService());
+            if(!array.isEmpty())
+            {
+                genius.parseLyrics(array);
+                return true;
+
+            }else return false;
+            break;
+
+            break;
         case lyricCRAWL: break;
         case AllLyricServices: break;
         case NoneLyricService: break;
@@ -295,9 +337,8 @@ QVariant Pulpo::getStaticTrackInfo(const TrackInfo &infoType)
 QByteArray Pulpo::startConnection(const QString &url)
 {
     QNetworkAccessManager manager;
-
-    QNetworkReply *reply = manager.get(QNetworkRequest(QUrl(url)));
-
+    QNetworkRequest request ((QUrl(url)));
+    QNetworkReply *reply =  manager.get(request);
     QEventLoop loop;
     connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
     connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), &loop,
@@ -306,7 +347,7 @@ QByteArray Pulpo::startConnection(const QString &url)
     loop.exec();
 
     QByteArray array(reply->readAll());
-
+    //    qDebug()<<"startConnection"<<array;
     delete reply;
     return array;
 }

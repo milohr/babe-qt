@@ -186,7 +186,11 @@ bool lastfm::parseLastFmAlbum(const QByteArray &array, const AlbumInfo &infoType
     }else
     {
         if (doc.documentElement().toElement().attributes().namedItem("status").nodeValue()!="ok")
+        {
+            qDebug() << "lfm status=failed.";
+
             return false;
+        }
 
         const QDomNodeList nodeList = doc.documentElement().namedItem("album").childNodes();
 

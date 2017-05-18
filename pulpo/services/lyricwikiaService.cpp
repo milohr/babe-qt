@@ -1,7 +1,7 @@
 #include "lyricwikiaService.h"
 
 lyricWikia::lyricWikia(const QString &title_, const QString &artist_, const QString &album_) :
-     artist(artist_),  album(album_), title(title_)  {}
+    artist(artist_),  album(album_), title(title_)  {}
 
 QString lyricWikia::setUpService()
 {
@@ -81,24 +81,22 @@ bool lyricWikia::parseLyrics(const QByteArray &array)
 void lyricWikia::extractLyrics(const QByteArray &array)
 {
     QString content = QString::fromUtf8(array.constData());
-
-    //QString text;
     content.replace("&lt;", "<");
     QRegExp lyrics_regexp("<lyrics>(.*)</lyrics>");
     lyrics_regexp.indexIn(content);
-
-    QString text = "<h2 align='center' >" + this->title + "</h2>";
+    QString text;
     QString lyrics = lyrics_regexp.cap(1);
     lyrics = lyrics.trimmed();
     lyrics.replace("\n", "<br>");
-    if(lyrics.isEmpty())
+    if(!lyrics.contains("PUT LYRICS HERE")&&!lyrics.isEmpty())
     {
-        qDebug("Not found");
-        text+="\n<h3 align='center'>:( Nothing Here</h3>";
-    }
-    else text += lyrics;
+//        qDebug()<<lyrics;
+        text = "<h2 align='center' >" + this->title + "</h2>";
+        text += lyrics;
 
-    text= "<p align='center'>"+text+"<p>";
+        text= "<div align='center'>"+text+"</div>";
+    }
+
     emit trackLyricsReady(text);
 
 }

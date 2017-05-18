@@ -17,6 +17,7 @@ QT       += multimedia
 QT       += sql
 QT       += network
 QT       += xml
+QT       += xmlpatterns
 QT       += dbus
 QT       += KConfigCore
 QT       += KNotifications
@@ -71,7 +72,9 @@ SOURCES += main.cpp\
     pulpo/services/lastfmService.cpp \
     pulpo/services/spotifyService.cpp \
     pulpo/services/musicbrainzService.cpp \
-    pulpo/services/lyricwikiaService.cpp
+    pulpo/services/lyricwikiaService.cpp \
+    pulpo/services/geniusService.cpp \
+    pulpo/htmlparser.cpp
 
 HEADERS  += mainwindow.h \
             playlist.h \
@@ -97,7 +100,9 @@ HEADERS  += mainwindow.h \
     pulpo/services/lastfmService.h \
     pulpo/services/spotifyService.h \
     pulpo/services/musicbrainzService.h \
-    pulpo/services/lyricwikiaService.h
+    pulpo/services/lyricwikiaService.h \
+    pulpo/services/geniusService.h \
+    pulpo/htmlparser.h
 
 FORMS    += mainwindow.ui \
     settings.ui \

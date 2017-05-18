@@ -18,8 +18,6 @@
 #include <QVariantMap>
 
 
-
-
 class Pulpo : public QObject
 {
     Q_OBJECT
@@ -33,12 +31,12 @@ public:
 
     enum InfoServices
     {
-        LastFm,Spotify,iTunes,AllInfoServices, infoCRAWL, NoneInfoService
+        LastFm,Spotify,iTunes,GeniusInfo,AllInfoServices, infoCRAWL, NoneInfoService
     };
 
     enum LyricServices
     {
-        LyricWikia,WikiLyrics,Lyrics,AllLyricServices, lyricCRAWL, NoneLyricService
+        LyricWikia,WikiLyrics,Lyrics, Genius,AllLyricServices, lyricCRAWL, NoneLyricService
     };
 
     enum ArtistInfo

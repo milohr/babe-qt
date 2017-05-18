@@ -48,6 +48,7 @@ QString spotify::setUpService(const spotify::Ontology &type)
         url.append("&type=track");
         break;
     }
+    qDebug()<<"setUpService Spotify["<<url<<"]";
 
     return url;
 }

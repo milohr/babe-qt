@@ -720,7 +720,10 @@ void MainWindow::setCoverArt(const QString &artist, const QString &album,const Q
     qDebug()<<"Trying to retieve the cover art from Pulpo for"<< title << artist << album;
     Pulpo coverArt(title,artist,album);
     connect(&coverArt,&Pulpo::albumArtReady,this,&MainWindow::putPixmap);
-    coverArt.fetchAlbumInfo(Pulpo::AlbumArt,Pulpo::LastFm);
+    if (coverArt.fetchAlbumInfo(Pulpo::AlbumArt,Pulpo::LastFm)) qDebug()<<"using lastfm";
+    else if(coverArt.fetchAlbumInfo(Pulpo::AlbumArt,Pulpo::Spotify)) qDebug()<<"using spotify";
+    else if(coverArt.fetchAlbumInfo(Pulpo::AlbumArt,Pulpo::GeniusInfo)) qDebug()<<"using genius";
+    else coverArt.albumArtReady(QByteArray());
 }
 
 void MainWindow::putPixmap(const QByteArray &array)
