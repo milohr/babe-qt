@@ -32,7 +32,7 @@ private slots:
 
 private:
 
-    const QString ydl="youtube-dl --metadata-from-title \"%(artist)s - %(title)s\"  --format m4a  --add-metadata";
+    const QString ydl="youtube-dl --metadata-from-title \"%(artist)s - %(title)s\"  --format m4a --add-metadata --youtube-skip-dash-manifest --verbose";
     const QString cachePath=BaeUtils::YoutubeCachePath;
     const QString extensionFetchingPath = BaeUtils::ExtensionFetchingPath;
 

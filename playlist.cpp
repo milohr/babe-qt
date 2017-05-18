@@ -100,9 +100,9 @@ void Playlist::add(QStringList files)
             int track_n = info.getTrack();
             QString genre = info.getGenre();
 
-            title = title.size() > 0 ? title : info.fileName();
-            artist = artist.size() > 0 ? artist : "UNKNOWN";
-            album = album.size() > 0 ? album : "UNKNOWN";
+            title = !title.isEmpty() ? title : info.fileName();
+            artist = !artist.isEmpty()  ? artist : "UNKNOWN";
+            album = !album.isEmpty() ? album : title;
 
             track.setTitle(title.toStdString());
 

@@ -33,7 +33,7 @@ void TagInfo::writeData()
     int trackPosition = info.getStaticTrackInfo(Pulpo::TrackPosition).toInt();
 
     this->setTrack(trackPosition);
-    this->setAlbum(newTitle.isEmpty()?"UNKNOWN":newTitle);
+    this->setAlbum(newTitle.isEmpty()?this->getTitle():newTitle);
 }
 
 QString TagInfo::getAlbum()

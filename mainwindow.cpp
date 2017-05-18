@@ -1283,7 +1283,7 @@ void MainWindow::update()
 
     }else
     {
-        qDebug()<<"no song to play";
+//        qDebug()<<"no song to play";
         seekBar->setValue(0);
         seekBar->setEnabled(false);
     }
