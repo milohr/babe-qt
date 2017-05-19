@@ -2,7 +2,6 @@
 #define GENIUSSERVICE_H
 
 #include <QObject>
-#include <QXmlQuery>
 #include "../pulpo.h"
 #include "../htmlparser.h"
 
