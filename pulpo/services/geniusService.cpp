@@ -26,8 +26,9 @@ void genius::parseLyrics(const QByteArray &array)
     htmlParser parser;
     parser.setHtml(array);
 
-    connect(&parser, &htmlParser::finishedParsingTags,[&parser, this] (const QStringList &tags)
+    connect(&parser, &htmlParser::finishedParsingTags,[this] (const QStringList &tags)
     {
+        htmlParser parser;
         if(!tags.isEmpty())
             extractLyrics(parser.extractProp(tags.first(),"href="));
     });
@@ -73,10 +74,11 @@ void genius::extractAlbumArt(const QString &url)
     parser.setHtml(array);
     qDebug()<<"Artwork now";
 
-    connect(&parser, &htmlParser::finishedParsingTags,[&parser, this] (const QStringList &list)
+    connect(&parser, &htmlParser::finishedParsingTags,[this] (const QStringList &list)
     {
         if(!list.isEmpty())
         {
+            htmlParser parser;
             emit albumArtReady(Pulpo::extractImg(parser.extractProp(list.first(),"src=")));
         }
     });
@@ -88,6 +90,7 @@ void genius::extractAlbumArt(const QString &url)
 void genius::extractLyrics(const QString &url)
 {
 
+    qDebug()<<"extractLyrics"<<url;
     QNetworkAccessManager manager;
     QNetworkRequest request ((QUrl(url)));
     QNetworkReply *reply =  manager.get(request);
@@ -102,11 +105,15 @@ void genius::extractLyrics(const QString &url)
     delete reply;
 
     htmlParser parser;
+
+//    qDebug()<<"LYRICS ARRAY"<<array;
+
     parser.setHtml(array);
     qDebug()<<"Lyricsssss now";
 
-    connect(&parser, &htmlParser::finishedParsingTags,[&parser, this] (const QStringList &list)
+    connect(&parser, &htmlParser::finishedParsingTags,[this] (const QStringList &list)
     {
+        qDebug()<<"got lyrics"<<list;
         if(!list.isEmpty())
         {
             QString text = "<h2 align='center' >" + this->title + "</h2>";
@@ -126,6 +133,6 @@ void genius::extractLyrics(const QString &url)
 
         }
     });
- parser.parseTag("lyrics", "class=\"lyrics\"");
+ parser.parseTag("div", "class=\"lyrics\"");
 
 }

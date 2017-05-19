@@ -19,7 +19,7 @@ QString htmlParser::extractProp(const QString &tag,const QString &prop)
     auto result =list.filter(prop,Qt::CaseInsensitive);
 //    qDebug()<<result;
     auto url = result.first().replace(prop,"").replace('\"',"");
-//    qDebug()<<url;
+    qDebug()<<url;
     return url;
 
 }
@@ -50,7 +50,7 @@ void htmlParser::parseTag(const QString &tagRef, const QString &attribute)
             }
 
             results<<subResult.simplified();
-//            qDebug()<<tag;
+            qDebug()<<subResult;
         }
 
 

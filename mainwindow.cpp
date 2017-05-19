@@ -1133,7 +1133,7 @@ void MainWindow::loadTrack()
         player->setMedia(QUrl::fromLocalFile(current_song[BabeTable::LOCATION]));
         player->play();
 
-        timer->stop();
+//        timer->stop();
         timer->start(3000);
 
         ui->play_btn->setIcon(QIcon(":Data/data/media-playback-pause.svg"));
