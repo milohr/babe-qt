@@ -286,7 +286,7 @@ void MainWindow::setUpSidebar()
     //ui->mainToolBar->setStyleSheet(QString("QToolBar{margin:0 background-image:url('%1') repeat; }QToolButton{ border-radius:0;} QToolButton:checked{border-radius:0; background: rgba(0,0,0,50)}").arg(":Data/data/pattern.png"));
     ui->mainToolBar->setOrientation(Qt::Vertical);
     ui->mainToolBar->setAutoFillBackground(true);
-    ui->mainToolBar->setBackgroundRole(QPalette::Dark);
+//    ui->mainToolBar->setBackgroundRole(QPalette::Dark);
 
     ui->mainToolBar->addWidget(left_spacer);
 
@@ -340,7 +340,8 @@ void MainWindow::setUpCollectionViewer()
 
     utilsBar = new QToolBar(this);
     utilsBar->setAutoFillBackground(true);
-    utilsBar->setBackgroundRole(QPalette::Dark);
+//    utilsBar->setBackgroundRole(QPalette::Midlight);
+   
     utilsBar->setMovable(false);
     utilsBar->setContentsMargins(0,0,0,0);
     utilsBar->layout()->setMargin(0);
@@ -413,7 +414,7 @@ void MainWindow::setUpPlaylist()
     seekBar->setFixedHeight(5);
     seekBar->setStyleSheet(QString("QSlider { background:transparent;} QSlider::groove:horizontal {border: none; background: transparent; height: 5px; border-radius: 0; } QSlider::sub-page:horizontal { background: %1;border: none; height: 5px;border-radius: 0;} QSlider::add-page:horizontal {background: transparent; border: none; height: 5px; border-radius: 0; } QSlider::handle:horizontal {background: %1; width: 8px; } QSlider::handle:horizontal:hover {background: qlineargradient(x1:0, y1:0, x2:1, y2:1,stop:0 #fff, stop:1 #ddd);border: 1px solid #444;border-radius: 4px;}QSlider::sub-page:horizontal:disabled {background: transparent;border-color: #999;}QSlider::add-page:horizontal:disabled {background: transparent;border-color: #999;}QSlider::handle:horizontal:disabled {background: transparent;border: 1px solid #aaa;border-radius: 4px;}").arg(this->palette().color(QPalette::Highlight).name()));
 
-    ui->playlistUtils->setBackgroundRole(QPalette::Dark);
+//    ui->playlistUtils->setBackgroundRole(QPalette::Button);
 
     ui->filterBox->setVisible(false);
     ui->filter->setClearButtonEnabled(true);
