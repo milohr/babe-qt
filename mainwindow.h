@@ -58,7 +58,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
+    explicit MainWindow(const QStringList &files={}, QWidget *parent = 0);
     ~MainWindow();
 
     enum views

@@ -320,9 +320,6 @@ void BabeTable::addRowAt(int row,QMap<int, QString> map, bool descriptiveTooltip
 
     if(coloring && !map[ART].isEmpty())
         this->colorizeRow(row,map[ART]);
-    else if(coloring)
-        this->colorizeRow(row,"#000");
-
 
     if(descriptiveTooltip)
         this->item(row,TITLE)->setToolTip( "by "+map[ARTIST]);

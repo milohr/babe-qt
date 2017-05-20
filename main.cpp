@@ -38,12 +38,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     a.setApplicationName("Babe");
     a.setDesktopFileName("Babe");
-    MainWindow w;
-    if(!files.isEmpty())
-    {
-        w.appendFiles(files,MainWindow::APPENDTOP);
-        w.loadTrackAt(0);
-    }
+    MainWindow w(files);
     w.show();
 
 

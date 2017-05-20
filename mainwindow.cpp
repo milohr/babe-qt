@@ -21,7 +21,7 @@
 
 
 
-MainWindow::MainWindow(QWidget *parent) :
+MainWindow::MainWindow(const QStringList &files, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
@@ -94,7 +94,15 @@ MainWindow::MainWindow(QWidget *parent) :
         QString style(styleFile.readAll());
         this->setStyleSheet(style);
     }
-    mainList->setCurrentCell(0,BabeTable::TITLE);
+
+    if(!files.isEmpty())
+    {
+        this->appendFiles(files, APPENDTOP);
+        current_song_pos = 0;
+    }else  current_song_pos = this->loadSettings("PLAYLIST_POS","MAINWINDOW",QVariant(0)).toInt();
+
+
+    mainList->setCurrentCell(current_song_pos,BabeTable::TITLE);
     this->saveSettings("GEOMETRY",this->geometry(),"MAINWINDOW");
     if(mainList->rowCount()>0)
     {
@@ -462,6 +470,8 @@ void MainWindow::setUpPlaylist()
         {
             mainList->addRowAt(current_song_pos+i,track,true,true);
             //            mainList->item(current_song_pos+i,BabeTable::TITLE)->setIcon(QIcon::fromTheme("filename-space-amarok"));
+            mainList->colorizeRow(current_song_pos+i,"#000");
+
             i++;
         }
 
@@ -598,6 +608,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
     }
 
     this->saveSettings("PLAYLIST", mainList->getTableColumnContent(BabeTable::LOCATION),"MAINWINDOW");
+    this->saveSettings("PLAYLIST_POS", current_song_pos,"MAINWINDOW");
     qDebug()<<this->ui->mainToolBar->iconSize().height();
     this->saveSettings("TOOLBAR", this->ui->mainToolBar->iconSize().height(),"MAINWINDOW");
 
@@ -1300,6 +1311,7 @@ void MainWindow::addToQueue(const QMap<int, QString> &track)
 
     mainList->addRowAt(queued_song_pos,track,true,true);
     mainList->item(queued_song_pos,BabeTable::TITLE)->setIcon(QIcon::fromTheme("clock"));
+    mainList->colorizeRow(queued_song_pos,"#000");
     //mainList->addRowAt(current_song_pos+1,track,true);
     nof.notify("Song added to Queue",track[BabeTable::TITLE]+" by "+track[BabeTable::ARTIST]);
 
@@ -1750,7 +1762,7 @@ void MainWindow::clearMainList()
     this->lCounter=0;
     this->current_song_pos=0;
     this->mainList->setCurrentCell(current_song_pos,BabeTable::TITLE);
-    mainList->item(current_song_pos,BabeTable::TITLE)->setIcon(QIcon("media-playback-start"));
+    mainList->item(current_song_pos,BabeTable::TITLE)->setIcon(QIcon::fromTheme("media-playback-start"));
 
     //    this->player->stop();
 }
