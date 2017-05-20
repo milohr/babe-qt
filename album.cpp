@@ -19,9 +19,9 @@ Album::Album(QString imagePath, int widgetSize, int widgetRadius, bool isDraggab
     widget->setMinimumWidth(size-2);
     widget->setGeometry(1,size-31,size-2,30);
     widget->setStyleSheet( QString(" background: rgba(0,0,0,150); border-top: 1px solid rgba(%1,%1,%1,120); border-top-left-radius:0; border-top-right-radius:0; border-bottom-right-radius:%2px; border-bottom-left-radius:%3px;").arg( QString::number(this->palette().color(QPalette::WindowText).blue()), QString::number(border_radius-1),QString::number(border_radius-1)));
+    title = new ScrollText(this);
 
-   
-    title.setMaxSize(size+10);
+    title->setMaxSize(size+10);
 
     auto *left_spacer = new QWidget(this);
     left_spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -29,17 +29,22 @@ Album::Album(QString imagePath, int widgetSize, int widgetRadius, bool isDraggab
     auto *right_spacer = new QWidget(this);
     right_spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    title.setStyleSheet("QLabel{background:transparent; color:white; border:none;}");
+    title->setStyleSheet("QLabel{background:transparent; color:white; border:none;}");
     right_spacer->setStyleSheet("background:transparent;  border:none;");
     left_spacer->setStyleSheet("background:transparent;  border:none;");
 
     layout->addWidget(left_spacer);
-    layout->addWidget(&title);
+    layout->addWidget(title);
     layout->addWidget(right_spacer);
 
     playBtn = new QToolButton(this);
+    connect(playBtn,&QToolButton::clicked,[this]()
+    {
+        qDebug()<<this->albumMap;
+        emit playAlbum(this->albumMap);
+    });
+
     playBtn->installEventFilter(this);
-    connect(playBtn,SIGNAL(clicked()),this,SLOT(playBtn_clicked()));
     playBtn->setIcon(QIcon(":Data/data/playBtn.svg"));
     playBtn->setIconSize(QSize(48,48));
     playBtn->setGeometry((size/2)-24,(size/2)-24,playBtn->iconSize().width(),playBtn->iconSize().width());
@@ -101,7 +106,10 @@ void Album::removeIt_action()
     qDebug()<<"Remove album"<<this->artist<<this->album;
 }
 
-void Album::playBtn_clicked() { emit playAlbum(this->albumMap); }
+void Album::playBtn_clicked()
+{
+
+}
 
 void Album::setSize(const int &value)
 {
@@ -153,7 +161,7 @@ void Album::putDefaultPixmap()
     this->setPixmap(image);
 }
 
-QString Album::getTitle() { return title.text(); }
+QString Album::getTitle() { return title->text(); }
 
 QString Album::getArtist() { return this->artist; }
 
@@ -184,7 +192,7 @@ void Album::setTitle(const QString &artistTitle, const QString &albumTitle)
     albumMap.insert(ALBUM, this->album);
 
     QString str = album.isEmpty()? artist : album+" - "+artist;
-    title.setText(str);
+    title->setText(str);
 }
 
 void Album::setTitleGeometry(const int &x, const int &y, const int &w, const int &h) { widget->setGeometry(x,y,w,h); }

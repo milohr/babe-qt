@@ -59,7 +59,7 @@ private:
     QString artist="";
     QString album="";
     QString bgColor="";
-    ScrollText title;
+    ScrollText *title;
     QColor borderQColor;
     QPoint oldPos;
     QPoint startPos;
@@ -67,11 +67,11 @@ private:
 
 signals:
 
-    void albumCoverClicked(const QMap<int, QString> &albumMap);
-    void albumCoverDoubleClicked(const QMap<int, QString> &albumMap);
-    void playAlbum(const QMap<int, QString> &albumMap);
-    void changedArt(const QMap<int, QString> &albumMap);
-    void babeAlbum_clicked(const QMap<int, QString> &albumMap);
+    void albumCoverClicked(QMap<int, QString> albumMap);
+    void albumCoverDoubleClicked(QMap<int, QString> albumMap);
+    void playAlbum( QMap<int, QString> albumMap);
+    void changedArt( QMap<int, QString> albumMap);
+    void babeAlbum_clicked( QMap<int, QString> albumMap);
     void albumDragged();
     void albumCoverEnter();
     void albumCoverLeft();

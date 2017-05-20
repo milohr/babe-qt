@@ -45,7 +45,7 @@ MainWindow::MainWindow(const QStringList &files, QWidget *parent) :
     this->move(expandedPos);
     this->resize(expandedSize);
 
-
+    player = new QMediaPlayer();
     defaultWindowFlags = this->windowFlags();
     //mpris = new Mpris(this);
 
@@ -66,7 +66,7 @@ MainWindow::MainWindow(const QStringList &files, QWidget *parent) :
     if(settings_widget->checkCollection())
     {
         settings_widget->getCollectionDB().setCollectionLists();
-        this->addToPlaylist(connection.getTrackData(loadSettings("PLAYLIST","MAINWINDOW").toStringList()));
+        this->addToPlaylist(connection.getTrackData(loadSettings("PLAYLIST","MAINWINDOW").toStringList()),false, APPENDBOTTOM);
         if(this->mainList->rowCount()==0) populateMainList();
         emit collectionChecked();
 
@@ -164,7 +164,7 @@ void MainWindow::setUpViews()
 
     collectionTable = new BabeTable(this);
     //connect(collectionTable, &BabeTable::tableWidget_doubleClicked, this, &MainWindow::addToPlaylist);
-    connect(collectionTable,&BabeTable::tableWidget_doubleClicked, [this] (const QList<QMap<int, QString>> &list) { addToPlaylist(list,false);});
+    connect(collectionTable,&BabeTable::tableWidget_doubleClicked, [this] (QList<QMap<int, QString>> list) { addToPlaylist(list,false);});
     connect(collectionTable,SIGNAL(enteredTable()),this,SLOT(hideControls()));
     connect(collectionTable,SIGNAL(leftTable()),this,SLOT(showControls()));
     connect(collectionTable,SIGNAL(finishedPopulating()),this,SLOT(orderTables()));
@@ -181,7 +181,7 @@ void MainWindow::setUpViews()
 
     //mainList->setFixedWidth(200);
     mainList->setMaximumWidth(ALBUM_SIZE);
-    mainList->setMinimumHeight(ALBUM_SIZE);
+    //    mainList->setMinimumHeight(ALBUM_SIZE);
     mainList->setAddMusicMsg("\nDrag and drop music here!");
     connect(mainList, &BabeTable::tableWidget_doubleClicked, this, &MainWindow::on_mainList_clicked);
     //connect(mainList,SIGNAL(tableWidget_doubleClicked(QList<QMap<int, QString>>)),this,SLOT(on_mainList_clicked(QList<QMap<int, QString>>)));
@@ -243,7 +243,7 @@ void MainWindow::setUpViews()
     connect(infoTable,&InfoView::tagsBtnClicked,[this](QStringList queries) { this->ui->search->setText(queries.join(",")); });
     connect(infoTable,&InfoView::tagClicked,[this](QString query) { this->ui->search->setText(query);});
     connect(infoTable,&InfoView::similarArtistTagClicked,[this](QString query) { this->ui->search->setText(query);});
-    connect(infoTable,&InfoView::artistSimilarReady, [this] (const QMap<QString,QByteArray> &info)
+    connect(infoTable,&InfoView::artistSimilarReady, [this] (QMap<QString,QByteArray> info)
     {
         calibrateBtn_menu->actions().at(3)->setEnabled(true);
         rabbitTable->flushSuggestions(RabbitView::SIMILAR);
@@ -529,7 +529,7 @@ void MainWindow::albumDoubleClicked(const QMap<int, QString> &info)
     else if(!album.isEmpty()&&!artist.isEmpty())
         mapList = settings_widget->getCollectionDB().getTrackData(QString("SELECT * FROM tracks WHERE artist = \""+artist+"\" AND album = \""+album+"\" ORDER by track asc"));
 
-    if(!mapList.isEmpty()) addToPlaylist(mapList);
+    if(!mapList.isEmpty()) addToPlaylist(mapList,false, APPENDBOTTOM);
 
 }
 
@@ -564,7 +564,7 @@ void MainWindow::putOnPlay(const QList<QMap<int,QString>> &mapList)
         mainList->flushTable();
         currentList.clear();
 
-        addToPlaylist(mapList);
+        addToPlaylist(mapList,false,APPENDBOTTOM);
 
         if(mainList->rowCount()>0)
         {
@@ -738,7 +738,7 @@ void MainWindow::dropEvent(QDropEvent *event)
         }else
             mapList = settings_widget->getCollectionDB().getTrackData(QString("SELECT * FROM tracks WHERE artist = \""+info+"\" ORDER by album asc, track asc "));
 
-        addToPlaylist(mapList);
+        addToPlaylist(mapList,false,APPENDBOTTOM);
 
     }else
     {
@@ -1532,7 +1532,7 @@ bool MainWindow::babeIt(const QMap<int, QString> &track)
             if(settings_widget->getCollectionDB().insertInto("tracks","babe",url,1))
             {
                 nof.notify("Song Babe'd it",track[BabeTable::TITLE]+" by "+track[BabeTable::ARTIST]);
-                addToPlaylist({track},true);
+                addToPlaylist({track},true,APPENDBOTTOM);
                 return true;
             } else return false;
 
@@ -1591,7 +1591,7 @@ bool MainWindow::addToCollectionDB(const QStringList &url, const QString &babe)
     if(settings_widget->getCollectionDB().addTrack(url,babe.toInt()))
     {
         if(babe.contains("1"))
-            for(auto track: url) addToPlaylist(settings_widget->getCollectionDB().getTrackData(url),true);
+            for(auto track: url) addToPlaylist(settings_widget->getCollectionDB().getTrackData(url),true,APPENDBOTTOM);
 
         return true;
     }else return false;
@@ -1758,7 +1758,7 @@ void MainWindow::clearMainList()
     this->currentList.clear();
     //    this->current_song.clear();
     this->mainList->flushTable();
-    this->addToPlaylist({current_song});
+    this->addToPlaylist({current_song},false,APPENDBOTTOM);
     this->lCounter=0;
     this->current_song_pos=0;
     this->mainList->setCurrentCell(current_song_pos,BabeTable::TITLE);
@@ -1777,17 +1777,17 @@ void MainWindow::on_addAll_clicked()
     switch(views->currentIndex())
     {
     case COLLECTION:
-        addToPlaylist(collectionTable->getAllTableContent()); break;
+        addToPlaylist(collectionTable->getAllTableContent(),false, APPENDBOTTOM); break;
     case ALBUMS:
-        addToPlaylist(albumsTable->albumTable->getAllTableContent()); break;
+        addToPlaylist(albumsTable->albumTable->getAllTableContent(),false, APPENDBOTTOM); break;
     case ARTISTS:
-        addToPlaylist(artistsTable->albumTable->getAllTableContent()); break;
+        addToPlaylist(artistsTable->albumTable->getAllTableContent(),false,APPENDBOTTOM); break;
     case PLAYLISTS:
-        addToPlaylist(playlistTable->table->getAllTableContent()); break;
+        addToPlaylist(playlistTable->table->getAllTableContent(),false,APPENDBOTTOM); break;
     case RABBIT:
-        addToPlaylist(rabbitTable->getTable()->getAllTableContent()); break;
+        addToPlaylist(rabbitTable->getTable()->getAllTableContent(),false, APPENDBOTTOM); break;
     case RESULTS:
-        addToPlaylist(resultsTable->getAllTableContent()); break;
+        addToPlaylist(resultsTable->getAllTableContent(),false, APPENDBOTTOM); break;
     }
 }
 
@@ -1853,7 +1853,7 @@ void MainWindow::on_filter_textChanged(const QString &arg1)
             mainList->flushTable();
             auto old = currentList;
             currentList.clear();
-            addToPlaylist(old);
+            addToPlaylist(old,false, APPENDBOTTOM);
 
         }
 
@@ -1863,7 +1863,7 @@ void MainWindow::on_filter_textChanged(const QString &arg1)
         mainList->flushTable();
         auto old = currentList;
         currentList.clear();
-        addToPlaylist(old);
+        addToPlaylist(old,false, APPENDBOTTOM);
 
     }
 

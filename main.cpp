@@ -33,8 +33,6 @@ int main(int argc, char *argv[])
             files << argv[i];
         }
 
-
-
     QApplication a(argc, argv);
     a.setApplicationName("Babe");
     a.setDesktopFileName("Babe");

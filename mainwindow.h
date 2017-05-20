@@ -245,7 +245,7 @@ private:
     QVariant loadSettings(const QString &key, const QString &group, const QVariant &defaultValue = QVariant());
 
     /*the streaming */
-    QMediaPlayer *player = new QMediaPlayer();
+    QMediaPlayer *player;
     QTimer *updater = new QTimer(this);
     QTimer *timer;
 
@@ -274,9 +274,9 @@ private:
 
 
 signals:
-    void finishedPlayingSong(const QString &url);
+    void finishedPlayingSong(QString url);
     void collectionChecked();
-    void fetchCover(const QString &artist, const QString &album,const QString &title);
+    void fetchCover(QString artist, QString album,QString title);
 
 };
 
