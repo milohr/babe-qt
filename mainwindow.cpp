@@ -19,12 +19,13 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
 
 
     this->setWindowTitle(" Babe ... \xe2\x99\xa1  \xe2\x99\xa1 \xe2\x99\xa1 ");
@@ -44,6 +45,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->move(expandedPos);
     this->resize(expandedSize);
 
+
     defaultWindowFlags = this->windowFlags();
     //mpris = new Mpris(this);
 
@@ -58,11 +60,14 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setUpRightFrame();
     this->setUpCollectionViewer();
 
+    settings_widget->setToolbarIconSize(this->loadSettings("TOOLBAR","MAINWINDOW",QVariant(16)).toInt());
+
     //* CHECK FOR DATABASE *//
     if(settings_widget->checkCollection())
     {
         settings_widget->getCollectionDB().setCollectionLists();
-        populateMainList();
+        this->addToPlaylist(connection.getTrackData(loadSettings("PLAYLIST","MAINWINDOW").toStringList()));
+        if(this->mainList->rowCount()==0) populateMainList();
         emit collectionChecked();
 
     } else settings_widget->createCollectionDB();
@@ -89,7 +94,6 @@ MainWindow::MainWindow(QWidget *parent) :
         QString style(styleFile.readAll());
         this->setStyleSheet(style);
     }
-    setToolbarIconSize(settings_widget->getToolbarIconSize());
     mainList->setCurrentCell(0,BabeTable::TITLE);
     this->saveSettings("GEOMETRY",this->geometry(),"MAINWINDOW");
     if(mainList->rowCount()>0)
@@ -246,7 +250,7 @@ void MainWindow::setUpViews()
 
 
     settings_widget->readSettings();
-    connect(settings_widget, SIGNAL(toolbarIconSizeChanged(int)), this, SLOT(setToolbarIconSize(int)));
+    connect(settings_widget,&settings::toolbarIconSizeChanged, this, &MainWindow::setToolbarIconSize);
     connect(settings_widget, SIGNAL(collectionDBFinishedAdding(bool)), this, SLOT(collectionDBFinishedAdding(bool)));
     connect(settings_widget, SIGNAL(dirChanged(QString,QString)),this, SLOT(scanNewDir(QString, QString)));
     //connect(settings_widget, SIGNAL(collectionPathRemoved(QString)),&settings_widget->getCollectionDB(), SLOT(removePath(QString)));
@@ -584,6 +588,13 @@ void MainWindow::closeEvent(QCloseEvent* event)
         this->saveSettings("SIZE",expandedSize,"MAINWINDOW");
     }
 
+    this->saveSettings("PLAYLIST", mainList->getTableColumnContent(BabeTable::LOCATION),"MAINWINDOW");
+    qDebug()<<this->ui->mainToolBar->iconSize().height();
+    this->saveSettings("TOOLBAR", this->ui->mainToolBar->iconSize().height(),"MAINWINDOW");
+
+
+
+
     QMainWindow::closeEvent(event);
 }
 
@@ -753,7 +764,7 @@ void MainWindow::putPixmap(const QByteArray &array)
 
 void MainWindow::setToolbarIconSize(const int &iconSize) //tofix
 {
-    qDebug()<< "Toolbar icons size changed";
+    qDebug()<< "Toolbar icons size changed"<<iconSize;
     ui->mainToolBar->setIconSize(QSize(iconSize,iconSize));
     //playback->setIconSize(QSize(iconSize,iconSize));
     //utilsBar->setIconSize(QSize(iconSize,iconSize));
@@ -1149,7 +1160,7 @@ void MainWindow::loadTrack()
         player->play();
 
         //        timer->stop();
-//        timer->start(3000);
+        //        timer->start(3000);
 
         ui->play_btn->setIcon(QIcon(":Data/data/media-playback-pause.svg"));
 

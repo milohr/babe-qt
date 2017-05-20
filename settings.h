@@ -51,6 +51,7 @@ public:
     CollectionDB &getCollectionDB();
 
     int getToolbarIconSize()  {return iconSize;}
+    void setToolbarIconSize(const int &iconSize);
 
     void setSettings(QStringList setting);
     void readSettings();

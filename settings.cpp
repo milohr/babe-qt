@@ -242,8 +242,6 @@ CollectionDB &settings::getCollectionDB() { return collection_db; }
 void settings::on_toolbarIconSize_activated(const QString &arg1) {
     // qDebug () <<arg1;
     iconSize = arg1.toInt();
-    setSettings({"toolbarIconSize=", arg1});
-
     emit toolbarIconSizeChanged(iconSize);
 }
 
@@ -407,25 +405,29 @@ void settings::readSettings() {
             // SLOT(handleFileChanged(const QString&)));
         }
 
-        if (get_setting.contains("toolbarIconSize=")) {
-            iconSize = get_setting.replace("toolbarIconSize=", "").toInt();
-            qDebug() << "Setting the tSize: " << iconSize;
 
-            switch (iconSize) {
-            case 16:
-                ui->toolbarIconSize->setCurrentIndex(0);
-                break;
-            case 22:
-                ui->toolbarIconSize->setCurrentIndex(1);
-                break;
-            case 24:
-                ui->toolbarIconSize->setCurrentIndex(2);
-                break;
-            default:
-                qDebug() << "error setting icon size";
-            }
-        }
     }
+}
+
+void settings::setToolbarIconSize(const int &iconSize)
+{
+    qDebug()<<"setToolbarIconSize"<<iconSize;
+    switch (iconSize) {
+    case 16:
+        ui->toolbarIconSize->setCurrentIndex(0);
+        break;
+    case 22:
+        ui->toolbarIconSize->setCurrentIndex(1);
+        break;
+    case 24:
+        ui->toolbarIconSize->setCurrentIndex(2);
+        break;
+    default:
+        qDebug() << "error setting icon size";
+    }
+
+    emit toolbarIconSizeChanged(iconSize);
+
 }
 
 bool settings::checkCollection() {
@@ -569,7 +571,7 @@ void settings::fetchArt() {
         connect(&art, &Pulpo::artistArtReady,[this,&art] (QByteArray array){ art.saveArt(array,this->cachePath); });
         connect(&art, &Pulpo::artSaved, &collection_db, &CollectionDB::insertHeadArt);
 
-       art.fetchArtistInfo(Pulpo::ArtistArt,Pulpo::LastFm);
+        art.fetchArtistInfo(Pulpo::ArtistArt,Pulpo::LastFm);
 
 
     }

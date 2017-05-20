@@ -686,11 +686,7 @@ void BabeTable::keyPressEvent(QKeyEvent *event) {
                 << this->model()->data(this->model()->index(row, LOCATION)).toString();
         break;
     }
-    case Qt::Key_Control:
-    {
-//        this->setSelectionMode(QAbstractItemView::MultiSelection);
-        break;
-    }
+
     default: {
         QTableWidget::keyPressEvent(event);
         break;
