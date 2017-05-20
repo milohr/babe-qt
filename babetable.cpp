@@ -45,8 +45,7 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
     this->horizontalHeader()->setStretchLastSection(true);
 
     this->verticalHeader()->resizeSections(QHeaderView::ResizeToContents);
-
-    // this->setGridStyle(Qt::PenStyle);
+    this->setSelectionMode(QAbstractItemView::MultiSelection);
     this->setShowGrid(false);
 
     this->setColumnWidth(TRACK, 20);
@@ -211,7 +210,7 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
     addMusicTxt_layout->addStretch();
 
     connect(updater, SIGNAL(timeout()), this, SLOT(update()));
-    updater->start(1000);
+    updater->start(100);
 }
 
 
@@ -644,9 +643,18 @@ void BabeTable::keyPressEvent(QKeyEvent *event) {
     switch (event->key()) {
     case Qt::Key_Return: {
 
-        QList<QMap<int, QString>> list;
+        QItemSelectionModel *select = this->selectionModel();
 
-        list<<getRowData(this->getIndex());
+        auto selection = select->selectedRows(TITLE);
+        QList<QMap<int, QString>> list;
+        for(auto model : selection)
+        {
+            list<<getRowData(model.row());
+
+            qDebug()<< model.row();
+        }
+
+
         emit tableWidget_doubleClicked(list);
 
         break;

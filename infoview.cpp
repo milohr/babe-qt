@@ -276,6 +276,7 @@ void InfoView::clearInfoViews()
     ui->tagsInfo->setVisible(false);
     ui->artistText->setVisible(false);
     ui->albumText->setVisible(false);
+    ui->lyricsText->clear();
 }
 
 void InfoView::on_toolButton_clicked()

@@ -71,7 +71,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(timer, &QTimer::timeout, [this]()
     {
         timer->stop();
-
+if(!current_song.isEmpty())
         infoTable->getTrackInfo(current_song[BabeTable::TITLE],current_song[BabeTable::ARTIST],current_song[BabeTable::ALBUM]);
 
     });
@@ -100,7 +100,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     }else collectionView();
 
-    updater->start(1000);
+    updater->start(100);
 }
 
 
@@ -157,6 +157,8 @@ void MainWindow::setUpViews()
     mainList->hideColumn(BabeTable::ALBUM);
     mainList->hideColumn(BabeTable::ARTIST);
     mainList->horizontalHeader()->setVisible(false);
+    mainList->setSelectionMode(QAbstractItemView::SingleSelection);
+
     //mainList->setFixedWidth(200);
     mainList->setMaximumWidth(ALBUM_SIZE);
     mainList->setMinimumHeight(ALBUM_SIZE);
@@ -226,6 +228,7 @@ void MainWindow::setUpViews()
     connect(infoTable,&InfoView::similarArtistTagClicked,[this](QString query) { this->ui->search->setText(query);});
     connect(infoTable,&InfoView::artistSimilarReady, [this] (const QMap<QString,QByteArray> &info)
     {
+        calibrateBtn_menu->actions().at(3)->setEnabled(true);
         rabbitTable->flushSuggestions(RabbitView::SIMILAR);
         qDebug()<<"&InfoView::artistSimilarReady:"<<info.keys();
         rabbitTable->populateArtistSuggestion(info);
@@ -341,7 +344,7 @@ void MainWindow::setUpCollectionViewer()
     utilsBar = new QToolBar(this);
     utilsBar->setAutoFillBackground(true);
 //    utilsBar->setBackgroundRole(QPalette::Midlight);
-   
+
     utilsBar->setMovable(false);
     utilsBar->setContentsMargins(0,0,0,0);
     utilsBar->layout()->setMargin(0);
@@ -443,8 +446,16 @@ void MainWindow::setUpPlaylist()
     auto similarIt = new QAction("Append Similar...");
     connect(similarIt, &QAction::triggered, [this]()
     {
-        this->addToPlaylist(searchFor(infoTable->getSimilarArtistTags()),true);
-        this->addToPlaylist(searchFor(infoTable->getTags()),true);
+        auto results = searchFor(infoTable->getSimilarArtistTags());
+        int i =1;
+        for(auto track : results)
+        {
+            mainList->addRowAt(current_song_pos+i,track,true,true);
+//            mainList->item(current_song_pos+i,BabeTable::TITLE)->setIcon(QIcon::fromTheme("filename-space-amarok"));
+            i++;
+        }
+
+//        this->addToPlaylist(searchFor(infoTable->getTags()),true);
     });
     calibrateBtn_menu->addAction(similarIt);
 
@@ -1115,12 +1126,14 @@ void MainWindow::feedRabbit()
 
 void MainWindow::loadTrack()
 {
-    //mainList->item(current_song_pos,BabeTable::TITLE)->setIcon(QIcon());
+    mainList->item(current_song_pos,BabeTable::TITLE)->setIcon(QIcon());
+     calibrateBtn_menu->actions().at(3)->setEnabled(false);
+
     prev_song = current_song;
 
     current_song_pos = mainList->getIndex();
     current_song = mainList->getRowData(current_song_pos);
-    //mainList->item(current_song_pos,BabeTable::TITLE)->setIcon(QIcon::fromTheme("media-playback-pause"));
+    mainList->item(current_song_pos,BabeTable::TITLE)->setIcon(QIcon::fromTheme("media-playback-start"));
 
     mainList->scrollTo(mainList->model()->index(current_song_pos,BabeTable::TITLE));
     queued_song_pos = -1;
@@ -1679,12 +1692,17 @@ void MainWindow::on_rowInserted(QModelIndex model ,int x,int y)
 
 void MainWindow::clearMainList()
 {
-    this->album_art->putDefaultPixmap();
+//    this->album_art->putDefaultPixmap();
     this->currentList.clear();
-    this->current_song.clear();
+//    this->current_song.clear();
     this->mainList->flushTable();
-    this->lCounter=-1;
-    this->player->stop();
+    this->addToPlaylist({current_song});
+    this->lCounter=0;
+    this->current_song_pos=0;
+    this->mainList->setCurrentCell(current_song_pos,BabeTable::TITLE);
+    mainList->item(current_song_pos,BabeTable::TITLE)->setIcon(QIcon("media-playback-start"));
+
+//    this->player->stop();
 }
 
 void MainWindow::on_tracks_view_2_clicked()

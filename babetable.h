@@ -24,6 +24,7 @@
 #include <QTimer>
 #include <QGraphicsEffect>
 #include <QGraphicsOpacityEffect>
+#include<QItemSelectionModel>
 
 #include "settings.h"
 #include "notify.h"

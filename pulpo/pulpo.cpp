@@ -45,7 +45,7 @@ bool Pulpo::fetchArtistInfo(const ArtistInfo &infoType, const InfoServices &serv
 
         lastfm lastfm(this->title,this->artist,this->album);
         connect(&lastfm,&lastfm::artistArtReady,[this] (QByteArray array) { emit Pulpo::artistArtReady(array);});
-        connect(&lastfm,&lastfm::artistWikiReady,[this] (QString wiki) { emit Pulpo::artistWikiReady(wiki);});
+        connect(&lastfm,&lastfm::artistWikiReady,[this] (QString wiki) { qDebug() <<"got the artist wiki";emit Pulpo::artistWikiReady(wiki);});
         connect(&lastfm,&lastfm::artistSimilarReady,[this] (QMap<QString,QByteArray> similar) { emit Pulpo::artistSimilarReady(similar);});
         connect(&lastfm,&lastfm::artistTagsReady,[this] (QStringList tags) { emit Pulpo::artistTagsReady(tags);});
 
