@@ -888,10 +888,8 @@ void BabeTable::moodIt_action(QString color)
 
         if(query.exec())
         {
-            qDebug()<<"Art[color] inserted into DB"<< color;
-
             contextMenu->close();
-            moodIt_clicked(rRow,color);
+            emit moodIt_clicked(rRow,color);
 
         }else qDebug()<<"COULDN'T insert art[color] into DB";
 

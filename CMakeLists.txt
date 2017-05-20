@@ -57,9 +57,11 @@ set(babe_SRCS
   web_jgm90.cpp
   rabbitview.cpp
   pulpo/pulpo.cpp
+  pulpo/htmlparser.cpp
   pulpo/services/lastfmService.cpp
   pulpo/services/spotifyService.cpp
   pulpo/services/lyricwikiaService.cpp
+  pulpo/services/geniusService.cpp
 
 )
 

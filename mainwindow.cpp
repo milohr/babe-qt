@@ -422,6 +422,7 @@ void MainWindow::setUpPlaylist()
     seekBar->setStyleSheet(QString("QSlider { background:transparent;} QSlider::groove:horizontal {border: none; background: transparent; height: 5px; border-radius: 0; } QSlider::sub-page:horizontal { background: %1;border: none; height: 5px;border-radius: 0;} QSlider::add-page:horizontal {background: transparent; border: none; height: 5px; border-radius: 0; } QSlider::handle:horizontal {background: %1; width: 8px; } QSlider::handle:horizontal:hover {background: qlineargradient(x1:0, y1:0, x2:1, y2:1,stop:0 #fff, stop:1 #ddd);border: 1px solid #444;border-radius: 4px;}QSlider::sub-page:horizontal:disabled {background: transparent;border-color: #999;}QSlider::add-page:horizontal:disabled {background: transparent;border-color: #999;}QSlider::handle:horizontal:disabled {background: transparent;border: 1px solid #aaa;border-radius: 4px;}").arg(this->palette().color(QPalette::Highlight).name()));
 
     //    ui->playlistUtils->setBackgroundRole(QPalette::Button);
+    ui->playlistUtils->setMaximumWidth(ALBUM_SIZE);
 
     ui->filterBox->setVisible(false);
     ui->filter->setClearButtonEnabled(true);
@@ -519,21 +520,24 @@ void MainWindow::albumDoubleClicked(const QMap<int, QString> &info)
 
 void MainWindow::putAlbumOnPlay(const QMap<int,QString> &info)
 {
-    QString artist =info[Album::ARTIST];
-    QString album = info[Album::ALBUM];
-
-    if(!artist.isEmpty()||!album.isEmpty())
+    if(!info.isEmpty())
     {
-        qDebug()<<"put on play<<"<<artist<<album;
+        QString artist =info[Album::ARTIST];
+        QString album = info[Album::ALBUM];
 
-        QList<QMap<int,QString>> mapList;
+        if(!artist.isEmpty()||!album.isEmpty())
+        {
+            qDebug()<<"put on play<<"<<artist<<album;
 
-        if(album.isEmpty())
-            mapList = settings_widget->getCollectionDB().getTrackData(QString("SELECT * FROM tracks WHERE artist = \""+artist+"\" ORDER by album asc, track asc"));
-        else if(!album.isEmpty()&&!artist.isEmpty())
-            mapList = settings_widget->getCollectionDB().getTrackData(QString("SELECT * FROM tracks WHERE artist = \""+artist+"\" AND album = \""+album+"\" ORDER by track asc"));
+            QList<QMap<int,QString>> mapList;
 
-        if(!mapList.isEmpty()) this->putOnPlay(mapList);
+            if(album.isEmpty())
+                mapList = settings_widget->getCollectionDB().getTrackData(QString("SELECT * FROM tracks WHERE artist = \""+artist+"\" ORDER by album asc, track asc"));
+            else if(!album.isEmpty()&&!artist.isEmpty())
+                mapList = settings_widget->getCollectionDB().getTrackData(QString("SELECT * FROM tracks WHERE artist = \""+artist+"\" AND album = \""+album+"\" ORDER by track asc"));
+
+            if(!mapList.isEmpty()) this->putOnPlay(mapList);
+        }
     }
 
 }
@@ -723,23 +727,10 @@ void MainWindow::dropEvent(QDropEvent *event)
     }else
     {
         QList<QUrl> urls = event->mimeData()->urls();
+        QStringList list;
+        for(auto url : urls) list<<url.path();
 
-        QStringList trackList;
-        for( auto url  : urls)
-        {
-            if(QFileInfo(url.path()).isDir())
-            {
-                QDirIterator it(url.path(), settings_widget->formats, QDir::Files, QDirIterator::Subdirectories);
-
-                while (it.hasNext()) trackList<<it.next();
-
-            }else if (QFileInfo(url.path()).isFile())
-                trackList<<url.path();
-        }
-
-        auto tracks = new Playlist();
-        tracks->add(trackList);
-        addToPlaylist(tracks->getTracksData());
+        appendFiles(list);
     }
 }
 
@@ -764,7 +755,7 @@ void MainWindow::putPixmap(const QByteArray &array)
 
 void MainWindow::setToolbarIconSize(const int &iconSize) //tofix
 {
-    qDebug()<< "Toolbar icons size changed"<<iconSize;
+//    qDebug()<< "Toolbar icons size changed"<<iconSize;
     ui->mainToolBar->setIconSize(QSize(iconSize,iconSize));
     //playback->setIconSize(QSize(iconSize,iconSize));
     //utilsBar->setIconSize(QSize(iconSize,iconSize));
@@ -835,7 +826,6 @@ void MainWindow::rabbitView()
 
     if(this->viewMode != FULLMODE) expand();
 
-    prevSize = this->size();
 
     utilsBar->actions().at(ALBUMS_UB)->setVisible(false);
     utilsBar->actions().at(ARTISTS_UB)->setVisible(false);
@@ -1068,11 +1058,29 @@ void MainWindow::on_shuffle_btn_clicked() //tofix
 void MainWindow::on_open_btn_clicked()
 {
     QStringList files = QFileDialog::getOpenFileNames(this, tr("Select Music Files"),QDir().homePath()+"/Music/", tr("Audio (*.mp3 *.wav *.mp4 *.flac *.ogg *.m4a)"));
-    if(!files.isEmpty())
-    {
-        auto tracks = new Playlist();
-        tracks->add(files);
+    if(!files.isEmpty()) appendFiles(files);
 
+}
+
+void MainWindow::appendFiles(const QStringList &paths)
+{
+    if(!paths.isEmpty())
+    {
+        QStringList trackList;
+        for( auto url  : paths)
+        {
+            if(QFileInfo(url).isDir())
+            {
+                QDirIterator it(url, settings_widget->formats, QDir::Files, QDirIterator::Subdirectories);
+
+                while (it.hasNext()) trackList<<it.next();
+
+            }else if (QFileInfo(url).isFile())
+                trackList<<url;
+        }
+
+        auto tracks = new Playlist();
+        tracks->add(trackList);
         addToPlaylist(tracks->getTracksData());
     }
 }

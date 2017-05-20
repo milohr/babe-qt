@@ -8,6 +8,7 @@ Album::Album(QString imagePath, int widgetSize, int widgetRadius, bool isDraggab
     this->border_radius=widgetRadius;
     this->draggable=isDraggable;
     this->imagePath=imagePath;
+    this->borderQColor = this->palette().color(QPalette::BrightText).name();
 
     if (!imagePath.isEmpty()) this->putPixmap(imagePath);
     else this->putDefaultPixmap();
@@ -19,8 +20,8 @@ Album::Album(QString imagePath, int widgetSize, int widgetRadius, bool isDraggab
     widget->setGeometry(1,size-31,size-2,30);
     widget->setStyleSheet( QString(" background: rgba(0,0,0,150); border-top: 1px solid rgba(%1,%1,%1,120); border-top-left-radius:0; border-top-right-radius:0; border-bottom-right-radius:%2px; border-bottom-left-radius:%3px;").arg( QString::number(this->palette().color(QPalette::WindowText).blue()), QString::number(border_radius-1),QString::number(border_radius-1)));
 
-    title = new ScrollText(this);
-    title->setMaxSize(size+10);
+   
+    title.setMaxSize(size+10);
 
     auto *left_spacer = new QWidget(this);
     left_spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -28,12 +29,12 @@ Album::Album(QString imagePath, int widgetSize, int widgetRadius, bool isDraggab
     auto *right_spacer = new QWidget(this);
     right_spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    title->setStyleSheet("QLabel{background:transparent; color:white; border:none;}");
+    title.setStyleSheet("QLabel{background:transparent; color:white; border:none;}");
     right_spacer->setStyleSheet("background:transparent;  border:none;");
     left_spacer->setStyleSheet("background:transparent;  border:none;");
 
     layout->addWidget(left_spacer);
-    layout->addWidget(title);
+    layout->addWidget(&title);
     layout->addWidget(right_spacer);
 
     playBtn = new QToolButton(this);
@@ -102,7 +103,7 @@ void Album::removeIt_action()
 
 void Album::playBtn_clicked() { emit playAlbum(this->albumMap); }
 
-void Album::setSize(int value)
+void Album::setSize(const int &value)
 {
     this->size=value;
     this->setFixedSize(size,size);
@@ -152,7 +153,7 @@ void Album::putDefaultPixmap()
     this->setPixmap(image);
 }
 
-QString Album::getTitle() { return title->text(); }
+QString Album::getTitle() { return title.text(); }
 
 QString Album::getArtist() { return this->artist; }
 
@@ -160,11 +161,11 @@ QString Album::getAlbum() { return this->album; }
 
 QString Album::getBGcolor() { return this->bgColor; }
 
-void Album::setArtist(QString artist) { this->artist=artist; }
+void Album::setArtist(const QString &artistTitle) { this->artist=artistTitle; }
 
-void Album::setAlbum(QString album) { this->album=album; }
+void Album::setAlbum(const QString &albumTitle) { this->album=albumTitle; }
 
-void Album::setBGcolor(QString bgColor)
+void Album::setBGcolor(const QString &bgColor)
 {
     this->bgColor=bgColor;
 
@@ -174,21 +175,21 @@ void Album::setBGcolor(QString bgColor)
     this->setPixmap(image);
 }
 
-void Album::setTitle(QString _artist, QString _album)
+void Album::setTitle(const QString &artistTitle, const QString &albumTitle)
 {
-    this->artist = _artist;
-    this->album = _album;
+    this->artist = artistTitle;
+    this->album = albumTitle;
 
     albumMap.insert(ARTIST,this->artist);
     albumMap.insert(ALBUM, this->album);
 
     QString str = album.isEmpty()? artist : album+" - "+artist;
-    title->setText(str);
+    title.setText(str);
 }
 
-void Album::setTitleGeometry(int x, int y, int w, int h) { widget->setGeometry(x,y,w,h); }
+void Album::setTitleGeometry(const int &x, const int &y, const int &w, const int &h) { widget->setGeometry(x,y,w,h); }
 
-void Album::titleVisible(bool state)
+void Album::titleVisible(const bool &state)
 {
     if(state) widget->setVisible(true);
     else widget->setVisible(false);

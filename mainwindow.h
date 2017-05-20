@@ -61,6 +61,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     void setStyle();
+    void appendFiles(const QStringList &paths);
 
     QStringList searchKeys = {"location:","artist:","album:","title:","genre:","online:"};
 
@@ -182,8 +183,6 @@ private:
     Qt::WindowFlags defaultWindowFlags;
     Notify nof;
     Mpris *mpris;
-
-    QSize prevSize;
 
     QWidget *mainWidget;
     QGridLayout * mainLayout;

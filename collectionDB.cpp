@@ -254,7 +254,7 @@ bool CollectionDB::checkQuery(QString queryTxt)
 {
     QSqlQuery query(queryTxt);
 
-    qDebug()<<"The Query is: "<<queryTxt;
+//    qDebug()<<"The Query is: "<<queryTxt;
 
     if (query.exec())
         if (query.next()) return true;
@@ -476,11 +476,11 @@ bool CollectionDB::check_existance(QString tableName, QString searchId, QString 
     {
         if (query.next())
         {
-            qDebug()<< "it exists";
+            qDebug()<< "song does exists in db";
             return true;
         }else
         {
-            qDebug()<<"currnt song doesn't exists in db";
+            qDebug()<<"song does not exists in db";
             return false;
         }
 

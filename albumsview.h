@@ -87,13 +87,13 @@ private slots:
 
 signals:
 
-    void albumDoubleClicked(QMap<int,QString> info);
-    void songClicked(QStringList url);
-    void songRated(QStringList url);
-    void songBabeIt(QStringList url);
-    void albumOrderChanged(QString order);
-    void playAlbum(QMap<int,QString> info);
-    void babeAlbum_clicked(QMap<int,QString> info);
+    void albumDoubleClicked(const QMap<int,QString> &info);
+    void songClicked(const QStringList &url);
+    void songRated(const QStringList &url);
+    void songBabeIt(const QStringList &url);
+    void albumOrderChanged(const QString &order);
+    void playAlbum(const QMap<int,QString> &info);
+    void babeAlbum_clicked(const QMap<int,QString> &info);
     void populateCoversFinished();
     void populateHeadsFinished();
 

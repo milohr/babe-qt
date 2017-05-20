@@ -26,13 +26,13 @@ public:
 
     explicit Album(QString imagePath, int widgetSize, int widgetRadius=0, bool isDraggable=false, QWidget *parent = 0);
     ~Album(){}
-    void setArtist(QString artist);
-    void setAlbum(QString album);
-    void setTitle(QString _artist, QString _album="");
-    void setBGcolor(QString bgColor);
-    void titleVisible(bool state);
-    void setTitleGeometry(int x, int y, int w, int h);
-    void setSize(int value);
+    void setArtist(const QString &artistTitle);
+    void setAlbum(const QString &albumTitle);
+    void setTitle(const QString &artistTitle, const QString &albumTitle="");
+    void setBGcolor(const QString &bgColor);
+    void titleVisible(const bool &state);
+    void setTitleGeometry(const int &x, const int &y, const int &w, const int &h);
+    void setSize(const int &value);
 
     int border_radius;
     int size;
@@ -59,19 +59,19 @@ private:
     QString artist="";
     QString album="";
     QString bgColor="";
-    ScrollText *title;
-    QColor borderQColor = this->palette().color(QPalette::BrightText).name();
+    ScrollText title;
+    QColor borderQColor;
     QPoint oldPos;
     QPoint startPos;
     void performDrag();
 
 signals:
 
-    void albumCoverClicked(QMap<int, QString> albumMap);
-    void albumCoverDoubleClicked(QMap<int, QString> albumMap);
-    void playAlbum(QMap<int, QString> albumMap);
-    void changedArt(QMap<int, QString> albumMap);
-    void babeAlbum_clicked(QMap<int, QString> albumMap);
+    void albumCoverClicked(const QMap<int, QString> &albumMap);
+    void albumCoverDoubleClicked(const QMap<int, QString> &albumMap);
+    void playAlbum(const QMap<int, QString> &albumMap);
+    void changedArt(const QMap<int, QString> &albumMap);
+    void babeAlbum_clicked(const QMap<int, QString> &albumMap);
     void albumDragged();
     void albumCoverEnter();
     void albumCoverLeft();

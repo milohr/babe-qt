@@ -4,7 +4,7 @@
 
 AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     QWidget(parent)
-{    
+{
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     auto layout = new QGridLayout();
     layout->setMargin(0);
@@ -243,7 +243,7 @@ void AlbumsView::populateTableView(QSqlQuery query)
 
             connect(artwork, &Album::albumCoverClicked,this,&AlbumsView::getAlbumInfo);
             connect(artwork, &Album::albumCoverDoubleClicked, [this] (QMap<int, QString> info) { emit albumDoubleClicked(info); });
-            connect(artwork,&Album::playAlbum, [this] (QMap<int,QString> info) { emit playAlbum(info); });
+            connect(artwork,&Album::playAlbum, [this] (const QMap<int,QString> &info) { emit playAlbum(info); });
             connect(artwork,&Album::changedArt,this,&AlbumsView::changedArt_cover);
             connect(artwork,&Album::babeAlbum_clicked,this,&AlbumsView::babeAlbum);
             //connect(artwork,SIGNAL(albumDragged()),grid,SLOT(clear()));
@@ -267,7 +267,7 @@ void AlbumsView::populateTableView(QSqlQuery query)
     }
 
     //grid->adjustSize();
-    qDebug()<<grid->width()<<grid->size().height();
+//    qDebug()<<grid->width()<<grid->size().height();
     emit populateCoversFinished();
 
 
