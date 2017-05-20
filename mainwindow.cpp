@@ -1149,7 +1149,7 @@ void MainWindow::loadTrack()
         player->play();
 
         //        timer->stop();
-        timer->start(3000);
+//        timer->start(3000);
 
         ui->play_btn->setIcon(QIcon(":Data/data/media-playback-pause.svg"));
 

@@ -22,8 +22,9 @@
 BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
 
 
-    connect(this, SIGNAL(doubleClicked(QModelIndex)), this,
-            SLOT(on_tableWidget_doubleClicked(QModelIndex)));
+    connect(this,&QTableWidget::doubleClicked, this, &BabeTable::on_tableWidget_doubleClicked);
+//    connect(this->selectionModel(),&QItemSelectionModel::selectionChanged,[this](){    this->setSelectionMode(QAbstractItemView::SingleSelection);
+//qDebug()<<"a row got selected;";});
     //connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),SLOT(setUpContextMenu(const QPoint&)));
     //connect(this->model(),SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)),this,SLOT(itemEdited(const QModelIndex&, const QModelIndex&)));
     //this->setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
@@ -38,14 +39,13 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
     this->verticalHeader()->setVisible(false);
     this->setEditTriggers(QAbstractItemView::NoEditTriggers);
     this->setSelectionBehavior(QAbstractItemView::SelectRows);
-    this->setSelectionMode(QAbstractItemView::SingleSelection);
+    this->setSelectionMode(QAbstractItemView::ExtendedSelection);
     this->setAlternatingRowColors(true);
     this->setSortingEnabled(true);
     this->horizontalHeader()->setHighlightSections(false);
     this->horizontalHeader()->setStretchLastSection(true);
 
     this->verticalHeader()->resizeSections(QHeaderView::ResizeToContents);
-    this->setSelectionMode(QAbstractItemView::MultiSelection);
     this->setShowGrid(false);
 
     this->setColumnWidth(TRACK, 20);
@@ -684,6 +684,11 @@ void BabeTable::keyPressEvent(QKeyEvent *event) {
 
         qDebug()
                 << this->model()->data(this->model()->index(row, LOCATION)).toString();
+        break;
+    }
+    case Qt::Key_Control:
+    {
+//        this->setSelectionMode(QAbstractItemView::MultiSelection);
         break;
     }
     default: {
