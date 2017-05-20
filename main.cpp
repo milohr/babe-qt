@@ -39,7 +39,11 @@ int main(int argc, char *argv[])
     a.setApplicationName("Babe");
     a.setDesktopFileName("Babe");
     MainWindow w;
-    w.appendFiles(files);
+    if(!files.isEmpty())
+    {
+        w.appendFiles(files,MainWindow::APPENDTOP);
+        w.loadTrackAt(0);
+    }
     w.show();
 
 

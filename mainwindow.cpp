@@ -113,6 +113,14 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::loadTrackAt(const int &pos)
+{
+    mainList->setCurrentCell(pos,BabeTable::TITLE);
+    loadTrack();
+    mainList->item(prev_song_pos+1,BabeTable::TITLE)->setIcon(QIcon());//this needs to get fixed
+
+}
+
 void MainWindow::saveSettings(const QString &key, const QVariant &value, const QString &group)
 {
     QSettings setting("Babe","babe");
@@ -148,7 +156,7 @@ void MainWindow::setUpViews()
 
     collectionTable = new BabeTable(this);
     //connect(collectionTable, &BabeTable::tableWidget_doubleClicked, this, &MainWindow::addToPlaylist);
-    connect(collectionTable,SIGNAL(tableWidget_doubleClicked(QList<QMap<int, QString>>)),this,SLOT(addToPlaylist(QList<QMap<int, QString>>)));
+    connect(collectionTable,&BabeTable::tableWidget_doubleClicked, [this] (const QList<QMap<int, QString>> &list) { addToPlaylist(list,false);});
     connect(collectionTable,SIGNAL(enteredTable()),this,SLOT(hideControls()));
     connect(collectionTable,SIGNAL(leftTable()),this,SLOT(showControls()));
     connect(collectionTable,SIGNAL(finishedPopulating()),this,SLOT(orderTables()));
@@ -178,7 +186,6 @@ void MainWindow::setUpViews()
     connect(mainList,SIGNAL(infoIt_clicked(QString, QString, QString)),this,SLOT(infoIt(QString, QString, QString)));
     connect(mainList->model() ,SIGNAL(rowsInserted(QModelIndex,int,int)),this,SLOT(on_rowInserted(QModelIndex,int,int)));
 
-
     onlineFetcher = new web_jgm90();
     resultsTable=new BabeTable(this);
     resultsTable->passStyle("QHeaderView::section { background-color:#575757; color:white; }");
@@ -198,8 +205,6 @@ void MainWindow::setUpViews()
     connect(rabbitTable->getTable(),&BabeTable::queueIt_clicked,this,&MainWindow::addToQueue);
     connect(rabbitTable->getTable(),&BabeTable::babeIt_clicked,this,&MainWindow::babeIt);
     connect(rabbitTable->getTable(),&BabeTable::infoIt_clicked,this,&MainWindow::infoIt);
-
-
 
     albumsTable = new AlbumsView(false,this);
     connect(albumsTable,SIGNAL(albumOrderChanged(QString)),this,SLOT(AlbumsViewOrder(QString)));
@@ -755,7 +760,7 @@ void MainWindow::putPixmap(const QByteArray &array)
 
 void MainWindow::setToolbarIconSize(const int &iconSize) //tofix
 {
-//    qDebug()<< "Toolbar icons size changed"<<iconSize;
+    //    qDebug()<< "Toolbar icons size changed"<<iconSize;
     ui->mainToolBar->setIconSize(QSize(iconSize,iconSize));
     //playback->setIconSize(QSize(iconSize,iconSize));
     //utilsBar->setIconSize(QSize(iconSize,iconSize));
@@ -1062,7 +1067,7 @@ void MainWindow::on_open_btn_clicked()
 
 }
 
-void MainWindow::appendFiles(const QStringList &paths)
+void MainWindow::appendFiles(const QStringList &paths,const appendPos &pos)
 {
     if(!paths.isEmpty())
     {
@@ -1081,7 +1086,7 @@ void MainWindow::appendFiles(const QStringList &paths)
 
         auto tracks = new Playlist();
         tracks->add(trackList);
-        addToPlaylist(tracks->getTracksData());
+        addToPlaylist(tracks->getTracksData(),false,pos);
     }
 }
 
@@ -1145,10 +1150,13 @@ void MainWindow::feedRabbit()
 
 void MainWindow::loadTrack()
 {
-    mainList->item(current_song_pos,BabeTable::TITLE)->setIcon(QIcon());
-    calibrateBtn_menu->actions().at(3)->setEnabled(false);
+
 
     prev_song = current_song;
+    prev_song_pos = current_song_pos;
+
+    mainList->item(prev_song_pos,BabeTable::TITLE)->setIcon(QIcon());
+    calibrateBtn_menu->actions().at(3)->setEnabled(false);
 
     current_song_pos = mainList->getIndex();
     current_song = mainList->getRowData(current_song_pos);
@@ -1579,7 +1587,7 @@ bool MainWindow::addToCollectionDB(const QStringList &url, const QString &babe)
 }
 
 
-void MainWindow::addToPlaylist(const QList<QMap<int, QString> > &mapList, const bool &notRepeated)
+void MainWindow::addToPlaylist(const QList<QMap<int, QString> > &mapList, const bool &notRepeated, const appendPos &pos)
 {
     //currentList.clear();
     qDebug()<<"Adding mapList to mainPlaylist";
@@ -1593,7 +1601,17 @@ void MainWindow::addToPlaylist(const QList<QMap<int, QString> > &mapList, const 
             if(!alreadyInList.contains(track[BabeTable::LOCATION]))
             {
                 newList<<track;
-                mainList->addRow(track,true,true);
+                switch(pos)
+                {
+                case APPENDBOTTOM:
+                    mainList->addRow(track,true,true);
+                    break;
+                case APPENDTOP:
+                    mainList->addRowAt(0,track,true,true);
+                    break;
+                default: qDebug()<<"error appending track to mainlist";
+                }
+
             }
         }
 
@@ -1601,7 +1619,18 @@ void MainWindow::addToPlaylist(const QList<QMap<int, QString> > &mapList, const 
     }else
     {
         currentList+=mapList;
-        for(auto track:mapList) mainList->addRow(track, true,true);
+        for(auto track:mapList)
+            switch(pos)
+            {
+            case APPENDBOTTOM:
+                mainList->addRow(track,true,true);
+                break;
+            case APPENDTOP:
+                mainList->addRowAt(0,track,true,true);
+                break;
+            default: qDebug()<<"error appending track to mainlist";
+            }
+
     }
 
     mainList->resizeRowsToContents();

@@ -23,8 +23,8 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
 
 
     connect(this,&QTableWidget::doubleClicked, this, &BabeTable::on_tableWidget_doubleClicked);
-//    connect(this->selectionModel(),&QItemSelectionModel::selectionChanged,[this](){    this->setSelectionMode(QAbstractItemView::SingleSelection);
-//qDebug()<<"a row got selected;";});
+    //    connect(this->selectionModel(),&QItemSelectionModel::selectionChanged,[this](){    this->setSelectionMode(QAbstractItemView::SingleSelection);
+    //qDebug()<<"a row got selected;";});
     //connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),SLOT(setUpContextMenu(const QPoint&)));
     //connect(this->model(),SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)),this,SLOT(itemEdited(const QModelIndex&, const QModelIndex&)));
     //this->setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
@@ -318,8 +318,9 @@ void BabeTable::addRowAt(int row,QMap<int, QString> map, bool descriptiveTooltip
     this->setItem(row , PLAYED, new QTableWidgetItem(map[PLAYED]));
     //this->setItem(row , PLAYLIST, new QTableWidgetItem(map[PLAYLIST]));
 
-
-    if(coloring)
+    if(coloring && !map[ART].isEmpty())
+        this->colorizeRow(row,map[ART]);
+    else if(coloring)
         this->colorizeRow(row,"#000");
 
 

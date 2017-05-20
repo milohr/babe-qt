@@ -60,10 +60,6 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    void setStyle();
-    void appendFiles(const QStringList &paths);
-
-    QStringList searchKeys = {"location:","artist:","album:","title:","genre:","online:"};
 
     enum views
     {
@@ -81,7 +77,18 @@ public:
     {
         REGULAR, SHUFFLE, REPEAT
     };
+    enum appendPos
+    {
+        APPENDTOP,APPENDBOTTOM
+    };
 
+    void setStyle();
+    void appendFiles(const QStringList &paths, const appendPos &pos = APPENDBOTTOM);
+    void loadTrack();
+    void loadTrackAt(const int &pos);
+
+
+    QStringList searchKeys = {"location:","artist:","album:","title:","genre:","online:"};
 
 protected:
 
@@ -97,7 +104,7 @@ protected:
 
 public slots:
 
-    void addToPlaylist(const QList<QMap<int,QString>> &mapList, const bool &notRepeated=false);
+    void addToPlaylist(const QList<QMap<int,QString>> &mapList, const bool &notRepeated=false, const appendPos &pos = APPENDBOTTOM);
     void putPixmap(const QByteArray &array);
     void populateResultsTable(const QList<QMap<int,QString>> &mapList);
     QList<QMap<int,QString>> searchFor(const QStringList &queries);
@@ -220,7 +227,6 @@ private:
     void setUpPlaylist();
     void setUpRightFrame();
 
-    void loadTrack();
     void next();
     void back();
     void shufflePlaylist();
@@ -255,7 +261,7 @@ private:
     int current_song_pos=0;
 
     QMap<int, QString> prev_song;
-    int prev_song_pos;
+    int prev_song_pos=0;
 
     int lCounter = 0;
     int  shuffle_state = REGULAR;
