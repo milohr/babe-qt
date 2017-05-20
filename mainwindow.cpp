@@ -71,8 +71,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(timer, &QTimer::timeout, [this]()
     {
         timer->stop();
-if(!current_song.isEmpty())
-        infoTable->getTrackInfo(current_song[BabeTable::TITLE],current_song[BabeTable::ARTIST],current_song[BabeTable::ALBUM]);
+        if(!current_song.isEmpty())
+            infoTable->getTrackInfo(current_song[BabeTable::TITLE],current_song[BabeTable::ARTIST],current_song[BabeTable::ALBUM]);
 
     });
 
@@ -289,7 +289,7 @@ void MainWindow::setUpSidebar()
     //ui->mainToolBar->setStyleSheet(QString("QToolBar{margin:0 background-image:url('%1') repeat; }QToolButton{ border-radius:0;} QToolButton:checked{border-radius:0; background: rgba(0,0,0,50)}").arg(":Data/data/pattern.png"));
     ui->mainToolBar->setOrientation(Qt::Vertical);
     ui->mainToolBar->setAutoFillBackground(true);
-//    ui->mainToolBar->setBackgroundRole(QPalette::Dark);
+    //    ui->mainToolBar->setBackgroundRole(QPalette::Dark);
 
     ui->mainToolBar->addWidget(left_spacer);
 
@@ -343,13 +343,13 @@ void MainWindow::setUpCollectionViewer()
 
     utilsBar = new QToolBar(this);
     utilsBar->setAutoFillBackground(true);
-//    utilsBar->setBackgroundRole(QPalette::Midlight);
+    //    utilsBar->setBackgroundRole(QPalette::Midlight);
 
     utilsBar->setMovable(false);
     utilsBar->setContentsMargins(0,0,0,0);
     utilsBar->layout()->setMargin(0);
     utilsBar->layout()->setSpacing(0);
-//    utilsBar->setStyleSheet("margin:0;");
+    //    utilsBar->setStyleSheet("margin:0;");
 
     utilsBar->addWidget(infoTable->infoUtils);
     utilsBar->addWidget(playlistTable->btnContainer);
@@ -417,7 +417,7 @@ void MainWindow::setUpPlaylist()
     seekBar->setFixedHeight(5);
     seekBar->setStyleSheet(QString("QSlider { background:transparent;} QSlider::groove:horizontal {border: none; background: transparent; height: 5px; border-radius: 0; } QSlider::sub-page:horizontal { background: %1;border: none; height: 5px;border-radius: 0;} QSlider::add-page:horizontal {background: transparent; border: none; height: 5px; border-radius: 0; } QSlider::handle:horizontal {background: %1; width: 8px; } QSlider::handle:horizontal:hover {background: qlineargradient(x1:0, y1:0, x2:1, y2:1,stop:0 #fff, stop:1 #ddd);border: 1px solid #444;border-radius: 4px;}QSlider::sub-page:horizontal:disabled {background: transparent;border-color: #999;}QSlider::add-page:horizontal:disabled {background: transparent;border-color: #999;}QSlider::handle:horizontal:disabled {background: transparent;border: 1px solid #aaa;border-radius: 4px;}").arg(this->palette().color(QPalette::Highlight).name()));
 
-//    ui->playlistUtils->setBackgroundRole(QPalette::Button);
+    //    ui->playlistUtils->setBackgroundRole(QPalette::Button);
 
     ui->filterBox->setVisible(false);
     ui->filter->setClearButtonEnabled(true);
@@ -451,11 +451,11 @@ void MainWindow::setUpPlaylist()
         for(auto track : results)
         {
             mainList->addRowAt(current_song_pos+i,track,true,true);
-//            mainList->item(current_song_pos+i,BabeTable::TITLE)->setIcon(QIcon::fromTheme("filename-space-amarok"));
+            //            mainList->item(current_song_pos+i,BabeTable::TITLE)->setIcon(QIcon::fromTheme("filename-space-amarok"));
             i++;
         }
 
-//        this->addToPlaylist(searchFor(infoTable->getTags()),true);
+        //        this->addToPlaylist(searchFor(infoTable->getTags()),true);
     });
     calibrateBtn_menu->addAction(similarIt);
 
@@ -1127,13 +1127,15 @@ void MainWindow::feedRabbit()
 void MainWindow::loadTrack()
 {
     mainList->item(current_song_pos,BabeTable::TITLE)->setIcon(QIcon());
-     calibrateBtn_menu->actions().at(3)->setEnabled(false);
+    calibrateBtn_menu->actions().at(3)->setEnabled(false);
 
     prev_song = current_song;
 
     current_song_pos = mainList->getIndex();
     current_song = mainList->getRowData(current_song_pos);
-    mainList->item(current_song_pos,BabeTable::TITLE)->setIcon(QIcon::fromTheme("media-playback-start"));
+
+    if(mainList->item(current_song_pos,BabeTable::TITLE)->icon().name()!="clock")
+        mainList->item(current_song_pos,BabeTable::TITLE)->setIcon(QIcon::fromTheme("media-playback-start"));
 
     mainList->scrollTo(mainList->model()->index(current_song_pos,BabeTable::TITLE));
     queued_song_pos = -1;
@@ -1146,7 +1148,7 @@ void MainWindow::loadTrack()
         player->setMedia(QUrl::fromLocalFile(current_song[BabeTable::LOCATION]));
         player->play();
 
-//        timer->stop();
+        //        timer->stop();
         timer->start(3000);
 
         ui->play_btn->setIcon(QIcon(":Data/data/media-playback-pause.svg"));
@@ -1692,9 +1694,9 @@ void MainWindow::on_rowInserted(QModelIndex model ,int x,int y)
 
 void MainWindow::clearMainList()
 {
-//    this->album_art->putDefaultPixmap();
+    //    this->album_art->putDefaultPixmap();
     this->currentList.clear();
-//    this->current_song.clear();
+    //    this->current_song.clear();
     this->mainList->flushTable();
     this->addToPlaylist({current_song});
     this->lCounter=0;
@@ -1702,7 +1704,7 @@ void MainWindow::clearMainList()
     this->mainList->setCurrentCell(current_song_pos,BabeTable::TITLE);
     mainList->item(current_song_pos,BabeTable::TITLE)->setIcon(QIcon("media-playback-start"));
 
-//    this->player->stop();
+    //    this->player->stop();
 }
 
 void MainWindow::on_tracks_view_2_clicked()
