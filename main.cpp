@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
     a.setApplicationName("Babe");
     a.setDesktopFileName("Babe");
     MainWindow w;
-
+    w.appendFiles(files);
     w.show();
 
 
