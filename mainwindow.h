@@ -271,9 +271,10 @@ private:
     bool repeat = false;
     bool muted = false;
     bool shuffle = false;
+    bool stopped = false;
 
     vector<unsigned short int> shuffledPlaylist;
-
+    void stopPlayback();
 
 signals:
     void finishedPlayingSong(QString url);

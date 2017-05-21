@@ -457,9 +457,11 @@ void MainWindow::setUpPlaylist()
     connect(clearIt, &QAction::triggered, [this]()
     {
         this->clearMainList();
-        this->mainList->setCurrentCell(current_song_pos,BabeTable::TITLE);
-        this->mainList->item(current_song_pos,BabeTable::TITLE)->setIcon(QIcon::fromTheme("media-playback-start"));
-
+        if(mainList->rowCount()>0)
+        {
+            this->mainList->setCurrentCell(current_song_pos,BabeTable::TITLE);
+            this->mainList->item(current_song_pos,BabeTable::TITLE)->setIcon(QIcon::fromTheme("media-playback-start"));
+        }
     });
 
     calibrateBtn_menu->addAction(clearIt);
@@ -472,7 +474,10 @@ void MainWindow::setUpPlaylist()
     connect(similarIt, &QAction::triggered, [this]()
     {
         auto results = searchFor(infoTable->getSimilarArtistTags());
-        int i =1;
+
+        int i = 1;
+        if(mainList->rowCount()==0) i=0;
+
         for(auto track : results)
         {
             mainList->addRowAt(current_song_pos+i,track,true,true);
@@ -481,6 +486,7 @@ void MainWindow::setUpPlaylist()
 
             i++;
         }
+
 
         //        this->addToPlaylist(searchFor(infoTable->getTags()),true);
     });
@@ -1171,6 +1177,8 @@ void MainWindow::feedRabbit()
 void MainWindow::loadTrack()
 {
 
+    if(stopped) updater->start(100);
+
     prev_song = current_song;
     prev_song_pos = current_song_pos;
 
@@ -1337,8 +1345,24 @@ void MainWindow::on_seekBar_sliderMoved(const int &position)
     player->setPosition(player->duration() / 1000 * position);
 }
 
+void MainWindow::stopPlayback()
+{
+    album_art->putDefaultPixmap();
+    current_song.clear();
+    prev_song = current_song;
+    current_song_pos =0;
+    prev_song_pos =current_song_pos;
+
+    player->stop();
+    updater->stop();
+    stopped = true;
+}
+
 void MainWindow::update()
 {
+
+    if(mainList->rowCount()==0) stopPlayback();
+
     if(!current_song.isEmpty())
     {
         if(!seekBar->isEnabled()) seekBar->setEnabled(true);
@@ -1511,13 +1535,16 @@ void MainWindow::orderTables()
 
 void MainWindow::on_fav_btn_clicked()
 {
-    if(!isBabed(current_song))
+    if(!current_song.isEmpty())
     {
-        if(babeTrack(current_song))  ui->fav_btn->setIcon(QIcon(":Data/data/loved.svg"));
-    }else
-    {
-        if(unbabeIt(current_song)) ui->fav_btn->setIcon(QIcon(":Data/data/love-amarok.svg"));
-        qDebug()<<"brujas";
+        if(!isBabed(current_song))
+        {
+            if(babeTrack(current_song))  ui->fav_btn->setIcon(QIcon(":Data/data/loved.svg"));
+        }else
+        {
+            if(unbabeIt(current_song)) ui->fav_btn->setIcon(QIcon(":Data/data/love-amarok.svg"));
+            qDebug()<<"brujas";
+        }
     }
 }
 
@@ -1933,6 +1960,7 @@ void MainWindow::calibrateMainList()
         lCounter=0;
         this->mainList->setCurrentCell(current_song_pos,BabeTable::TITLE);
         this->mainList->item(current_song_pos,BabeTable::TITLE)->setIcon(QIcon::fromTheme("media-playback-start"));
+        this->mainList->removeRepeated();
     }
 }
 
