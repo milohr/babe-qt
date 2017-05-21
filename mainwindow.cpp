@@ -177,7 +177,7 @@ void MainWindow::setUpViews()
     mainList->hideColumn(BabeTable::ALBUM);
     mainList->hideColumn(BabeTable::ARTIST);
     mainList->horizontalHeader()->setVisible(false);
-    mainList->setSelectionMode(QAbstractItemView::SingleSelection);
+    //    mainList->setSelectionMode(QAbstractItemView::SingleSelection);
 
     //mainList->setFixedWidth(200);
     mainList->setMaximumWidth(ALBUM_SIZE);
@@ -1787,10 +1787,22 @@ void MainWindow::on_rowInserted(QModelIndex model ,int x,int y)
 void MainWindow::clearMainList()
 {
     //    this->album_art->putDefaultPixmap();
-    this->currentList.clear();
+
     //    this->current_song.clear();
+
+
+
+    QList<QMap<int,QString>> mapList;
+    mapList<<current_song;
+    for(auto row : mainList->getSelectedRows(false))
+    {
+        mapList<<mainList->getRowData(row);
+        qDebug()<<"cleaning but leaving:"<<row;
+    }
+    this->currentList.clear();
     this->mainList->flushTable();
-    this->addToPlaylist({current_song},false,APPENDBOTTOM);
+    this->addToPlaylist(mapList,true,APPENDBOTTOM);
+
     this->lCounter=0;
     this->current_song_pos=0;
     this->mainList->setCurrentCell(current_song_pos,BabeTable::TITLE);

@@ -103,7 +103,7 @@ bool htmlParser::findTag(const QString &txt, const QString &tagRef)
     {
         if(txt.at(i)=="<")
         {
-            while(!txt.at(i).isSpace() && txt.at(i)!=">")
+            while(!txt.at(i).isSpace() && txt.at(i).toLatin1()!='>')
             {
                 subTag+=txt.at(i);
                 i++;
