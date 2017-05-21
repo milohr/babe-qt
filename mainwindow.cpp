@@ -568,7 +568,9 @@ void MainWindow::putOnPlay(const QList<QMap<int,QString>> &mapList)
 
         if(mainList->rowCount()>0)
         {
-            mainList->setCurrentCell(0,BabeTable::TITLE);
+            current_song_pos=0;
+            prev_song_pos=0;
+            mainList->setCurrentCell(current_song_pos,BabeTable::TITLE);
             lCounter=0;
             loadTrack();
         }
@@ -1162,12 +1164,12 @@ void MainWindow::feedRabbit()
 void MainWindow::loadTrack()
 {
 
-
     prev_song = current_song;
     prev_song_pos = current_song_pos;
 
     mainList->item(prev_song_pos,BabeTable::TITLE)->setIcon(QIcon());
     calibrateBtn_menu->actions().at(3)->setEnabled(false);
+
 
     current_song_pos = mainList->getIndex();
     current_song = mainList->getRowData(current_song_pos);
