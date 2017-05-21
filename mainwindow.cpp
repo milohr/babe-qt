@@ -454,7 +454,14 @@ void MainWindow::setUpPlaylist()
     calibrateBtn_menu->addAction(refreshIt);
 
     auto clearIt = new QAction("Clear...");
-    connect(clearIt, &QAction::triggered, [this]() { clearMainList(); });
+    connect(clearIt, &QAction::triggered, [this]()
+    {
+        this->clearMainList();
+        this->mainList->setCurrentCell(current_song_pos,BabeTable::TITLE);
+        this->mainList->item(current_song_pos,BabeTable::TITLE)->setIcon(QIcon::fromTheme("media-playback-start"));
+
+    });
+
     calibrateBtn_menu->addAction(clearIt);
 
     auto cleanIt = new QAction("Clean...");
@@ -1799,14 +1806,15 @@ void MainWindow::clearMainList()
         mapList<<mainList->getRowData(row);
         qDebug()<<"cleaning but leaving:"<<row;
     }
+
     this->currentList.clear();
     this->mainList->flushTable();
     this->addToPlaylist(mapList,true,APPENDBOTTOM);
+    mainList->removeRepeated();
 
     this->lCounter=0;
     this->current_song_pos=0;
-    this->mainList->setCurrentCell(current_song_pos,BabeTable::TITLE);
-    mainList->item(current_song_pos,BabeTable::TITLE)->setIcon(QIcon::fromTheme("media-playback-start"));
+    this->prev_song_pos=current_song_pos;
 
     //    this->player->stop();
 }
@@ -1922,9 +1930,9 @@ void MainWindow::calibrateMainList()
 
     if(mainList->rowCount()>0)
     {
-        mainList->setCurrentCell(0,BabeTable::TITLE);
         lCounter=0;
-        loadTrack();
+        this->mainList->setCurrentCell(current_song_pos,BabeTable::TITLE);
+        this->mainList->item(current_song_pos,BabeTable::TITLE)->setIcon(QIcon::fromTheme("media-playback-start"));
     }
 }
 
