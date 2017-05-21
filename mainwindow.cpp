@@ -78,7 +78,7 @@ MainWindow::MainWindow(const QStringList &files, QWidget *parent) :
         timer->stop();
         if(!current_song.isEmpty())
             infoTable->getTrackInfo(current_song[BabeTable::TITLE],current_song[BabeTable::ARTIST],current_song[BabeTable::ALBUM]);
-
+        qDebug()<<"GETTING SONG INFO";
     });
 
     connect(&nof,&Notify::babeSong,this,&MainWindow::babeIt);
@@ -470,7 +470,7 @@ void MainWindow::setUpPlaylist()
         {
             mainList->addRowAt(current_song_pos+i,track,true,true);
             //            mainList->item(current_song_pos+i,BabeTable::TITLE)->setIcon(QIcon::fromTheme("filename-space-amarok"));
-            mainList->colorizeRow(current_song_pos+i,"#000");
+            mainList->colorizeRow({current_song_pos+i},"#000");
 
             i++;
         }
@@ -992,10 +992,10 @@ void MainWindow::go_playlistMode()
 
     int oldHeigh = this->size().height();
 
-    this->resize(ALBUM_SIZE+12,oldHeigh);
-//    this->setMaximumSize(ALBUM_SIZE+(this->contentsMargins().right()*2),QWIDGETSIZE_MAX);
-//    this->setMinimumSize(ALBUM_SIZE+(this->contentsMargins().right()*2),0);
-    this->setFixedWidth(ALBUM_SIZE+12);
+    this->resize(ALBUM_SIZE+16,oldHeigh);
+    //    this->setMaximumSize(ALBUM_SIZE+(this->contentsMargins().right()*2),QWIDGETSIZE_MAX);
+    //    this->setMinimumSize(ALBUM_SIZE+(this->contentsMargins().right()*2),0);
+    this->setFixedWidth(ALBUM_SIZE+16);
 
     //this->adjustSize();
     //this->setWindowFlags(defaultWindowFlags);
@@ -1167,7 +1167,8 @@ void MainWindow::loadTrack()
     prev_song = current_song;
     prev_song_pos = current_song_pos;
 
-    mainList->item(prev_song_pos,BabeTable::TITLE)->setIcon(QIcon());
+    if(prev_song_pos<this->mainList->rowCount())
+        mainList->item(prev_song_pos,BabeTable::TITLE)->setIcon(QIcon());
     calibrateBtn_menu->actions().at(3)->setEnabled(false);
 
 
@@ -1189,7 +1190,7 @@ void MainWindow::loadTrack()
         player->play();
 
         //        timer->stop();
-        //        timer->start(3000);
+        timer->start(3000);
 
         ui->play_btn->setIcon(QIcon(":Data/data/media-playback-pause.svg"));
 
@@ -1306,16 +1307,21 @@ bool MainWindow::loadCover(const QString &artist, const QString &album, const QS
     }
 }
 
-void MainWindow::addToQueue(const QMap<int, QString> &track)
+void MainWindow::addToQueue(const QList<QMap<int, QString>> &tracks)
 {
-    queued_song_pos = queued_song_pos > 0 ? queued_song_pos+1 : current_song_pos+1;
-    queued_songs.insert(track[BabeTable::LOCATION],track);
+    QStringList queuedList;
+    for(auto track : tracks)
+    {
+        queued_song_pos = queued_song_pos > 0 ? queued_song_pos+1 : current_song_pos+1;
+        queued_songs.insert(track[BabeTable::LOCATION],track);
 
-    mainList->addRowAt(queued_song_pos,track,true,true);
-    mainList->item(queued_song_pos,BabeTable::TITLE)->setIcon(QIcon::fromTheme("clock"));
-    mainList->colorizeRow(queued_song_pos,"#000");
+        mainList->addRowAt(queued_song_pos,track,true,true);
+        mainList->item(queued_song_pos,BabeTable::TITLE)->setIcon(QIcon::fromTheme("clock"));
+        mainList->colorizeRow({queued_song_pos},"#000");
+        queuedList<<track[BabeTable::TITLE]+" by "+track[BabeTable::ARTIST];
+    }
     //mainList->addRowAt(current_song_pos+1,track,true);
-    nof.notify("Song added to Queue",track[BabeTable::TITLE]+" by "+track[BabeTable::ARTIST]);
+    nof.notify("Song added to Queue",queuedList.join("\n"));
 
 }
 
@@ -1484,7 +1490,7 @@ void MainWindow::on_fav_btn_clicked()
 {
     if(!isBabed(current_song))
     {
-        if(babeIt(current_song))  ui->fav_btn->setIcon(QIcon(":Data/data/loved.svg"));
+        if(babeTrack(current_song))  ui->fav_btn->setIcon(QIcon(":Data/data/loved.svg"));
     }else
     {
         if(unbabeIt(current_song)) ui->fav_btn->setIcon(QIcon(":Data/data/love-amarok.svg"));
@@ -1504,7 +1510,7 @@ void MainWindow::babeAlbum(const QMap<int, QString> &info)
         mapList = settings_widget->getCollectionDB().getTrackData(QString("SELECT * FROM tracks WHERE artist = \""+artist+"\" and album = \""+album+"\""));
 
     if(!mapList.isEmpty())
-        for (auto track : mapList) babeIt(track);
+        babeIt(mapList);
 
 }
 
@@ -1518,8 +1524,9 @@ bool MainWindow::unbabeIt(const QMap<int, QString> &track)
 
 }
 
-bool MainWindow::babeIt(const QMap<int, QString> &track)
+bool MainWindow::babeTrack(const QMap<int, QString> &track)
 {
+
     QString url = track[BabeTable::LOCATION];
     if(isBabed(track))
     {
@@ -1553,6 +1560,13 @@ bool MainWindow::babeIt(const QMap<int, QString> &track)
         }
 
     }
+
+}
+void MainWindow::babeIt(const QList<QMap<int, QString>> &tracks)
+{
+    for(auto track : tracks)
+        if(!babeTrack(track)) qDebug()<<"couldn't Babe track:"<<track[BabeTable::LOCATION];
+
 }
 
 void  MainWindow::infoIt(const QString &title, const QString &artist, const QString &album)

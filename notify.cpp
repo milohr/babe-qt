@@ -30,9 +30,9 @@ void Notify::notify(  const QString &title, const QString &body)
     // notification->setComponentName(QStringLiteral("Babe"));
     notification->setTitle(QStringLiteral("%1").arg(title));
     notification->setText(QStringLiteral("%1").arg(body));
-    QPixmap babeIcon;
-    babeIcon.load(":Data/data/babe_128.svg");
-    notification->setPixmap(babeIcon);
+//    QPixmap babeIcon;
+//    babeIcon.load(":Data/data/babe_128.svg");
+//    notification->setPixmap(babeIcon);
     //connect(notification, SIGNAL(ac), this, SLOT(notify()));
 
     notification->sendEvent();
@@ -76,6 +76,6 @@ void Notify::notifyUrgent(  const QString &title, const QString &body)
 void Notify::babeIt()
 {
     qDebug()<<"babe the shit out of it";
-     emit babeSong(track);
+    emit babeSong({track});
 
 }

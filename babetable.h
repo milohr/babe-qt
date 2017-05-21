@@ -77,6 +77,7 @@ public:
     void setAddMusicMsg(QString msg);
     int getIndex();
     void removeRepeated();
+    QList<int> getSelectedRows(const bool &onRightClick=true);
     //void removeRow(int row);
 
     QMap<int,QString> getRowData(int row);
@@ -104,7 +105,7 @@ private slots:
     void infoIt_action();
     void editIt_action();
     void removeIt_action();
-    void moodIt_action(QString color);
+    void moodIt_action(const QString &color);
     void queueIt_action();
     void moodTrack(int color);
     void update();
@@ -113,7 +114,7 @@ public slots:
     QStringList getPlaylistMenus();
     void itemEdited(QMap<int, QString> map);
     void flushTable();
-    void colorizeRow(const int &row, const QString &color);
+    void colorizeRow(const QList<int> &rows, const QString &color);
 
 private:
 
@@ -145,12 +146,12 @@ signals:
     void leftTable();
     void finishedPopulating();
     void rightClicked(const int row, const int column);
-    void babeIt_clicked(QMap<int,QString> track);
+    void babeIt_clicked(QList<QMap<int,QString>> tracks);
     void removeIt_clicked(int index);
     void createPlaylist_clicked();
     void refreshPlaylistsMenu(QStringList list);
-    void moodIt_clicked(const int &row, const QString &color);
-    void queueIt_clicked(QMap<int,QString> track);
+    void moodIt_clicked(QList<int> rows, QString color);
+    void queueIt_clicked(QList<QMap<int,QString>> track);
     void infoIt_clicked(QString title, QString artist, QString album);
 
 };

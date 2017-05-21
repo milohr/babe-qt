@@ -86,6 +86,7 @@ public:
     void appendFiles(const QStringList &paths, const appendPos &pos = APPENDBOTTOM);
     void loadTrack();
     void loadTrackAt(const int &pos);
+    bool babeTrack(const QMap<int, QString> &track);
 
 
     QStringList searchKeys = {"location:","artist:","album:","title:","genre:","online:"};
@@ -161,11 +162,11 @@ private slots:
     void changedArt(const QMap<int, QString> &info);
     void babeAlbum(const QMap<int, QString> &info);
     bool loadCover(const QString &artist, const QString &album, const QString &title);
-    bool babeIt(const QMap<int, QString> &track);
+    void babeIt(const QList<QMap<int, QString>> &tracks);
     bool unbabeIt(const QMap<int, QString> &track);
     void loadMood();
     bool removeQueuedTrack(const QMap<int, QString> &track);
-    void addToQueue(const QMap<int,QString> &track);
+    void addToQueue(const QList<QMap<int, QString> > &tracks);
     void on_filterBtn_clicked();
     void on_filter_textChanged(const QString &arg1);
     void infoIt(const QString &title, const QString &artist, const QString &album);

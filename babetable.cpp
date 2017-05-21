@@ -129,19 +129,17 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
     // passPlaylists();
     // playlistsMenu->addAction("hello rold");
 
-    connect(this, SIGNAL(rightClicked(const int, const int)), this, SLOT(setUpContextMenu(const int, const int)));
-    connect(playlistsMenu, SIGNAL(triggered(QAction *)), this,
-            SLOT(addToPlaylist(QAction *)));
-    connect(sendToMenu, SIGNAL(triggered(QAction *)), this,
-            SLOT(sendIt_action(QAction *)));
+    connect(this, &BabeTable::rightClicked, this,&BabeTable::setUpContextMenu);
+    connect(playlistsMenu, &QMenu::triggered, this, &BabeTable::addToPlaylist);
+    connect(sendToMenu,&QMenu::triggered, this,&BabeTable::sendIt_action);
 
 
-    connect(babeIt, SIGNAL(triggered()), this, SLOT(babeIt_action()));
-    connect(queueIt, SIGNAL(triggered()), this, SLOT(queueIt_action()));
+    connect(babeIt,&QAction::triggered, this, &BabeTable::babeIt_action);
+    connect(queueIt,&QAction::triggered, this,&BabeTable::queueIt_action);
     //connect(sendIt, SIGNAL(triggered()), this, SLOT(sendIt_action()));
-    connect(infoIt, SIGNAL(triggered()), this, SLOT(infoIt_action()));
-    connect(editIt, SIGNAL(triggered()), this, SLOT(editIt_action()));
-    connect(removeIt, SIGNAL(triggered()), this, SLOT(removeIt_action()));
+    connect(infoIt, &QAction::triggered, this, &BabeTable::infoIt_action);
+    connect(editIt,&QAction::triggered, this, &BabeTable::editIt_action);
+    connect(removeIt,&QAction::triggered, this, &BabeTable::removeIt_action);
 
 
     auto gr = new QWidget();
@@ -239,10 +237,11 @@ void BabeTable::moodTrack(int color) { moodIt_action(colors.at(color)); }
 void BabeTable::addToPlaylist(QAction *action)
 {
     QString playlist = action->text().replace("&", "");
-    QString location = getRowData(rRow)[LOCATION];
 
-    if (playlist.contains("Create new...")) emit createPlaylist_clicked();
-    else populatePlaylist({location}, playlist);
+    QStringList locations;
+    for(auto row : this->getSelectedRows()) locations<<getRowData(row)[LOCATION];
+
+    populatePlaylist(locations, playlist);
 }
 
 void BabeTable::populatePlaylist(QStringList urls, QString playlist)  //this needs to get fixed
@@ -296,7 +295,7 @@ void BabeTable::addRow(QMap<int, QString> map, bool descriptiveTooltip, bool col
     this->setItem(this->rowCount() - 1, PLAYLIST, new QTableWidgetItem(map[PLAYLIST]));
 
     if(coloring && !map[ART].isEmpty())
-        this->colorizeRow(this->rowCount()-1,map[ART]);
+        this->colorizeRow({this->rowCount()-1},map[ART]);
 
     if(descriptiveTooltip)
         this->item(this->rowCount()-1,TITLE)->setToolTip( "by "+map[ARTIST]);
@@ -319,7 +318,7 @@ void BabeTable::addRowAt(int row,QMap<int, QString> map, bool descriptiveTooltip
     //this->setItem(row , PLAYLIST, new QTableWidgetItem(map[PLAYLIST]));
 
     if(coloring && !map[ART].isEmpty())
-        this->colorizeRow(row,map[ART]);
+        this->colorizeRow({row},map[ART]);
 
     if(descriptiveTooltip)
         this->item(row,TITLE)->setToolTip( "by "+map[ARTIST]);
@@ -641,15 +640,13 @@ void BabeTable::keyPressEvent(QKeyEvent *event) {
     switch (event->key()) {
     case Qt::Key_Return: {
 
-        QItemSelectionModel *select = this->selectionModel();
 
-        auto selection = select->selectedRows(TITLE);
         QList<QMap<int, QString>> list;
-        for(auto model : selection)
+        for(auto row : this->getSelectedRows(false))
         {
-            list<<getRowData(model.row());
+            list<<getRowData(row);
 
-            qDebug()<< model.row();
+            qDebug()<<row;
         }
 
 
@@ -714,48 +711,35 @@ void BabeTable::rateGroup(int id)
 {
     qDebug() << "rated with: " << id;
     // int row= this->currentIndex().row();
-    QString location = this->getRowData(rRow)[LOCATION];
 
-    QSqlQuery query = connection.getQuery(
-                "SELECT * FROM tracks WHERE location = \"" + location + "\"");
-
-    int rate = 0;
-
-    while (query.next())
-        rate = query.value(STARS).toInt();
-
-    if (connection.check_existance("tracks", "location", location))
+    for(auto row : this->getSelectedRows())
     {
-        if (connection.insertInto("tracks", "stars", location, id))
-            setRating(id);
 
-        QString stars;
-        for (int i = 0; i < id; i++)
-            stars += "\xe2\x98\x86 ";
+        QString location = this->getRowData(row)[LOCATION];
 
-        this->item(rRow, STARS)->setText(stars);
+        QSqlQuery query = connection.getQuery(
+                    "SELECT * FROM tracks WHERE location = \"" + location + "\"");
 
-        if (id > 0 && rate < 5)
+        int rate = 0;
+
+        while (query.next())
+            rate = query.value(STARS).toInt();
+
+        if (connection.check_existance("tracks", "location", location))
         {
-            QString title =
-                    this->model()->data(this->model()->index(rRow, TITLE)).toString();
-            QString artist =
-                    this->model()->data(this->model()->index(rRow, ARTIST)).toString();
-            QString album =
-                    this->model()->data(this->model()->index(rRow, ALBUM)).toString();
-            QString star =
-                    this->model()->data(this->model()->index(rRow, STARS)).toString();
-            QString babe =
-                    this->model()->data(this->model()->index(rRow, BABE)).toString();
+            if (connection.insertInto("tracks", "stars", location, id))
+            {
+                setRating(id);
 
-            qDebug() << "rated and trying to add to favs";
-            emit songRated({title, artist, album, location, star, babe});
-        } else {
-            qDebug() << "rated and trying to add to favs failed";
-        }
-        // this->update();
-    } else
-    {
+                QString stars;
+                for (int i = 0; i < id; i++)
+                    stars += "\xe2\x98\x86 ";
+
+                this->item(row, STARS)->setText(stars);
+
+            } else { qDebug() << "rating failed for"<< location;  }
+
+        } else { qDebug() << "rating failed for"<< location << "because i does not exists in db";  }
     }
 }
 
@@ -802,34 +786,40 @@ void BabeTable::on_tableWidget_doubleClicked(const QModelIndex &index)
 }
 
 void BabeTable::babeIt_action()
-{    
-    emit babeIt_clicked(this->getRowData(rRow));
+{    QList<QMap<int,QString>> mapList;
+     for(auto row: this->getSelectedRows())
+         mapList<< this->getRowData(row);
+
+      emit babeIt_clicked(mapList);
 }
 
 void BabeTable::sendIt_action(QAction *device)
 {
-    auto track = this->getRowData(rRow);
-
-    QString url =track[LOCATION];
-    QString title = track[TITLE];
-    QString artist = track[ARTIST];
-
-    QString deviceName = device->text().replace("&","");
-    QString deviceKey = devices.key(deviceName);
-
-    qDebug()<<"trying to send "<< url << "to : "<< deviceName;
-    auto process = new QProcess(this);
-    connect(process, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
-            [=](int exitCode, QProcess::ExitStatus exitStatus)
+    for(auto row: this->getSelectedRows())
     {
-        qDebug()<<"processFinished_totally"<<exitCode<<exitStatus;
-        nof.notifyUrgent("Song sent to " + deviceName,title +" by "+ artist);
 
-    });
+        auto track = this->getRowData(row);
 
-    qDebug()<<"kdeconnect-cli -d " +deviceKey+ " --share " + url;
-    process->start("kdeconnect-cli -d " +deviceKey+ " --share " +"\""+ url+"\"");
+        QString url =track[LOCATION];
+        QString title = track[TITLE];
+        QString artist = track[ARTIST];
 
+        QString deviceName = device->text().replace("&","");
+        QString deviceKey = devices.key(deviceName);
+
+        qDebug()<<"trying to send "<< url << "to : "<< deviceName;
+        auto process = new QProcess(this);
+        connect(process, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
+                [=](int exitCode, QProcess::ExitStatus exitStatus)
+        {
+            qDebug()<<"processFinished_totally"<<exitCode<<exitStatus;
+            nof.notifyUrgent("Song sent to " + deviceName,title +" by "+ artist);
+
+        });
+
+        qDebug()<<"kdeconnect-cli -d " +deviceKey+ " --share " + url;
+        process->start("kdeconnect-cli -d " +deviceKey+ " --share " +"\""+ url+"\"");
+    }
 }
 
 void BabeTable::editIt_action()
@@ -874,41 +864,64 @@ void BabeTable::removeIt_action()
     emit removeIt_clicked(rRow);
 }
 
-void BabeTable::moodIt_action(QString color)
+void BabeTable::moodIt_action(const QString &color)
 {
     if(!color.isEmpty())
     {
-        QSqlQuery query;
-        query.prepare("UPDATE tracks SET art = (:art) WHERE location = (:location)" );
-        //query.prepare("SELECT * FROM "+tableName+" WHERE "+searchId+" = (:search)");
-        query.bindValue(":art",  color);
-        query.bindValue(":location", this->getRowData(rRow)[LOCATION]);
-
-        if(query.exec())
+        for(auto row : this->getSelectedRows())
         {
-            contextMenu->close();
-            emit moodIt_clicked(rRow,color);
+            auto track =this->getRowData(row);
+            QSqlQuery query;
+            query.prepare("UPDATE tracks SET art = (:art) WHERE location = (:location)" );
+            //query.prepare("SELECT * FROM "+tableName+" WHERE "+searchId+" = (:search)");
+            query.bindValue(":art",  color);
+            query.bindValue(":location",track[LOCATION]);
 
-        }else qDebug()<<"COULDN'T insert art[color] into DB";
+            if(query.exec()) qDebug()<< "moodIt was sucessful";
+            else qDebug()<<"could not mood track: "<< track[LOCATION];
+        }
 
+        contextMenu->close();
+        emit moodIt_clicked(this->getSelectedRows(),color);
     }
 }
 
-void BabeTable::colorizeRow(const int &row, const QString &color)
+void BabeTable::colorizeRow(const QList<int> &rows, const QString &color)
 {
-    QColor coloring;
-    coloring.setNamedColor(color);
-    coloring.setAlpha(40);
-    this->item(row,TITLE)->setBackgroundColor(coloring);
-    /* QBrush brush;
+    for(auto row : rows)
+    {
+        QColor coloring;
+        coloring.setNamedColor(color);
+        coloring.setAlpha(40);
+        this->item(row,TITLE)->setBackgroundColor(coloring);
+        /* QBrush brush;
     brush.setColor("#fff");
     this->item(row,TITLE)->setForeground(brush);*/
-    //this->item(row,TITLE)->setTextAlignment(Qt::AlignCenter);
+        //this->item(row,TITLE)->setTextAlignment(Qt::AlignCenter);
+    }
 }
 
 void BabeTable::queueIt_action()
 {
-    emit queueIt_clicked(getRowData(rRow));
+    QList<QMap<int,QString>> mapList;
+    for(auto row : this->getSelectedRows())
+        mapList<< this->getRowData(row);
+
+    emit queueIt_clicked(mapList);
+}
+
+QList<int> BabeTable::getSelectedRows(const bool &onRightClick)
+{
+    QList<int> selectedRows;
+    QItemSelectionModel *select = this->selectionModel();
+
+    auto selection = select->selectedRows(TITLE);
+    QList<QMap<int, QString>> list;
+    for(auto model : selection) selectedRows<<model.row();
+
+    if(!selectedRows.contains(rRow) && onRightClick) return {rRow};
+    else return selectedRows;
+
 }
 
 void BabeTable::flushTable()

@@ -394,8 +394,5 @@ void AlbumsView::getAlbumInfo(QMap<int,QString> info)
     albumBox_frame->resize(cover->sizeHint());
 }
 
-void AlbumsView::albumTable_clicked(QStringList list) { emit songClicked(list); }
 
-void AlbumsView::albumTable_rated(QStringList list) { emit songRated(list); }
 
-void AlbumsView::albumTable_babeIt(QStringList list) { emit songBabeIt(list); }

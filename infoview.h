@@ -36,6 +36,9 @@ private:
     QToolButton *hideBtn;
     bool hide= false;
     bool customsearch = false;
+    QString trackTitle;
+    QString albumTitle;
+    QString artistTitle;
 
 public slots:
 
@@ -52,7 +55,7 @@ public slots:
     QStringList getSimilarArtistTags();
     void hideArtistInfo();
     void playAlbum_clicked(QMap<int,QString> info);
-    void getTrackInfo(const QString &title_, const QString &artist_, const QString &album_);
+    void getTrackInfo(const QString &title, const QString &artist, const QString &album);
     void on_searchBtn_clicked();
 
 signals:

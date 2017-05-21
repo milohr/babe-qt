@@ -228,17 +228,20 @@ void InfoView::on_searchBtn_clicked()
 }
 
 
-void InfoView::getTrackInfo(const QString &title_, const QString &artist_, const QString &album_)
+void InfoView::getTrackInfo(const QString &title, const QString &artist, const QString &album)
 {
+    this->trackTitle= title;
+    this->albumTitle = album;
+    this->artistTitle = artist;
     clearInfoViews();
 
-    if(!album_.isEmpty()&&!artist_.isEmpty())
+    if(!albumTitle.isEmpty()&&!artistTitle.isEmpty())
     {
-        this->artist->setArtist(artist_);
+        this->artist->setArtist(artistTitle);
         //this->album->setAlbum(album);
         //        QCoreApplication::removePostedEvents(QObject *receiver, int eventType = 0)
 
-        Pulpo info(title_,artist_,album_);
+        Pulpo info(trackTitle,artistTitle,albumTitle);
         connect(&info, &Pulpo::trackLyricsReady, this, &InfoView::setLyrics, Qt::UniqueConnection);
         connect(&info, &Pulpo::albumWikiReady, this, &InfoView::setAlbumInfo, Qt::UniqueConnection);
         connect(&info, &Pulpo::artistWikiReady, this, &InfoView::setArtistInfo);
@@ -261,11 +264,11 @@ void InfoView::getTrackInfo(const QString &title_, const QString &artist_, const
 
 
 
-        if(!title_.isEmpty())
+        if(!trackTitle.isEmpty())
         {
             info.fetchTrackInfo(Pulpo::NoneTrackInfo,Pulpo::LyricWikia,Pulpo::NoneInfoService);
-            ui->artistLine->setText(artist_);
-            ui->titleLine->setText(title_);
+            ui->titleLine->setText(this->trackTitle);
+            ui->artistLine->setText(this->artistTitle);
         }
     }
 }

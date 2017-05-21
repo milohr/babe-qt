@@ -78,9 +78,6 @@ private slots:
 
     void getAlbumInfo(QMap<int,QString> info);
     void getArtistInfo(QMap<int,QString> info);
-    void albumTable_clicked(QStringList list);
-    void albumTable_rated(QStringList list);
-    void albumTable_babeIt(QStringList list);
     void albumHover();    
     void orderChanged(QString order);
     void filterAlbum(QModelIndex index);
@@ -88,9 +85,6 @@ private slots:
 signals:
 
     void albumDoubleClicked(QMap<int,QString> info);
-    void songClicked(QStringList url);
-    void songRated(QStringList url);
-    void songBabeIt(QStringList url);
     void albumOrderChanged(QString order);
     void playAlbum(QMap<int,QString> info);
     void babeAlbum_clicked( QMap<int,QString> info);
