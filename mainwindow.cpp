@@ -458,7 +458,7 @@ void MainWindow::setUpPlaylist()
     calibrateBtn_menu->addAction(clearIt);
 
     auto cleanIt = new QAction("Clean...");
-    connect(cleanIt, &QAction::triggered, [this]() { mainList->removeRepeated(); });
+    connect(cleanIt, &QAction::triggered, [this]() { mainList->removeRepeated(); /*this->removequeuedTracks();*/ });
     calibrateBtn_menu->addAction(cleanIt);
 
     auto similarIt = new QAction("Append Similar...");
@@ -1373,6 +1373,22 @@ bool MainWindow::removeQueuedTrack(const QMap<int, QString> &track)
 
     return false;
 }
+
+void MainWindow::removequeuedTracks()
+{
+    QList<QMap<int, QString>> newList;
+
+    for(auto row=0;row<this->mainList->rowCount();row++)
+
+        if(mainList->item(row,BabeTable::TITLE)->icon().name()=="clock")
+        {
+            mainList->removeRow(row);
+            queued_songs.remove(mainList->getRowData(row)[BabeTable::LOCATION]);
+            lCounter--;
+        }
+
+}
+
 
 void MainWindow::next()
 {

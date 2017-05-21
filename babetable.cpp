@@ -952,8 +952,28 @@ QList<QMap<int, QString>> BabeTable::getAllTableContent()
 
 void BabeTable::removeRepeated()//tofix
 {
-    auto list = this->getTableColumnContent(BabeTable::LOCATION);
-    list.removeDuplicates();
-    this->flushTable();
-    this->populateTableView(connection.getTrackData(list),true,true);
+
+    QStringList index;
+//    int rows =;
+    for(auto row=0;row<this->rowCount();row++)
+    {
+        auto track = this->getRowData(row);
+        auto trackInfo = track[TITLE]+"/&/"+track[ARTIST]+"/&/"+track[ALBUM];
+
+        if(index.contains(trackInfo))
+        {
+            qDebug()<<"index contains:"<<track[TITLE]<<row;;
+            this->removeRow(row);
+            row--;
+        }
+        else
+        {
+            qDebug()<<"adding to index:"<<track[TITLE]<<row;
+
+            index<<trackInfo;
+        }
+
+
+    }
+
 }
