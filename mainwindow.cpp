@@ -1352,6 +1352,7 @@ void MainWindow::stopPlayback()
     prev_song = current_song;
     current_song_pos =0;
     prev_song_pos =current_song_pos;
+    ui->play_btn->setIcon(QIcon(":Data/data/media-playback-start.svg"));
 
     player->stop();
     updater->stop();
@@ -1827,7 +1828,7 @@ void MainWindow::clearMainList()
 
 
     QList<QMap<int,QString>> mapList;
-    mapList<<current_song;
+    if (!current_song.isEmpty()) mapList<<current_song;
     for(auto row : mainList->getSelectedRows(false))
     {
         mapList<<mainList->getRowData(row);
