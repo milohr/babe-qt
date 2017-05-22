@@ -139,7 +139,7 @@ void Album::paintEvent(QPaintEvent *event)
 
 QPixmap Album::getPixmap() { return image; }
 
-void Album::putPixmap(QByteArray pix)
+void Album::putPixmap(const QByteArray &pix)
 {
     if(!pix.isEmpty()) this->image.loadFromData(pix);
     else this->image.load(":Data/data/cover.svg");
@@ -147,7 +147,7 @@ void Album::putPixmap(QByteArray pix)
     this->setPixmap(image);
 }
 
-void Album::putPixmap(QString path)
+void Album::putPixmap(const QString &path)
 {
     if(!path.isEmpty()) this->image.load(path);
     else this->image.load(":Data/data/cover.svg");

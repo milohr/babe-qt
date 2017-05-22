@@ -74,8 +74,6 @@ public:
 
     bool fetchTrackInfo(const TrackInfo &infoType = AllTrackInfo, const LyricServices &lyricService = AllLyricServices, const InfoServices &services = AllInfoServices );
 
-    QByteArray extractImg(QString url);
-
     QByteArray startConnection(const QString &url);
 
 

@@ -336,20 +336,22 @@ QVariant Pulpo::getStaticTrackInfo(const TrackInfo &infoType)
 
 QByteArray Pulpo::startConnection(const QString &url)
 {
-    QNetworkAccessManager manager;
-    QNetworkRequest request ((QUrl(url)));
-    QNetworkReply *reply =  manager.get(request);
-    QEventLoop loop;
-    connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
-    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), &loop,
-            SLOT(quit()));
+    if(!url.isEmpty())
+    {
+        QUrl mURL(url);
+        QNetworkAccessManager manager;
+        QNetworkRequest request (mURL);
+        QNetworkReply *reply =  manager.get(request);
+        QEventLoop loop;
+        connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+        connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), &loop,
+                SLOT(quit()));
 
-    loop.exec();
+        loop.exec();
 
-    QByteArray array(reply->readAll());
-    //    qDebug()<<"startConnection"<<array;
-    delete reply;
-    return array;
+        reply->deleteLater();
+        return reply->readAll();
+    }else return QByteArray();
 }
 
 
@@ -388,23 +390,4 @@ void Pulpo::saveArt(const QByteArray &array, const QString &path)
         else
             emit artSaved("", {this->album, this->artist});
     }
-}
-
-QByteArray Pulpo::extractImg(QString url)
-{
-    QNetworkAccessManager manager;
-
-    QNetworkReply *reply = manager.get(QNetworkRequest(QUrl(url)));
-
-    QEventLoop loop;
-
-    QObject::connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
-    QObject::connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), &loop,
-                     SLOT(quit()));
-    loop.exec();
-
-    QByteArray img(reply->readAll());
-    delete reply;
-
-    return img;
 }

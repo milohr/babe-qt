@@ -79,7 +79,7 @@ void genius::extractAlbumArt(const QString &url)
         if(!list.isEmpty())
         {
             htmlParser parser;
-            emit albumArtReady(Pulpo::extractImg(parser.extractProp(list.first(),"src=")));
+            emit albumArtReady(Pulpo::startConnection(parser.extractProp(list.first(),"src=")));
         }
     });
  parser.parseTag("img", "class=\"cover_art-image\"");

@@ -19,7 +19,7 @@ QString htmlParser::extractProp(const QString &tag,const QString &prop)
     auto result =list.filter(prop,Qt::CaseInsensitive);
 //    qDebug()<<result;
     auto url = result.first().replace(prop,"").replace('\"',"");
-    qDebug()<<url;
+//    qDebug()<<url;
     return url;
 
 }
@@ -101,7 +101,7 @@ bool htmlParser::findTag(const QString &txt, const QString &tagRef)
     QString subTag;
     while(i<txt.size())
     {
-        if(txt.at(i)=="<")
+        if(txt.at(i).toLatin1()=='<')
         {
             while(!txt.at(i).isSpace() && txt.at(i).toLatin1()!='>')
             {

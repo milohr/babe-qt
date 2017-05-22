@@ -265,7 +265,6 @@ private:
     QMap<int, QString> prev_song;
     int prev_song_pos=0;
 
-    int lCounter = 0;
     int  shuffle_state = REGULAR;
 
     bool repeat = false;

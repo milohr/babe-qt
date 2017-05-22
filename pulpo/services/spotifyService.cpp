@@ -92,7 +92,7 @@ bool spotify::parseSpotifyAlbum(const QByteArray &array, const AlbumInfo &infoTy
                     if(infoType == AlbumArt || infoType == AllAlbumInfo)
                     {
                         auto albumArt =items.at(0).toMap().value("images").toList().at(0).toMap().value("url").toString();
-                        emit albumArtReady(extractImg(albumArt));
+                        emit albumArtReady(startConnection(albumArt));
                         qDebug()<<"parseSpotifyAlbum ["<< albumArt<<"]";
                         if(infoType == AlbumArt ) return true;
 

@@ -86,7 +86,7 @@ bool lastfm::parseLastFmArtist(const QByteArray &array, const ArtistInfo &infoTy
                         {
                             auto artistArt_url = n.toElement().text();
                             qDebug()<<"Fetching ArtistArt LastFm["<<artistArt_url<<"]";
-                            emit artistArtReady(extractImg(artistArt_url));
+                            emit artistArtReady(startConnection(artistArt_url));
                             if(infoType == ArtistArt) return true;
                             else continue;
 
@@ -135,7 +135,7 @@ bool lastfm::parseLastFmArtist(const QByteArray &array, const ArtistInfo &infoTy
                                         if (k.isElement())
                                         {
                                             auto artistSimilarArt_url = k.toElement().text();
-                                            artistSimilarArt = extractImg(artistSimilarArt_url);
+                                            artistSimilarArt = startConnection(artistSimilarArt_url);
                                         }
                                 }
                             }
@@ -213,7 +213,7 @@ bool lastfm::parseLastFmAlbum(const QByteArray &array, const AlbumInfo &infoType
                             auto albumArt_url = n.toElement().text();
                             qDebug()<<"Fetching AlbumArt LastFm[]";
 
-                            emit albumArtReady(extractImg(albumArt_url));
+                            emit albumArtReady(startConnection(albumArt_url));
 
                             if(infoType == AlbumArt) return true;
                             else continue;

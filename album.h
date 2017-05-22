@@ -78,8 +78,8 @@ signals:
 
 public slots:
 
-    void putPixmap(QByteArray pix);
-    void putPixmap(QString path);
+    void putPixmap(const QByteArray &pix);
+    void putPixmap(const QString &path);
     void putDefaultPixmap();
     void playBtn_clicked();
     void babeIt_action();

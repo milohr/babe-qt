@@ -23,7 +23,7 @@ static const double BIG_ALBUM_FACTOR = 0.039;
 static const double MEDIUM_ALBUM_FACTOR = 0.013;
 static const double SMALL_ALBUM_FACTOR = 0.006;
 
-static inline int getWidgetSizeHint(const double &factor, const int &deafultValue)
+inline int getWidgetSizeHint(const double &factor, const int &deafultValue)
 {
     int ALBUM_SIZE = deafultValue;
     auto screenSize = QApplication::desktop()->availableGeometry().size();
@@ -32,7 +32,7 @@ static inline int getWidgetSizeHint(const double &factor, const int &deafultValu
     return ALBUM_SIZE;
 }
 
-static inline QString getNameFromLocation(const QString &str)
+inline QString getNameFromLocation(const QString &str)
 {
     QString ret;
     int index = 0;
@@ -54,16 +54,16 @@ static inline QString getNameFromLocation(const QString &str)
     return ret;
 }
 
-static const QString SettingPath = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation)+"/babe/";
-static const QString CollectionDBPath = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation)+"/babe/";
-static const QString CachePath = QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation)+"/babe/";
-static const QString YoutubeCachePath = QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation)+"/babe/youtube/";
-static const QString ExtensionFetchingPath = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
-static const QString NotifyDir = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
-static const QStringList MoodColors = {"#F0FF01","#01FF5B","#3DAEFD","#B401FF","#E91E63"};
+const QString SettingPath = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation)+"/babe/";
+const QString CollectionDBPath = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation)+"/babe/";
+const QString CachePath = QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation)+"/babe/";
+const QString YoutubeCachePath = QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation)+"/babe/youtube/";
+const QString ExtensionFetchingPath = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
+const QString NotifyDir = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
+const QStringList MoodColors = {"#F0FF01","#01FF5B","#3DAEFD","#B401FF","#E91E63"};
 
 
-static inline QString fixTitle(const QString &title,const QString &s,const QString &e)
+inline QString fixTitle(const QString &title,const QString &s,const QString &e)
 {
     QString newTitle;
     for(int i=0; i<title.size();i++)
@@ -82,7 +82,7 @@ static inline QString fixTitle(const QString &title,const QString &s,const QStri
 }
 
 
-static inline QString removeSubstring(const QString &newTitle, const QString &subString)
+inline QString removeSubstring(const QString &newTitle, const QString &subString)
 {
     const int indexFt = newTitle.indexOf(subString, 0, Qt::CaseInsensitive);
 
@@ -94,7 +94,7 @@ static inline QString removeSubstring(const QString &newTitle, const QString &su
     }
 }
 
-static inline QString ucfirst(const QString &str)
+inline QString ucfirst(const QString &str)
 {
     if (str.isEmpty()) return "";
 
@@ -120,7 +120,7 @@ static inline QString ucfirst(const QString &str)
     return output.simplified();
 }
 
-static inline QString fixString (const QString &str)
+inline QString fixString (const QString &str)
 {
 
     //title.remove(QRegExp(QString::fromUtf8("[·-`~!@#$%^&*()_—+=|:;<>«»,.?/{}\'\"\\\[\\\]\\\\]")));
@@ -145,7 +145,7 @@ static inline QString fixString (const QString &str)
     return ucfirst(title).simplified();
 }
 
-static inline bool fileExists(const QString &url)
+inline bool fileExists(const QString &url)
 {
     QFileInfo path(url);
     if (path.exists()) return true;

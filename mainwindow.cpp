@@ -582,9 +582,9 @@ void MainWindow::putOnPlay(const QList<QMap<int,QString>> &mapList)
         if(mainList->rowCount()>0)
         {
             current_song_pos=0;
-            prev_song_pos=0;
+            prev_song_pos=current_song_pos;
             mainList->setCurrentCell(current_song_pos,BabeTable::TITLE);
-            lCounter=0;
+
             loadTrack();
         }
     }
@@ -1135,9 +1135,8 @@ void MainWindow::updateList()
 void MainWindow::on_mainList_clicked(const QList<QMap<int, QString> > &list)
 {
     Q_UNUSED(list);
-    lCounter = mainList->getIndex();
-    loadTrack();
 
+    loadTrack();
     if(!currentList.contains(current_song)) currentList<<current_song;
 
     ui->play_btn->setIcon(QIcon(":Data/data/media-playback-pause.svg"));
@@ -1182,7 +1181,7 @@ void MainWindow::loadTrack()
     prev_song = current_song;
     prev_song_pos = current_song_pos;
 
-    if(prev_song_pos<this->mainList->rowCount())
+    if(prev_song_pos<this->mainList->rowCount() && mainList->item(current_song_pos,BabeTable::TITLE)->icon().name()!="clock")
         mainList->item(prev_song_pos,BabeTable::TITLE)->setIcon(QIcon());
     calibrateBtn_menu->actions().at(3)->setEnabled(false);
 
@@ -1399,7 +1398,7 @@ bool MainWindow::removeQueuedTrack(const QMap<int, QString> &track)
         {
             mainList->removeRow(current_song_pos);
             queued_songs.remove(track[BabeTable::LOCATION]);
-            lCounter--;
+            current_song_pos--;
             return true;
         }
 
@@ -1416,7 +1415,7 @@ void MainWindow::removequeuedTracks()
         {
             mainList->removeRow(row);
             queued_songs.remove(mainList->getRowData(row)[BabeTable::LOCATION]);
-            lCounter--;
+            current_song_pos--;
         }
 
 }
@@ -1426,7 +1425,7 @@ void MainWindow::next()
 {
     if(!queued_songs.isEmpty()) removeQueuedTrack(current_song); //check if the track was queued and then removed it
 
-    lCounter++;
+    auto lCounter = current_song_pos+1;
 
     if(repeat) lCounter--;
 
@@ -1441,7 +1440,7 @@ void MainWindow::next()
 
 void MainWindow::back()
 {
-    lCounter--;
+    auto lCounter = current_song_pos-1;
 
     if(lCounter < 0)
         lCounter = mainList->rowCount() - 1;
@@ -1544,7 +1543,6 @@ void MainWindow::on_fav_btn_clicked()
         }else
         {
             if(unbabeIt(current_song)) ui->fav_btn->setIcon(QIcon(":Data/data/love-amarok.svg"));
-            qDebug()<<"brujas";
         }
     }
 }
@@ -1840,7 +1838,6 @@ void MainWindow::clearMainList()
     this->addToPlaylist(mapList,true,APPENDBOTTOM);
     mainList->removeRepeated();
 
-    this->lCounter=0;
     this->current_song_pos=0;
     this->prev_song_pos=current_song_pos;
 
@@ -1958,7 +1955,6 @@ void MainWindow::calibrateMainList()
 
     if(mainList->rowCount()>0)
     {
-        lCounter=0;
         this->mainList->setCurrentCell(current_song_pos,BabeTable::TITLE);
         this->mainList->item(current_song_pos,BabeTable::TITLE)->setIcon(QIcon::fromTheme("media-playback-start"));
         this->mainList->removeRepeated();
