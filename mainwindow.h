@@ -26,6 +26,7 @@
 #include <QDesktopWidget>
 #include <QPoint>
 #include <QSize>
+#include <QPropertyAnimation>
 
 #include <QPixmap>
 #include <QDir>
@@ -145,7 +146,6 @@ private slots:
 
     //void on_resultsPLaylist_clicked();
     void setCoverArt(const QString &artist, const QString &album, const QString &title);
-    void orderTables();
     void on_rowInserted(QModelIndex model ,int x,int y);
 
     void AlbumsViewOrder(QString order);
@@ -185,8 +185,8 @@ private:
     const QString stylePath = BaeUtils::SettingPath+"style.qss";
 
     int viewMode = FULLMODE;
-    QPoint expandedPos;
-    QSize expandedSize;
+    QRect defaultGeometry;
+    int minWidth = ALBUM_SIZE*3;
     int prevIndex;
 
     Qt::WindowFlags defaultWindowFlags;
