@@ -36,11 +36,11 @@ MainWindow::MainWindow(const QStringList &files, QWidget *parent) :
     this->setMinimumSize(this->minWidth,0);
 
     this->defaultGeometry = (QStyle::alignedRect(
-                         Qt::LeftToRight,
-                         Qt::AlignCenter,
-                         qApp->desktop()->availableGeometry().size()*0.7,
-                         qApp->desktop()->availableGeometry()
-                         ));
+                                 Qt::LeftToRight,
+                                 Qt::AlignCenter,
+                                 qApp->desktop()->availableGeometry().size()*0.7,
+                                 qApp->desktop()->availableGeometry()
+                                 ));
 
     this->setGeometry( this->loadSettings("GEOMETRY","MAINWINDOW",defaultGeometry).toRect());
     this->saveSettings("GEOMETRY",this->geometry(),"MAINWINDOW");
@@ -492,8 +492,6 @@ void MainWindow::setUpPlaylist()
     });
     calibrateBtn_menu->addAction(similarIt);
 
-    auto saveIt = new QAction("Save as playlist...");
-    calibrateBtn_menu->addAction(saveIt);
 
     playlistWidget_layout->addWidget(album_art, 0,0,Qt::AlignTop);
     playlistWidget_layout->addWidget(ui->frame_6,1,0);
@@ -628,12 +626,12 @@ void MainWindow::closeEvent(QCloseEvent* event)
 
 void MainWindow::resizeEvent(QResizeEvent* event)
 {
-//    if(this->viewMode == FULLMODE && this->size().width() < this->minWidth)
-//    {
-//        this->saveSettings("GEOMETRY",this->defaultGeometry,"MAINWINDOW");
+    //    if(this->viewMode == FULLMODE && this->size().width() < this->minWidth)
+    //    {
+    //        this->saveSettings("GEOMETRY",this->defaultGeometry,"MAINWINDOW");
 
-//        go_playlistMode();
-//    }
+    //        go_playlistMode();
+    //    }
 
     QMainWindow::resizeEvent(event);
 }
@@ -996,7 +994,7 @@ void MainWindow::go_playlistMode()
     ui->tracks_view_2->setVisible(true);
 
     album_art->borderColor=false;
-this->setMinimumWidth(ALBUM_SIZE+16);
+    this->setMinimumWidth(ALBUM_SIZE+16);
     QPropertyAnimation *animation = new QPropertyAnimation(this, "maximumWidth");
     animation->setDuration(200);
     animation->setStartValue(this->size().width());

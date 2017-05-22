@@ -27,8 +27,7 @@ public:
     void openCollection(QString path);
     QSqlQuery getQuery(QString queryTxt);
     bool checkQuery(QString queryTxt);
-    bool insertInto(QString tableName, QString column, QString location, int value);
-    bool insertInto(QString tableName, QString column, QString location, QString value);
+    bool insertInto(const QString &tableName, const QString &column, const QString &location, const QVariant &value);
     void setTrackList(QList <Track>);
     void prepareCollectionDB();
     bool removeQuery(QString queryTxt);
@@ -71,6 +70,7 @@ public slots:
 signals:
     void progress(int);
     void DBactionFinished(bool state);
+    void finishedInserting(bool state);
 
 };
 

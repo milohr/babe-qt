@@ -514,7 +514,7 @@ bool CollectionDB::execQuery(QString queryTxt)
 
 }
 
-bool CollectionDB::insertInto(QString tableName, QString column, QString location, int value)
+bool CollectionDB::insertInto(const QString &tableName, const QString &column, const QString &location, const QVariant &value)
 {
     QSqlQuery query;
 
@@ -527,36 +527,10 @@ bool CollectionDB::insertInto(QString tableName, QString column, QString locatio
         query.bindValue(":location", location);
         if(query.exec())
         {
-            qDebug()<<"insertInto<<"<<"UPDATE "+tableName+" SET "+column+" = "+ value + " WHERE location = "+location;
+           return true;
+        }else return false;
 
-            return true;
-        }else
-        {
-            return false;
-        }
-    }
-
-    return false;
-}
-
-bool CollectionDB::insertInto(QString tableName, QString column, QString location, QString value)
-{
-
-    QSqlQuery query;
-    query.prepare("UPDATE "+tableName+" SET "+column+" = (:value) WHERE location = (:location)" );
-    //query.prepare("SELECT * FROM "+tableName+" WHERE "+searchId+" = (:search)");
-
-    query.bindValue(":value", value);
-    query.bindValue(":location", location);
-    if(query.exec())
-    {
-        qDebug()<<"insertInto<<"<<"UPDATE "+tableName+" SET "+column+" = "+ value + " WHERE location = "+location;
-
-        return true;
-    }else
-    {
-        return false;
-    }
+    }else return false;
 
 }
 

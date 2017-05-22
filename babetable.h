@@ -73,7 +73,7 @@ public:
     void addRowAt(int row, QMap<int, QString> map, bool descriptiveTooltip, bool coloring);
     void passStyle(QString style);
     void passPlaylists();
-    void populatePlaylist(QStringList urls, QString playlist);
+    void populatePlaylist(const QStringList &urls, const QString &playlist);
     void setAddMusicMsg(QString msg);
     int getIndex();
     void removeRepeated();
@@ -153,6 +153,7 @@ signals:
     void moodIt_clicked(QList<int> rows, QString color);
     void queueIt_clicked(QList<QMap<int,QString>> track);
     void infoIt_clicked(QString title, QString artist, QString album);
+    void finishedPopulatingPlaylist(QString playlist);
 
 };
 

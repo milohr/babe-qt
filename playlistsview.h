@@ -7,6 +7,7 @@
 #include <QToolButton>
 #include <QGridLayout>
 #include <QStandardPaths>
+#include <QDialog>
 #include "baeUtils.h"
 namespace Ui {
 class PlaylistsView;
@@ -27,6 +28,7 @@ public:
     void setPlaylistsMoods(QStringList moods_n);
     void setDefaultPlaylists();
     void definePlaylists(QStringList playlists);
+    void showPlaylistDialog();
     QFrame *line_v;
     QWidget *btnContainer;
     QString currentPlaylist;
@@ -34,7 +36,7 @@ public:
     QStringList moods = BaeUtils::MoodColors;
     QString youtubeCachePath=BaeUtils::YoutubeCachePath;
 
-   // QToolButton *removeBtn;
+    // QToolButton *removeBtn;
 
 private:
 
@@ -43,7 +45,6 @@ private:
     QToolButton *addBtn;
     QToolButton *removeBtn;
     QGridLayout *layout;
-
     QFrame *frame;
 
     CollectionDB connection;

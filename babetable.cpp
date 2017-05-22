@@ -242,9 +242,14 @@ void BabeTable::addToPlaylist(QAction *action)
     for(auto row : this->getSelectedRows()) locations<<getRowData(row)[LOCATION];
 
     populatePlaylist(locations, playlist);
+
+    connect(this,&BabeTable::finishedPopulatingPlaylist,[this](QString playlist)
+    {
+        nof.notifyUrgent(playlist, "Tracks added to playlist");
+    });
 }
 
-void BabeTable::populatePlaylist(QStringList urls, QString playlist)  //this needs to get fixed
+void BabeTable::populatePlaylist(const QStringList &urls, const QString &playlist)  //this needs to get fixed
 {
     for (auto location : urls)
     {
@@ -264,7 +269,8 @@ void BabeTable::populatePlaylist(QStringList urls, QString playlist)  //this nee
             qDebug() << list;
 
     }
-    nof.notifyUrgent("Tracks added to playlist:",playlist);
+
+    emit finishedPopulatingPlaylist(playlist);
 }
 
 
@@ -954,7 +960,7 @@ void BabeTable::removeRepeated()//tofix
 {
 
     QStringList index;
-//    int rows =;
+    //    int rows =;
     for(auto row=0;row<this->rowCount();row++)
     {
         auto track = this->getRowData(row);

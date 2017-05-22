@@ -116,6 +116,12 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent) {
     // container->setContentsMargins(0,0,0,0);
     this->setLayout(layout);
 }
+void PlaylistsView::showPlaylistDialog()
+{
+    QDialog *playlistDialog = new QDialog();
+    playlistDialog->show();
+
+}
 
 void PlaylistsView::dummy() { qDebug() << "signal was recived"; }
 
@@ -144,8 +150,6 @@ void PlaylistsView::setDefaultPlaylists() {
     online->setIcon(QIcon::fromTheme("kstars_constellationart"));
     online->setText("Online");
     list->addItem(online);
-
-
 
 }
 
