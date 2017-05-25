@@ -103,6 +103,7 @@ protected:
     virtual void dropEvent(QDropEvent *event);
     virtual void resizeEvent(QResizeEvent* event);
     virtual void keyPressEvent(QKeyEvent *event);
+    virtual bool eventFilter(QObject * watched, QEvent * event) Q_DECL_OVERRIDE;
 
 public slots:
 

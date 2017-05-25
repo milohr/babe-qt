@@ -461,6 +461,8 @@ void MainWindow::setUpPlaylist()
     ui->controls->setGeometry(0,ALBUM_SIZE-static_cast<int>(ALBUM_SIZE*0.25),ALBUM_SIZE,static_cast<int>(ALBUM_SIZE*0.25));
 
     seekBar = new QSlider(this);
+    seekBar->installEventFilter(this);
+
     connect(seekBar,SIGNAL(sliderMoved(int)),this,SLOT(on_seekBar_sliderMoved(int)));
 
     seekBar->setMaximum(1000);
@@ -640,6 +642,33 @@ void MainWindow::addToPlayed(const QString &url)
     }
 }
 
+
+bool MainWindow::eventFilter(QObject *object, QEvent *event)
+{
+    if (object == seekBar && seekBar->isEnabled())
+    {
+        if (event->type() == QEvent::MouseButtonPress)
+        {
+            auto mevent = static_cast<QMouseEvent *>(event);
+            qreal value = seekBar->minimum() + (seekBar->maximum() - seekBar->minimum()) * mevent->localPos().x() / seekBar->width();
+            if (mevent->button() == Qt::LeftButton)
+            {
+//                seekBar->setValue(qRound(value));
+                emit seekBar->sliderMoved(qRound(value));
+            }
+            event->accept();
+            return true;
+        }
+
+        if (event->type() == QEvent::MouseButtonDblClick)
+        {
+            event->accept();
+            return true;
+        }
+    }
+    return QMainWindow::eventFilter(object, event);
+}
+
 void MainWindow::closeEvent(QCloseEvent* event)
 {
 
@@ -669,7 +698,7 @@ void MainWindow::resizeEvent(QResizeEvent* event)
 
     if(this->viewMode==MINIMODE)
     {        this->setMaximumHeight(event->size().width());
-this->setMinimumHeight(event->size().width());
+        this->setMinimumHeight(event->size().width());
 
         album_art->setSize(event->size().width());
         int ALBUM_SIZE_ = album_art->getSize();
