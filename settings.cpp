@@ -60,20 +60,10 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
     if (!youtubeCache_dir.exists())
         youtubeCache_dir.mkpath(".");
 
-    /*cacheTimer = new QTimer();
-    connect(cacheTimer, &QTimer::timeout, [this]() {
-        // this->setLyrics(artist,title);
-        emit dirChanged(youtubeCachePath,"1");
-        cacheTimer->stop();
-        //qDebug()<<"antonpirulilului";
-        //this->getTrackInfo();
+    connect(&collection_db, &CollectionDB::DBactionFinished, this,&settings::finishedAddingTracks);
+    connect(&collection_db,&CollectionDB::progress, ui->progressBar,&QProgressBar::setValue);
+    connect(this, &settings::collectionPathChanged, this, &settings::populateDB);
 
-    });*/
-
-    /* auto cacheWatcher = new QFileSystemWatcher();
-    cacheWatcher->addPath(youtubeCachePath);
-    connect(cacheWatcher, SIGNAL(directoryChanged(QString)), this,
-            SLOT(handleDirectoryChanged_cache(QString)));*/
 
     ytFetch = new YouTube(this);
     connect(ytFetch,&YouTube::youtubeTrackReady,this,&settings::youtubeTrackReady);
@@ -83,14 +73,6 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
     connect(extensionWatcher, SIGNAL(directoryChanged(QString)), this,
             SLOT(handleDirectoryChanged_extension()));
 
-    connect(this, &settings::collectionPathChanged, this, &settings::populateDB);
-    connect(&collection_db, &CollectionDB::DBactionFinished, this,&settings::finishedAddingTracks);
-    connect(&collection_db,&CollectionDB::progress, ui->progressBar,&QProgressBar::setValue);
-    // thread = new QThread(parent);
-    // thread->setTerminationEnabled=true;
-    // collection_db.moveToThread(thread);
-    // connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
-    //  connect(thread, SIGNAL(started()), &collection_db, SLOT(addTrack()));
 
     ui->remove->setEnabled(false);
     ui->progressBar->hide();
@@ -167,19 +149,25 @@ void settings::on_collectionPath_clicked(const QModelIndex &index) {
     pathToRemove = index.data().toString();
 }
 
-void settings::on_remove_clicked() {
+void settings::on_remove_clicked()
+{
     qDebug() << pathToRemove;
-    if (!pathToRemove.isEmpty()) {
+    if (!pathToRemove.isEmpty())
+    {
 
-        collection_db.removePath(pathToRemove);
-        removeSettings({"collectionPath=", pathToRemove});
-        collectionPaths.removeAll(pathToRemove);
+        if(collection_db.removePath(pathToRemove))
+        {
+            removeSettings({"collectionPath=", pathToRemove});
+            collectionPaths.removeAll(pathToRemove);
 
-        refreshCollectionPaths();
-        refreshWatchFiles();
-        ui->remove->setEnabled(false);
+            refreshCollectionPaths();
+            refreshWatchFiles();
+            ui->remove->setEnabled(false);
+            collection_db.setCollectionLists();
+            collection_db.cleanCollectionLists();
+            emit collectionDBFinishedAdding();
+        }
         //emit collectionPathRemoved(pathToRemove);
-        emit refreshTables();
     }
 }
 
@@ -242,11 +230,12 @@ void settings::on_toolbarIconSize_activated(const QString &arg1) {
     emit toolbarIconSizeChanged(iconSize);
 }
 
-void settings::on_open_clicked() {
+void settings::on_open_clicked()
+{
     QString url = QFileDialog::getExistingDirectory(this,"Select folder...", QDir().homePath()+"/Music/");
 
-    // qDebug()<<url;
-    if (!collectionPaths.contains(url) && !url.isEmpty()) {
+    if (!collectionPaths.contains(url) && !url.isEmpty())
+    {
         ui->collectionPath->addItem(url);
         collectionPaths << url;
         qDebug() << "Collection dir added: " << url;
@@ -372,14 +361,8 @@ void settings::collectionWatcher()
     // for(auto m: dirs) qDebug()<<m;
 }
 
-
-void settings::handleFileChanged(QString file) {
-    qDebug() << "this file changed: " << file;
-    refreshWatchFiles();
-    emit fileChanged(file);
-}
-
-void settings::handleDirectoryChanged(QString dir) {
+void settings::handleDirectoryChanged(QString dir)
+{
     qDebug() << "this directory changed: " << dir;
 
     emit dirChanged(dir);
@@ -454,77 +437,50 @@ void settings::createCollectionDB()
 
 }
 
-void settings::populateDB(QString path)
+void settings::populateDB(const QString &path)
 {
 
     qDebug() << "Function Name: " << Q_FUNC_INFO
              << "new path for database action: " << path;
 
     QStringList urlCollection;
-    // QDir dir = new QDir(url);
 
     if (QFileInfo(path).isDir())
-
     {
         QDirIterator it(path, formats, QDir::Files, QDirIterator::Subdirectories);
 
-        while (it.hasNext()) {
-            urlCollection << it.next();
+        while (it.hasNext()) urlCollection << it.next();
 
-            // qDebug() << it.next();
-        }
-    } else if (QFileInfo(path).isFile()) {
-        urlCollection << path;
-        qDebug() << path;
-    }
+    } else if (QFileInfo(path).isFile()) urlCollection << path;
 
-    /* Playlist *collection= new Playlist();
-                  collection->addClean(urlCollection);
-                  //updateList();
-                 collection_db.setTrackList(collection->getTracks());*/
     ui->progressBar->setValue(0);
     ui->progressBar->setMaximum(urlCollection.size());
     ui->progressBar->show();
     collection_db.addTrack(urlCollection);
-    // thread->start();
 
-    // collection_db.start();
-
-    /*for(auto tr:urlCollection)
-                  {
-                      qDebug()<<tr;
-                  }
-                  //populateTableView();*/
 }
 
-void settings::finishedAddingTracks(bool state)
+void settings::finishedAddingTracks()
 {
-    if (state)
-    {
-        ui->progressBar->hide();
-        ui->progressBar->setValue(0);
+    ui->progressBar->hide();
+    ui->progressBar->setValue(0);
 
-        nof.notify("Songs added to collection","finished writting new songs to the collection :)");
-        //emit collectionDBFinishedAdding(true);
+    nof.notify("Songs added to collection","finished writting new songs to the collection :)");
+    qDebug() << "good to hear it finished yay! now going to fetch artwork";
 
-
-        qDebug() << "good to hear it finished yay! now going to fetch artwork";
-
-
-        collectionWatcher();
-        emit refreshTables();
-        fetchArt();
-
-    }else emit collectionDBFinishedAdding(true);
-
+    collectionWatcher();
+    emit refreshTables();
+    fetchArt();
 
 }
 
-void settings::fetchArt() {
-
+void settings::fetchArt()
+{
 
     nof.notify("Fetching art","this might take some time depending on your collection size and internet connection speed...");
 
+    int amountArtists=0;
+    int amountAlbums=0;
 
     ui->label->show();
     movie->start();
@@ -554,7 +510,7 @@ void settings::fetchArt() {
         else if(art.fetchAlbumInfo(Pulpo::AlbumArt,Pulpo::Spotify)) qDebug()<<"using spotify";
         else if(art.fetchAlbumInfo(Pulpo::AlbumArt,Pulpo::GeniusInfo)) qDebug()<<"using genius";
         else art.albumArtReady(QByteArray());
-
+        amountAlbums++;
     }
 
     while (query_Heads.next())
@@ -570,14 +526,15 @@ void settings::fetchArt() {
 
         art.fetchArtistInfo(Pulpo::ArtistArt,Pulpo::LastFm);
 
-
+        amountArtists++;
     }
 
-    nof.notify("Finished fetching art","the artwork for your collection is now ready :)");
+
+    nof.notify("Finished fetching art","the artwork for your collection is now ready :)\n "+QString::number(amountArtists)+" artists and "+QString::number(amountAlbums)+" albums");
     movie->stop();
     ui->label->hide();
 
-    emit collectionDBFinishedAdding(true);
+    emit collectionDBFinishedAdding();
     // emit refreshTables();
 }
 

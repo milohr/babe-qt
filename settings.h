@@ -74,9 +74,8 @@ private slots:
 
     void on_open_clicked();
     void on_toolbarIconSize_activated(const QString &arg1);
-    void finishedAddingTracks(bool state);
+    void finishedAddingTracks();
     void on_pushButton_clicked();
-    void handleFileChanged(QString file);
     void handleDirectoryChanged(QString dir);
     void on_collectionPath_clicked(const QModelIndex &index);
     void on_remove_clicked();
@@ -91,7 +90,7 @@ private slots:
 
 public slots:
 
-    void populateDB(QString path);
+    void populateDB(const QString &path);
     void fetchArt();
     void refreshWatchFiles();
     void youtubeTrackReady(bool state);
@@ -128,7 +127,7 @@ signals:
 
     void toolbarIconSizeChanged(int newSize);
     void collectionPathChanged(QString newPath);
-    void collectionDBFinishedAdding(bool state);
+    void collectionDBFinishedAdding();
     void fileChanged(QString url);
     void dirChanged(QString url,QString babe="0");
     void collectionPathRemoved(QString url);

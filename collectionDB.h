@@ -21,6 +21,12 @@ class CollectionDB : public QObject
     Q_OBJECT
 public:
 
+
+    enum columns
+    {
+        TRACK,TITLE,ARTIST,ALBUM,GENRE,LOCATION,STARS,BABE,ART,PLAYED,PLAYLIST,LYRIC,columnsCOUNT
+    };
+
     explicit CollectionDB();
     //CollectionDB(bool connect);
     ~CollectionDB(){}
@@ -33,7 +39,7 @@ public:
     bool removeQuery(QString queryTxt);
     bool execQuery(QString queryTxt);
     bool check_existance(QString tableName, QString searchId, QString search);
-    void createTable(QString tableName);
+    void addTrack(const QStringList &paths, const int &babe=0);
 
     QList<QMap<int, QString>> getTrackData(const QStringList &urls);
     QList<QMap<int, QString>> getTrackData(const QString &queryText);
@@ -43,10 +49,7 @@ public:
     QStringList getPlaylistsMoods();
     QStringList albums;
     QStringList artists;
-    enum colums
-    {
-        TRACK,TITLE,ARTIST,ALBUM,GENRE,LOCATION,STARS,BABE,ART,PLAYED,PLAYLIST
-    };
+
 
 private:
 
@@ -55,11 +58,11 @@ private:
 
 
 public slots:
-    bool addTrack(QStringList paths, int babe=0);
+
     void closeConnection();
     void insertPlaylist(QString name);
 
-    void removePath(QString path);
+    bool removePath(const QString &path);
     void setCollectionLists();
     void refreshArtistsTable();
     void cleanCollectionLists();
@@ -69,8 +72,7 @@ public slots:
 
 signals:
     void progress(int);
-    void DBactionFinished(bool state);
-    void finishedInserting(bool state);
+    void DBactionFinished();
 
 };
 

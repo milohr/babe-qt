@@ -33,7 +33,7 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
     this->setColumnCount(columnsCOUNT-1);
     this->setHorizontalHeaderLabels({"Track", "Title", "Artist", "Album", "Genre",
                                      "Location", "Stars", "Babe", "Art", "Played",
-                                     "Playlist"});
+                                     "Playlist", "Lyric"});
     this->horizontalHeader()->setDefaultSectionSize(150);
     this->setMinimumSize(0, 0);
     this->verticalHeader()->setVisible(false);

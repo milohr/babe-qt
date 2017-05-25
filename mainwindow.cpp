@@ -114,7 +114,9 @@ MainWindow::MainWindow(const QStringList &files, QWidget *parent) :
         collectionView();
         go_playlistMode();
 
-    }else collectionView();
+    }
+    else if(collectionTable->rowCount()>0) collectionView();
+    else settingsView();
 
     updater->start(100);
 }
@@ -666,11 +668,12 @@ void MainWindow::resizeEvent(QResizeEvent* event)
     //    }
 
     if(this->viewMode==MINIMODE)
-    {
+    {        this->setMaximumHeight(event->size().width());
+this->setMinimumHeight(event->size().width());
+
         album_art->setSize(event->size().width());
         int ALBUM_SIZE_ = album_art->getSize();
         ui->controls->setGeometry(0,ALBUM_SIZE_-static_cast<int>(ALBUM_SIZE_*0.25),ALBUM_SIZE_,static_cast<int>(ALBUM_SIZE_*0.25));
-
     }
     QMainWindow::resizeEvent(event);
 }
@@ -1543,18 +1546,14 @@ void MainWindow::on_foward_btn_clicked()
 }
 
 
-void MainWindow::collectionDBFinishedAdding(bool state)
+void MainWindow::collectionDBFinishedAdding()
 {
-    if(state)
-    {
-        if(!ui->fav_btn->isEnabled()) ui->fav_btn->setEnabled(true);
-        qDebug()<<"now it i time to put the tracks in the table ;)";
-        //settings_widget->getCollectionDB().closeConnection();
-        albumsTable->flushGrid();
-        artistsTable->flushGrid();
-        refreshTables();
-
-    }else refreshTables();
+    if(!ui->fav_btn->isEnabled()) ui->fav_btn->setEnabled(true);
+    qDebug()<<"now it i time to put the tracks in the table ;)";
+    //settings_widget->getCollectionDB().closeConnection();
+    albumsTable->flushGrid();
+    artistsTable->flushGrid();
+    refreshTables();
 
 }
 
@@ -1622,15 +1621,12 @@ bool MainWindow::babeTrack(const QMap<int, QString> &track)
 
         }else
         {
-
             ui->fav_btn->setEnabled(false);
 
-            if(addToCollectionDB({url},"1"))
-            {
-                nof.notify("Song Babe'd it",track[BabeTable::TITLE]+" by "+track[BabeTable::ARTIST]);
-                ui->fav_btn->setEnabled(true);
-                return true;
-            }else return false;
+            addToCollectionDB({url},"1");
+
+            ui->fav_btn->setEnabled(true);
+            return true;
 
         }
 
@@ -1666,8 +1662,7 @@ void MainWindow::scanNewDir(const QString &url, const QString &babe)
 
     if (!list.isEmpty())
     {
-        if(addToCollectionDB(list,babe))
-            nof.notify("New music added to collection",list.join("\n"));
+        addToCollectionDB(list,babe);
 
     }else
     {
@@ -1677,15 +1672,13 @@ void MainWindow::scanNewDir(const QString &url, const QString &babe)
 }
 
 
-bool MainWindow::addToCollectionDB(const QStringList &url, const QString &babe)
+void MainWindow::addToCollectionDB(const QStringList &url, const QString &babe)
 {
-    if(settings_widget->getCollectionDB().addTrack(url,babe.toInt()))
-    {
-        if(babe.contains("1"))
-            addToPlaylist(settings_widget->getCollectionDB().getTrackData(url),true,APPENDBOTTOM);
 
-        return true;
-    }else return false;
+    settings_widget->getCollectionDB().addTrack(url,babe.toInt());
+    if(babe.contains("1"))
+        addToPlaylist(settings_widget->getCollectionDB().getTrackData(url),true,APPENDBOTTOM);
+
 
 }
 
