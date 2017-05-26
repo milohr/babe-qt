@@ -14,6 +14,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
 
 
     grid = new QListWidget(this);
+    grid->setMinimumHeight(albumSize);
     grid->setViewMode(QListWidget::IconMode);
     grid->setResizeMode(QListWidget::Adjust);
     grid->setUniformItemSizes(true);

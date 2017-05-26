@@ -29,9 +29,10 @@ private:
 
 signals:
     void babeSong(QList<QMap<int, QString>> mapList);
+    void skipSong();
 
 public slots:
-    void babeIt();
+    void actions(uint id);
 };
 
 #endif // NOTIFY_H

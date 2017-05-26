@@ -50,11 +50,18 @@ void Notify::notifySong(const QMap<int, QString> &trackMap,  const QPixmap &pix)
     notification->setTitle(QStringLiteral("%1").arg(track[BabeTable::TITLE]));
     notification->setText(QStringLiteral("by %1 - %2").arg(track[BabeTable::ARTIST],track[BabeTable::ALBUM]));
     if(!pix.isNull()) notification->setPixmap(pix);
+    QStringList actions;
 
-    if(track[BabeTable::BABE].toInt()==1) notification->setActions(QStringList(i18n("Un-Babe it  \xe2\x99\xa1")));
-    else notification->setActions(QStringList(i18n("Babe it  \xe2\x99\xa1")));
+    if(track[BabeTable::BABE].toInt()==1) actions<<i18n("Un-Babe it  \xe2\x99\xa1");
+    else actions<<i18n("Babe it  \xe2\x99\xa1");
 
-    connect(notification, SIGNAL(activated(uint)), SLOT(babeIt()));
+    actions<<i18n("Skip");
+
+     notification->setActions(actions);
+
+
+
+    connect(notification, SIGNAL(activated(uint)), SLOT(actions(uint)));
 
     notification->sendEvent();
 
@@ -73,9 +80,13 @@ void Notify::notifyUrgent(  const QString &title, const QString &body)
 
 }
 
-void Notify::babeIt()
+void Notify::actions(uint id)
 {
-    qDebug()<<"babe the shit out of it";
-    emit babeSong({track});
+    switch(id)
+    {
+    case 1: emit this->babeSong({this->track}); break;
+    case 2: emit this->skipSong(); break;
+    default: break;
+    }
 
 }

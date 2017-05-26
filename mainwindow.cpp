@@ -86,6 +86,7 @@ MainWindow::MainWindow(const QStringList &files, QWidget *parent) :
     });
 
     connect(&nof,&Notify::babeSong,this,&MainWindow::babeIt);
+    connect(&nof,&Notify::skipSong,this,&MainWindow::next);
     connect(updater, &QTimer::timeout, this, &MainWindow::update);
     player->setVolume(100);
 
@@ -463,7 +464,7 @@ void MainWindow::setUpPlaylist()
     seekBar = new QSlider(this);
     seekBar->installEventFilter(this);
 
-    connect(seekBar,SIGNAL(sliderMoved(int)),this,SLOT(on_seekBar_sliderMoved(int)));
+    connect(seekBar,&QSlider::sliderMoved,this,&MainWindow::on_seekBar_sliderMoved);
 
     seekBar->setMaximum(1000);
     seekBar->setOrientation(Qt::Horizontal);
@@ -653,13 +654,24 @@ bool MainWindow::eventFilter(QObject *object, QEvent *event)
             qreal value = seekBar->minimum() + (seekBar->maximum() - seekBar->minimum()) * mevent->localPos().x() / seekBar->width();
             if (mevent->button() == Qt::LeftButton)
             {
-//                seekBar->setValue(qRound(value));
+                //                seekBar->setValue(qRound(value));
                 emit seekBar->sliderMoved(qRound(value));
             }
             event->accept();
             return true;
         }
 
+        if (event->type() == QEvent::MouseMove)
+        {
+            auto mevent = static_cast<QMouseEvent *>(event);
+            qreal value = seekBar->minimum() + (seekBar->maximum() - seekBar->minimum()) * mevent->localPos().x() / seekBar->width();
+            if (mevent->buttons() & Qt::LeftButton)
+            {
+                emit seekBar->sliderMoved(qRound(value));
+            }
+            event->accept();
+            return true;
+        }
         if (event->type() == QEvent::MouseButtonDblClick)
         {
             event->accept();
@@ -697,7 +709,8 @@ void MainWindow::resizeEvent(QResizeEvent* event)
     //    }
 
     if(this->viewMode==MINIMODE)
-    {        this->setMaximumHeight(event->size().width());
+    {
+        this->setMaximumHeight(event->size().width());
         this->setMinimumHeight(event->size().width());
 
         album_art->setSize(event->size().width());
@@ -981,6 +994,7 @@ void MainWindow::settingsView()
 void MainWindow::expand()
 {
 
+    this->viewMode=FULLMODE;
     ui->tracks_view_2->setVisible(false);
     if(!leftFrame->isVisible()) leftFrame->setVisible(true);
     if(!ui->frame_4->isVisible()) ui->frame_4->setVisible(true);
@@ -995,6 +1009,7 @@ void MainWindow::expand()
     mainLayout->setContentsMargins(6,6,6,6);
 
     this->setMaximumSize(QWIDGETSIZE_MAX,QWIDGETSIZE_MAX);
+    this->setMinimumHeight(0);
     this->setMinimumSize(ALBUM_SIZE*3,0);
 
     QPropertyAnimation *animation = new QPropertyAnimation(this, "geometry");
@@ -1007,7 +1022,7 @@ void MainWindow::expand()
 
     ui->hide_sidebar_btn->setToolTip("Go Mini");
     ui->hide_sidebar_btn->setIcon(QIcon(":Data/data/mini_mode.svg"));
-    this->viewMode=FULLMODE;
+
 
     if(album_art->getSize()!=ALBUM_SIZE)
     {
@@ -1019,6 +1034,7 @@ void MainWindow::expand()
 void MainWindow::go_mini()
 {
 
+    this->viewMode=MINIMODE;
     leftFrame->setVisible(false);
     ui->frame_4->setVisible(false);
     mainListView->setVisible(false);
@@ -1049,13 +1065,13 @@ void MainWindow::go_mini()
     //this->adjustSize();
     ui->hide_sidebar_btn->setToolTip("Expand");
     ui->hide_sidebar_btn->setIcon(QIcon(":Data/data/full_mode.svg"));
-    this->viewMode=MINIMODE;
+
 }
 
 void MainWindow::go_playlistMode()
 {
     this->saveSettings("GEOMETRY",this->geometry(),"MAINWINDOW");
-
+    this->viewMode=PLAYLISTMODE;
     QString icon;
     switch(prevIndex)
     {
@@ -1090,7 +1106,7 @@ void MainWindow::go_playlistMode()
 
     ui->hide_sidebar_btn->setToolTip("Go Mini");
     ui->hide_sidebar_btn->setIcon(QIcon(":Data/data/mini_mode.svg"));
-    this->viewMode=PLAYLISTMODE;
+
 }
 
 void MainWindow::keepOnTop(bool state)
