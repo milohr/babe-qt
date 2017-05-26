@@ -1970,12 +1970,18 @@ void MainWindow::on_filterBtn_clicked()
     {
         ui->filterBtn->setChecked(true);
         ui->filterBox->setVisible(true);
+        ui->calibrateBtn->setVisible(false);
+        ui->open_btn->setVisible(false);
+        if(ui->tracks_view_2->isVisible()) ui->tracks_view_2->setVisible(false);
         mainListView->setCurrentIndex(1);
         ui->filter->setFocus();
     }else
     {
         ui->filterBtn->setChecked(false);
         ui->filterBox->setVisible(false);
+        ui->calibrateBtn->setVisible(true);
+        ui->open_btn->setVisible(true);
+        if(!ui->tracks_view_2->isVisible() && viewMode==PLAYLISTMODE)ui->tracks_view_2->setVisible(true);
         mainListView->setCurrentIndex(0);
 
     }
@@ -2005,6 +2011,7 @@ void MainWindow::on_filter_textChanged(const QString &arg1)
     {
         filterList->flushTable();
         ui->filterBtn->setChecked(false);
+       emit  ui->filterBtn->clicked();
         ui->filterBox->setVisible(false);
         mainListView->setCurrentIndex(0);
     }

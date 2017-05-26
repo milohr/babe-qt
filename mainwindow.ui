@@ -875,22 +875,6 @@ border-top: 1px solid #333;
          <number>0</number>
         </property>
         <item>
-         <widget class="QFrame" name="frame_2">
-          <property name="maximumSize">
-           <size>
-            <width>1</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="frameShape">
-           <enum>QFrame::VLine</enum>
-          </property>
-          <property name="frameShadow">
-           <enum>QFrame::Plain</enum>
-          </property>
-         </widget>
-        </item>
-        <item>
          <widget class="QLineEdit" name="filter">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
