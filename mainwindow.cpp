@@ -34,8 +34,22 @@ MainWindow::MainWindow(const QStringList &files, QWidget *parent) :
     this->setWindowIconText("Babe...");
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
+
     album_art = new Album(":Data/data/babe.png",BaeUtils::BIG_ALBUM,0,false);
     ALBUM_SIZE = album_art->getSize();
+
+
+    ui->controls->installEventFilter(this);
+
+
+//    auto blurWidget = new QWidget(album_art);
+//   blurWidget->setGeometry(0,ALBUM_SIZE-static_cast<int>(ALBUM_SIZE*0.25),ALBUM_SIZE,static_cast<int>(ALBUM_SIZE*0.25));
+
+//    QGraphicsBlurEffect* effect	= new QGraphicsBlurEffect();
+//    effect->setBlurRadius(5);
+//   blurWidget->setGraphicsEffect(effect);
+
+
     this->setMinimumSize(ALBUM_SIZE*3,0);
 
 
@@ -248,7 +262,6 @@ void MainWindow::setUpViews()
 
     albumsTable = new AlbumsView(false,this);
     connect(albumsTable,&AlbumsView::populateCoversFinished,[this](){qDebug()<<"finished populateHeadsFinished";});
-    connect(albumsTable,SIGNAL(albumOrderChanged(QString)),this,SLOT(AlbumsViewOrder(QString)));
     connect(albumsTable->albumTable,&BabeTable::tableWidget_doubleClicked, [this] (QList<QMap<int, QString>> list) { addToPlaylist(list,false,APPENDBOTTOM);});
     connect(albumsTable->albumTable,&BabeTable::removeIt_clicked,this,&MainWindow::removeSong);
     connect(albumsTable->albumTable,&BabeTable::babeIt_clicked,this,&MainWindow::babeIt);
@@ -260,7 +273,6 @@ void MainWindow::setUpViews()
 
 
     artistsTable = new AlbumsView(true,this);
-    artistsTable->order->setVisible(false);
     artistsTable->albumTable->showColumn(BabeTable::ALBUM);
     connect(artistsTable,&AlbumsView::populateHeadsFinished,[this](){qDebug()<<"finished populateHeadsFinished";});
     connect(artistsTable->albumTable,&BabeTable::tableWidget_doubleClicked, [this] (QList<QMap<int, QString>> list) { addToPlaylist(list,false,APPENDBOTTOM);});
@@ -646,6 +658,20 @@ void MainWindow::addToPlayed(const QString &url)
 
 bool MainWindow::eventFilter(QObject *object, QEvent *event)
 {
+    if(object == this->ui->controls)
+    {
+        if(event->type()==QEvent::Enter)
+        {
+            ui->controls->setStyleSheet("QGroupBox{\nbackground-color: rgba(0,0,0,255);border-radius:0;border-top: 1px solid #333;}");
+
+        }else if(event->type()==QEvent::Leave)
+        {
+            ui->controls->setStyleSheet("QGroupBox{\nbackground-color: rgba(0,0,0,150);border-radius:0;border-top: 1px solid #333;}");
+
+        }
+    }
+
+
     if (object == seekBar && seekBar->isEnabled())
     {
         if (event->type() == QEvent::MouseButtonPress)
@@ -710,8 +736,8 @@ void MainWindow::resizeEvent(QResizeEvent* event)
 
     if(this->viewMode==MINIMODE)
     {
-        this->setMaximumHeight(event->size().width());
-        this->setMinimumHeight(event->size().width());
+        this->setMaximumHeight(event->size().width()+5);
+        this->setMinimumHeight(event->size().width()+5);
 
         album_art->setSize(event->size().width());
         int ALBUM_SIZE_ = album_art->getSize();
@@ -741,11 +767,6 @@ void MainWindow::refreshTables() //tofix
 
 }
 
-void MainWindow::AlbumsViewOrder(QString order)
-{
-    albumsTable->flushGrid();
-    albumsTable->populateTableView(settings_widget->getCollectionDB().getQuery("SELECT * FROM albums ORDER by "+order.toLower()+" asc"));
-}
 
 void MainWindow::keyPressEvent(QKeyEvent *event) //todo
 {
@@ -1050,12 +1071,12 @@ void MainWindow::go_mini()
 
     this->setMinimumSize(ALBUM_SIZE/2,ALBUM_SIZE/2);
     this->setMaximumWidth(ALBUM_SIZE);
-    QPropertyAnimation *animation = new QPropertyAnimation(this, "maximumHeight");
-    animation->setDuration(200);
-    animation->setStartValue(this->size().height());
-    animation->setEndValue(ALBUM_SIZE);
+    //    QPropertyAnimation *animation = new QPropertyAnimation(this, "maximumHeight");
+    //    animation->setDuration(200);
+    //    animation->setStartValue(this->size().height());
+    //    animation->setEndValue(ALBUM_SIZE+5);
 
-    animation->start();
+    //    animation->start();
 
 
     /*this->setWindowFlags(this->windowFlags() | Qt::Tool | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
@@ -1811,7 +1832,16 @@ void MainWindow::on_search_textChanged(const QString &arg1)
 
         if(!searchResults.isEmpty()) populateResultsTable(searchResults);
 
-    }else views->setCurrentIndex(prevIndex);
+    }else
+    {
+        views->setCurrentIndex(prevIndex);
+        if(views->currentIndex()==PLAYLISTS)
+        {
+            utilsBar->actions().at(PLAYLISTS_UB)->setVisible(true);
+            ui->frame_3->setVisible(true);
+
+        }
+    }
 
 
 }
@@ -2011,7 +2041,7 @@ void MainWindow::on_filter_textChanged(const QString &arg1)
     {
         filterList->flushTable();
         ui->filterBtn->setChecked(false);
-       emit  ui->filterBtn->clicked();
+        emit  ui->filterBtn->clicked();
         ui->filterBox->setVisible(false);
         mainListView->setCurrentIndex(0);
     }

@@ -136,8 +136,9 @@ private:
     QMap<QString,QString> devices;
     QTimer *updater = new QTimer(this);
 
+    QWidget *addMusicMsgWidget;
     QLabel *addMusicTxt;
-    QString addMusicMsg = "oops... :(\n";
+    QString addMusicMsg = "oops...\n";
 
 signals:
 

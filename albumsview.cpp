@@ -75,8 +75,8 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     order->setMaximumHeight(22);*/
     order->setContentsMargins(0,0,0,0);
 
-    order->addItem("Artist");
-    order->addItem("Title");
+    order->addItem("Ascending");
+    order->addItem("Descending");
     order->setCurrentIndex(1);
 
     utilsLayout->addWidget(order);
@@ -193,7 +193,7 @@ void AlbumsView::filterAlbum(QModelIndex index)
 
 void AlbumsView::setAlbumsSize(int value)
 {
-     albumSize=value;
+    albumSize=value;
     /*slider->setToolTip(QString::number(value));
     QToolTip::showText( slider->mapToGlobal( QPoint( 0, 0 ) ), QString::number(value) );*/
     for(auto album : albumsList)
@@ -219,7 +219,15 @@ void  AlbumsView::flushGrid()
     grid->clear();
 }
 
-void AlbumsView::orderChanged(QString order) { emit albumOrderChanged(order); }
+void AlbumsView::orderChanged(const QString &order)
+{
+    qDebug()<<"order changed:" <<order;
+    if(order =="Ascending")
+        grid->sortItems(Qt::AscendingOrder);
+    else if (order=="Descending")
+        grid->sortItems(Qt::DescendingOrder);
+
+}
 
 void AlbumsView::populateTableView(QSqlQuery query)
 {
@@ -264,6 +272,8 @@ void AlbumsView::populateTableView(QSqlQuery query)
             auto item = new QListWidgetItem();
             itemsList.push_back(item);
             item->setSizeHint(QSize(artwork->getSize(),artwork->getSize()));
+            item->setText(album);
+            item->setTextAlignment(Qt::AlignCenter);
             grid->addItem(item);
             grid->setItemWidget(item,artwork);
         }

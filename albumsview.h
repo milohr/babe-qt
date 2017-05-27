@@ -79,7 +79,7 @@ private slots:
     void getAlbumInfo(QMap<int,QString> info);
     void getArtistInfo(QMap<int,QString> info);
     void albumHover();    
-    void orderChanged(QString order);
+    void orderChanged(const QString &order);
     void filterAlbum(QModelIndex index);
 
 signals:

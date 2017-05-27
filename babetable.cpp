@@ -195,16 +195,37 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
     addMusicTxt->setFont(helvetica);
     addMusicTxt->setWordWrap(true);
     addMusicTxt->setAlignment(Qt::AlignCenter);
-    addMusicTxt->setVisible(false);
 
     auto effect = new QGraphicsOpacityEffect();
     effect->setOpacity(0.5);
     addMusicTxt->setGraphicsEffect(effect);
     addMusicTxt->setAutoFillBackground(true);
 
+    auto effect2= new QGraphicsOpacityEffect();
+    effect2->setOpacity(0.5);
+
+
+
+
+
+    auto addMusicImg = new QLabel();
+    addMusicImg->setAlignment(Qt::AlignCenter);
+    addMusicImg->setPixmap(QIcon::fromTheme("face-sleeping").pixmap(48));
+    addMusicImg->setEnabled(false);
+    addMusicImg->setGraphicsEffect(effect2);
+
+    auto addMusicMsg_layout = new QVBoxLayout();
+    addMusicMsgWidget = new QWidget(this);
+    addMusicMsgWidget->setVisible(false);
+    addMusicMsgWidget->setLayout(addMusicMsg_layout);
+    addMusicMsg_layout->addStretch();
+    addMusicMsg_layout->addWidget(addMusicImg);
+    addMusicMsg_layout->addWidget(addMusicTxt);
+    addMusicMsg_layout->addStretch();
+
     auto addMusicTxt_layout = new QHBoxLayout(this);
     addMusicTxt_layout->addStretch();
-    addMusicTxt_layout->addWidget(addMusicTxt); // center alignment
+    addMusicTxt_layout->addWidget(addMusicMsgWidget); // center alignment
     addMusicTxt_layout->addStretch();
 
     connect(updater, SIGNAL(timeout()), this, SLOT(update()));
@@ -217,7 +238,7 @@ BabeTable::~BabeTable() {  }
 
 void BabeTable::setAddMusicMsg(QString msg)
 {
-    addMusicMsg+=msg;
+    addMusicMsg=msg;
     addMusicTxt->setText(addMusicMsg);
 
 }
@@ -226,9 +247,9 @@ void BabeTable::update()
 {
     if(this->rowCount()!=0)
     {
-        if(addMusicTxt->isVisible()) addMusicTxt->setVisible(false);
+        if(addMusicMsgWidget->isVisible()) addMusicMsgWidget->setVisible(false);
 
-    }else addMusicTxt->setVisible(true);
+    }else addMusicMsgWidget->setVisible(true);
 
 }
 
@@ -716,20 +737,11 @@ void BabeTable::mousePressEvent(QMouseEvent *evt)
 void BabeTable::rateGroup(int id)
 {
     qDebug() << "rated with: " << id;
-    // int row= this->currentIndex().row();
 
     for(auto row : this->getSelectedRows())
     {
 
         QString location = this->getRowData(row)[LOCATION];
-
-        QSqlQuery query = connection.getQuery(
-                    "SELECT * FROM tracks WHERE location = \"" + location + "\"");
-
-        int rate = 0;
-
-        while (query.next())
-            rate = query.value(STARS).toInt();
 
         if (connection.check_existance("tracks", "location", location))
         {

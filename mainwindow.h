@@ -149,7 +149,6 @@ private slots:
     void setCoverArt(const QString &artist, const QString &album, const QString &title);
     void on_rowInserted(QModelIndex model ,int x,int y);
 
-    void AlbumsViewOrder(QString order);
     void refreshTables();
     void addToPlayed(const QString &url);
     void on_tracks_view_2_clicked();
