@@ -203,7 +203,7 @@ void MainWindow::setUpViews()
     mainList->horizontalHeader()->setVisible(false);
     //mainList->setSelectionMode(QAbstractItemView::SingleSelection);
 
-    mainList->setAddMusicMsg("\nDrag and drop music here!");
+    mainList->setAddMusicMsg("\nDrag and drop music here!","face-ninja");
     connect(mainList,&BabeTable::tableWidget_doubleClicked,this,&MainWindow::on_mainList_clicked);
     connect(mainList,&BabeTable::removeIt_clicked,this,&MainWindow::removeSong);
     connect(mainList,&BabeTable::babeIt_clicked,this,&MainWindow::babeIt);
@@ -219,7 +219,7 @@ void MainWindow::setUpViews()
     filterList->horizontalHeader()->setVisible(false);
     //    filterList->setMaximumWidth(ALBUM_SIZE);
 
-    filterList->setAddMusicMsg("\nDidn't find anything!");
+    filterList->setAddMusicMsg("\nDidn't find anything!","face-surprise");
     connect(filterList,&BabeTable::tableWidget_doubleClicked, [this] (QList<QMap<int, QString>> list)
     {
         addToPlaylist(list,false,APPENDBOTTOM);
@@ -1171,7 +1171,6 @@ void MainWindow::on_shuffle_btn_clicked() //tofix
     {
         shuffle = true;
         repeat = false;
-        shufflePlaylist();
         ui->shuffle_btn->setIcon(QIcon(":Data/data/media-playlist-shuffle.svg"));
         ui->shuffle_btn->setToolTip("Repeat");
         shuffle_state = SHUFFLE;
@@ -1267,11 +1266,8 @@ void MainWindow::removeSong(const int &index)
         for(auto a: currentList)
         {
             qDebug()<<a[BabeTable::TITLE];
-        }
-        //updateList();
-        // mainList->setCurrentCell(index,0);
+        }      
 
-        if(shuffle) shufflePlaylist();
     }
 }
 
@@ -1464,6 +1460,8 @@ void MainWindow::stopPlayback()
 
     player->stop();
     updater->stop();
+
+    this->setWindowTitle("Babe...");
     stopped = true;
 }
 
@@ -1541,7 +1539,7 @@ void MainWindow::next()
     if(lCounter >= mainList->rowCount()) lCounter = 0;
 
     mainList->setCurrentCell((!shuffle || repeat) ?
-                                 lCounter : shuffledPlaylist[static_cast<unsigned short int>(lCounter)], BabeTable::TITLE);
+                                 lCounter : shuffleNumber(), BabeTable::TITLE);
 
     loadTrack();
 }
@@ -1554,20 +1552,20 @@ void MainWindow::back()
     if(lCounter < 0)
         lCounter = mainList->rowCount() - 1;
 
-    (!shuffle) ? mainList->setCurrentCell(lCounter,0) :
-                 mainList->setCurrentCell(shuffledPlaylist[static_cast<unsigned short int>(lCounter)],BabeTable::TITLE);
+    mainList->setCurrentCell(!shuffle ? lCounter : shuffleNumber(), BabeTable::TITLE);
 
     loadTrack();
 }
 
-void MainWindow::shufflePlaylist()
-{
-    shuffledPlaylist.resize(0);
+int MainWindow::shuffleNumber()
+{     
+    std::random_device rd;     // only used once to initialise (seed) engine
+    std::mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)
+    std::uniform_int_distribution<int> uni(0,mainList->rowCount()-1); // guaranteed unbiased
 
-    for(int i = 0; i < mainList->rowCount(); i++)
-        shuffledPlaylist.push_back(static_cast<unsigned short>(i));
-
-    random_shuffle(shuffledPlaylist.begin(), shuffledPlaylist.end());
+    auto random_integer = uni(rng);
+    qDebug()<<"random number:"<<random_integer;
+    return random_integer;
 }
 
 void MainWindow::on_play_btn_clicked()
@@ -1790,16 +1788,12 @@ void MainWindow::addToPlaylist(const QList<QMap<int, QString> > &mapList, const 
             case APPENDTOP:
                 mainList->addRowAt(0,track,true,true);
                 break;
-            default: qDebug()<<"error appending track to mainlist";
             }
 
     }
 
     mainList->resizeRowsToContents();
 
-    //updateList();
-    if(shuffle) shufflePlaylist();
-    //mainList->scrollToBottom();
 }
 
 
@@ -1907,8 +1901,8 @@ QList<QMap<int, QString> > MainWindow::searchFor(const QStringList &queries)
 
 void MainWindow::on_rowInserted(QModelIndex model ,int x,int y)
 {
-    //Q_UNUSED(model);
-    //Q_UNUSED(x);Q_UNUSED(y);
+    Q_UNUSED(model);
+   Q_UNUSED(y);
     mainList->scrollTo(mainList->model()->index(x,BabeTable::TITLE),QAbstractItemView::PositionAtCenter);
 
 }

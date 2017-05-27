@@ -323,6 +323,8 @@ void AlbumsView::populateTableViewHeads(QSqlQuery query)
             auto item =new QListWidgetItem();
             itemsList.push_back(item);
             item->setSizeHint( QSize( album->getSize(), album->getSize()));
+            item->setText(artist);
+            item->setTextAlignment(Qt::AlignCenter);
             grid->addItem(item);
             grid->setItemWidget(item,album);
 

@@ -25,12 +25,16 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent) {
     layout->setSpacing(0);
 
     table = new BabeTable(this);
-    table->setAddMusicMsg("\nSelect a Playlist...");
+    table->setAddMusicMsg("\nSelect a Playlist...","face-hug-right");
     list = new QListWidget(this);
     list->setFixedWidth(120);
     list->setAlternatingRowColors(true);
     list->setFrameShape(QFrame::NoFrame);
     list->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
+    auto syncPlaylist = new QAction("Sync to device...");
+    list->addAction(syncPlaylist);
+    list->setContextMenuPolicy(Qt::ActionsContextMenu);
 
     // list->setStyleSheet("background: #575757; color:white;");
 
@@ -153,9 +157,8 @@ void PlaylistsView::setDefaultPlaylists() {
 
 }
 
-void PlaylistsView::tableClicked(QStringList list) {emit songClicked(list);}
 
-void PlaylistsView::populatePlaylist(QModelIndex index)
+void PlaylistsView::populatePlaylist(const QModelIndex &index)
 {
     QString query;
     currentPlaylist = index.data().toString();

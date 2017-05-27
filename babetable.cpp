@@ -205,12 +205,9 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
     effect2->setOpacity(0.5);
 
 
-
-
-
-    auto addMusicImg = new QLabel();
+    addMusicImg = new QLabel();
     addMusicImg->setAlignment(Qt::AlignCenter);
-    addMusicImg->setPixmap(QIcon::fromTheme("face-sleeping").pixmap(48));
+    addMusicImg->setPixmap(QIcon::fromTheme(addMusicIcon).pixmap(48));
     addMusicImg->setEnabled(false);
     addMusicImg->setGraphicsEffect(effect2);
 
@@ -236,10 +233,12 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
 BabeTable::~BabeTable() {  }
 
 
-void BabeTable::setAddMusicMsg(QString msg)
+void BabeTable::setAddMusicMsg(const QString &msg,const QString &icon)
 {
     addMusicMsg=msg;
     addMusicTxt->setText(addMusicMsg);
+    addMusicIcon=icon;
+    addMusicImg->setPixmap(QIcon::fromTheme(addMusicIcon).pixmap(48));
 
 }
 

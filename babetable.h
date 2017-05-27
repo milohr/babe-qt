@@ -74,7 +74,7 @@ public:
     void passStyle(QString style);
     void passPlaylists();
     void populatePlaylist(const QStringList &urls, const QString &playlist);
-    void setAddMusicMsg(QString msg);
+    void setAddMusicMsg(const QString &msg, const QString &icon);
     int getIndex();
     void removeRepeated();
     QList<int> getSelectedRows(const bool &onRightClick=true);
@@ -138,7 +138,9 @@ private:
 
     QWidget *addMusicMsgWidget;
     QLabel *addMusicTxt;
+    QLabel *addMusicImg;
     QString addMusicMsg = "oops...\n";
+    QString addMusicIcon= "face-sleeping";
 
 signals:
 

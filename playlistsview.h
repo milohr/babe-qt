@@ -55,8 +55,7 @@ public slots:
     void removePlaylist();
     void playlistName(QListWidgetItem *item);
     void on_removeBtn_clicked();
-    void populatePlaylist(QModelIndex index);
-    void tableClicked(QStringList list);
+    void populatePlaylist(const QModelIndex &index);
     void dummy();
 
 signals:

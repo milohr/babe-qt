@@ -68,9 +68,9 @@ public:
     QVariant getStaticTrackInfo(const TrackInfo &infoType);
 
 
-    bool fetchArtistInfo(const ArtistInfo &infoType = AllArtistInfo, const InfoServices &service = AllInfoServices, const bool &recursive = false);
+    bool fetchArtistInfo(const ArtistInfo &infoType = AllArtistInfo, const InfoServices &service = AllInfoServices);
 
-    bool fetchAlbumInfo(const AlbumInfo &infoType = AllAlbumInfo, const InfoServices &service = AllInfoServices , const bool &recursive =false);
+    bool fetchAlbumInfo(const AlbumInfo &infoType = AllAlbumInfo, const InfoServices &service = AllInfoServices );
 
     bool fetchTrackInfo(const TrackInfo &infoType = AllTrackInfo, const LyricServices &lyricService = AllLyricServices, const InfoServices &services = AllInfoServices );
 

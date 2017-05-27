@@ -1,6 +1,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <random>
+
 #include <QMainWindow>
 #include <QGridLayout>
 #include <QtMultimedia/QMediaPlayer>
@@ -232,7 +234,7 @@ private:
 
     void next();
     void back();
-    void shufflePlaylist();
+    int shuffleNumber();
     void expand();
     void go_mini();
     void go_playlistMode();

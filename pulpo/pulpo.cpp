@@ -37,7 +37,7 @@ void Pulpo::feed(const QString &title, const QString &artist, const QString &alb
 
 }
 
-bool Pulpo::fetchArtistInfo(const ArtistInfo &infoType, const InfoServices &service, const bool &recursive)
+bool Pulpo::fetchArtistInfo(const ArtistInfo &infoType, const InfoServices &service)
 {
     if(!this->artist.isEmpty())
     {
@@ -84,6 +84,8 @@ bool Pulpo::fetchArtistInfo(const ArtistInfo &infoType, const InfoServices &serv
         case iTunes: break;
         case infoCRAWL: break;
         case AllInfoServices: break;
+        case GeniusInfo: break;
+        case NoneInfoService: break;
         }
 
     }else return false;
@@ -93,7 +95,7 @@ bool Pulpo::fetchArtistInfo(const ArtistInfo &infoType, const InfoServices &serv
 
 
 
-bool Pulpo::fetchAlbumInfo(const AlbumInfo &infoType, const InfoServices &service, const bool &recursive)
+bool Pulpo::fetchAlbumInfo(const AlbumInfo &infoType, const InfoServices &service)
 {
     //qDebug()<<"fetchAlbumInfo["<<this->title<<this->artist<<this->album<<"]";
 
@@ -174,6 +176,8 @@ bool Pulpo::fetchAlbumInfo(const AlbumInfo &infoType, const InfoServices &servic
         case iTunes: break;
         case infoCRAWL: break;
         case AllInfoServices: break;
+        case NoneInfoService: break;
+
         }
 
 
@@ -234,6 +238,7 @@ bool Pulpo::fetchTrackInfo(const Pulpo::TrackInfo &infoType, const Pulpo::LyricS
 
         case iTunes: break;
         case infoCRAWL: break;
+        case GeniusInfo: break;
         case AllInfoServices: break;
         case NoneInfoService: break;
 

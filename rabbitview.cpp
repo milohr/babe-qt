@@ -24,7 +24,7 @@ RabbitView::RabbitView(QWidget *parent) : QWidget(parent)
 
     generalSuggestion = new BabeTable(this);
     generalSuggestion->passStyle("QHeaderView::section { background-color:#333; color:white; }");
-    generalSuggestion->setAddMusicMsg("\nCouldn't find similar music");
+    generalSuggestion->setAddMusicMsg("\nCouldn't find similar music","face-quiet");
 
     QSplitter *splitter = new QSplitter(parent);
     splitter->setChildrenCollapsible(false);
