@@ -137,9 +137,10 @@ private:
     QTimer *updater = new QTimer(this);
 
     QLabel *addMusicTxt;
-    QString addMusicMsg = "oops... :(\nnothing here";
+    QString addMusicMsg = "oops... :(\n";
 
 signals:
+
     void tableWidget_doubleClicked(QList<QMap<int,QString>> mapList);
     void songRated(QStringList list);
     void enteredTable();

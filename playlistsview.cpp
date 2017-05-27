@@ -25,7 +25,7 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent) {
     layout->setSpacing(0);
 
     table = new BabeTable(this);
-
+    table->setAddMusicMsg("\nSelect a Playlist...");
     list = new QListWidget(this);
     list->setFixedWidth(120);
     list->setAlternatingRowColors(true);
@@ -216,7 +216,7 @@ void PlaylistsView::removePlaylist()
         query = "SELECT * FROM tracks WHERE stars > \"0\" ORDER  by stars desc";
 
     } else if (currentPlaylist == "Babes") {
-       connection.execQuery("UPDATE tracks SET babe = \"0\" WHERE babe > \"0\"");
+        connection.execQuery("UPDATE tracks SET babe = \"0\" WHERE babe > \"0\"");
         table->flushTable();
         query = "SELECT * FROM tracks WHERE babe = \"1\" ORDER  by played desc";
     }else if (currentPlaylist == "Online") {
@@ -232,7 +232,7 @@ void PlaylistsView::removePlaylist()
 
 
         connection.execQuery("UPDATE tracks SET art = \"\" WHERE art = \"" +
-                                     currentPlaylist + "\"");
+                             currentPlaylist + "\"");
 
         connection.execQuery("DELETE FROM playlists  WHERE art = \""+currentPlaylist+"\"");
         table->flushTable();

@@ -15,8 +15,10 @@
 #include <QDrag>
 #include <QMimeData>
 #include <QApplication>
+#include <QPair>
 #include "baeUtils.h"
 #include "scrolltext.h"
+
 
 class Album : public QLabel
 {
@@ -24,7 +26,8 @@ class Album : public QLabel
 
 public:
 
-    explicit Album(QString imagePath, int widgetSize, int widgetRadius=0, bool isDraggable=false, QWidget *parent = 0);
+
+    explicit Album(QString imagePath,BaeUtils::ALbumSizeHint widgetSize, int widgetRadius=0, bool isDraggable=false, QWidget *parent = 0);
     ~Album(){}
     void setArtist(const QString &artistTitle);
     void setAlbum(const QString &albumTitle);
@@ -33,9 +36,10 @@ public:
     void titleVisible(const bool &state);
     void setTitleGeometry(const int &x, const int &y, const int &w, const int &h);
     void setSize(const int &value);
-
+    int getSize();
     int border_radius;
     int size;
+    double subSize;
     bool borderColor=false;
     QWidget *widget;
     QString getTitle();
@@ -81,7 +85,6 @@ public slots:
     void putPixmap(const QByteArray &pix);
     void putPixmap(const QString &path);
     void putDefaultPixmap();
-    void playBtn_clicked();
     void babeIt_action();
     void artIt_action();
     void removeIt_action();

@@ -90,7 +90,7 @@ public:
     bool babeTrack(const QMap<int, QString> &track);
 
 
-    QStringList searchKeys = {"location:","artist:","album:","title:","genre:","online:"};
+    QStringList searchKeys = {"location:","artist:","album:","title:","genre:","online:","playlist:"};
 
 protected:
 
@@ -178,7 +178,7 @@ private:
 
     Ui::MainWindow *ui;
 
-    int ALBUM_SIZE = BaeUtils::getWidgetSizeHint(BaeUtils::BIG_ALBUM_FACTOR,BaeUtils::BIG_ALBUM);
+    int ALBUM_SIZE;
 
     CollectionDB connection;
 
@@ -186,7 +186,6 @@ private:
 
     int viewMode = FULLMODE;
     QRect defaultGeometry;
-    int minWidth = ALBUM_SIZE*3;
     int prevIndex;
 
     Qt::WindowFlags defaultWindowFlags;
@@ -196,6 +195,7 @@ private:
     QWidget *mainWidget;
     QGridLayout * mainLayout;
     QStackedWidget *views;
+    QStackedWidget *mainListView;
 
     QFrame *leftFrame;
     QGridLayout *leftFrame_layout;
@@ -210,6 +210,7 @@ private:
 
     /*the views*/
     BabeTable *mainList;
+    BabeTable *filterList;
     BabeTable *collectionTable;
     BabeTable *resultsTable;
     AlbumsView* albumsTable;

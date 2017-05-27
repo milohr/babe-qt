@@ -24,7 +24,7 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView)
 {
     ui->setupUi(this);
 
-    artist = new Album(":Data/data/cover.png", ALBUM_SIZE_MEDIUM, 100,false,this);
+    artist = new Album(":Data/data/cover.png", BaeUtils::MEDIUM_ALBUM, 100,false,this);
     connect(artist,&Album::playAlbum,this,&InfoView::playAlbum_clicked);
 
     /* ui->lyricsText->setLineWrapMode(QTextEdit::NoWrap);

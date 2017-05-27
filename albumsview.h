@@ -13,6 +13,9 @@
 #include <QDebug>
 #include <QShortcut>
 #include <QSplitter>
+//#include <QGraphicsBlurEffect>
+//#include <QGraphicsScene>
+//#include <QGraphicsPixmapItem>
 
 #include "scrolltext.h"
 #include "album.h"
@@ -47,11 +50,8 @@ public:
 
 private:
 
-    int ALBUM_SIZE_BIG = BaeUtils::getWidgetSizeHint(BaeUtils::BIG_ALBUM_FACTOR,BaeUtils::BIG_ALBUM);
-    int ALBUM_SIZE_MEDIUM = BaeUtils::getWidgetSizeHint(BaeUtils::MEDIUM_ALBUM_FACTOR,BaeUtils::MEDIUM_ALBUM);
-
     int gridSize;
-    int albumSize=BaeUtils::getWidgetSizeHint(BaeUtils::MEDIUM_ALBUM_FACTOR,BaeUtils::MEDIUM_ALBUM);
+    int albumSize;
     bool extraList=false;
     QList<Album*> albumsList;
     QList<QListWidgetItem*> itemsList;

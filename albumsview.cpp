@@ -10,6 +10,9 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     layout->setMargin(0);
     layout->setSpacing(0);
 
+    albumSize = BaeUtils::getWidgetSizeHint(BaeUtils::MEDIUM_ALBUM_FACTOR,BaeUtils::MEDIUM_ALBUM);
+
+
     grid = new QListWidget(this);
     grid->setViewMode(QListWidget::IconMode);
     grid->setResizeMode(QListWidget::Adjust);
@@ -20,15 +23,15 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     grid->setSizeAdjustPolicy(QListWidget::AdjustToContentsOnFirstShow);
     //grid->setStyleSheet("QListWidget {background:#2E2F30; border:1px solid black; border-radius: 2px; }");
     grid->setStyleSheet("QListWidget {background:transparent; padding-top:15px; padding-left:15px; }");
-    grid->setGridSize(QSize(ALBUM_SIZE_MEDIUM+10,ALBUM_SIZE_MEDIUM+10));
+    grid->setGridSize(QSize(albumSize+10,albumSize+10));
 
     QAction *zoomIn = new QAction(this);
     zoomIn->setShortcut(tr("CTRL++"));
     connect(zoomIn, &QAction::triggered,[this](){
-        if(ALBUM_SIZE_MEDIUM+5<=300)
+        if(albumSize+5<=300)
         {
-            this->setAlbumsSize(ALBUM_SIZE_MEDIUM+5);
-           /* slider->setValue(ALBUM_SIZE_MEDIUM+5);
+            this->setAlbumsSize(albumSize+5);
+            /* slider->setValue(ALBUM_SIZE_MEDIUM+5);
             slider->setSliderPosition(ALBUM_SIZE_MEDIUM+5);*/
         }
     });
@@ -36,9 +39,9 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     QAction *zoomOut = new QAction(this);
     zoomOut->setShortcut(tr("CTRL+-"));
     connect(zoomOut, &QAction::triggered,[this](){
-        if(ALBUM_SIZE_MEDIUM-5>=80){
-            this->setAlbumsSize(ALBUM_SIZE_MEDIUM-5);
-           /* slider->setValue(ALBUM_SIZE_MEDIUM-5);
+        if(albumSize-5>=80){
+            this->setAlbumsSize(albumSize-5);
+            /* slider->setValue(ALBUM_SIZE_MEDIUM-5);
             slider->setSliderPosition(ALBUM_SIZE_MEDIUM-5);*/
         }
     });
@@ -101,7 +104,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     line_h->setFrameShadow(QFrame::Plain);
     line_h->setMaximumHeight(1);
 
-    cover = new Album(":Data/data/cover.svg",ALBUM_SIZE_MEDIUM,0,true,this);
+    cover = new Album(":Data/data/cover.svg",BaeUtils::MEDIUM_ALBUM,0,true,this);
     connect(cover,&Album::playAlbum,[this] (QMap<int,QString> info) { emit this->playAlbum(info); });
     connect(cover,&Album::changedArt,this,&AlbumsView::changedArt_cover);
     connect(cover,&Album::babeAlbum_clicked,this,&AlbumsView::babeAlbum);
@@ -126,7 +129,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
         connect(artistList,SIGNAL(clicked(QModelIndex)),this,SLOT(filterAlbum(QModelIndex)));
         artistList->setFrameShape(QFrame::NoFrame);
         artistList->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-        artistList->setMaximumWidth(ALBUM_SIZE_MEDIUM);
+        artistList->setMaximumWidth(cover->getSize());
         artistList->setAlternatingRowColors(true);
         // artistList->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContentsOnFirstShow);
         // artistList->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Minimum);
@@ -189,18 +192,18 @@ void AlbumsView::filterAlbum(QModelIndex index)
 
 void AlbumsView::setAlbumsSize(int value)
 {
-    ALBUM_SIZE_MEDIUM=value;
+     albumSize=value;
     /*slider->setToolTip(QString::number(value));
     QToolTip::showText( slider->mapToGlobal( QPoint( 0, 0 ) ), QString::number(value) );*/
     for(auto album : albumsList)
     {
-        album->setSize(ALBUM_SIZE_MEDIUM);
-        grid->setGridSize(QSize(ALBUM_SIZE_MEDIUM+10,ALBUM_SIZE_MEDIUM+10));
+        album->setSize(albumSize);
+        grid->setGridSize(QSize(albumSize+10,albumSize+10));
         grid->update();
 
     }
 
-    for(auto item : itemsList) item->setSizeHint(QSize(ALBUM_SIZE_MEDIUM, ALBUM_SIZE_MEDIUM));
+    for(auto item : itemsList) item->setSizeHint(QSize(albumSize, albumSize));
 
 }
 
@@ -235,14 +238,14 @@ void AlbumsView::populateTableView(QSqlQuery query)
                 art = query.value(ART).toString();
             else art = connection.getArtistArt(artist);
 
-            auto artwork= new Album(art,ALBUM_SIZE_MEDIUM,4,true,this);
+            auto artwork= new Album(art,BaeUtils::MEDIUM_ALBUM,4,true,this);
             albumsList.push_back(artwork);
 
             artwork->borderColor=true;
             artwork->setTitle(artist,album);
 
-            connect(artwork, &Album::albumCoverClicked,this,&AlbumsView::getAlbumInfo);
-            connect(artwork, &Album::albumCoverDoubleClicked, [this] (QMap<int, QString> info) { emit albumDoubleClicked(info); });
+            connect(artwork,&Album::albumCoverClicked,this,&AlbumsView::getAlbumInfo);
+            connect(artwork,&Album::albumCoverDoubleClicked, [this] (QMap<int, QString> info) { emit albumDoubleClicked(info); });
             connect(artwork,&Album::playAlbum, [this] (QMap<int,QString> info) { emit this->playAlbum(info); });
             connect(artwork,&Album::changedArt,this,&AlbumsView::changedArt_cover);
             connect(artwork,&Album::babeAlbum_clicked,this,&AlbumsView::babeAlbum);
@@ -259,7 +262,7 @@ void AlbumsView::populateTableView(QSqlQuery query)
 
             auto item = new QListWidgetItem();
             itemsList.push_back(item);
-            item->setSizeHint(QSize( ALBUM_SIZE_MEDIUM, ALBUM_SIZE_MEDIUM));
+            item->setSizeHint(QSize(artwork->getSize(),artwork->getSize()));
             grid->addItem(item);
             grid->setItemWidget(item,artwork);
         }
@@ -267,7 +270,7 @@ void AlbumsView::populateTableView(QSqlQuery query)
     }
 
     //grid->adjustSize();
-//    qDebug()<<grid->width()<<grid->size().height();
+    //    qDebug()<<grid->width()<<grid->size().height();
     emit populateCoversFinished();
 
 
@@ -294,7 +297,7 @@ void AlbumsView::populateTableViewHeads(QSqlQuery query)
             if(!query.value(1).toString().isEmpty()&&query.value(1).toString()!="NULL")
                 art=(query.value(1).toString());
 
-            Album *album= new Album(art,ALBUM_SIZE_MEDIUM,4,true,this);
+            Album *album= new Album(art,BaeUtils::MEDIUM_ALBUM,4,true,this);
             albumsList.push_back(album);
 
             album->borderColor=true;
@@ -308,7 +311,7 @@ void AlbumsView::populateTableViewHeads(QSqlQuery query)
 
             auto item =new QListWidgetItem();
             itemsList.push_back(item);
-            item->setSizeHint( QSize( ALBUM_SIZE_MEDIUM, ALBUM_SIZE_MEDIUM));
+            item->setSizeHint( QSize( album->getSize(), album->getSize()));
             grid->addItem(item);
             grid->setItemWidget(item,album);
 
@@ -367,6 +370,33 @@ void AlbumsView::getArtistInfo(QMap<int,QString> info)
     auto art = connection.getArtistArt(artist);
     if(!art.isEmpty()) cover->putPixmap(art);
     else cover->putDefaultPixmap();
+
+
+
+    //    QListView w;
+    //    QPalette p = w.palette();
+    //    p.setBrush(QPalette::Base, QPixmap("/usr/share/wallpapers/Air/contents/images/1024x768.jpg"));
+    //    w.setPalette(p);
+
+    //    QGraphicsBlurEffect* effect	= new QGraphicsBlurEffect();
+    //    effect->setBlurRadius(5);
+    //    int extent =0;
+    //    auto src = QPixmap(art).toImage();
+    //    QGraphicsScene scene;
+    //    QGraphicsPixmapItem item;
+    //    item.setPixmap(QPixmap::fromImage(src));
+    //    item.setGraphicsEffect(effect);
+    //    scene.addItem(&item);
+    //    QImage res(src.size()+QSize(extent*2, extent*2), QImage::Format_ARGB32);
+    //    res.fill(Qt::transparent);
+    //    QPainter ptr(&res);
+    //    scene.render(&ptr, QRectF(), QRectF( -extent, -extent, src.width()+extent*2, src.height()+extent*2 ) );
+
+
+    //    QPalette palette = albumBox_frame->palette();
+    //    palette.setBrush(QPalette::Background,res);
+    //    albumBox_frame->setPalette(palette);
+    //    albumBox_frame->setGraphicsEffect(effect);
 
     if(extraList) populateExtraList(connection.getQuery("SELECT * FROM albums WHERE artist = \""+artist+"\" ORDER by title asc"));
 

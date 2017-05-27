@@ -76,19 +76,16 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
             SLOT(handleDirectoryChanged_cache(QString)));*/
 
     ytFetch = new YouTube(this);
-    connect(ytFetch,SIGNAL(youtubeTrackReady(bool)),this,SLOT(youtubeTrackReady(bool)));
+    connect(ytFetch,&YouTube::youtubeTrackReady,this,&settings::youtubeTrackReady);
     ytFetch->searchPendingFiles();
     extensionWatcher = new QFileSystemWatcher();
     extensionWatcher->addPath(extensionFetchingPath);
     connect(extensionWatcher, SIGNAL(directoryChanged(QString)), this,
             SLOT(handleDirectoryChanged_extension()));
 
-    connect(this, SIGNAL(collectionPathChanged(QString)), this,
-            SLOT(populateDB(QString)));
-    connect(&collection_db, SIGNAL(DBactionFinished(bool)), this,
-            SLOT(finishedAddingTracks(bool)));
-    connect(&collection_db, SIGNAL(progress(int)), ui->progressBar,
-            SLOT(setValue(int)));
+    connect(this, &settings::collectionPathChanged, this, &settings::populateDB);
+    connect(&collection_db, &CollectionDB::DBactionFinished, this,&settings::finishedAddingTracks);
+    connect(&collection_db,&CollectionDB::progress, ui->progressBar,&QProgressBar::setValue);
     // thread = new QThread(parent);
     // thread->setTerminationEnabled=true;
     // collection_db.moveToThread(thread);

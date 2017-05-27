@@ -20,8 +20,13 @@ static const int MAX_ALBUM_SIZE=300;
 static const int MIN_ALBUM_SIZE=80;
 
 static const double BIG_ALBUM_FACTOR = 0.039;
+static const double BIG_ALBUM_FACTOR_SUBWIDGET = 0.27;
+
 static const double MEDIUM_ALBUM_FACTOR = 0.013;
+static const double MEDIUM_ALBUM_FACTOR_SUBWIDGET = 0.4;
+
 static const double SMALL_ALBUM_FACTOR = 0.006;
+static const double SMALL_ALBUM_FACTOR_SUBWIDGET = 0.5;
 
 inline int getWidgetSizeHint(const double &factor, const int &deafultValue)
 {

@@ -1,9 +1,25 @@
 #include "album.h"
 
 
-Album::Album(QString imagePath, int widgetSize, int widgetRadius, bool isDraggable, QWidget *parent) : QLabel(parent)
-{    
-    this->size=widgetSize;
+Album::Album(QString imagePath, BaeUtils::ALbumSizeHint widgetSize, int widgetRadius, bool isDraggable, QWidget *parent) : QLabel(parent)
+{
+
+    switch (widgetSize)
+    {
+    case BaeUtils::BIG_ALBUM:
+        this->size=BaeUtils::getWidgetSizeHint(BaeUtils::BIG_ALBUM_FACTOR,BaeUtils::BIG_ALBUM);
+        this->subSize=BaeUtils::BIG_ALBUM_FACTOR_SUBWIDGET;
+        break;
+    case BaeUtils::MEDIUM_ALBUM:
+        this->size=BaeUtils::getWidgetSizeHint(BaeUtils::MEDIUM_ALBUM_FACTOR,BaeUtils::MEDIUM_ALBUM);
+        this->subSize=BaeUtils::MEDIUM_ALBUM_FACTOR_SUBWIDGET;
+        break;
+    case BaeUtils::SMALL_ALBUM:
+        this->size=BaeUtils::getWidgetSizeHint(BaeUtils::SMALL_ALBUM_FACTOR,BaeUtils::SMALL_ALBUM);
+        this->subSize=BaeUtils::SMALL_ALBUM_FACTOR_SUBWIDGET;
+        break;
+    }
+
     this->setFixedSize(size,size);
     this->border_radius=widgetRadius;
     this->draggable=isDraggable;
@@ -16,8 +32,7 @@ Album::Album(QString imagePath, int widgetSize, int widgetRadius, bool isDraggab
     auto layout = new QHBoxLayout();
     widget = new QWidget(this);
     widget->setLayout(layout);
-    widget->setMinimumWidth(size-2);
-    widget->setGeometry(1,size-31,size-2,30);
+
     widget->setStyleSheet( QString(" background: rgba(0,0,0,150); border-top: 1px solid rgba(%1,%1,%1,120); border-top-left-radius:0; border-top-right-radius:0; border-bottom-right-radius:%2px; border-bottom-left-radius:%3px;").arg( QString::number(this->palette().color(QPalette::WindowText).blue()), QString::number(border_radius-1),QString::number(border_radius-1)));
     title = new ScrollText(this);
 
@@ -46,11 +61,12 @@ Album::Album(QString imagePath, int widgetSize, int widgetRadius, bool isDraggab
 
     playBtn->installEventFilter(this);
     playBtn->setIcon(QIcon(":Data/data/playBtn.svg"));
-    playBtn->setIconSize(QSize(48,48));
-    playBtn->setGeometry((size/2)-24,(size/2)-24,playBtn->iconSize().width(),playBtn->iconSize().width());
+    playBtn->setToolTip("Play all - "+artist+" "+album);
     playBtn->setStyleSheet("QToolButton{border:none;}");
     playBtn->setAutoRaise(true);
     playBtn->setVisible(false);
+
+    this->setSize(size);
 
     auto contextMenu = new QMenu(this);
     this->setContextMenuPolicy(Qt::ActionsContextMenu);
@@ -106,9 +122,10 @@ void Album::removeIt_action()
     qDebug()<<"Remove album"<<this->artist<<this->album;
 }
 
-void Album::playBtn_clicked()
-{
 
+int Album::getSize()
+{
+    return this->size;
 }
 
 void Album::setSize(const int &value)
@@ -117,8 +134,8 @@ void Album::setSize(const int &value)
     this->setFixedSize(size,size);
     this->widget->setMinimumWidth(size-2);
     this->widget->setGeometry(1,size-31,size-2,30);
-    this->playBtn->setIconSize(QSize(static_cast<int>(size*0.4),static_cast<int>(size*0.4)));
-    this->playBtn->setGeometry((size/2)-static_cast<int>((size*0.4)/2),(size/2)-static_cast<int>((size*0.4)/2),playBtn->iconSize().width(),playBtn->iconSize().width());
+    this->playBtn->setIconSize(QSize(static_cast<int>(size*subSize),static_cast<int>(size*subSize)));
+    this->playBtn->setGeometry((size/2)-static_cast<int>((size*subSize)/2),(size/2)-static_cast<int>((size*subSize)/2),playBtn->iconSize().width(),playBtn->iconSize().width());
 }
 
 void Album::paintEvent(QPaintEvent *event)
@@ -266,8 +283,9 @@ void Album::enterEvent(QEvent *event)
     //  this->setStyleSheet("border:1px solid #f85b79");
     // qDebug()<<"entered the album cover";
     event->accept();
+
     playBtn->setVisible(true);
-    playBtn->setToolTip("Play all - "+artist+" "+album);
+    //    playBtn->setToolTip("Play all - "+artist+" "+album);
 
     widget->setStyleSheet( QString(" background: %4; border-top: 1px solid rgba(%1,%1,%1,120); border-top-left-radius:0; border-top-right-radius:0; border-bottom-right-radius:%2px; border-bottom-left-radius:%3px;").arg( QString::number(this->palette().color(QPalette::WindowText).blue()), QString::number(border_radius-1),QString::number(border_radius-1),"#000"));
 

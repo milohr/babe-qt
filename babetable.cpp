@@ -245,7 +245,7 @@ void BabeTable::addToPlaylist(QAction *action)
 
     connect(this,&BabeTable::finishedPopulatingPlaylist,[this](QString playlist)
     {
-        nof.notifyUrgent(playlist, "Tracks added to playlist");
+        nof.notify(playlist, "Tracks added to playlist");
     });
 }
 
