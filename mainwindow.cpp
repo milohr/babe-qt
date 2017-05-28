@@ -206,7 +206,7 @@ void MainWindow::setUpViews()
     //mainList->setSelectionMode(QAbstractItemView::SingleSelection);
 
     mainList->setAddMusicMsg("\nDrag and drop music here!","face-ninja");
-    connect(mainList,&BabeTable::indexesMoved,[this](int amount){current_song_pos-=amount;});
+    connect(mainList,&BabeTable::indexesMoved,[this](int j, int x){current_song_pos-=j; current_song_pos+=x;});
     connect(mainList,&BabeTable::tableWidget_doubleClicked,this,&MainWindow::on_mainList_clicked);
     connect(mainList,&BabeTable::removeIt_clicked,this,&MainWindow::removeSong);
     connect(mainList,&BabeTable::babeIt_clicked,this,&MainWindow::babeIt);
@@ -902,17 +902,6 @@ void MainWindow::leaveEvent(QEvent *event)
 void MainWindow::hideControls() { ui->controls->setVisible(false); }
 
 void MainWindow::showControls() { ui->controls->setVisible(true); }
-
-//void MainWindow::dragEnterEvent(QDragEnterEvent *event) { event->accept(); }
-
-//void MainWindow::dragLeaveEvent(QDragLeaveEvent *event) { event->accept(); }
-
-//void MainWindow::dragMoveEvent(QDragMoveEvent *event) { event->accept(); }
-
-//void MainWindow::dropEvent(QDropEvent *event)
-//{
-
-//}
 
 void MainWindow::dummy() { qDebug()<<"TEST on DUMMYT"; }
 

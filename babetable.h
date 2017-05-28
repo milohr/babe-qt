@@ -164,7 +164,7 @@ signals:
     void queueIt_clicked(QList<QMap<int,QString>> track);
     void infoIt_clicked(QString title, QString artist, QString album);
     void finishedPopulatingPlaylist(QString playlist);
-    void indexesMoved(int amount);
+    void indexesMoved(int j, int i);
 
 };
 

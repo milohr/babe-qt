@@ -96,15 +96,11 @@ public:
 
 protected:
 
-    virtual void enterEvent(QEvent *event);
-    virtual void leaveEvent(QEvent *event);
-    virtual void closeEvent(QCloseEvent *event);
-//    virtual void dragEnterEvent(QDragEnterEvent *event);
-//    virtual void dragLeaveEvent(QDragLeaveEvent *event);
-//    virtual void dragMoveEvent(QDragMoveEvent *event);
-//    virtual void dropEvent(QDropEvent *event);
-    virtual void resizeEvent(QResizeEvent* event);
-    virtual void keyPressEvent(QKeyEvent *event);
+    virtual void enterEvent(QEvent *event) Q_DECL_OVERRIDE;
+    virtual void leaveEvent(QEvent *event) Q_DECL_OVERRIDE;
+    virtual void closeEvent(QCloseEvent *event) Q_DECL_OVERRIDE;
+    virtual void resizeEvent(QResizeEvent* event) Q_DECL_OVERRIDE;
+    virtual void keyPressEvent(QKeyEvent *event) Q_DECL_OVERRIDE;
     virtual bool eventFilter(QObject * watched, QEvent * event) Q_DECL_OVERRIDE;
 
 public slots:
