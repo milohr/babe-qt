@@ -11,14 +11,15 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     layout->setSpacing(0);
 
     albumSize = BaeUtils::getWidgetSizeHint(BaeUtils::MEDIUM_ALBUM_FACTOR,BaeUtils::MEDIUM_ALBUM);
-
-
+    this->setAcceptDrops(false);
     grid = new QListWidget(this);
     grid->setMinimumHeight(albumSize);
     grid->setViewMode(QListWidget::IconMode);
     grid->setResizeMode(QListWidget::Adjust);
     grid->setUniformItemSizes(true);
     grid->setWrapping(true);
+    grid->setAcceptDrops(false);
+    grid->setDragDropMode(QAbstractItemView::DragOnly);
     grid->setFrameShape(QFrame::NoFrame);
     grid->setSizePolicy(QSizePolicy ::Expanding , QSizePolicy ::Expanding );
     grid->setSizeAdjustPolicy(QListWidget::AdjustToContentsOnFirstShow);
@@ -182,7 +183,7 @@ void AlbumsView::filterAlbum(QModelIndex index)
     QString album = index.data().toString();
     qDebug()<<album;
     albumTable->flushTable();
-    albumTable->populateTableView("SELECT * FROM tracks WHERE album = \""+album+"\" AND artist =\""+cover->getArtist()+"\" ORDER by album asc, track asc ",false,false);
+    albumTable->populateTableView("SELECT * FROM tracks WHERE album = \""+album+"\" AND artist =\""+cover->getArtist()+"\" ORDER by album asc, track asc ",false);
     cover->setTitle(cover->getArtist(),album);
 
     QSqlQuery queryCover = connection.getQuery("SELECT * FROM albums WHERE title = \""+album+"\" AND artist =\""+cover->getArtist()+"\"");
@@ -378,7 +379,7 @@ void AlbumsView::getArtistInfo(QMap<int,QString> info)
 
     albumTable->flushTable();
 
-    albumTable->populateTableView("SELECT * FROM tracks WHERE artist = \""+artist+"\" ORDER by album asc, track asc",false,false);
+    albumTable->populateTableView("SELECT * FROM tracks WHERE artist = \""+artist+"\" ORDER by album asc, track asc",false);
 
     auto art = connection.getArtistArt(artist);
     if(!art.isEmpty()) cover->putPixmap(art);
@@ -426,7 +427,7 @@ void AlbumsView::getAlbumInfo(QMap<int,QString> info)
 
     albumTable->flushTable();
 
-    albumTable->populateTableView("SELECT * FROM tracks WHERE artist = \""+artist+"\" and album = \""+album+"\" ORDER by track asc",false,false);
+    albumTable->populateTableView("SELECT * FROM tracks WHERE artist = \""+artist+"\" and album = \""+album+"\" ORDER by track asc",false);
 
     auto art = connection.getAlbumArt(album,artist);
     art = art.isEmpty()? connection.getArtistArt(artist) : art;

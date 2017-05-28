@@ -29,7 +29,6 @@ MainWindow::MainWindow(const QStringList &files, QWidget *parent) :
 
 
     this->setWindowTitle(" Babe ... \xe2\x99\xa1  \xe2\x99\xa1 \xe2\x99\xa1 ");
-    this->setAcceptDrops(true);
     this->setWindowIcon(QIcon(":Data/data/babe_48.svg"));
     this->setWindowIconText("Babe...");
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -201,6 +200,9 @@ void MainWindow::setUpViews()
     mainList->hideColumn(BabeTable::ALBUM);
     mainList->hideColumn(BabeTable::ARTIST);
     mainList->horizontalHeader()->setVisible(false);
+    mainList->enableRowColoring(true);
+    mainList->enableRowDragging(true);
+
     //mainList->setSelectionMode(QAbstractItemView::SingleSelection);
 
     mainList->setAddMusicMsg("\nDrag and drop music here!","face-ninja");
@@ -210,14 +212,14 @@ void MainWindow::setUpViews()
     connect(mainList,&BabeTable::queueIt_clicked,this,&MainWindow::addToQueue);
     connect(mainList,&BabeTable::moodIt_clicked,mainList,&BabeTable::colorizeRow);
     connect(mainList,&BabeTable::infoIt_clicked,this,&MainWindow::infoIt);
-    connect(mainList->model(),&QAbstractItemModel::rowsInserted,this,&MainWindow::on_rowInserted);
+//    connect(mainList->model(),&QAbstractItemModel::rowsInserted,this,&MainWindow::on_rowInserted);
 
 
     filterList = new BabeTable(this);
     filterList->hideColumn(BabeTable::ALBUM);
     filterList->hideColumn(BabeTable::ARTIST);
     filterList->horizontalHeader()->setVisible(false);
-    //    filterList->setMaximumWidth(ALBUM_SIZE);
+    filterList->enableRowColoring(true);
 
     filterList->setAddMusicMsg("\nDidn't find anything!","face-surprise");
     connect(filterList,&BabeTable::tableWidget_doubleClicked, [this] (QList<QMap<int, QString>> list)
@@ -458,6 +460,7 @@ void MainWindow::setUpPlaylist()
     playlistWidget_layout->setSpacing(0);
 
     playlistWidget = new QWidget(this);
+
     playlistWidget->setLayout(playlistWidget_layout);
     playlistWidget->setFixedWidth(ALBUM_SIZE);
 
@@ -529,7 +532,7 @@ void MainWindow::setUpPlaylist()
 
         for(auto track : results)
         {
-            mainList->addRowAt(current_song_pos+i,track,true,true);
+            mainList->addRowAt(current_song_pos+i,track,true);
             //            mainList->item(current_song_pos+i,BabeTable::TITLE)->setIcon(QIcon::fromTheme("filename-space-amarok"));
             mainList->colorizeRow({current_song_pos+i},"#000");
 
@@ -560,6 +563,8 @@ void MainWindow::setUpRightFrame()
     rightFrame_layout->setSpacing(0);
 
     rightFrame = new QFrame(this);
+    rightFrame->installEventFilter(this);
+    rightFrame->setAcceptDrops(true);
     rightFrame->setLayout(rightFrame_layout);
     rightFrame->setFrameShadow(QFrame::Raised);
     rightFrame->setFrameShape(QFrame::StyledPanel);
@@ -704,6 +709,75 @@ bool MainWindow::eventFilter(QObject *object, QEvent *event)
             return true;
         }
     }
+
+    if(object == rightFrame)
+    {
+
+        if(event->type()==QEvent::DragEnter)
+        {
+            qDebug()<<"playlistWidget event filter DragEnter";
+
+            event->accept();
+        }
+
+        if(event->type()==QEvent::DragLeave)
+        {
+            qDebug()<<"playlistWidget event filter DragLeave";
+
+            event->accept();
+        }
+
+        if(event->type()==QEvent::DragMove)
+        {
+            qDebug()<<"playlistWidget event filter DragMove";
+
+            event->accept();
+        }
+
+        if(event->type()==QEvent::Drop)
+        {
+
+
+            event->accept();
+            QDropEvent* dropEvent = static_cast<QDropEvent*>(event);
+
+            QList<QMap<int, QString>> mapList;
+            QList<QUrl> urls = dropEvent->mimeData()->urls();
+            qDebug()<< urls;
+
+            if(urls.isEmpty())
+            {
+                auto info = dropEvent->mimeData()->text();
+                auto infoList = info.split("/by/");
+
+                if(infoList.size()==2)
+                {
+                    //qDebug()<<"album: " << infoList.at(0) << "artist: "<< infoList.at(1);
+                    QString artist_ = infoList.at(1).simplified();
+                    QString album_ = infoList.at(0).simplified();
+                    mapList = settings_widget->getCollectionDB().getTrackData(QString("SELECT * FROM tracks WHERE artist = \""+artist_+"\" and album = \""+album_+"\" ORDER by track asc "));
+
+                }else
+                    mapList = settings_widget->getCollectionDB().getTrackData(QString("SELECT * FROM tracks WHERE artist = \""+info+"\" ORDER by album asc, track asc "));
+
+                addToPlaylist(mapList,false,APPENDBOTTOM);
+
+            }else
+            {
+                QList<QUrl> urls = dropEvent->mimeData()->urls();
+                QStringList list;
+                for(auto url : urls) list<<url.path();
+
+                appendFiles(list);
+            }
+
+
+
+        }
+
+
+
+    }
     return QMainWindow::eventFilter(object, event);
 }
 
@@ -711,7 +785,10 @@ void MainWindow::closeEvent(QCloseEvent* event)
 {
 
     if(viewMode == FULLMODE )
+    {
         this->saveSettings("GEOMETRY",this->geometry(),"MAINWINDOW");
+        qDebug()<<"saved geometry: "<<this->geometry();
+    }
 
 
     this->saveSettings("PLAYLIST", mainList->getTableColumnContent(BabeTable::LOCATION),"MAINWINDOW");
@@ -749,7 +826,7 @@ void MainWindow::resizeEvent(QResizeEvent* event)
 void MainWindow::refreshTables() //tofix
 {
     collectionTable->flushTable();
-    collectionTable->populateTableView("SELECT * FROM tracks",false,false);
+    collectionTable->populateTableView("SELECT * FROM tracks",false);
 
     albumsTable->populateTableView(settings_widget->getCollectionDB().getQuery("SELECT * FROM albums ORDER by title asc"));
     albumsTable->hideAlbumFrame();
@@ -825,45 +902,16 @@ void MainWindow::hideControls() { ui->controls->setVisible(false); }
 
 void MainWindow::showControls() { ui->controls->setVisible(true); }
 
-void MainWindow::dragEnterEvent(QDragEnterEvent *event) { event->accept(); }
+//void MainWindow::dragEnterEvent(QDragEnterEvent *event) { event->accept(); }
 
-void MainWindow::dragLeaveEvent(QDragLeaveEvent *event) { event->accept(); }
+//void MainWindow::dragLeaveEvent(QDragLeaveEvent *event) { event->accept(); }
 
-void MainWindow::dragMoveEvent(QDragMoveEvent *event) { event->accept(); }
+//void MainWindow::dragMoveEvent(QDragMoveEvent *event) { event->accept(); }
 
-void MainWindow::dropEvent(QDropEvent *event)
-{
-    event->accept();
-    QList<QMap<int, QString>> mapList;
-    QList<QUrl> urls = event->mimeData()->urls();
-    qDebug()<< urls;
+//void MainWindow::dropEvent(QDropEvent *event)
+//{
 
-    if(urls.isEmpty())
-    {
-        auto info = event->mimeData()->text();
-        auto infoList = info.split("/by/");
-
-        if(infoList.size()==2)
-        {
-            //qDebug()<<"album: " << infoList.at(0) << "artist: "<< infoList.at(1);
-            QString artist_ = infoList.at(1).simplified();
-            QString album_ = infoList.at(0).simplified();
-            mapList = settings_widget->getCollectionDB().getTrackData(QString("SELECT * FROM tracks WHERE artist = \""+artist_+"\" and album = \""+album_+"\" ORDER by track asc "));
-
-        }else
-            mapList = settings_widget->getCollectionDB().getTrackData(QString("SELECT * FROM tracks WHERE artist = \""+info+"\" ORDER by album asc, track asc "));
-
-        addToPlaylist(mapList,false,APPENDBOTTOM);
-
-    }else
-    {
-        QList<QUrl> urls = event->mimeData()->urls();
-        QStringList list;
-        for(auto url : urls) list<<url.path();
-
-        appendFiles(list);
-    }
-}
+//}
 
 void MainWindow::dummy() { qDebug()<<"TEST on DUMMYT"; }
 
@@ -1016,6 +1064,13 @@ void MainWindow::expand()
 {
 
     this->viewMode=FULLMODE;
+
+    if(album_art->getSize()!=ALBUM_SIZE)
+    {
+        album_art->setSize(ALBUM_SIZE);
+        ui->controls->setGeometry(0,ALBUM_SIZE-static_cast<int>(ALBUM_SIZE*0.25),ALBUM_SIZE,static_cast<int>(ALBUM_SIZE*0.25));
+    }
+
     ui->tracks_view_2->setVisible(false);
     if(!leftFrame->isVisible()) leftFrame->setVisible(true);
     if(!ui->frame_4->isVisible()) ui->frame_4->setVisible(true);
@@ -1040,16 +1095,10 @@ void MainWindow::expand()
 
     animation->start();
 
-
     ui->hide_sidebar_btn->setToolTip("Go Mini");
     ui->hide_sidebar_btn->setIcon(QIcon(":Data/data/mini_mode.svg"));
 
 
-    if(album_art->getSize()!=ALBUM_SIZE)
-    {
-        album_art->setSize(ALBUM_SIZE);
-        ui->controls->setGeometry(0,ALBUM_SIZE-static_cast<int>(ALBUM_SIZE*0.25),ALBUM_SIZE,static_cast<int>(ALBUM_SIZE*0.25));
-    }
 }
 
 void MainWindow::go_mini()
@@ -1228,7 +1277,7 @@ void MainWindow::appendFiles(const QStringList &paths,const appendPos &pos)
 void MainWindow::populateMainList()
 {
     auto results = settings_widget->getCollectionDB().getTrackData(QString("SELECT * FROM tracks WHERE babe = 1 ORDER by played desc"));
-    mainList->populateTableView(results,true,true);
+    mainList->populateTableView(results,true);
     mainList->resizeRowsToContents();
     currentList = mainList->getAllTableContent();
 }
@@ -1237,7 +1286,7 @@ void MainWindow::updateList()
 {
     mainList->flushTable();
     for(auto list: currentList)
-        mainList->addRow(list,true,true);
+        mainList->addRow(list,true);
 }
 
 
@@ -1434,7 +1483,7 @@ void MainWindow::addToQueue(const QList<QMap<int, QString>> &tracks)
         queued_song_pos = queued_song_pos > 0 ? queued_song_pos+1 : current_song_pos+1;
         queued_songs.insert(track[BabeTable::LOCATION],track);
 
-        mainList->addRowAt(queued_song_pos,track,true,true);
+        mainList->addRowAt(queued_song_pos,track,true);
         mainList->item(queued_song_pos,BabeTable::TITLE)->setIcon(QIcon::fromTheme("clock"));
         mainList->colorizeRow({queued_song_pos},"#000");
         queuedList<<track[BabeTable::TITLE]+" by "+track[BabeTable::ARTIST];
@@ -1764,10 +1813,10 @@ void MainWindow::addToPlaylist(const QList<QMap<int, QString> > &mapList, const 
                 switch(pos)
                 {
                 case APPENDBOTTOM:
-                    mainList->addRow(track,true,true);
+                    mainList->addRow(track,true);
                     break;
                 case APPENDTOP:
-                    mainList->addRowAt(0,track,true,true);
+                    mainList->addRowAt(0,track,true);
                     break;
                 default: qDebug()<<"error appending track to mainlist";
                 }
@@ -1783,10 +1832,10 @@ void MainWindow::addToPlaylist(const QList<QMap<int, QString> > &mapList, const 
             switch(pos)
             {
             case APPENDBOTTOM:
-                mainList->addRow(track,true,true);
+                mainList->addRow(track,true);
                 break;
             case APPENDTOP:
-                mainList->addRowAt(0,track,true,true);
+                mainList->addRowAt(0,track,true);
                 break;
             }
 
@@ -1845,7 +1894,7 @@ void MainWindow::populateResultsTable(const QList<QMap<int, QString> > &mapList)
     views->setCurrentIndex(RESULTS);
     utilsBar->actions().at(ALBUMS_UB)->setVisible(false);
     resultsTable->flushTable();
-    resultsTable->populateTableView(mapList,false,false);
+    resultsTable->populateTableView(mapList,false);
 }
 
 QList<QMap<int, QString> > MainWindow::searchFor(const QStringList &queries)
@@ -2027,7 +2076,7 @@ void MainWindow::on_filter_textChanged(const QString &arg1)
         if(!searchResults.isEmpty())
         {
             filterList->flushTable();
-            filterList->populateTableView(searchResults,true,true);
+            filterList->populateTableView(searchResults,true);
         }else  filterList->flushTable();
 
 

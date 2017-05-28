@@ -28,6 +28,7 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
     //connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),SLOT(setUpContextMenu(const QPoint&)));
     //connect(this->model(),SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)),this,SLOT(itemEdited(const QModelIndex&, const QModelIndex&)));
     //this->setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
+
     this->setFrameShape(QFrame::NoFrame);
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     this->setColumnCount(columnsCOUNT-1);
@@ -38,8 +39,7 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
     this->setMinimumSize(0, 0);
     this->verticalHeader()->setVisible(false);
     this->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    this->setSelectionBehavior(QAbstractItemView::SelectRows);
-    this->setSelectionMode(QAbstractItemView::ExtendedSelection);
+
     this->setAlternatingRowColors(true);
     this->setSortingEnabled(true);
     this->horizontalHeader()->setHighlightSections(false);
@@ -47,6 +47,10 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
 
     this->verticalHeader()->resizeSections(QHeaderView::ResizeToContents);
     this->setShowGrid(false);
+
+
+    this->setSelectionBehavior(QAbstractItemView::SelectRows);
+    this->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
     this->setColumnWidth(TRACK, 20);
     this->setColumnWidth(PLAYED, 20);
@@ -232,6 +236,59 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
 
 BabeTable::~BabeTable() {  }
 
+void BabeTable::dropEvent(QDropEvent *event)
+{
+    if(event->source() == this && !event->isAccepted() && rowDragging )
+    {
+        int newRow = this->indexAt(event->pos()).row();
+
+        qDebug()<<"new row position"<< newRow;
+        auto list = this->getSelectedRows(false);
+        QList<QMap<int,QString>> tracks;
+
+        for(auto track : list)
+            tracks<<this->getRowData(track);
+
+        int i =0;
+        int j =0;
+
+        std::sort(list.begin(),list.end());
+
+        for(auto track:list)
+        {
+            if(track>newRow)
+            {
+                this->removeRow(track-i-j);
+                i++;
+            }
+
+            else
+            {
+                this->removeRow(track-j);
+                j++;
+            }
+
+        }
+
+//       newRow -=list.size();
+//       i =0;
+        for(auto track : tracks)
+        {
+
+
+            this->addRowAt(newRow,track,true);
+
+
+        }
+
+
+
+
+    }
+}
+
+
+
 
 void BabeTable::setAddMusicMsg(const QString &msg,const QString &icon)
 {
@@ -304,7 +361,29 @@ void BabeTable::passStyle(QString style) { this->setStyleSheet(style); }
 
 int BabeTable::getIndex() { return this->currentIndex().row(); }
 
-void BabeTable::addRow(QMap<int, QString> map, bool descriptiveTooltip, bool coloring)
+
+void BabeTable::enableRowColoring(const bool &state)
+{
+    this->rowColoring=state;
+}
+
+void BabeTable::enableRowDragging(const bool &state)
+{
+    this->rowDragging=state;
+    if(rowDragging)
+    {
+        this->setDragEnabled(true);
+        this->setAcceptDrops(true);
+        this->viewport()->setAcceptDrops(true);
+        this->setDragDropOverwriteMode(true);
+        this->setDropIndicatorShown(true);
+        this->setDragDropMode(QAbstractItemView::InternalMove);
+
+    }
+}
+
+
+void BabeTable::addRow(const QMap<int, QString> &map, const  bool &descriptiveTooltip)
 {
     this->insertRow(this->rowCount());
 
@@ -314,20 +393,20 @@ void BabeTable::addRow(QMap<int, QString> map, bool descriptiveTooltip, bool col
     this->setItem(this->rowCount() - 1, ALBUM, new QTableWidgetItem(map[ALBUM]));
     this->setItem(this->rowCount() - 1, GENRE, new QTableWidgetItem(map[GENRE]));
     this->setItem(this->rowCount() - 1, LOCATION, new QTableWidgetItem(map[LOCATION]));
-    this->setItem(this->rowCount() - 1, STARS, new QTableWidgetItem(map[STARS]));
+    this->setItem(this->rowCount() - 1, STARS, new QTableWidgetItem(this->getStars(map[STARS].toInt())));
     this->setItem(this->rowCount() - 1, BABE, new QTableWidgetItem(map[BABE]));
     this->setItem(this->rowCount() - 1, ART, new QTableWidgetItem(map[ART]));
     this->setItem(this->rowCount() - 1, PLAYED, new QTableWidgetItem(map[PLAYED]));
     this->setItem(this->rowCount() - 1, PLAYLIST, new QTableWidgetItem(map[PLAYLIST]));
 
-    if(coloring && !map[ART].isEmpty())
+    if(this->rowColoring && !map[ART].isEmpty())
         this->colorizeRow({this->rowCount()-1},map[ART]);
 
     if(descriptiveTooltip)
         this->item(this->rowCount()-1,TITLE)->setToolTip( "by "+map[ARTIST]);
 }
 
-void BabeTable::addRowAt(int row,QMap<int, QString> map, bool descriptiveTooltip, bool coloring)
+void BabeTable::addRowAt(const int &row,const QMap<int, QString> &map,const  bool &descriptiveTooltip)
 {
     this->insertRow(row);
 
@@ -337,20 +416,20 @@ void BabeTable::addRowAt(int row,QMap<int, QString> map, bool descriptiveTooltip
     this->setItem(row , ALBUM, new QTableWidgetItem(map[ALBUM]));
     this->setItem(row , GENRE, new QTableWidgetItem(map[GENRE]));
     this->setItem(row , LOCATION, new QTableWidgetItem(map[LOCATION]));
-    this->setItem(row , STARS, new QTableWidgetItem(map[STARS]));
+    this->setItem(row , STARS, new QTableWidgetItem(this->getStars(map[STARS].toInt())));
     this->setItem(row , BABE, new QTableWidgetItem(map[BABE]));
     this->setItem(row , ART, new QTableWidgetItem(map[ART]));
     this->setItem(row , PLAYED, new QTableWidgetItem(map[PLAYED]));
-    //this->setItem(row , PLAYLIST, new QTableWidgetItem(map[PLAYLIST]));
+    this->setItem(row , PLAYLIST, new QTableWidgetItem(map[PLAYLIST]));
 
-    if(coloring && !map[ART].isEmpty())
+    if(this->rowColoring && !map[ART].isEmpty())
         this->colorizeRow({row},map[ART]);
 
     if(descriptiveTooltip)
         this->item(row,TITLE)->setToolTip( "by "+map[ARTIST]);
 }
 
-void BabeTable::populateTableView(QList<QMap<int,QString>> mapList, bool descriptiveTitle, bool coloring)
+void BabeTable::populateTableView(const QList<QMap<int,QString>>& mapList, const bool &descriptiveTitle)
 {
     qDebug() << "ON POPULATE by mapList";
 
@@ -371,7 +450,7 @@ void BabeTable::populateTableView(QList<QMap<int,QString>> mapList, bool descrip
                 missingFiles << location;
                 missing = true;
 
-            } else addRow(trackMap,descriptiveTitle,coloring);
+            } else addRow(trackMap,descriptiveTitle);
 
         }
 
@@ -400,7 +479,7 @@ void BabeTable::removeMissing(QStringList missingFiles)
     connection.cleanCollectionLists();
 }
 
-void BabeTable::populateTableView(QString indication, bool descriptiveTitle, bool coloring)
+void BabeTable::populateTableView(const QString &indication, const bool &descriptiveTitle)
 {
 
     qDebug() << "ON POPULATE:"<<indication;
@@ -432,36 +511,7 @@ void BabeTable::populateTableView(QString indication, bool descriptiveTitle, boo
                 QString artist = query.value(ARTIST).toString();
                 QString album = query.value(ALBUM).toString();
                 QString genre = query.value(GENRE).toString();
-
-
-                QString rating;
-                switch (query.value((STARS)).toInt()) {
-                case 0:
-                    rating = " ";
-                    break;
-                case 1:
-                    rating = "\xe2\x98\x86 ";
-                    break;
-                case 2:
-                    rating = "\xe2\x98\x86 \xe2\x98\x86 ";
-                    break;
-                case 3:
-                    rating = "\xe2\x98\x86 \xe2\x98\x86 \xe2\x98\x86 ";
-                    break;
-                case 4:
-                    rating = "\xe2\x98\x86 \xe2\x98\x86 \xe2\x98\x86 \xe2\x98\x86 ";
-                    break;
-                case 5:
-                    rating =
-                            "\xe2\x98\x86 \xe2\x98\x86 \xe2\x98\x86 \xe2\x98\x86 \xe2\x98\x86 ";
-                    break;
-                }
-
-                if (query.value(BABE).toInt() == 1)
-                    rating = "\xe2\x99\xa1 ";
-
-
-                QString stars =  rating;
+                QString stars = query.value((STARS)).toString();
 
 
                 QString bb;
@@ -475,15 +525,13 @@ void BabeTable::populateTableView(QString indication, bool descriptiveTitle, boo
                 }
 
                 QString babe = bb;
-
                 QString art = query.value(ART).toString();
-
                 QString played =query.value(PLAYED).toString();
                 QString playlist =query.value(PLAYLIST).toString();
 
                 const QMap<int, QString> map{{TRACK,track}, {TITLE,title}, {ARTIST,artist},{ALBUM,album},{GENRE,genre},{LOCATION,location},{STARS,stars},{BABE,babe},{ART,art},{PLAYED,played},{PLAYLIST,playlist}};
 
-                addRow(map,descriptiveTitle,coloring);
+                addRow(map,descriptiveTitle);
             }
         }
 
@@ -494,6 +542,34 @@ void BabeTable::populateTableView(QString indication, bool descriptiveTitle, boo
         emit finishedPopulating();
     }else qDebug()<<"Error: the query didn't pass"<<indication;
 
+
+}
+
+QString BabeTable::getStars(const int &value)
+{
+
+
+    switch (value) {
+    case 0:
+        return  " ";
+
+    case 1:
+        return  "\xe2\x98\x86 ";
+
+    case 2:
+        return "\xe2\x98\x86 \xe2\x98\x86 ";
+
+    case 3:
+        return  "\xe2\x98\x86 \xe2\x98\x86 \xe2\x98\x86 ";
+
+    case 4:
+        return  "\xe2\x98\x86 \xe2\x98\x86 \xe2\x98\x86 \xe2\x98\x86 ";
+
+    case 5:
+        return "\xe2\x98\x86 \xe2\x98\x86 \xe2\x98\x86 \xe2\x98\x86 \xe2\x98\x86 ";
+
+    default: return "error";
+    }
 
 }
 
@@ -606,7 +682,7 @@ QMap<QString,QString> BabeTable::getKdeConnectDevices()
 
 
 void BabeTable::setUpContextMenu(const int row, const int column)
-{    
+{
     qDebug() << "setUpContextMenu";
     //contextMenu->exec(QCursor::pos());
 
@@ -761,7 +837,7 @@ void BabeTable::rateGroup(int id)
 }
 
 QMap<int, QString> BabeTable::getRowData(int row)
-{  
+{
     QString location = this->model()->data(this->model()->index(row, LOCATION)).toString();
 
     if(connection.check_existance("tracks","location",location))

@@ -63,21 +63,24 @@ public:
 //    const QMap<int, QString> columnsNames{{TRACK, "track"}, {TITLE, "title"}, {ARTIST, "artist"},{ALBUM,"album"},{GENRE,"genre"},{LOCATION,"location"},{STARS,"stars"},{BABE,"babe"},{ART,"art"},{PLAYED,"played"},{PLAYLIST,"playlist"}};
     QStringList playlistsMenus;
     QStringList colors = BaeUtils::MoodColors;
-    void populateTableView(QList<QMap<int,QString>> mapList, bool descriptiveTitle, bool coloring);
-    void populateTableView(QString indication, bool descriptiveTitle, bool coloring);
+    void populateTableView(const QList<QMap<int,QString>> &mapList, const bool &descriptiveTitle);
+    void populateTableView(const QString &indication, const bool &descriptiveTitle);
     void removeMissing(QStringList missingFiles);
     void setRating(int rate);
     void setTableOrder(int column, int order);
     void setVisibleColumn(int column);
-    void addRow(QMap<int, QString> map, bool descriptiveTooltip,bool coloring);
-    void addRowAt(int row, QMap<int, QString> map, bool descriptiveTooltip, bool coloring);
+    void addRow(const QMap<int, QString> &map, const bool &descriptiveTooltip);
+    void addRowAt(const int &row, const QMap<int, QString> &map, const bool &descriptiveTooltip);
     void passStyle(QString style);
     void passPlaylists();
     void populatePlaylist(const QStringList &urls, const QString &playlist);
     void setAddMusicMsg(const QString &msg, const QString &icon);
     int getIndex();
+    QString getStars(const int &value);
     void removeRepeated();
     QList<int> getSelectedRows(const bool &onRightClick=true);
+    void enableRowColoring(const bool &state=false);
+    void enableRowDragging(const bool &state=false);
     //void removeRow(int row);
 
     QMap<int,QString> getRowData(int row);
@@ -90,6 +93,7 @@ protected:
 
     virtual void enterEvent(QEvent *event);
     virtual void leaveEvent(QEvent *event);
+    virtual void dropEvent(QDropEvent *event);
     //  virtual void mouseReleaseEvent(QMouseEvent* evt);
     virtual void mousePressEvent(QMouseEvent* evt);
     virtual void keyPressEvent(QKeyEvent *event);
@@ -129,6 +133,8 @@ private:
 
     int rRow=0;
     int rColumn=0;
+    bool rowColoring=false;
+    bool rowDragging=false;
     QMenu *contextMenu;
     QMenu* playlistsMenu;
     QMenu* sendToMenu;

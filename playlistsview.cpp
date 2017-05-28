@@ -191,7 +191,7 @@ void PlaylistsView::populatePlaylist(const QModelIndex &index)
         query = "SELECT * FROM tracks WHERE art = \"" + currentPlaylist + "\"";
     }
 
-    table->populateTableView(query,false,false);
+    table->populateTableView(query,false);
 
 }
 
@@ -243,7 +243,7 @@ void PlaylistsView::removePlaylist()
         query = "SELECT * FROM tracks WHERE art = \"" + currentPlaylist+ "\"";
     }
 
-    table->populateTableView(query,false,false);
+    table->populateTableView(query,false);
 
 }
 

@@ -37,14 +37,6 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <widget class="QToolButton" name="playlists_view">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>30</y>
-      <width>32</width>
-      <height>32</height>
-     </rect>
-    </property>
     <property name="sizePolicy">
      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
       <horstretch>0</horstretch>
@@ -64,6 +56,12 @@
      <iconset theme="amarok_lyrics">
       <normaloff>.</normaloff>.</iconset>
     </property>
+    <property name="iconSize">
+     <size>
+      <width>22</width>
+      <height>22</height>
+     </size>
+    </property>
     <property name="checkable">
      <bool>true</bool>
     </property>
@@ -78,14 +76,6 @@
     </property>
    </widget>
    <widget class="QToolButton" name="artists_view">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>240</y>
-      <width>28</width>
-      <height>28</height>
-     </rect>
-    </property>
     <property name="sizePolicy">
      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
       <horstretch>0</horstretch>
@@ -105,6 +95,12 @@
      <iconset theme="amarok_artist">
       <normaloff>.</normaloff>.</iconset>
     </property>
+    <property name="iconSize">
+     <size>
+      <width>22</width>
+      <height>22</height>
+     </size>
+    </property>
     <property name="checkable">
      <bool>true</bool>
     </property>
@@ -119,14 +115,6 @@
     </property>
    </widget>
    <widget class="QToolButton" name="rabbit_view">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>210</y>
-      <width>32</width>
-      <height>32</height>
-     </rect>
-    </property>
     <property name="sizePolicy">
      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
       <horstretch>0</horstretch>
@@ -149,6 +137,12 @@
      <iconset theme="kstars_constellationart">
       <normaloff>.</normaloff>.</iconset>
     </property>
+    <property name="iconSize">
+     <size>
+      <width>22</width>
+      <height>22</height>
+     </size>
+    </property>
     <property name="checkable">
      <bool>true</bool>
     </property>
@@ -163,14 +157,6 @@
     </property>
    </widget>
    <widget class="QToolButton" name="settings_view">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>170</y>
-      <width>32</width>
-      <height>32</height>
-     </rect>
-    </property>
     <property name="sizePolicy">
      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
       <horstretch>0</horstretch>
@@ -193,6 +179,12 @@
      <iconset theme="games-config-options">
       <normaloff>.</normaloff>.</iconset>
     </property>
+    <property name="iconSize">
+     <size>
+      <width>22</width>
+      <height>22</height>
+     </size>
+    </property>
     <property name="checkable">
      <bool>true</bool>
     </property>
@@ -207,14 +199,6 @@
     </property>
    </widget>
    <widget class="QToolButton" name="albums_view">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>130</y>
-      <width>32</width>
-      <height>32</height>
-     </rect>
-    </property>
     <property name="sizePolicy">
      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
       <horstretch>0</horstretch>
@@ -237,6 +221,12 @@
      <iconset theme="media-album-track">
       <normaloff>.</normaloff>.</iconset>
     </property>
+    <property name="iconSize">
+     <size>
+      <width>22</width>
+      <height>22</height>
+     </size>
+    </property>
     <property name="checkable">
      <bool>true</bool>
     </property>
@@ -251,14 +241,6 @@
     </property>
    </widget>
    <widget class="QToolButton" name="tracks_view">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>90</y>
-      <width>32</width>
-      <height>32</height>
-     </rect>
-    </property>
     <property name="sizePolicy">
      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
       <horstretch>0</horstretch>
@@ -278,6 +260,12 @@
      <iconset theme="filename-filetype-amarok">
       <normaloff>.</normaloff>.</iconset>
     </property>
+    <property name="iconSize">
+     <size>
+      <width>22</width>
+      <height>22</height>
+     </size>
+    </property>
     <property name="checkable">
      <bool>true</bool>
     </property>
@@ -292,14 +280,6 @@
     </property>
    </widget>
    <widget class="QToolButton" name="info_view">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>60</y>
-      <width>32</width>
-      <height>32</height>
-     </rect>
-    </property>
     <property name="sizePolicy">
      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
       <horstretch>0</horstretch>
@@ -318,6 +298,12 @@
     <property name="icon">
      <iconset theme="internet-amarok">
       <normaloff>.</normaloff>.</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>22</width>
+      <height>22</height>
+     </size>
     </property>
     <property name="checkable">
      <bool>true</bool>
