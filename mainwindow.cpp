@@ -206,6 +206,7 @@ void MainWindow::setUpViews()
     //mainList->setSelectionMode(QAbstractItemView::SingleSelection);
 
     mainList->setAddMusicMsg("\nDrag and drop music here!","face-ninja");
+    connect(mainList,&BabeTable::indexesMoved,[this](int amount){current_song_pos-=amount;});
     connect(mainList,&BabeTable::tableWidget_doubleClicked,this,&MainWindow::on_mainList_clicked);
     connect(mainList,&BabeTable::removeIt_clicked,this,&MainWindow::removeSong);
     connect(mainList,&BabeTable::babeIt_clicked,this,&MainWindow::babeIt);
@@ -512,7 +513,7 @@ void MainWindow::setUpPlaylist()
         if(mainList->rowCount()>0)
         {
             this->mainList->setCurrentCell(current_song_pos,BabeTable::TITLE);
-            this->mainList->item(current_song_pos,BabeTable::TITLE)->setIcon(QIcon::fromTheme("media-playback-start"));
+//            this->mainList->item(current_song_pos,BabeTable::TITLE)->setIcon(QIcon::fromTheme("media-playback-start"));
         }
     });
 
@@ -1335,16 +1336,16 @@ void MainWindow::loadTrack()
     prev_song = current_song;
     prev_song_pos = current_song_pos;
 
-    if(prev_song_pos<this->mainList->rowCount() && mainList->item(current_song_pos,BabeTable::TITLE)->icon().name()!="clock")
-        mainList->item(prev_song_pos,BabeTable::TITLE)->setIcon(QIcon());
+//    if(prev_song_pos<this->mainList->rowCount() && mainList->item(current_song_pos,BabeTable::TITLE)->icon().name()!="clock")
+//        mainList->item(prev_song_pos,BabeTable::TITLE)->setIcon(QIcon());
     calibrateBtn_menu->actions().at(3)->setEnabled(false);
 
 
     current_song_pos = mainList->getIndex();
     current_song = mainList->getRowData(current_song_pos);
 
-    if(mainList->item(current_song_pos,BabeTable::TITLE)->icon().name()!="clock")
-        mainList->item(current_song_pos,BabeTable::TITLE)->setIcon(QIcon::fromTheme("media-playback-start"));
+//    if(mainList->item(current_song_pos,BabeTable::TITLE)->icon().name()!="clock")
+//        mainList->item(current_song_pos,BabeTable::TITLE)->setIcon(QIcon::fromTheme("media-playback-start"));
 
     mainList->scrollTo(mainList->model()->index(current_song_pos,BabeTable::TITLE));
     queued_song_pos = -1;
@@ -2103,7 +2104,7 @@ void MainWindow::calibrateMainList()
     if(mainList->rowCount()>0)
     {
         this->mainList->setCurrentCell(current_song_pos,BabeTable::TITLE);
-        this->mainList->item(current_song_pos,BabeTable::TITLE)->setIcon(QIcon::fromTheme("media-playback-start"));
+//        this->mainList->item(current_song_pos,BabeTable::TITLE)->setIcon(QIcon::fromTheme("media-playback-start"));
         this->mainList->removeRepeated();
     }
 }

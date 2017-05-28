@@ -256,7 +256,7 @@ void BabeTable::dropEvent(QDropEvent *event)
 
         for(auto track:list)
         {
-            if(track>newRow)
+            if(track>=newRow)
             {
                 this->removeRow(track-i-j);
                 i++;
@@ -266,20 +266,20 @@ void BabeTable::dropEvent(QDropEvent *event)
             {
                 this->removeRow(track-j);
                 j++;
+                newRow--;
             }
 
         }
 
-//       newRow -=list.size();
-//       i =0;
+        i =0;
         for(auto track : tracks)
         {
-
-
-            this->addRowAt(newRow,track,true);
-
+            this->addRowAt(newRow+1+i,track,true);
+            i++;
 
         }
+
+        emit indexesMoved(j);
 
 
 
