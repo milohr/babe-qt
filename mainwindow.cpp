@@ -212,7 +212,7 @@ void MainWindow::setUpViews()
         {
             current_song_pos++; prev_song_pos++;
         }
-        else if(row<current_song_pos && newRow>current_song_pos)
+        else if(row<current_song_pos && newRow>=current_song_pos)
         {
             current_song_pos--; prev_song_pos--;
         }
@@ -1577,6 +1577,18 @@ void MainWindow::removequeuedTracks()
 
 }
 
+int MainWindow::firstQueuedTrack()
+{
+    int result=0;
+    for(auto row=0;row<this->mainList->rowCount();row++)
+        if(mainList->item(row,BabeTable::TITLE)->icon().name()=="clock")
+        {
+            result = row;
+            break;
+        }
+
+    return result;
+}
 
 void MainWindow::next()
 {
@@ -1588,8 +1600,11 @@ void MainWindow::next()
 
     if(lCounter >= mainList->rowCount()) lCounter = 0;
 
-    mainList->setCurrentCell((!shuffle || repeat) ?
-                                 lCounter : shuffleNumber(), BabeTable::TITLE);
+    mainList->setCurrentCell(shuffle ? shuffleNumber():lCounter, BabeTable::TITLE);
+
+    if(!queued_songs.isEmpty())
+        mainList->setCurrentCell(firstQueuedTrack(), BabeTable::TITLE);
+
 
     loadTrack();
 }
@@ -1615,7 +1630,8 @@ int MainWindow::shuffleNumber()
 
     auto random_integer = uni(rng);
     qDebug()<<"random number:"<<random_integer;
-    return random_integer;
+    if (current_song_pos !=random_integer)return random_integer;
+    else return random_integer++;
 }
 
 void MainWindow::on_play_btn_clicked()

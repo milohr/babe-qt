@@ -234,6 +234,8 @@ private:
     void expand();
     void go_mini();
     void go_playlistMode();
+    void stopPlayback();
+    int firstQueuedTrack();
 
     void clearMainList();
     void calibrateMainList();
@@ -271,8 +273,7 @@ private:
     bool shuffle = false;
     bool stopped = false;
 
-    vector<unsigned short int> shuffledPlaylist;
-    void stopPlayback();
+
 
 signals:
     void finishedPlayingSong(QString url);
