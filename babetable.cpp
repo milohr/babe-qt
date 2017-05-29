@@ -967,7 +967,7 @@ void BabeTable::removeIt_action()
     // int row= this->currentIndex().row();
     qDebug()
             << this->model()->data(this->model()->index(rRow, LOCATION)).toString();
-    this->removeRow(rRow);
+//    this->removeRow(rRow);
     emit removeIt_clicked(rRow);
 }
 

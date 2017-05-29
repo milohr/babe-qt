@@ -828,6 +828,7 @@ void MainWindow::resizeEvent(QResizeEvent* event)
         this->setMinimumHeight(event->size().width()+5);
 
         album_art->setSize(event->size().width());
+        //        this->seekBar->setMaximumWidth(event->size().width());
         int ALBUM_SIZE_ = album_art->getSize();
         ui->controls->setGeometry(0,ALBUM_SIZE_-static_cast<int>(ALBUM_SIZE_*0.25),ALBUM_SIZE_,static_cast<int>(ALBUM_SIZE_*0.25));
     }
@@ -1068,6 +1069,7 @@ void MainWindow::expand()
     if(album_art->getSize()!=ALBUM_SIZE)
     {
         album_art->setSize(ALBUM_SIZE);
+        //        this->seekBar->setMaximumWidth(ALBUM_SIZE);
         ui->controls->setGeometry(0,ALBUM_SIZE-static_cast<int>(ALBUM_SIZE*0.25),ALBUM_SIZE,static_cast<int>(ALBUM_SIZE*0.25));
     }
 
@@ -1306,17 +1308,30 @@ void MainWindow::removeSong(const int &index)
 
     if(index != -1)
     {
-        qDebug()<<"ehat was in current list:";
-        for(auto a: currentList)
+//        qDebug()<<"ehat was in current list:";
+//        for(auto a: currentList)
+//        {
+//            qDebug()<<a[BabeTable::TITLE];
+//        }
+        if(obj == mainList)
         {
-            qDebug()<<a[BabeTable::TITLE];
+
+            if(removeQueuedTrack(mainList->getRowData(index),index))
+            {
+                qDebug()<<"removedQueued track";
+                current_song_pos++;
+            }
+            else
+            {
+                mainList->removeRow(index);
+                currentList.removeAt(index);
+            }
         }
-        if(obj == mainList) currentList.removeAt(index);
-        qDebug()<<"in current list:";
-        for(auto a: currentList)
-        {
-            qDebug()<<a[BabeTable::TITLE];
-        }
+//        qDebug()<<"in current list:";
+//        for(auto a: currentList)
+//        {
+//            qDebug()<<a[BabeTable::TITLE];
+//        }
 
     }
 }
@@ -1529,7 +1544,7 @@ void MainWindow::update()
 
         if(player->state() == QMediaPlayer::StoppedState)
         {
-            if(!queued_songs.isEmpty()) removeQueuedTrack(current_song);
+            if(!queued_songs.isEmpty()) removeQueuedTrack(current_song, current_song_pos);
 
             prev_song = current_song;
             qDebug()<<"finished playing song: "<<prev_song[BabeTable::LOCATION];
@@ -1548,12 +1563,12 @@ void MainWindow::update()
 }
 
 
-bool MainWindow::removeQueuedTrack(const QMap<int, QString> &track)
+bool MainWindow::removeQueuedTrack(const QMap<int, QString> &track, const int &pos)
 {
     if(queued_songs.contains(track[BabeTable::LOCATION]))
-        if(mainList->item(current_song_pos,BabeTable::TITLE)->icon().name()=="clock")
+        if(mainList->item(pos,BabeTable::TITLE)->icon().name()=="clock")
         {
-            mainList->removeRow(current_song_pos);
+            mainList->removeRow(pos);
             queued_songs.remove(track[BabeTable::LOCATION]);
             current_song_pos--;
             return true;
@@ -1592,7 +1607,7 @@ int MainWindow::firstQueuedTrack()
 
 void MainWindow::next()
 {
-    if(!queued_songs.isEmpty()) removeQueuedTrack(current_song); //check if the track was queued and then removed it
+    if(!queued_songs.isEmpty()) removeQueuedTrack(current_song,current_song_pos); //check if the track was queued and then removed it
 
     auto lCounter = current_song_pos+1;
 
