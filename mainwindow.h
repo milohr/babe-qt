@@ -163,7 +163,7 @@ private slots:
     void babeIt(const QList<QMap<int, QString>> &tracks);
     bool unbabeIt(const QMap<int, QString> &track);
     void loadMood();
-    bool removeQueuedTrack(const QMap<int, QString> &track, const int &pos);
+    bool removeQueuedTrack(const QMap<int, QString> &track);
     void removequeuedTracks();
     void addToQueue(const QList<QMap<int, QString> > &tracks);
     void on_filterBtn_clicked();

@@ -245,58 +245,61 @@ void BabeTable::dropEvent(QDropEvent *event)
         int newRow = this->indexAt(event->pos()).row();
         auto insertionRow = newRow;
 
-        qDebug()<<"new row position"<< newRow;
-        auto list = this->getSelectedRows(false);
-        QList<QMap<int,QString>> tracks;
-        QList<int> newList;
-        for(auto track : list)
+        if(this->item(insertionRow,TITLE)->icon().name()!="clock")
         {
-            if(this->item(track,TITLE)->icon().name().isEmpty())
+            qDebug()<<"new row position"<< newRow;
+            auto list = this->getSelectedRows(false);
+            QList<QMap<int,QString>> tracks;
+            QList<int> newList;
+            for(auto track : list)
             {
-                tracks<<this->getRowData(track);
-                newList<<track;
+                if(this->item(track,TITLE)->icon().name().isEmpty())
+                {
+                    tracks<<this->getRowData(track);
+                    newList<<track;
+                }
+
             }
 
-        }
-
-        if(!newList.isEmpty())
-        {
-            int i =0;
-            int j =0;
-
-            std::sort(newList.begin(),newList.end());
-
-            for(auto track:newList)
+            if(!newList.isEmpty())
             {
-                if(track>=newRow)
+                int i =0;
+                int j =0;
+
+                std::sort(newList.begin(),newList.end());
+
+                for(auto track:newList)
                 {
-                    this->removeRow(track-i-j);
+                    if(track>=newRow)
+                    {
+                        this->removeRow(track-i-j);
+                        i++;
+                    }
+
+                    else
+                    {
+                        this->removeRow(track-j);
+                        j++;
+                        newRow--;
+                    }
+
+
+
+                }
+
+
+                i =0;
+                for(auto track : tracks)
+                {
+                    this->addRowAt(newRow+1+i,track,true);
+                    qDebug()<<"indexes moved "<< newList.at(i)<<insertionRow;
+
+                    emit indexesMoved(newList.at(i),insertionRow);
                     i++;
+
                 }
 
-                else
-                {
-                    this->removeRow(track-j);
-                    j++;
-                    newRow--;
-                }
-
-
-
             }
-
-
-            i =0;
-            for(auto track : tracks)
-            {
-                this->addRowAt(newRow+1+i,track,true);
-                qDebug()<<"indexes moved "<< newList.at(i)<<insertionRow;
-
-                emit indexesMoved(newList.at(i),insertionRow);
-                i++;
-
-            }
-
         }
     }
 }
@@ -967,7 +970,7 @@ void BabeTable::removeIt_action()
     // int row= this->currentIndex().row();
     qDebug()
             << this->model()->data(this->model()->index(rRow, LOCATION)).toString();
-//    this->removeRow(rRow);
+    //    this->removeRow(rRow);
     emit removeIt_clicked(rRow);
 }
 

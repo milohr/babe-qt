@@ -24,7 +24,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     grid->setSizePolicy(QSizePolicy ::Expanding , QSizePolicy ::Expanding );
     grid->setSizeAdjustPolicy(QListWidget::AdjustToContentsOnFirstShow);
     //grid->setStyleSheet("QListWidget {background:#2E2F30; border:1px solid black; border-radius: 2px; }");
-    grid->setStyleSheet("QListWidget {background:transparent; padding-top:15px; padding-left:15px; }");
+    grid->setStyleSheet("QListWidget {background:transparent; padding-top:15px; padding-left:15px; color:transparent; }");
     grid->setGridSize(QSize(albumSize+10,albumSize+10));
 
     QAction *zoomIn = new QAction(this);
@@ -78,7 +78,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
 
     order->addItem("Ascending");
     order->addItem("Descending");
-    order->setCurrentIndex(1);
+    order->setCurrentIndex(0);
 
     utilsLayout->addWidget(order);
     // utilsLayout->addWidget(slider);
@@ -284,7 +284,7 @@ void AlbumsView::populateTableView(QSqlQuery query)
     //grid->adjustSize();
     //    qDebug()<<grid->width()<<grid->size().height();
     emit populateCoversFinished();
-
+    orderChanged("Ascending");
 
 }
 
@@ -333,6 +333,7 @@ void AlbumsView::populateTableViewHeads(QSqlQuery query)
     }
 
     emit populateHeadsFinished();
+    orderChanged("Ascending");
 }
 
 void AlbumsView::populateExtraList(QSqlQuery query)
