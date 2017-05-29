@@ -1318,15 +1318,16 @@ void MainWindow::removeSong(const int &index)
         if(obj == mainList)
         {
 
-            if(removeQueuedTrack(mainList->getRowData(index)))
+            if(removeQueuedTrack(mainList->getRowData(index),index))
             {
                 qDebug()<<"removedQueued track";
-                current_song_pos++;
+                if(current_song_pos>index) current_song_pos--;
             }
             else
             {
                 mainList->removeRow(index);
                 currentList.removeAt(index);
+                if(current_song_pos>index) current_song_pos--;
             }
         }
         //        qDebug()<<"in current list:";
@@ -1495,6 +1496,8 @@ bool MainWindow::loadCover(const QString &artist, const QString &album, const QS
 
 void MainWindow::addToQueue(const QList<QMap<int, QString>> &tracks)
 {
+    prev_queued_song_pos=current_song_pos;
+
     QStringList queuedList;
     for(auto track : tracks)
     {
@@ -1507,6 +1510,8 @@ void MainWindow::addToQueue(const QList<QMap<int, QString>> &tracks)
 
     }
     //mainList->addRowAt(current_song_pos+1,track,true);
+    qDebug()<<"saving track pos to restore after queued is empty"<<prev_queued_song_pos;
+
     mainList->scrollToItem(mainList->item(0,BabeTable::TITLE),QAbstractItemView::PositionAtTop);
 
     nof.notify("Song added to Queue",queuedList.join("\n"));
@@ -1548,7 +1553,7 @@ void MainWindow::update()
 
         if(player->state() == QMediaPlayer::StoppedState)
         {
-            if(!queued_songs.isEmpty()) removeQueuedTrack(current_song);
+            if(!queued_songs.isEmpty()) removeQueuedTrack(current_song,current_song_pos);
 
             prev_song = current_song;
             qDebug()<<"finished playing song: "<<prev_song[BabeTable::LOCATION];
@@ -1567,12 +1572,12 @@ void MainWindow::update()
 }
 
 
-bool MainWindow::removeQueuedTrack(const QMap<int, QString> &track)
+bool MainWindow::removeQueuedTrack(const QMap<int, QString> &track,const int &pos)
 {
     if(queued_songs.contains(track[BabeTable::LOCATION]))
-        if(mainList->item(0,BabeTable::TITLE)->icon().name()=="clock")
+        if(mainList->item(pos,BabeTable::TITLE)->icon().name()=="clock")
         {
-            mainList->removeRow(0);
+            mainList->removeRow(pos);
             queued_songs.remove(track[BabeTable::LOCATION]);
             return true;
         }
@@ -1614,20 +1619,25 @@ void MainWindow::next()
 
     if(!queued_songs.isEmpty())
     {
-        removeQueuedTrack(current_song);
+        removeQueuedTrack(current_song,current_song_pos);
         nextSong=current_song_pos;
 
-    }else nextSong= current_song_pos+1;
+    } else  nextSong= current_song_pos+1;
+
+    if(queued_songs.isEmpty() && prev_queued_song_pos!=-1)
+    {
+        nextSong= prev_queued_song_pos+1;
+        prev_queued_song_pos=-1;
+    }
 
     if(repeat) nextSong--;
 
     if(nextSong >= mainList->rowCount()) nextSong = 0;
 
-    mainList->setCurrentCell(shuffle ? shuffleNumber():nextSong, BabeTable::TITLE);
-
     if(!queued_songs.isEmpty())
-        mainList->setCurrentCell(0, BabeTable::TITLE);
+        nextSong=0;
 
+    mainList->setCurrentCell(shuffle ? shuffleNumber():nextSong, BabeTable::TITLE);
 
     loadTrack();
 }

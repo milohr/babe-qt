@@ -163,7 +163,7 @@ private slots:
     void babeIt(const QList<QMap<int, QString>> &tracks);
     bool unbabeIt(const QMap<int, QString> &track);
     void loadMood();
-    bool removeQueuedTrack(const QMap<int, QString> &track);
+    bool removeQueuedTrack(const QMap<int, QString> &track, const int &pos);
     void removequeuedTracks();
     void addToQueue(const QList<QMap<int, QString> > &tracks);
     void on_filterBtn_clicked();
@@ -257,7 +257,7 @@ private:
     QMenu *calibrateBtn_menu;
 
     QMap<QString, QMap<int, QString>> queued_songs;
-    int queued_song_pos = -1;
+    int prev_queued_song_pos = -1;
 
     QList<QMap<int,QString>> currentList;
     QMap<int, QString> current_song;
