@@ -206,7 +206,7 @@ void MainWindow::setUpViews()
     //mainList->setSelectionMode(QAbstractItemView::SingleSelection);
 
     mainList->setAddMusicMsg("\nDrag and drop music here!","face-ninja");
-    connect(mainList,&BabeTable::indexesMoved,[this](int j, int x){current_song_pos-=j; current_song_pos+=x;});
+    connect(mainList,&BabeTable::indexesMoved,[this](int j, int x){current_song_pos-=j;});
     connect(mainList,&BabeTable::tableWidget_doubleClicked,this,&MainWindow::on_mainList_clicked);
     connect(mainList,&BabeTable::removeIt_clicked,this,&MainWindow::removeSong);
     connect(mainList,&BabeTable::babeIt_clicked,this,&MainWindow::babeIt);
@@ -1162,6 +1162,7 @@ void MainWindow::go_playlistMode()
     animation->setEndValue(ALBUM_SIZE+16);
 
     animation->start();
+
     leftFrame->setVisible(false);
 
     ui->hide_sidebar_btn->setToolTip("Go Mini");

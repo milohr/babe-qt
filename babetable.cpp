@@ -238,6 +238,8 @@ BabeTable::~BabeTable() {  }
 
 void BabeTable::dropEvent(QDropEvent *event)
 {
+
+
     if(event->source() == this && !event->isAccepted() && rowDragging )
     {
         int newRow = this->indexAt(event->pos()).row();
@@ -245,16 +247,23 @@ void BabeTable::dropEvent(QDropEvent *event)
         qDebug()<<"new row position"<< newRow;
         auto list = this->getSelectedRows(false);
         QList<QMap<int,QString>> tracks;
-
+        QList<int> newList;
         for(auto track : list)
-            tracks<<this->getRowData(track);
+        {
+            if(this->item(track,TITLE)->icon().name().isEmpty())
+            {
+                tracks<<this->getRowData(track);
+                newList<<track;
+            }
+
+        }
 
         int i =0;
         int j =0;
 
-        std::sort(list.begin(),list.end());
+        std::sort(newList.begin(),newList.end());
 
-        for(auto track:list)
+        for(auto track:newList)
         {
             if(track>=newRow)
             {
@@ -270,7 +279,7 @@ void BabeTable::dropEvent(QDropEvent *event)
             }
 
         }
-emit indexesMoved(j,i);
+        emit indexesMoved(j,i);
         i =0;
         for(auto track : tracks)
         {
@@ -278,10 +287,6 @@ emit indexesMoved(j,i);
             i++;
 
         }
-
-
-
-
 
 
     }
