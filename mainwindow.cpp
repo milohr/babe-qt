@@ -1622,7 +1622,7 @@ void MainWindow::next()
         removeQueuedTrack(current_song,current_song_pos);
         nextSong=current_song_pos;
 
-    } else  nextSong= current_song_pos+1;
+    }else nextSong= current_song_pos+1;
 
     if(queued_songs.isEmpty() && prev_queued_song_pos!=-1)
     {
@@ -1637,7 +1637,7 @@ void MainWindow::next()
     if(!queued_songs.isEmpty())
         nextSong=0;
 
-    mainList->setCurrentCell(shuffle ? shuffleNumber():nextSong, BabeTable::TITLE);
+    mainList->setCurrentCell((shuffle&&queued_songs.isEmpty()) ? shuffleNumber():nextSong, BabeTable::TITLE);
 
     loadTrack();
 }
