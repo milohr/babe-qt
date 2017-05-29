@@ -41,12 +41,12 @@ MainWindow::MainWindow(const QStringList &files, QWidget *parent) :
     ui->controls->installEventFilter(this);
 
 
-//    auto blurWidget = new QWidget(album_art);
-//   blurWidget->setGeometry(0,ALBUM_SIZE-static_cast<int>(ALBUM_SIZE*0.25),ALBUM_SIZE,static_cast<int>(ALBUM_SIZE*0.25));
+    //    auto blurWidget = new QWidget(album_art);
+    //   blurWidget->setGeometry(0,ALBUM_SIZE-static_cast<int>(ALBUM_SIZE*0.25),ALBUM_SIZE,static_cast<int>(ALBUM_SIZE*0.25));
 
-//    QGraphicsBlurEffect* effect	= new QGraphicsBlurEffect();
-//    effect->setBlurRadius(5);
-//   blurWidget->setGraphicsEffect(effect);
+    //    QGraphicsBlurEffect* effect	= new QGraphicsBlurEffect();
+    //    effect->setBlurRadius(5);
+    //   blurWidget->setGraphicsEffect(effect);
 
 
     this->setMinimumSize(ALBUM_SIZE*3,0);
@@ -206,14 +206,24 @@ void MainWindow::setUpViews()
     //mainList->setSelectionMode(QAbstractItemView::SingleSelection);
 
     mainList->setAddMusicMsg("\nDrag and drop music here!","face-ninja");
-    connect(mainList,&BabeTable::indexesMoved,[this](int j, int x){current_song_pos-=j;});
+    connect(mainList,&BabeTable::indexesMoved,[this](int  row, int newRow)
+    {
+        if(row>current_song_pos && newRow<current_song_pos )
+        {
+            current_song_pos++; prev_song_pos++;
+        }
+        else if(row<current_song_pos && newRow>current_song_pos)
+        {
+            current_song_pos--; prev_song_pos--;
+        }
+    });
     connect(mainList,&BabeTable::tableWidget_doubleClicked,this,&MainWindow::on_mainList_clicked);
     connect(mainList,&BabeTable::removeIt_clicked,this,&MainWindow::removeSong);
     connect(mainList,&BabeTable::babeIt_clicked,this,&MainWindow::babeIt);
     connect(mainList,&BabeTable::queueIt_clicked,this,&MainWindow::addToQueue);
     connect(mainList,&BabeTable::moodIt_clicked,mainList,&BabeTable::colorizeRow);
     connect(mainList,&BabeTable::infoIt_clicked,this,&MainWindow::infoIt);
-//    connect(mainList->model(),&QAbstractItemModel::rowsInserted,this,&MainWindow::on_rowInserted);
+    //    connect(mainList->model(),&QAbstractItemModel::rowsInserted,this,&MainWindow::on_rowInserted);
 
 
     filterList = new BabeTable(this);
@@ -513,7 +523,7 @@ void MainWindow::setUpPlaylist()
         if(mainList->rowCount()>0)
         {
             this->mainList->setCurrentCell(current_song_pos,BabeTable::TITLE);
-//            this->mainList->item(current_song_pos,BabeTable::TITLE)->setIcon(QIcon::fromTheme("media-playback-start"));
+            this->mainList->item(current_song_pos,BabeTable::TITLE)->setIcon(QIcon::fromTheme("media-playback-start"));
         }
     });
 
@@ -1306,7 +1316,7 @@ void MainWindow::removeSong(const int &index)
         for(auto a: currentList)
         {
             qDebug()<<a[BabeTable::TITLE];
-        }      
+        }
 
     }
 }
@@ -1326,16 +1336,16 @@ void MainWindow::loadTrack()
     prev_song = current_song;
     prev_song_pos = current_song_pos;
 
-//    if(prev_song_pos<this->mainList->rowCount() && mainList->item(current_song_pos,BabeTable::TITLE)->icon().name()!="clock")
-//        mainList->item(prev_song_pos,BabeTable::TITLE)->setIcon(QIcon());
+    if(prev_song_pos<this->mainList->rowCount() && mainList->item(current_song_pos,BabeTable::TITLE)->icon().name()!="clock")
+        mainList->item(prev_song_pos,BabeTable::TITLE)->setIcon(QIcon());
     calibrateBtn_menu->actions().at(3)->setEnabled(false);
 
 
     current_song_pos = mainList->getIndex();
     current_song = mainList->getRowData(current_song_pos);
 
-//    if(mainList->item(current_song_pos,BabeTable::TITLE)->icon().name()!="clock")
-//        mainList->item(current_song_pos,BabeTable::TITLE)->setIcon(QIcon::fromTheme("media-playback-start"));
+    if(mainList->item(current_song_pos,BabeTable::TITLE)->icon().name()!="clock")
+        mainList->item(current_song_pos,BabeTable::TITLE)->setIcon(QIcon::fromTheme("media-playback-start"));
 
     mainList->scrollTo(mainList->model()->index(current_song_pos,BabeTable::TITLE));
     queued_song_pos = -1;
@@ -1942,7 +1952,7 @@ QList<QMap<int, QString> > MainWindow::searchFor(const QStringList &queries)
 void MainWindow::on_rowInserted(QModelIndex model ,int x,int y)
 {
     Q_UNUSED(model);
-   Q_UNUSED(y);
+    Q_UNUSED(y);
     mainList->scrollTo(mainList->model()->index(x,BabeTable::TITLE),QAbstractItemView::PositionAtCenter);
 
 }
@@ -2094,7 +2104,7 @@ void MainWindow::calibrateMainList()
     if(mainList->rowCount()>0)
     {
         this->mainList->setCurrentCell(current_song_pos,BabeTable::TITLE);
-//        this->mainList->item(current_song_pos,BabeTable::TITLE)->setIcon(QIcon::fromTheme("media-playback-start"));
+        this->mainList->item(current_song_pos,BabeTable::TITLE)->setIcon(QIcon::fromTheme("media-playback-start"));
         this->mainList->removeRepeated();
     }
 }

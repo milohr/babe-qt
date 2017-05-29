@@ -243,6 +243,7 @@ void BabeTable::dropEvent(QDropEvent *event)
     if(event->source() == this && !event->isAccepted() && rowDragging )
     {
         int newRow = this->indexAt(event->pos()).row();
+        auto insertionRow = newRow;
 
         qDebug()<<"new row position"<< newRow;
         auto list = this->getSelectedRows(false);
@@ -258,37 +259,45 @@ void BabeTable::dropEvent(QDropEvent *event)
 
         }
 
-        int i =0;
-        int j =0;
-
-        std::sort(newList.begin(),newList.end());
-
-        for(auto track:newList)
+        if(!newList.isEmpty())
         {
-            if(track>=newRow)
+            int i =0;
+            int j =0;
+
+            std::sort(newList.begin(),newList.end());
+
+            for(auto track:newList)
             {
-                this->removeRow(track-i-j);
+                if(track>=newRow)
+                {
+                    this->removeRow(track-i-j);
+                    i++;
+                }
+
+                else
+                {
+                    this->removeRow(track-j);
+                    j++;
+                    newRow--;
+                }
+
+
+
+            }
+
+
+            i =0;
+            for(auto track : tracks)
+            {
+                this->addRowAt(newRow+1+i,track,true);
+                qDebug()<<"indexes moved "<< newList.at(i)<<insertionRow;
+
+                emit indexesMoved(newList.at(i),insertionRow);
                 i++;
-            }
 
-            else
-            {
-                this->removeRow(track-j);
-                j++;
-                newRow--;
             }
 
         }
-        emit indexesMoved(j,i);
-        i =0;
-        for(auto track : tracks)
-        {
-            this->addRowAt(newRow+1+i,track,true);
-            i++;
-
-        }
-
-
     }
 }
 
