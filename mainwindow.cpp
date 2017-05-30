@@ -211,10 +211,13 @@ void MainWindow::setUpViews()
         if(row>current_song_pos && newRow<current_song_pos )
         {
             current_song_pos++; prev_song_pos++;
+            if(prev_queued_song_pos!=-1) prev_queued_song_pos++;
         }
         else if(row<current_song_pos && newRow>=current_song_pos)
         {
             current_song_pos--; prev_song_pos--;
+            if(prev_queued_song_pos!=-1) prev_queued_song_pos--;
+
         }
     });
     connect(mainList,&BabeTable::tableWidget_doubleClicked,this,&MainWindow::on_mainList_clicked);
@@ -1664,7 +1667,7 @@ int MainWindow::shuffleNumber()
     auto random_integer = uni(rng);
     qDebug()<<"random number:"<<random_integer;
     if (current_song_pos !=random_integer)return random_integer;
-    else return random_integer++;
+    else return random_integer+1;
 }
 
 void MainWindow::on_play_btn_clicked()
