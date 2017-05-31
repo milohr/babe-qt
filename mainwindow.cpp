@@ -949,73 +949,73 @@ void MainWindow::setToolbarIconSize(const int &iconSize) //tofix
 
 
 
-   for(auto obj: ui->controls->children())
-   {
-       if(qobject_cast<QToolButton *>(obj)!=NULL)
-       {
-           qDebug()<< obj->objectName();
-           qobject_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
+    for(auto obj: ui->controls->children())
+    {
+        if(qobject_cast<QToolButton *>(obj)!=NULL)
+        {
+            qDebug()<< obj->objectName();
+            qobject_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
 
-           //static_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
-       }
+            //static_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
+        }
 
-   }
+    }
 
-   for(auto obj: ui->playlistUtils->children())
-   {
-       if(qobject_cast<QToolButton *>(obj)!=NULL)
-       {
-           qDebug()<< obj->objectName();
-           qobject_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
+    for(auto obj: ui->playlistUtils->children())
+    {
+        if(qobject_cast<QToolButton *>(obj)!=NULL)
+        {
+            qDebug()<< obj->objectName();
+            qobject_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
 
-           //static_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
-       }
+            //static_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
+        }
 
-   }
+    }
 
-   for(auto obj: ui->collectionUtils->children())
-   {
-       if(qobject_cast<QToolButton *>(obj)!=NULL)
-       {
-           qDebug()<< obj->objectName();
-           qobject_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
+    for(auto obj: ui->collectionUtils->children())
+    {
+        if(qobject_cast<QToolButton *>(obj)!=NULL)
+        {
+            qDebug()<< obj->objectName();
+            qobject_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
 
-           //static_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
-       }
+            //static_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
+        }
 
-   }
+    }
 
-   for(auto obj: infoTable->infoUtils->children())
-   {
-       if(qobject_cast<QToolButton *>(obj)!=NULL)
-       {
-           qDebug()<< obj->objectName();
-           qobject_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
+    for(auto obj: infoTable->infoUtils->children())
+    {
+        if(qobject_cast<QToolButton *>(obj)!=NULL)
+        {
+            qDebug()<< obj->objectName();
+            qobject_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
 
-           //static_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
-       }
+            //static_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
+        }
 
-   }
+    }
 
-   for(auto obj: playlistTable->btnContainer->children())
-   {
-       if(qobject_cast<QToolButton *>(obj)!=NULL)
-       {
-           qDebug()<< obj->objectName();
-           qobject_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
+    for(auto obj: playlistTable->btnContainer->children())
+    {
+        if(qobject_cast<QToolButton *>(obj)!=NULL)
+        {
+            qDebug()<< obj->objectName();
+            qobject_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
 
-           //static_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
-       }
+            //static_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
+        }
 
-   }
+    }
 
 
-   ui->mainToolBar->update();
-  ui->controls->update();
-   ui->playlistUtils->update();
+    ui->mainToolBar->update();
+    ui->controls->update();
+    ui->playlistUtils->update();
     infoTable->infoUtils->update();
     playlistTable->btnContainer->update();
-   ui->collectionUtils->update();
+    ui->collectionUtils->update();
 
 }
 
@@ -1375,11 +1375,7 @@ void MainWindow::removeSong(const int &index)
 
     if(index != -1)
     {
-        //        qDebug()<<"ehat was in current list:";
-        //        for(auto a: currentList)
-        //        {
-        //            qDebug()<<a[BabeTable::TITLE];
-        //        }
+
         if(obj == mainList)
         {
 
@@ -1394,12 +1390,8 @@ void MainWindow::removeSong(const int &index)
                 currentList.removeAt(index);
                 if(current_song_pos>index) current_song_pos--;
             }
+
         }
-        //        qDebug()<<"in current list:";
-        //        for(auto a: currentList)
-        //        {
-        //            qDebug()<<a[BabeTable::TITLE];
-        //        }
 
     }
 }
@@ -2070,10 +2062,8 @@ void MainWindow::clearMainList()
     QList<QMap<int,QString>> mapList;
     if (!current_song.isEmpty()) mapList<<current_song;
     for(auto row : mainList->getSelectedRows(false))
-    {
         mapList<<mainList->getRowData(row);
-        qDebug()<<"cleaning but leaving:"<<row;
-    }
+
 
     this->currentList.clear();
     this->mainList->flushTable();

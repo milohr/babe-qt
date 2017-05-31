@@ -376,7 +376,7 @@ void BabeTable::passPlaylists() {}
 void BabeTable::enterEvent(QEvent *event)
 {
 
-   QTableWidget::enterEvent(event);
+    QTableWidget::enterEvent(event);
 
 }
 
@@ -826,6 +826,18 @@ void BabeTable::keyPressEvent(QKeyEvent *event) {
             }
         }
 
+        break;
+    }
+
+    case Qt::Key_Delete	:
+    {
+        auto rows = this->getSelectedRows(false);
+        int i=0;
+        for(auto row:rows)
+        {
+            emit removeIt_clicked(row-i);
+            i++;
+        }
         break;
     }
 
