@@ -24,7 +24,8 @@
 #include <QTimer>
 #include <QGraphicsEffect>
 #include <QGraphicsOpacityEffect>
-#include<QItemSelectionModel>
+#include <QItemSelectionModel>
+#include <QtMultimedia/QMediaPlayer>
 
 #include "settings.h"
 #include "notify.h"
@@ -60,7 +61,7 @@ public:
     };
 
 
-//    const QMap<int, QString> columnsNames{{TRACK, "track"}, {TITLE, "title"}, {ARTIST, "artist"},{ALBUM,"album"},{GENRE,"genre"},{LOCATION,"location"},{STARS,"stars"},{BABE,"babe"},{ART,"art"},{PLAYED,"played"},{PLAYLIST,"playlist"}};
+    //    const QMap<int, QString> columnsNames{{TRACK, "track"}, {TITLE, "title"}, {ARTIST, "artist"},{ALBUM,"album"},{GENRE,"genre"},{LOCATION,"location"},{STARS,"stars"},{BABE,"babe"},{ART,"art"},{PLAYED,"played"},{PLAYLIST,"playlist"}};
     QStringList playlistsMenus;
     QStringList colors = BaeUtils::MoodColors;
     void populateTableView(const QList<QMap<int,QString>> &mapList, const bool &descriptiveTitle);
@@ -76,6 +77,9 @@ public:
     void populatePlaylist(const QStringList &urls, const QString &playlist);
     void setAddMusicMsg(const QString &msg, const QString &icon);
     int getIndex();
+    void enablePreview(const bool state);
+    void startPreview(const QString &url);
+    void stopPreview();
     QString getStars(const int &value);
     void removeRepeated();
     QList<int> getSelectedRows(const bool &onRightClick=true);
@@ -124,6 +128,8 @@ private:
 
     CollectionDB connection;
 
+    QMediaPlayer *preview;
+    int previewRow=-1;
     Notify nof;
     QToolButton *fav1;
     QToolButton *fav2;
@@ -135,6 +141,7 @@ private:
     int rColumn=0;
     bool rowColoring=false;
     bool rowDragging=false;
+    bool rowPreview=true;
     QMenu *contextMenu;
     QMenu* playlistsMenu;
     QMenu* sendToMenu;
@@ -165,6 +172,8 @@ signals:
     void infoIt_clicked(QString title, QString artist, QString album);
     void finishedPopulatingPlaylist(QString playlist);
     void indexesMoved(int track,int newRow);
+    void previewStarted();
+    void previewFinished();
 
 };
 

@@ -399,7 +399,7 @@ void settings::setToolbarIconSize(const int &iconSize)
     case 22:
         ui->toolbarIconSize->setCurrentIndex(1);
         break;
-    case 24:
+    case 32:
         ui->toolbarIconSize->setCurrentIndex(2);
         break;
     default:

@@ -44,5 +44,6 @@
         <file>data/icons/youtube.svg</file>
         <file>data/pattern.png</file>
         <file>data/LilyScriptOne-Regular.ttf</file>
+        <file>data/media-playback-stop.svg</file>
     </qresource>
 </RCC>

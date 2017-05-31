@@ -90,7 +90,7 @@ public:
     void loadTrack();
     void loadTrackAt(const int &pos);
     bool babeTrack(const QMap<int, QString> &track);
-
+    QList<QMap<int,QString>> searchFor(const QStringList &queries);
 
     QStringList searchKeys = {"location:","artist:","album:","title:","genre:","online:","playlist:"};
 
@@ -108,7 +108,17 @@ public slots:
     void addToPlaylist(const QList<QMap<int,QString>> &mapList, const bool &notRepeated=false, const appendPos &pos = APPENDBOTTOM);
     void putPixmap(const QByteArray &array);
     void populateResultsTable(const QList<QMap<int,QString>> &mapList);
-    QList<QMap<int,QString>> searchFor(const QStringList &queries);
+    void addToQueue(const QList<QMap<int, QString> > &tracks);
+
+    void pause();
+    void play();
+    void stop();
+    void next();
+    void back();
+
+    void expand();
+    void go_mini();
+    void go_playlistMode();
     void dummy();
 
 private slots:
@@ -165,7 +175,6 @@ private slots:
     void loadMood();
     bool removeQueuedTrack(const QMap<int, QString> &track, const int &pos);
     void removequeuedTracks();
-    void addToQueue(const QList<QMap<int, QString> > &tracks);
     void on_filterBtn_clicked();
     void on_filter_textChanged(const QString &arg1);
     void infoIt(const QString &title, const QString &artist, const QString &album);
@@ -228,22 +237,17 @@ private:
     void setUpPlaylist();
     void setUpRightFrame();
 
-    void next();
-    void back();
     int shuffleNumber();
-    void expand();
-    void go_mini();
-    void go_playlistMode();
-    void stopPlayback();
-    int firstQueuedTrack();
 
     void clearMainList();
+    void clearCurrentList();
     void calibrateMainList();
+
     void updateList();
     void populateMainList();
-    void clearCurrentList();
     bool isBabed(const QMap<int, QString> &track);
     void feedRabbit();
+
     void saveSettings(const QString &key, const QVariant &value,const QString &group);
     QVariant loadSettings(const QString &key, const QString &group, const QVariant &defaultValue = QVariant());
 
@@ -272,8 +276,6 @@ private:
     bool muted = false;
     bool shuffle = false;
     bool stopped = false;
-
-
 
 signals:
     void finishedPlayingSong(QString url);

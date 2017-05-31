@@ -440,7 +440,7 @@
       <item row="11" column="1" colspan="3">
        <widget class="QComboBox" name="toolbarIconSize">
         <property name="currentText">
-         <string>22</string>
+         <string>16</string>
         </property>
         <item>
          <property name="text">
@@ -454,12 +454,7 @@
         </item>
         <item>
          <property name="text">
-          <string>24</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>48</string>
+          <string>32</string>
          </property>
         </item>
        </widget>

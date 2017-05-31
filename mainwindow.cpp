@@ -27,30 +27,19 @@ MainWindow::MainWindow(const QStringList &files, QWidget *parent) :
 {
     ui->setupUi(this);
 
-
     this->setWindowTitle(" Babe ... \xe2\x99\xa1  \xe2\x99\xa1 \xe2\x99\xa1 ");
     this->setWindowIcon(QIcon(":Data/data/babe_48.svg"));
     this->setWindowIconText("Babe...");
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    this->defaultWindowFlags = this->windowFlags();
 
 
     album_art = new Album(":Data/data/babe.png",BaeUtils::BIG_ALBUM,0,false);
     ALBUM_SIZE = album_art->getSize();
 
-
     ui->controls->installEventFilter(this);
 
-
-    //    auto blurWidget = new QWidget(album_art);
-    //   blurWidget->setGeometry(0,ALBUM_SIZE-static_cast<int>(ALBUM_SIZE*0.25),ALBUM_SIZE,static_cast<int>(ALBUM_SIZE*0.25));
-
-    //    QGraphicsBlurEffect* effect	= new QGraphicsBlurEffect();
-    //    effect->setBlurRadius(5);
-    //   blurWidget->setGraphicsEffect(effect);
-
-
     this->setMinimumSize(ALBUM_SIZE*3,0);
-
 
     this->defaultGeometry = (QStyle::alignedRect(
                                  Qt::LeftToRight,
@@ -63,7 +52,6 @@ MainWindow::MainWindow(const QStringList &files, QWidget *parent) :
     this->saveSettings("GEOMETRY",this->geometry(),"MAINWINDOW");
 
     player = new QMediaPlayer();
-    defaultWindowFlags = this->windowFlags();
     //mpris = new Mpris(this);
 
     connect(this, &MainWindow::finishedPlayingSong, this, &MainWindow::addToPlayed);
@@ -181,6 +169,9 @@ void MainWindow::setUpViews()
     //connect(playlistTable->table,SIGNAL(createPlaylist_clicked()),this,SLOT(playlistsView()));
     connect(playlistTable->table,&BabeTable::queueIt_clicked,this,&MainWindow::addToQueue);
     connect(playlistTable->table,&BabeTable::infoIt_clicked,this,&MainWindow::infoIt);
+    connect(playlistTable->table,&BabeTable::previewStarted,this,&MainWindow::pause);
+    connect(playlistTable->table,&BabeTable::previewFinished,this,&MainWindow::play);
+
 
     collectionTable = new BabeTable(this);
     //connect(collectionTable, &BabeTable::tableWidget_doubleClicked, this, &MainWindow::addToPlaylist);
@@ -195,6 +186,8 @@ void MainWindow::setUpViews()
     connect(collectionTable,&BabeTable::babeIt_clicked,this,&MainWindow::babeIt);
     connect(collectionTable,&BabeTable::queueIt_clicked,this,&MainWindow::addToQueue);
     connect(collectionTable,&BabeTable::infoIt_clicked,this,&MainWindow::infoIt);
+    connect(collectionTable,&BabeTable::previewStarted,this,&MainWindow::pause);
+    connect(collectionTable,&BabeTable::previewFinished,this,&MainWindow::play);
 
     mainList = new BabeTable(this);
     mainList->hideColumn(BabeTable::ALBUM);
@@ -202,6 +195,7 @@ void MainWindow::setUpViews()
     mainList->horizontalHeader()->setVisible(false);
     mainList->enableRowColoring(true);
     mainList->enableRowDragging(true);
+    mainList->enablePreview(false);
 
     //mainList->setSelectionMode(QAbstractItemView::SingleSelection);
 
@@ -250,6 +244,8 @@ void MainWindow::setUpViews()
     connect(filterList,&BabeTable::queueIt_clicked,this,&MainWindow::addToQueue);
     connect(filterList,&BabeTable::moodIt_clicked,mainList,&BabeTable::colorizeRow);
     connect(filterList,&BabeTable::infoIt_clicked,this,&MainWindow::infoIt);
+    connect(filterList,&BabeTable::previewStarted,this,&MainWindow::pause);
+    connect(filterList,&BabeTable::previewFinished,this,&MainWindow::play);
 
     mainListView = new QStackedWidget(this);
     mainListView->setFrameShape(QFrame::NoFrame);
@@ -268,6 +264,9 @@ void MainWindow::setUpViews()
     connect(resultsTable,&BabeTable::babeIt_clicked,this,&MainWindow::babeIt);
     connect(resultsTable,&BabeTable::queueIt_clicked,this,&MainWindow::addToQueue);
     connect(resultsTable,&BabeTable::infoIt_clicked,this,&MainWindow::infoIt);
+    connect(resultsTable,&BabeTable::previewStarted,this,&MainWindow::pause);
+    connect(resultsTable,&BabeTable::previewFinished,this,&MainWindow::play);
+
 
     rabbitTable = new RabbitView(this);
     connect(rabbitTable,&RabbitView::playAlbum,this,&MainWindow::putAlbumOnPlay);
@@ -275,6 +274,8 @@ void MainWindow::setUpViews()
     connect(rabbitTable->getTable(),&BabeTable::queueIt_clicked,this,&MainWindow::addToQueue);
     connect(rabbitTable->getTable(),&BabeTable::babeIt_clicked,this,&MainWindow::babeIt);
     connect(rabbitTable->getTable(),&BabeTable::infoIt_clicked,this,&MainWindow::infoIt);
+    connect(rabbitTable->getTable(),&BabeTable::previewStarted,this,&MainWindow::pause);
+    connect(rabbitTable->getTable(),&BabeTable::previewFinished,this,&MainWindow::play);
 
     albumsTable = new AlbumsView(false,this);
     connect(albumsTable,&AlbumsView::populateCoversFinished,[this](){qDebug()<<"finished populateHeadsFinished";});
@@ -286,7 +287,8 @@ void MainWindow::setUpViews()
     connect(albumsTable,&AlbumsView::playAlbum,this,&MainWindow::putAlbumOnPlay);
     connect(albumsTable,&AlbumsView::babeAlbum_clicked,this,&MainWindow::babeAlbum);
     connect(albumsTable,&AlbumsView::albumDoubleClicked,this,&MainWindow::albumDoubleClicked);
-
+    connect(albumsTable->albumTable,&BabeTable::previewStarted,this,&MainWindow::pause);
+    connect(albumsTable->albumTable,&BabeTable::previewFinished,this,&MainWindow::play);
 
     artistsTable = new AlbumsView(true,this);
     artistsTable->albumTable->showColumn(BabeTable::ALBUM);
@@ -299,6 +301,9 @@ void MainWindow::setUpViews()
     connect(artistsTable,&AlbumsView::playAlbum,this,&MainWindow::putAlbumOnPlay);
     connect(artistsTable,&AlbumsView::babeAlbum_clicked,this,&MainWindow::babeAlbum);
     connect(artistsTable,&AlbumsView::albumDoubleClicked,this,&MainWindow::albumDoubleClicked);
+    connect(artistsTable->albumTable,&BabeTable::previewStarted,this,&MainWindow::pause);
+    connect(artistsTable->albumTable,&BabeTable::previewFinished,this,&MainWindow::play);
+
 
     infoTable = new InfoView(this);
     connect(infoTable,&InfoView::playAlbum,this,&MainWindow::putAlbumOnPlay);
@@ -940,21 +945,78 @@ void MainWindow::putPixmap(const QByteArray &array)
 
 void MainWindow::setToolbarIconSize(const int &iconSize) //tofix
 {
-    //    qDebug()<< "Toolbar icons size changed"<<iconSize;
     ui->mainToolBar->setIconSize(QSize(iconSize,iconSize));
-    //playback->setIconSize(QSize(iconSize,iconSize));
-    //utilsBar->setIconSize(QSize(iconSize,iconSize));
-    ui->mainToolBar->update();
-    //this->utilsBar->setIconSize(QSize(iconSize,iconSize));
-    /*for (auto obj : ui->collectionUtils->children())
-    {
-        if(static_cast<QToolButton *>(obj)!=0)
-        {
-            //static_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
-        }
-    }*/
-    //playback->update();
-    // this->update();
+
+
+
+   for(auto obj: ui->controls->children())
+   {
+       if(qobject_cast<QToolButton *>(obj)!=NULL)
+       {
+           qDebug()<< obj->objectName();
+           qobject_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
+
+           //static_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
+       }
+
+   }
+
+   for(auto obj: ui->playlistUtils->children())
+   {
+       if(qobject_cast<QToolButton *>(obj)!=NULL)
+       {
+           qDebug()<< obj->objectName();
+           qobject_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
+
+           //static_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
+       }
+
+   }
+
+   for(auto obj: ui->collectionUtils->children())
+   {
+       if(qobject_cast<QToolButton *>(obj)!=NULL)
+       {
+           qDebug()<< obj->objectName();
+           qobject_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
+
+           //static_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
+       }
+
+   }
+
+   for(auto obj: infoTable->infoUtils->children())
+   {
+       if(qobject_cast<QToolButton *>(obj)!=NULL)
+       {
+           qDebug()<< obj->objectName();
+           qobject_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
+
+           //static_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
+       }
+
+   }
+
+   for(auto obj: playlistTable->btnContainer->children())
+   {
+       if(qobject_cast<QToolButton *>(obj)!=NULL)
+       {
+           qDebug()<< obj->objectName();
+           qobject_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
+
+           //static_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
+       }
+
+   }
+
+
+   ui->mainToolBar->update();
+  ui->controls->update();
+   ui->playlistUtils->update();
+    infoTable->infoUtils->update();
+    playlistTable->btnContainer->update();
+   ui->collectionUtils->update();
+
 }
 
 void MainWindow::collectionView()
@@ -1351,9 +1413,7 @@ void MainWindow::feedRabbit()
 
 void MainWindow::loadTrack()
 {
-
     if(stopped) updater->start(100);
-
 
     prev_song = current_song;
     prev_song_pos = current_song_pos;
@@ -1362,7 +1422,6 @@ void MainWindow::loadTrack()
         mainList->item(prev_song_pos,BabeTable::TITLE)->setIcon(QIcon());
 
     calibrateBtn_menu->actions().at(3)->setEnabled(false);
-
 
     current_song_pos = mainList->getIndex();
     current_song = mainList->getRowData(current_song_pos);
@@ -1377,14 +1436,9 @@ void MainWindow::loadTrack()
     if(BaeUtils::fileExists(current_song[BabeTable::LOCATION]))
     {
         player->setMedia(QUrl::fromLocalFile(current_song[BabeTable::LOCATION]));
-        player->play();
-        ui->play_btn->setIcon(QIcon(":Data/data/media-playback-pause.svg"));
+        this->play();
 
-        //        timer->stop();
         timer->start(3000);
-
-
-        this->setWindowTitle(current_song[BabeTable::TITLE]+" \xe2\x99\xa1 "+current_song[BabeTable::ARTIST]);
 
         album_art->setTitle(current_song[BabeTable::ARTIST],current_song[BabeTable::ALBUM]);
 
@@ -1526,26 +1580,12 @@ void MainWindow::on_seekBar_sliderMoved(const int &position)
     player->setPosition(player->duration() / 1000 * position);
 }
 
-void MainWindow::stopPlayback()
-{
-    album_art->putDefaultPixmap();
-    current_song.clear();
-    prev_song = current_song;
-    current_song_pos =0;
-    prev_song_pos =current_song_pos;
-    ui->play_btn->setIcon(QIcon(":Data/data/media-playback-start.svg"));
 
-    player->stop();
-    updater->stop();
-
-    this->setWindowTitle("Babe...");
-    stopped = true;
-}
 
 void MainWindow::update()
 {
 
-    if(mainList->rowCount()==0) stopPlayback();
+    if(mainList->rowCount()==0) stop();
 
     if(!current_song.isEmpty())
     {
@@ -1603,18 +1643,6 @@ void MainWindow::removequeuedTracks()
 
 }
 
-int MainWindow::firstQueuedTrack()
-{
-    int result=0;
-    for(auto row=0;row<this->mainList->rowCount();row++)
-        if(mainList->item(row,BabeTable::TITLE)->icon().name()=="clock")
-        {
-            result = row;
-            break;
-        }
-
-    return result;
-}
 
 void MainWindow::next()
 {
@@ -1674,18 +1702,39 @@ void MainWindow::on_play_btn_clicked()
 {
     if(mainList->rowCount() > 0 || !current_song.isEmpty())
     {
-        if(player->state() == QMediaPlayer::PlayingState)
-        {
-            player->pause();
-            ui->play_btn->setIcon(QIcon(":Data/data/media-playback-start.svg"));
-        }
-        else
-        {
-            player->play();
-            //updater->start();
-            ui->play_btn->setIcon(QIcon(":Data/data/media-playback-pause.svg"));
-        }
+        if(player->state() == QMediaPlayer::PlayingState) this->pause();
+        else this->play();
     }
+}
+
+void MainWindow::play()
+{
+    player->play();
+    ui->play_btn->setIcon(QIcon(":Data/data/media-playback-pause.svg"));
+    this->setWindowTitle(current_song[BabeTable::TITLE]+" \xe2\x99\xa1 "+current_song[BabeTable::ARTIST]);
+
+}
+
+void MainWindow::pause()
+{
+    player->pause();
+    ui->play_btn->setIcon(QIcon(":Data/data/media-playback-start.svg"));
+}
+
+void MainWindow::stop()
+{
+    album_art->putDefaultPixmap();
+    current_song.clear();
+    prev_song = current_song;
+    current_song_pos =0;
+    prev_song_pos =current_song_pos;
+    ui->play_btn->setIcon(QIcon(":Data/data/media-playback-stop.svg"));
+
+    player->stop();
+    updater->stop();
+
+    this->setWindowTitle(" Babe ... \xe2\x99\xa1  \xe2\x99\xa1 \xe2\x99\xa1 ");
+    stopped = true;
 }
 
 void MainWindow::on_backward_btn_clicked()

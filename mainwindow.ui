@@ -37,6 +37,14 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <widget class="QToolButton" name="playlists_view">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>10</y>
+      <width>34</width>
+      <height>34</height>
+     </rect>
+    </property>
     <property name="sizePolicy">
      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
       <horstretch>0</horstretch>
@@ -76,6 +84,14 @@
     </property>
    </widget>
    <widget class="QToolButton" name="artists_view">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>240</y>
+      <width>34</width>
+      <height>34</height>
+     </rect>
+    </property>
     <property name="sizePolicy">
      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
       <horstretch>0</horstretch>
@@ -115,6 +131,14 @@
     </property>
    </widget>
    <widget class="QToolButton" name="rabbit_view">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>200</y>
+      <width>34</width>
+      <height>34</height>
+     </rect>
+    </property>
     <property name="sizePolicy">
      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
       <horstretch>0</horstretch>
@@ -157,6 +181,14 @@
     </property>
    </widget>
    <widget class="QToolButton" name="settings_view">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>160</y>
+      <width>34</width>
+      <height>34</height>
+     </rect>
+    </property>
     <property name="sizePolicy">
      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
       <horstretch>0</horstretch>
@@ -199,6 +231,14 @@
     </property>
    </widget>
    <widget class="QToolButton" name="albums_view">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>120</y>
+      <width>34</width>
+      <height>34</height>
+     </rect>
+    </property>
     <property name="sizePolicy">
      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
       <horstretch>0</horstretch>
@@ -241,6 +281,14 @@
     </property>
    </widget>
    <widget class="QToolButton" name="tracks_view">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>90</y>
+      <width>34</width>
+      <height>34</height>
+     </rect>
+    </property>
     <property name="sizePolicy">
      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
       <horstretch>0</horstretch>
@@ -280,6 +328,14 @@
     </property>
    </widget>
    <widget class="QToolButton" name="info_view">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>50</y>
+      <width>34</width>
+      <height>34</height>
+     </rect>
+    </property>
     <property name="sizePolicy">
      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
       <horstretch>0</horstretch>
@@ -447,8 +503,7 @@
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset theme="media-playback-start-symbolic">
-         <normaloff>.</normaloff>.</iconset>
+        <iconset theme="media-playback-start"/>
        </property>
        <property name="autoRaise">
         <bool>true</bool>

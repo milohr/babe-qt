@@ -22,7 +22,10 @@
 BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
 
 
+    preview = new QMediaPlayer(this);
+
     connect(this,&QTableWidget::doubleClicked, this, &BabeTable::on_tableWidget_doubleClicked);
+    connect(this,&QTableWidget::itemSelectionChanged,[this](){this->stopPreview();});
     //    connect(this->selectionModel(),&QItemSelectionModel::selectionChanged,[this](){    this->setSelectionMode(QAbstractItemView::SingleSelection);
     //qDebug()<<"a row got selected;";});
     //connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),SLOT(setUpContextMenu(const QPoint&)));
@@ -370,9 +373,20 @@ void BabeTable::populatePlaylist(const QStringList &urls, const QString &playlis
 
 void BabeTable::passPlaylists() {}
 
-void BabeTable::enterEvent(QEvent *event) { Q_UNUSED(event); }
+void BabeTable::enterEvent(QEvent *event)
+{
 
-void BabeTable::leaveEvent(QEvent *event) { Q_UNUSED(event); }
+   QTableWidget::enterEvent(event);
+
+}
+
+void BabeTable::leaveEvent(QEvent *event)
+{
+
+    this->stopPreview();
+    QTableWidget::leaveEvent(event);
+
+}
 
 void BabeTable::passStyle(QString style) { this->setStyleSheet(style); }
 
@@ -800,6 +814,20 @@ void BabeTable::keyPressEvent(QKeyEvent *event) {
                 << this->model()->data(this->model()->index(row, LOCATION)).toString();
         break;
     }
+    case Qt::Key_Space:
+    {
+        if(rowPreview)
+        {
+            if(preview->state()==QMediaPlayer::PlayingState) this->stopPreview();
+            else
+            {
+                previewRow= this->getIndex();
+                this->startPreview(this->getRowData(previewRow)[LOCATION]);
+            }
+        }
+
+        break;
+    }
 
     default: {
         QTableWidget::keyPressEvent(event);
@@ -825,6 +853,30 @@ void BabeTable::mousePressEvent(QMouseEvent *evt)
     QTableWidget::mousePressEvent(evt);
 
 }
+
+void BabeTable::enablePreview(const bool state)
+{
+    this->rowPreview=state;
+}
+
+void BabeTable::startPreview(const QString &url)
+{
+    preview->setMedia(QUrl::fromLocalFile(url));
+    preview->play();
+    this->item(this->getIndex(),BabeTable::TITLE)->setIcon(QIcon::fromTheme("quickview"));
+    emit previewStarted();
+}
+
+void BabeTable::stopPreview()
+{
+    if(preview->state()==QMediaPlayer::PlayingState)
+    {
+        preview->stop();
+        this->item(this->previewRow,BabeTable::TITLE)->setIcon(QIcon::fromTheme(""));
+        emit previewFinished();
+    }
+}
+
 
 void BabeTable::rateGroup(int id)
 {
