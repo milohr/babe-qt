@@ -26,7 +26,15 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent) {
 
     table = new BabeTable(this);
     table->setAddMusicMsg("\nSelect a Playlist...","face-hug-right");
+
     list = new QListWidget(this);
+    connect(list, SIGNAL(doubleClicked(QModelIndex)), list,
+            SLOT(edit(QModelIndex)));
+    connect(list, SIGNAL(clicked(QModelIndex)), this,
+            SLOT(populatePlaylist(QModelIndex)));
+    connect(list, SIGNAL(itemChanged(QListWidgetItem *)), this,
+            SLOT(playlistName(QListWidgetItem *)));
+
     list->setFixedWidth(120);
     list->setAlternatingRowColors(true);
     list->setFrameShape(QFrame::NoFrame);
@@ -38,12 +46,6 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent) {
 
     // list->setStyleSheet("background: #575757; color:white;");
 
-    connect(list, SIGNAL(doubleClicked(QModelIndex)), list,
-            SLOT(edit(QModelIndex)));
-    connect(list, SIGNAL(clicked(QModelIndex)), this,
-            SLOT(populatePlaylist(QModelIndex)));
-    connect(list, SIGNAL(itemChanged(QListWidgetItem *)), this,
-            SLOT(playlistName(QListWidgetItem *)));
 
 
     // connect(table,SIGNAL(tableWidget_doubleClicked(QStringList)),this,SLOT(tableClicked(QStringList)));
@@ -154,6 +156,9 @@ void PlaylistsView::setDefaultPlaylists() {
     online->setIcon(QIcon::fromTheme("kstars_constellationart"));
     online->setText("Online");
     list->addItem(online);
+
+    list->setCurrentRow(0);
+    emit list->clicked(list->model()->index(0,0));
 
 }
 

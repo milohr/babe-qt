@@ -947,67 +947,25 @@ void MainWindow::setToolbarIconSize(const int &iconSize) //tofix
 {
     ui->mainToolBar->setIconSize(QSize(iconSize,iconSize));
 
-
-
     for(auto obj: ui->controls->children())
-    {
         if(qobject_cast<QToolButton *>(obj)!=NULL)
-        {
-            qDebug()<< obj->objectName();
             qobject_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
-
-            //static_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
-        }
-
-    }
 
     for(auto obj: ui->playlistUtils->children())
-    {
         if(qobject_cast<QToolButton *>(obj)!=NULL)
-        {
-            qDebug()<< obj->objectName();
             qobject_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
-
-            //static_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
-        }
-
-    }
 
     for(auto obj: ui->collectionUtils->children())
-    {
         if(qobject_cast<QToolButton *>(obj)!=NULL)
-        {
-            qDebug()<< obj->objectName();
             qobject_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
-
-            //static_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
-        }
-
-    }
 
     for(auto obj: infoTable->infoUtils->children())
-    {
         if(qobject_cast<QToolButton *>(obj)!=NULL)
-        {
-            qDebug()<< obj->objectName();
             qobject_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
-
-            //static_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
-        }
-
-    }
 
     for(auto obj: playlistTable->btnContainer->children())
-    {
         if(qobject_cast<QToolButton *>(obj)!=NULL)
-        {
-            qDebug()<< obj->objectName();
             qobject_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
-
-            //static_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
-        }
-
-    }
 
 
     ui->mainToolBar->update();
@@ -1054,8 +1012,6 @@ void MainWindow::playlistsView()
 {
     views->setCurrentIndex(PLAYLISTS);
 
-    // playlistTable->list->itemClicked(playlistTable->list->indexAt();
-
     if(this->viewMode != FULLMODE) expand();
 
     utilsBar->actions().at(ALBUMS_UB)->setVisible(false);
@@ -1073,7 +1029,7 @@ void MainWindow::rabbitView()
 
     if(this->viewMode != FULLMODE) expand();
 
-
+    utilsBar->actions().at(COLLECTION_UB)->setVisible(true);
     utilsBar->actions().at(ALBUMS_UB)->setVisible(false);
     utilsBar->actions().at(ARTISTS_UB)->setVisible(false);
     utilsBar->actions().at(PLAYLISTS_UB)->setVisible(false); ui->frame_3->setVisible(false);
@@ -1090,7 +1046,7 @@ void MainWindow::infoView()
 
     utilsBar->actions().at(ALBUMS_UB)->setVisible(false);
     utilsBar->actions().at(ARTISTS_UB)->setVisible(false);
-    utilsBar->actions().at(COLLECTION_UB)->setVisible(true);
+    utilsBar->actions().at(COLLECTION_UB)->setVisible(false);
     utilsBar->actions().at(PLAYLISTS_UB)->setVisible(false);
     utilsBar->actions().at(INFO_UB)->setVisible(true); ui->frame_3->setVisible(true);
 

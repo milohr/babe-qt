@@ -85,13 +85,11 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
 
     albumTable = new BabeTable(this);
     albumTable->setFrameShape(QFrame::NoFrame);
-    albumTable->horizontalHeader()->setVisible(false);
+//    albumTable->horizontalHeader()->setVisible(false);
     albumTable->showColumn(BabeTable::TRACK);
     albumTable->showColumn(BabeTable::STARS);
     albumTable->hideColumn(BabeTable::ARTIST);
     albumTable->hideColumn(BabeTable::ALBUM);
-    //albumTable->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContentsOnFirstShow);
-    //albumTable->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Minimum);
 
     auto albumBox = new QGridLayout();
     albumBox->setContentsMargins(0,0,0,0);
@@ -436,7 +434,6 @@ void AlbumsView::getAlbumInfo(QMap<int,QString> info)
     cover->putPixmap(art); if(!art.isEmpty()) cover->putPixmap(art);
     else cover->putDefaultPixmap();
 
-    albumBox_frame->resize(cover->sizeHint());
 }
 
 

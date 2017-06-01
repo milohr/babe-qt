@@ -38,15 +38,17 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
     this->setHorizontalHeaderLabels({"Track", "Title", "Artist", "Album", "Genre",
                                      "Location", "Stars", "Babe", "Art", "Played",
                                      "Playlist", "Lyric"});
-    this->horizontalHeader()->setDefaultSectionSize(150);
-    this->setMinimumSize(0, 0);
+        this->horizontalHeader()->setDefaultSectionSize(150);
+    //    this->setMinimumSize(0, 0);
     this->verticalHeader()->setVisible(false);
     this->setEditTriggers(QAbstractItemView::NoEditTriggers);
-
     this->setAlternatingRowColors(true);
     this->setSortingEnabled(true);
-    this->horizontalHeader()->setHighlightSections(false);
-    this->horizontalHeader()->setStretchLastSection(true);
+
+//        this->horizontalHeader()->setHighlightSections(false);
+
+    this->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+
 
     this->verticalHeader()->resizeSections(QHeaderView::ResizeToContents);
     this->setShowGrid(false);
@@ -89,7 +91,6 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
     fav5->setIcon(QIcon::fromTheme("rating-unrated"));
 
     // this->horizontalHeaderItem(0);
-    // this->horizontalHeaderItem(0)->setResizeMode(1, QHeaderView::Interactive);
     // this->horizontalHeader()->setHighlightSections(true);
     contextMenu = new QMenu(this);
     //this->setContextMenuPolicy(Qt::ActionsContextMenu);
