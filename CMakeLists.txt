@@ -22,7 +22,7 @@ find_package (
    Sql
    Widgets
    Xml
-   )
+)
 
 # Find the required KDE Frameworks
 find_package (
@@ -30,7 +30,7 @@ find_package (
    Notifications
    I18n
    Config
-   )
+)
 
 find_package (Taglib REQUIRED)
 include_directories (${TAGLIB_INCLUDES})
@@ -113,8 +113,10 @@ install(FILES org.kde.babe.appdata.xml DESTINATION ${KDE_INSTALL_METAINFODIR})
 
 install(PROGRAMS org.kde.babe.desktop DESTINATION ${KDE_INSTALL_APPDIR})
 
+install(FILES data/babe.notifyrc  DESTINATION ${KNOTIFYRC_INSTALL_DIR}))
+
 feature_summary (
    WHAT ALL
    INCLUDE_QUIET_PACKAGES
    FATAL_ON_MISSING_REQUIRED_PACKAGES
-   )
+)

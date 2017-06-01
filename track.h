@@ -1,45 +1,40 @@
 #ifndef TRACK_H
 #define TRACK_H
 
-#include <string>
-
-using namespace std;
+#include <QObject>
 
 class Track
 {
 public:
     Track();
-
-
-    string getName();
-    string getTitle();
-    string getArtist();
-    string getAlbum();
-    string getLocation();
+    void operator=(Track const &);
     int getTrack();
-    string getGenre();
-    string getArtwork();
+    QString getName();
+    QString getTitle();
+    QString getArtist();
+    QString getAlbum();
+    QString getLocation();
+    QString getGenre();
+    QString getArtwork();
 
-    void setName(string name);
-    void setTitle(string title);
-    void setArtist(string artist);
-    void setAlbum(string album);
-    void setLocation(string location);
     void setTrack(int track);
-    void setGenre(string genre);
-    void setArtwork(string artwork);
+    void setName(const QString &name);
+    void setTitle(const QString &title);
+    void setArtist(const QString &artist);
+    void setAlbum(const QString &album);
+    void setLocation(const QString &location);
+    void setGenre(const QString &genre);
+    void setArtwork(const QString &artwork);
 
 private:
-    string name = "";
-
-    string title = "";
-    string artist = "";
-    string album ="";
-    int track=0;
-    string genre="";
-    string artwork="";
-
-    string location = "";
+    int m_track = 0;
+    QString m_name = "";
+    QString m_title = "";
+    QString m_artist = "";
+    QString m_album = "";
+    QString m_genre = "";
+    QString m_artwork = "";
+    QString m_location = "";
 };
 
 #endif // TRACK_H

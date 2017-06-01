@@ -26,7 +26,7 @@ private slots:
 
 private:
     Ui::About *ui;
-    const QString url="https://github.com/milohr/babe-qt";
+    const QString url = "https://github.com/milohr/babe-qt";
 };
 
 #endif // ABOUT_H

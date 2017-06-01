@@ -1,49 +1,41 @@
 #ifndef ALBUM_H
 #define ALBUM_H
+
 #include <QLabel>
-#include <QString>
-#include <QPixmap>
-#include <QToolButton>
+#include <QMap>
 #include <QObject>
-#include <QEvent>
-#include <QMouseEvent>
-#include <QDebug>
-#include <QHBoxLayout>
-#include <QMenu>
-#include <QPainter>
-#include <QFileDialog>
-#include <QDrag>
-#include <QMimeData>
-#include <QApplication>
+#include <QPixmap>
+
 #include "baeUtils.h"
 #include "scrolltext.h"
+
+class QEvent;
+class QWidget;
+class ScrollText;
+class QToolButton;
 
 class Album : public QLabel
 {
     Q_OBJECT
-
 public:
-
-    explicit Album(QString imagePath, int widgetSize, int widgetRadius=0, bool isDraggable=false, QWidget *parent = 0);
-    ~Album(){}
-    void setArtist(QString artist);
-    void setAlbum(QString album);
-    void setTitle(QString _artist, QString _album="");
-    void setBGcolor(QString bgColor);
+    explicit Album(const QString &imagePath, int widgetSize, int widgetRadius = 0, bool isDraggable = false, QWidget *parent = 0);
+    ~Album();
+    void setArtist(const QString &artist);
+    void setAlbum(const QString &album);
+    void setTitle(const QString &artist, const QString &album = "");
+    void setBGcolor(const QString &bgColor);
+    void setBordercolor(bool color);
     void titleVisible(bool state);
-    void setTitleGeometry(int x, int y, int w, int h);
     void setSize(int value);
+    void setTitleGeometry(int x, int y, int w, int h);
 
-    int border_radius;
-    int size;
-    bool borderColor=false;
-    QWidget *widget;
     QString getTitle();
     QString getArtist();
     QString getAlbum();
-    QString getBGcolor();
-    QPixmap image;
+    QString getBGColor();
     QPixmap getPixmap();
+
+    QWidget *widget;
     QToolButton *playBtn;
 
     enum albumField
@@ -52,34 +44,34 @@ public:
     };
 
 private:
+    int m_size;
+    int m_borderRadius;
+    bool m_draggable;
+    bool m_borderColor;
+    QPixmap image;
+    QPoint m_startPos;
+    QString m_artist;
+    QString m_album;
+    QString m_bgColor;
+    QString m_imagePath;
+    ScrollText *m_title;
+    QMap<int, QString> m_albumMap;
 
-    QMap<int, QString> albumMap;
-    bool draggable;
-    QString imagePath;
-    QString artist="";
-    QString album="";
-    QString bgColor="";
-    ScrollText *title;
-    QColor borderQColor = this->palette().color(QPalette::BrightText).name();
-    QPoint oldPos;
-    QPoint startPos;
     void performDrag();
 
 signals:
-
-    void albumCoverClicked(QMap<int, QString> albumMap);
-    void albumCoverDoubleClicked(QMap<int, QString> albumMap);
-    void playAlbum(QMap<int, QString> albumMap);
-    void changedArt(QMap<int, QString> albumMap);
-    void babeAlbum_clicked(QMap<int, QString> albumMap);
     void albumDragged();
     void albumCoverEnter();
     void albumCoverLeft();
+    void albumCoverClicked(const QMap<int, QString> &albumMap);
+    void albumCoverDoubleClicked(const QMap<int, QString> &albumMap);
+    void babeAlbum_clicked(const QMap<int, QString> &albumMap);
+    void changedArt(const QMap<int, QString> &albumMap);
+    void playAlbum(const QMap<int, QString> &albumMap);
 
 public slots:
-
-    void putPixmap(QByteArray pix);
-    void putPixmap(QString path);
+    void putPixmap(const QByteArray &pix);
+    void putPixmap(const QString &path);
     void putDefaultPixmap();
     void playBtn_clicked();
     void babeIt_action();
@@ -87,7 +79,6 @@ public slots:
     void removeIt_action();
 
 protected:
-
     virtual void mousePressEvent (QMouseEvent * event) Q_DECL_OVERRIDE;
     virtual void mouseDoubleClickEvent(QMouseEvent * event) Q_DECL_OVERRIDE;
     virtual void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
@@ -95,10 +86,6 @@ protected:
     virtual void leaveEvent(QEvent *event) Q_DECL_OVERRIDE;
     virtual void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
     virtual bool eventFilter(QObject * watched, QEvent * event) Q_DECL_OVERRIDE;
-
-
-
-    // virtual void  mouseMoveEvent(QMouseEvent *evt);
 };
 
 #endif // ALBUM_H

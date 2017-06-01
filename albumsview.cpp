@@ -1,6 +1,22 @@
 #include "albumsview.h"
 
+#include <QAction>
+#include <QComboBox>
+#include <QDebug>
+#include <QFrame>
+#include <QGridLayout>
+#include <QHeaderView>
+#include <QListWidgetItem>
+#include <QListWidget>
+#include <QShortcut>
+#include <QSplitter>
+#include <QToolTip>
+#include <QToolButton>
+
 AlbumsView::AlbumsView(bool extraList, QWidget *parent) : QWidget(parent)
+  ,m_albumsDB(AlbumsDB::instance())
+  ,m_tracksDB(TracksDB::instance())
+  ,m_artistsDB(ArtistsDB::instance())
 {
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     auto layout = new QGridLayout();
@@ -20,7 +36,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) : QWidget(parent)
 
     QAction *zoomIn = new QAction(this);
     zoomIn->setShortcut(tr("CTRL++"));
-    connect(zoomIn, &QAction::triggered,[this]() {
+    connect(zoomIn, &QAction::triggered, [this]() {
         if (albumSize+5 <= 200) {
             this->setAlbumsSize(albumSize+5);
             slider->setValue(albumSize+5);
@@ -30,8 +46,8 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) : QWidget(parent)
 
     QAction *zoomOut = new QAction(this);
     zoomOut->setShortcut(tr("CTRL+-"));
-    connect(zoomOut, &QAction::triggered,[this]() {
-        if (albumSize-5>=80) {
+    connect(zoomOut, &QAction::triggered, [this]() {
+        if (albumSize-5 >= 80) {
             this->setAlbumsSize(albumSize-5);
             slider->setValue(albumSize-5);
             slider->setSliderPosition(albumSize-5);
@@ -91,7 +107,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) : QWidget(parent)
     line_h->setMaximumHeight(1);
 
     cover = new Album(":Data/data/cover.svg", 120, 0, true, this);
-    connect(cover, &Album::playAlbum, [this] (QMap<int, QString> info) { emit playAlbum(info); });
+    connect(cover, &Album::playAlbum, [this](QMap<int, QString> info) { emit playAlbum(info); });
     connect(cover, &Album::changedArt, this, &AlbumsView::changedArt_cover);
     connect(cover, &Album::babeAlbum_clicked, this, &AlbumsView::babeAlbum);
 
@@ -154,22 +170,26 @@ void AlbumsView::hideAlbumFrame()
 
 void AlbumsView::filterAlbum(const QModelIndex &index)
 {
-    QString album = index.data().toString();
-    qDebug() << album;
+    QString coverTitle(cover->getArtist());
+    QString album(index.data().toString());
     albumTable->flushTable();
-    albumTable->populateTableView("SELECT * FROM tracks WHERE album = \"" + album + "\" AND artist =\"" + cover->getArtist() + "\" ORDER by album asc, track asc ", false, false);
-    cover->setTitle(cover->getArtist(), album);
-    QSqlQuery queryCover = connection->getQuery("SELECT * FROM albums WHERE title = \"" + album + "\" AND artist =\"" + cover->getArtist() + "\"");
-    while (queryCover.next())
-        if (!queryCover.value(2).toString().isEmpty() && queryCover.value(2).toString() != "NULL")
-            cover->putPixmap( queryCover.value(2).toString());
+    QVariantMap map({{"title", album}, {"artist", coverTitle}});
+    albumTable->populateTableView(m_albumsDB->loadAlbums(map, -1, 0 , "album, track"), false, false);
+    cover->setTitle(coverTitle, album);
+    map.clear();
+    foreach (const QVariant &entry, m_albumsDB->loadAlbums(map)) {
+        map = entry.toMap();
+        QString qcover(map.value("art").toString());
+        if (!qcover.isEmpty())
+            cover->putPixmap(qcover);
+    }
 }
 
 void AlbumsView::setAlbumsSize(int value)
 {
     albumSize = value;
     slider->setToolTip(QString::number(value));
-    QToolTip::showText( slider->mapToGlobal(QPoint(0, 0)), QString::number(value));
+    QToolTip::showText(slider->mapToGlobal(QPoint(0, 0)), QString::number(value));
     for (auto album : albumsList) {
         album->setSize(albumSize);
         grid->setGridSize(QSize(albumSize+10, albumSize+10));
@@ -202,48 +222,43 @@ void AlbumsView::orderChanged(const QString &order)
     emit albumOrderChanged(order);
 }
 
-void AlbumsView::populateTableView(QSqlQuery query)
+void AlbumsView::populateTableView(const QString &order)
 {
     qDebug() << "ON POPULATE ALBUM VIEW:";
-    while (query.next()) {
-        QString artist = query.value(ARTIST).toString();
-        QString album = query.value(TITLE).toString();
-        QString art=":Data/data/cover.svg";
+    QVariantMap map;
+    foreach (const QVariant &item, m_albumsDB->loadAlbums(QVariantMap(), -1, 0 , order)) {
+        map = item.toMap();
+        QString art(":Data/data/cover.svg");
+        QString album(map.value("title").toString());
+        QString artist(map.value("artist").toString());
 
         if (!albums.contains(album + " " + artist)) {
             albums << album + " " + artist;
 
-            if (!query.value(ART).toString().isEmpty() && query.value(ART).toString() != "NULL")
-                art = query.value(ART).toString();
+            QString qart(map.value("art").toString());
+            if (!qart.isEmpty() && qart.compare("NULL") != 0)
+                art = qart;
             else
-                art = connection->getArtistArt(artist);
+                art = m_artistsDB->getArt(artist);
 
             auto artwork = new Album(art, albumSize, 4, true, this);
             albumsList.push_back(artwork);
-            artwork->borderColor = true;
+            artwork->setBordercolor(true);
             artwork->setTitle(artist, album);
 
-            connect(artwork, &Album::albumCoverClicked, this ,&AlbumsView::getAlbumInfo);
+            connect(artwork, &Album::albumCoverClicked, this, &AlbumsView::getAlbumInfo);
             connect(artwork, &Album::albumCoverDoubleClicked, [this](QMap<int, QString> info) { emit albumDoubleClicked(info); });
             connect(artwork, &Album::playAlbum, [this](QMap<int, QString> info) { emit playAlbum(info); });
             connect(artwork, &Album::changedArt, this, &AlbumsView::changedArt_cover);
             connect(artwork, &Album::babeAlbum_clicked, this, &AlbumsView::babeAlbum);
-            connect(artwork, &Album::albumDragged, [this]()
-            {
-                // grid->adjustSize();
-                // grid->update();
-                // grid->updateGeometry();
-                // grid->clearMask();
-            });
 
             auto item = new QListWidgetItem();
             itemsList.push_back(item);
-            item->setSizeHint(QSize( albumSize, albumSize));
+            item->setSizeHint(QSize(albumSize, albumSize));
             grid->addItem(item);
-            grid->setItemWidget(item,artwork);
+            grid->setItemWidget(item, artwork);
         }
     }
-    qDebug() << grid->width() << grid->size().height();
     emit populateCoversFinished();
 }
 
@@ -252,46 +267,58 @@ void AlbumsView::babeAlbum(const QMap<int, QString> &info)
     emit babeAlbum_clicked(info);
 }
 
-void AlbumsView::populateTableViewHeads(QSqlQuery query)
+void AlbumsView::populateTableViewHeads()
 {
     qDebug() << "ON POPULATE HEADS VIEW:";
-    while (query.next()) {
-        QString artist = query.value(TITLE).toString();
-        QString art = ":Data/data/cover.svg";
-        if (!artists.contains(artist)) {
-            artists << artist;
+    QVariantList list(m_artistsDB->loadArtists(QVariantMap(), -1, 0, "title"));
+    if (list.size()) {
+        QString qart;
+        QString art;
+        QString artist;
+        QVariantMap map;
+        foreach (const QVariant &item, list) {
+            map = item.toMap();
+            art = ":Data/data/cover.svg";
+            artist = map.value("title").toString();
 
-            if (!query.value(1).toString().isEmpty() && query.value(1).toString() != "NULL")
-                art = query.value(1).toString();
+            if (!artist.isEmpty() && !artists.contains(artist)) {
+                artists << artist;
+                qart = map.value("art").toString();
 
-            Album *album = new Album(art, albumSize, 4, true, this);
-            albumsList.push_back(album);
-            album->borderColor = true;
-            album->setTitle(artist);
+                if (!qart.isEmpty() && qart.compare("NULL") != 0)
+                    art = qart;
 
-            connect(album, &Album::albumCoverClicked, this, &AlbumsView::getArtistInfo);
-            connect(album, &Album::albumCoverDoubleClicked, [this] (QMap<int, QString> info) { emit albumDoubleClicked(info); });
-            connect(album, &Album::playAlbum, [this](QMap<int, QString> info) { emit playAlbum(info);});
-            connect(album, &Album::changedArt,this,&AlbumsView::changedArt_head);
-            connect(album, &Album::babeAlbum_clicked, this, &AlbumsView::babeAlbum);
+                Album *album = new Album(art, albumSize, 4, true, this);
+                albumsList.push_back(album);
+                album->setBordercolor(true);
+                album->setTitle(artist);
 
-            auto item = new QListWidgetItem();
-            itemsList.push_back(item);
-            item->setSizeHint(QSize(albumSize, albumSize));
+                connect(album, &Album::albumCoverClicked, this, &AlbumsView::getArtistInfo);
+                connect(album, &Album::albumCoverDoubleClicked, [this] (QMap<int, QString> info) { emit albumDoubleClicked(info); });
+                connect(album, &Album::playAlbum, [this](QMap<int, QString> info) { emit playAlbum(info); });
+                connect(album, &Album::changedArt, this, &AlbumsView::changedArt_head);
+                connect(album, &Album::babeAlbum_clicked, this, &AlbumsView::babeAlbum);
 
-            grid->addItem(item);
-            grid->setItemWidget(item, album);
+                auto item = new QListWidgetItem();
+                itemsList.push_back(item);
+                item->setSizeHint(QSize(albumSize, albumSize));
+
+                grid->addItem(item);
+                grid->setItemWidget(item, album);
+            }
         }
     }
     emit populateHeadsFinished();
 }
 
-void AlbumsView::populateExtraList(QSqlQuery query)
+void AlbumsView::populateExtraList(const QString &artist)
 {
-    artistList->clear();
     qDebug() << "ON POPULATE EXTRA LIST:";
-    while (query.next()) {
-        auto album = query.value(TITLE).toString();
+    artistList->clear();
+    QVariantMap map;
+    foreach (const QVariant &entry, m_albumsDB->loadAlbums(QVariantMap({{"artist", artist}}), -1, 0, "title")) {
+        map = entry.toMap();
+        auto album = map.value("title").toString();
         auto item = new QListWidgetItem();
         item->setText(album);
         item->setTextAlignment(Qt::AlignCenter);
@@ -301,56 +328,52 @@ void AlbumsView::populateExtraList(QSqlQuery query)
 
 void AlbumsView::changedArt_cover(const QMap<int, QString> &info)
 {
-    QString path = info[Album::ART];
-    QString album = info[Album::ALBUM];
-    QString artist = info[Album::ARTIST];
-    connection->execQuery(QString("UPDATE albums SET art = \"%1\" WHERE title = \"%2\" AND artist = \"%3\"").arg(path, album, artist));
+    QString title(info[Album::ALBUM]);
+    QString artist(info[Album::ARTIST]);
+    m_albumsDB->update(QVariantMap({{"art", info[Album::ART]}}), QVariantMap({{"title", title}, {"artist", artist}}));
+    m_collectionDB.updateTrackArt(info[Album::ART], info[Album::ARTIST], info[Album::ALBUM]);
 }
 
 void AlbumsView::changedArt_head(const QMap<int, QString> &info)
 {
-    QString path = info[Album::ART];
-    QString artist = info[Album::ARTIST];
-    connection->execQuery(QString("UPDATE artists SET art = \"%1\" WHERE title = \"%2\" ").arg(path, artist));
+    QString title(info[Album::ARTIST]);
+    m_artistsDB->update(QVariantMap({{"art", info[Album::ART]}}), QVariantMap({{"title", title}}));
+    m_collectionDB.updateTrackArt(info[Album::ART], info[Album::ARTIST], info[Album::ALBUM]);
 }
 
 void AlbumsView::getArtistInfo(const QMap<int, QString> &info)
 {
     albumBox_frame->show();
     line_h->show();
-    QString artist = info[Album::ARTIST];
+    QString artist(info[Album::ARTIST]);
     cover->setTitle(artist);
     albumTable->flushTable();
-    albumTable->populateTableView("SELECT * FROM tracks WHERE artist = \"" + artist + "\" ORDER by album asc, track asc", false, false);
-    auto art = connection->getArtistArt(artist);
-
+    albumTable->populateTableView(m_tracksDB->loadTracks(QVariantMap({{"artist", artist}}), -1, 0, "album, track"), false, false);
+    auto art = m_artistsDB->getArt(artist);
     if (!art.isEmpty())
         cover->putPixmap(art);
     else
         cover->putDefaultPixmap();
-
     if (extraList)
-        populateExtraList(connection->getQuery("SELECT * FROM albums WHERE artist = \"" + artist + "\" ORDER by title asc"));
+        populateExtraList(artist);
 }
 
 void AlbumsView::getAlbumInfo(QMap<int, QString> info)
 {
     albumBox_frame->setVisible(true);
     line_h->setVisible(true);
-    QString album = info[Album::ALBUM];
-    QString artist = info[Album::ARTIST];
+    QString album(info[Album::ALBUM]);
+    QString artist(info[Album::ARTIST]);
     cover->setTitle(artist, album);
     albumTable->flushTable();
-    albumTable->populateTableView("SELECT * FROM tracks WHERE artist = \"" + artist + "\" and album = \"" + album + "\" ORDER by track asc", false, false);
-    auto art = connection->getAlbumArt(album, artist);
-    art = art.isEmpty() ? connection->getArtistArt(artist) : art;
+    albumTable->populateTableView(m_tracksDB->loadTracks(QVariantMap({{"artist", artist}, {"album", album}}), -1, 0, "album, track"), false, false);
+    auto art = m_collectionDB.getAlbumArt(album, artist);
+    art = art.isEmpty() ? m_artistsDB->getArt(artist) : art;
     cover->putPixmap(art);
-
     if (!art.isEmpty())
         cover->putPixmap(art);
     else
         cover->putDefaultPixmap();
-
     albumBox_frame->resize(cover->sizeHint());
 }
 

@@ -8,6 +8,10 @@ PlaylistsDB::PlaylistsDB(QObject *parent) : BaseDB(QStringLiteral("playlists"), 
 {
 }
 
+PlaylistsDB::~PlaylistsDB()
+{
+}
+
 PlaylistsDB *PlaylistsDB::instance()
 {
     if (!m_instance)

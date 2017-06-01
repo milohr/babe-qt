@@ -12,208 +12,171 @@
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software Foundation,
    Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
-
-   */
-
+*/
 
 #include "playlist.h"
 
+#include <QDebug>
+#include <QStringList>
+#include <QFileInfo>
+#include <QMimeDatabase>
+#include <QMimeType>
+#include <QString>
 
-Playlist::Playlist() {}
-
-bool Playlist::isMusic(QString file)
+Playlist::Playlist(QObject *parent) : QObject(parent)
 {
-    QMimeDatabase mimeDatabase;
-    QMimeType mimeType;
-
-    mimeType = mimeDatabase.mimeTypeForFile(QFileInfo(file));
-    // mp4 mpg4
-
-    if (mimeType.inherits("audio/mp4"))
-        return true;
-
-    // mpeg mpg mpe
-    else if (mimeType.inherits("audio/mpeg"))
-        return true;
-    else if (mimeType.inherits("video/mp4"))
-        return true;
-    else if (mimeType.inherits("audio/MPEG-4"))
-        return true;
-    else if (mimeType.inherits("video/mpeg"))
-        return true;    
-    else if (mimeType.inherits("audio/m4a"))
-        return true;    
-    else if (mimeType.inherits("audio/mp3"))
-        return false;
-    else if (mimeType.inherits("audio/ogg"))
-        return true;
-    else if (mimeType.inherits("audio/wav"))
-        return true;
-    else if (mimeType.inherits("audio/flac"))
-        return true;
-    else return false;
 }
 
-
-QList<QMap<int,QString>> Playlist::getTracksData()
+bool Playlist::isMusic(const QString &file)
 {
-    QList<QMap<int,QString>> mapList;
+    QMimeDatabase mimeDatabase;
+    QMimeType mimeType(mimeDatabase.mimeTypeForFile(QFileInfo(file)));
 
-    for(auto file : getTracks())
-    {       
-        QString track = QString::number(file.getTrack());
-        QString title = QString::fromStdString(file.getTitle());
-        QString artist = QString::fromStdString(file.getArtist());
-        QString album = QString::fromStdString(file.getAlbum());
-        QString genre = QString::fromStdString(file.getGenre());
-        QString location = QString::fromStdString(file.getLocation());
-        QString art = "";
-        QString stars = "";
-        QString babe = "";
-        QString played = "";
-        QString playlist = "";
+    QStringList audioFileTypes;
+    audioFileTypes << "audio/flac"
+                   << "audio/mp4"
+                   << "audio/m4a"
+                   << "audio/mpeg"
+                   << "audio/MPEG-4"
+                   << "audio/mp3"
+                   << "audio/ogg"
+                   << "audio/wav"
+                   << "video/mp4"
+                   << "video/mpeg";
 
-        const QMap<int, QString> map{{BabeTable::TRACK,track},{BabeTable::TITLE,title},{BabeTable::ARTIST,artist},{BabeTable::ALBUM,album},{BabeTable::GENRE,genre},{BabeTable::LOCATION,location},{BabeTable::STARS,stars},{BabeTable::BABE,babe},{BabeTable::ART,art},{BabeTable::PLAYED,played},{BabeTable::PLAYLIST,playlist}};
+    foreach (const QString &str, audioFileTypes)
+        if (mimeType.inherits(str))
+            return true;
+    return false;
+}
 
-        mapList<<map;
-
+QList<QMap<int, QString>> Playlist::getTracksData()
+{
+    QList<QMap<int, QString>> mapList;
+    for (auto file : getTracks()) {
+        const QMap<int, QString> map{
+            {BabeTable::TRACK, QString::number(file.getTrack())},
+            {BabeTable::TITLE, file.getTitle()},
+            {BabeTable::ARTIST, file.getArtist()},
+            {BabeTable::ALBUM, file.getAlbum()},
+            {BabeTable::GENRE, file.getGenre()},
+            {BabeTable::LOCATION, file.getLocation()},
+            {BabeTable::STARS, ""},
+            {BabeTable::BABE, ""},
+            {BabeTable::ART, ""},
+            {BabeTable::PLAYED, ""},
+            {BabeTable::PLAYLIST, ""}
+        };
+        mapList << map;
     }
-
     return mapList;
 }
 
 void Playlist::add(QStringList files)
 {
-
-    for (int i = 0; i < files.size(); i++) {
-        if (isMusic(files[i])) {
-
-            TagInfo info(files[i]);
-
+    foreach (const QString &file, files) {
+        if (isMusic(file)) {
             Track track;
+            TagInfo info(file);
 
-            // qDebug()<<QString::fromStdWString(file.tag()->title().toWString());
-            QString title = info.getTitle();
-            QString artist = info.getArtist();
-            QString album = info.getAlbum();
-            QString artwork = ""; // here needs to get the artwork;
-            int track_n = info.getTrack();
-            QString genre = info.getGenre();
+            QString title(info.getTitle());
+            QString artist(info.getArtist());
+            QString album(info.getAlbum());
 
             title = title.size() > 0 ? title : info.fileName();
             artist = artist.size() > 0 ? artist : "UNKNOWN";
             album = album.size() > 0 ? album : "UNKNOWN";
 
-            track.setTitle(title.toStdString());
-
-            track.setArtist(artist.toStdString());
-            track.setAlbum(album.toStdString());
-            track.setLocation(files[i].toStdString());
-            track.setGenre(genre.toStdString());
-            track.setTrack(track_n);
-            track.setArtwork(artwork.toStdString());
-            track.setName(info.fileName().toStdString());
-
+            track.setTitle(title);
+            track.setArtist(artist);
+            track.setAlbum(album);
+            track.setLocation(file);
+            track.setGenre(info.getGenre());
+            track.setTrack(info.getTrack());
+            track.setArtwork("");
+            track.setName(info.fileName());
             tracks.push_back(track);
-        } else {
-            qDebug() << "file not valid: " << files[i];
         }
     }
 }
 
 void Playlist::addClean(QStringList files)
 {
-
-    for (int i = 0; i < files.size(); i++)
-    {
-        TagInfo info(files[i]);
-
+    foreach (const QString &file, files) {
         Track track;
-
-        // qDebug()<<QString::fromStdWString(file.tag()->title().toWString());
-        QString title = info.getTitle();
-        QString artist = info.getArtist();
-        QString album = info.getAlbum();
-        QString artwork = ""; // here needs to get the artwork;
+        TagInfo info(file);
         int track_n = info.getTrack();
-        QString genre = info.getGenre();
+        QString title(info.getTitle());
+        QString artist(info.getArtist());
+        QString album(info.getAlbum());
+        QString artwork(""); // here needs to get the artwork;
+        QString genre(info.getGenre());
 
         title = title.size() > 0 ? title : info.fileName();
         artist = artist.size() > 0 ? artist : "UNKNOWN";
         album = album.size() > 0 ? album : "UNKNOWN";
 
-        track.setTitle(title.toStdString());
-
-        track.setArtist(artist.toStdString());
-        track.setAlbum(album.toStdString());
-        track.setLocation(files[i].toStdString());
-        track.setGenre(genre.toStdString());
+        track.setTitle(title);
+        track.setArtist(artist);
+        track.setAlbum(album);
+        track.setLocation(file);
+        track.setGenre(genre);
         track.setTrack(track_n);
-        track.setArtwork(artwork.toStdString());
-        track.setName(info.fileName().toStdString());
-
+        track.setArtwork(artwork);
+        track.setName(info.fileName());
         tracks.push_back(track);
     }
 }
 
-void Playlist::setMetaData(QString title, QString artist, QString album,QString location)
+void Playlist::setMetaData(const QString &title, const QString &artist, const QString &album, const QString &location)
 {
-    qDebug() << title + artist + album;
     Track track;
-    track.setTitle(title.toStdString());
-
-    track.setArtist(artist.toStdString());
-    track.setAlbum(album.toStdString());
-    track.setLocation(location.toStdString());
-    // track.setName(getNameFromLocation(location.toStdString()));
+    track.setTitle(title);
+    track.setArtist(artist);
+    track.setAlbum(album);
+    track.setLocation(location);
     tracks.push_back(track);
 }
 
-void Playlist::remove(int index) { tracks.erase(tracks.begin() + index); }
+void Playlist::remove(int index)
+{
+    tracks.erase(tracks.begin() + index);
+}
 
-void Playlist::removeAll() { tracks.clear(); }
+void Playlist::removeAll()
+{
+    tracks.clear();
+}
 
 QStringList Playlist::getTracksNameList()
 {
     QStringList list;
-    for (unsigned int i = 0; i < tracks.size(); i++)
-    {
-        QString qstr = QString::fromStdString(tracks[i].getTitle() + "\nby " +
-                                              tracks[i].getArtist());
-        list.push_back(qstr);
-    }
+    for (auto t : tracks)
+        list << t.getTitle() + "\nby " + t.getArtist();
     return list;
 }
 
 QStringList Playlist::getTracksNameListSimple()
 {
     QStringList list;
-    for (unsigned int i = 0; i < tracks.size(); i++)
-    {
-        QString qstr = QString::fromStdString(tracks[i].getTitle());
-        list.push_back(qstr);
-    }
+    for (auto t : tracks)
+        list << t.getTitle();
     return list;
 }
 
 QList<Track> Playlist::getTracks()
 {
     QList<Track> list;
-    for (unsigned int i = 0; i < tracks.size(); i++)
-    {
-
-        list.push_back(tracks[i]);
-    }
+    for (auto t : tracks)
+        list.push_back(t);
     return list;
+
 }
 
 QStringList Playlist::getList()
 {
     QStringList list;
-    for(auto track : getTracks())
-    {
-        list<<QString::fromStdString(track.getLocation());
-    }
-
+    for (auto t : tracks)
+        list << t.getLocation();
     return list;
 }

@@ -2,13 +2,12 @@
 #define INFOVIEW_H
 
 #include <QWidget>
-#include <QToolButton>
-#include <QDebug>
-#include <QHBoxLayout>
-#include <QToolButton>
 #include "album.h"
 #include "pulpo/pulpo.h"
 #include "pulpo/lyrics.h"
+
+class QHBoxLayout;
+class QToolButton;
 
 namespace Ui {
 class InfoView;
@@ -17,52 +16,43 @@ class InfoView;
 class InfoView : public QWidget
 {
     Q_OBJECT
-
-
 public:
     explicit InfoView(QWidget *parent = 0);
     ~InfoView();
-
     Album *album;
     Album *artist;
     QWidget *infoUtils;
 
-
 private:
-
     Ui::InfoView *ui;
     Lyrics *lyrics;
     QToolButton *hideBtn;
-    bool hide= false;
-    bool customsearch = false;
+    bool hide = false;
+    bool m_customSearch = false;
 
 public slots:
-
     void clearInfoViews();
-    void setAlbumArt(QByteArray array);
-    void setAlbumInfo(QString info);
+    void setAlbumArt(const QByteArray &array);
+    void setAlbumInfo(const QString &info);
     void setArtistArt(const QByteArray &array);
     void setArtistArt(const QString &url);
-    void setLyrics(QString lyrics);
+    void setLyrics(const QString &lyrics);
     void setArtistInfo(const QString &info);
-    void setArtistTagInfo(QStringList tags);
+    void setArtistTagInfo(const QStringList &tags);
     void setTagsInfo(QStringList);
     void hideArtistInfo();
-    void playAlbum_clicked(QMap<int,QString> info);
+    void playAlbum_clicked(const QMap<int, QString> &info);
     void getTrackInfo(const QString &title_, const QString &artist_, const QString &album_);
     void on_searchBtn_clicked();
 
 signals:
-
-    void playAlbum(QMap<int,QString> info);
-    void tagClicked(QString tag);
-    void similarArtistTagClicked(QString tag);
-    void similarBtnClicked(QStringList similar);
-    void tagsBtnClicked(QStringList similar);
-
+    void playAlbum(const QMap<int, QString> &info);
+    void similarArtistTagClicked(const QString &tag);
+    void similarBtnClicked(const QStringList &similar);
+    void tagsBtnClicked(const QStringList &similar);
+    void tagClicked(const QString &tag);
 
 private slots:
-
     void on_toolButton_clicked();
     void on_tagsInfo_anchorClicked(const QUrl &arg1);
     void on_similarArtistInfo_anchorClicked(const QUrl &arg1);

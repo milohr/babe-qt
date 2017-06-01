@@ -2,5 +2,4 @@
 
 musicbrainzService::musicbrainzService()
 {
-
 }

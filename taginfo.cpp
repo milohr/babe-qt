@@ -16,93 +16,94 @@
 
 #include "taginfo.h"
 
+#include <QString>
+#include <QByteArray>
+
 TagInfo::TagInfo(QString file)
 {
-    this->file = TagLib::FileRef(file.toUtf8());
-    this->path = file;
+    m_path = file;
+    m_file = TagLib::FileRef(m_path.toUtf8());
 }
 
 void TagInfo::writeData()
 {
-    Pulpo info(this->getTitle(), this->getArtist(), this->getAlbum());
-    QString newTitle = info.getStaticTrackInfo(Pulpo::TrackAlbum).toString();
-    int trackPosition = info.getStaticTrackInfo(Pulpo::TrackPosition).toInt();
-    this->setTrack(trackPosition);
-    this->setAlbum(newTitle.isEmpty() ? "UNKNOWN" : newTitle);
+    Pulpo info(getTitle(), getArtist(), getAlbum());
+    QString newTitle(info.getStaticTrackInfo(Pulpo::TrackAlbum).toString());
+    setTrack(info.getStaticTrackInfo(Pulpo::TrackPosition).toInt());
+    setAlbum(newTitle.isEmpty() ? QStringLiteral("UNKNOWN") : newTitle);
+}
+
+bool TagInfo::isValidTag()
+{
+    m_tag = m_file.tag();
+    return (m_tag && !m_tag->isEmpty());
 }
 
 QString TagInfo::getAlbum()
 {
-    auto *tag = file.tag();
-    if (!tag || tag->isEmpty())
-        return QStringLiteral("");
-    return QString::fromStdWString(tag->album().toWString());
+    if (isValidTag())
+        return QString::fromStdWString(m_tag->album().toWString());
+    return QStringLiteral("");
 }
 
 QString TagInfo::getTitle()
 {
-    auto *tag = file.tag();
-    if (!tag || tag->isEmpty())
+    if (!isValidTag())
         return QStringLiteral("");
-    return QString::fromStdWString(tag->title().toWString()).isEmpty()
-           ? fileName()
-           : QString::fromStdWString(tag->title().toWString());
+    if (QString::fromStdWString(m_tag->title().toWString()).isEmpty())
+       return fileName();
+    return QString::fromStdWString(m_tag->title().toWString());
 }
 
 QString TagInfo::getArtist()
 {
-    auto *tag = file.tag();
-    if (!tag || tag->isEmpty())
+    if (!isValidTag())
         return QStringLiteral("");
-    return QString::fromStdWString(tag->artist().toWString()).size() > 0
-            ? QString::fromStdWString(tag->artist().toWString())
-            : "UNKNOWN";
+    if (QString::fromStdWString(m_tag->artist().toWString()).size() > 0)
+        return QString::fromStdWString(m_tag->artist().toWString());
+    return QStringLiteral("UNKNOWN");
 }
 
 int TagInfo::getTrack()
 {
-    auto *tag = file.tag();
-    if (!tag || tag->isEmpty())
-        return 0;
-    return static_cast<signed int>(tag->track());
+    if (isValidTag())
+        return static_cast<signed int>(m_tag->track());
+    return 0;
 }
 
 QString TagInfo::getGenre()
 {
-    auto *tag = file.tag();
-    if (!tag || tag->isEmpty())
+    if (!isValidTag())
         return QStringLiteral("");
-    return QString::fromStdWString(tag->genre().toWString()).size() > 0
-            ? QString::fromStdWString(tag->genre().toWString())
-            : "UNKNOWN";
+    if (QString::fromStdWString(m_tag->genre().toWString()).size() > 0)
+        return QString::fromStdWString(m_tag->genre().toWString());
+    return QStringLiteral("UNKNOWN");
 }
 
 QString TagInfo::fileName()
 {
-    return BaeUtils::getNameFromLocation(path);
+    return BaeUtils::getNameFromLocation(m_path);
 }
 
 int TagInfo::getYear()
 {
-    auto *tag = file.tag();
-    if (!tag || tag->isEmpty())
-        return 0;
-    return static_cast<signed int>(tag->year());
+    if (!isValidTag())
+        return static_cast<signed int>(m_tag->year());
+    return 0;
 }
 
 int TagInfo::getDuration()
 {
-    return file.audioProperties()->length();
+    return m_file.audioProperties()->length();
 }
 
 QString TagInfo::getComment()
 {
-    auto *tag = file.tag();
-    if (!tag || tag->isEmpty())
+    if (!isValidTag())
         return QStringLiteral("");
-    return QString::fromStdWString(tag->comment().toWString()).size() > 0
-            ? QString::fromStdWString(tag->genre().toWString())
-            : "UNKNOWN";
+    if (QString::fromStdWString(m_tag->comment().toWString()).size() > 0)
+        return QString::fromStdWString(m_tag->genre().toWString());
+    return QStringLiteral("UNKNOWN");
 }
 
 QByteArray TagInfo::getCover()
@@ -117,54 +118,48 @@ void TagInfo::setCover(const QByteArray &array)
 
 void TagInfo::setComment(const QString &comment)
 {
-    auto *tag = this->file.tag();
-    if (!tag || tag->isEmpty())
+    if (!isValidTag())
         return;
-    tag->setComment(comment.toStdString());
-    this->file.save();
+    m_tag->setComment(comment.toStdString());
+    m_file.save();
 }
 
 void TagInfo::setAlbum(const QString &album)
 {
-    auto *tag = this->file.tag();
-    if (!tag || tag->isEmpty())
+    if (!isValidTag())
         return;
-    tag->setAlbum(album.toStdString());
-    this->file.save();
+    m_tag->setAlbum(album.toStdString());
+    m_file.save();
 }
 
 void TagInfo::setTitle(const QString &title)
 {
-    auto *tag = this->file.tag();
-    if (!tag || tag->isEmpty())
+    if (!isValidTag())
         return;
-    tag->setTitle(title.toStdString());
-    this->file.save();
+    m_tag->setTitle(title.toStdString());
+    m_file.save();
 }
 
 void TagInfo::setTrack(int track)
 {
-    auto *tag = this->file.tag();
-    if (!tag || tag->isEmpty())
+    if (!isValidTag())
         return;
-    tag->setTrack(static_cast<unsigned int>(track));
-    this->file.save();
+    m_tag->setTrack(static_cast<unsigned int>(track));
+    m_file.save();
 }
 
 void TagInfo::setArtist(const QString &artist)
 {
-    auto *tag = this->file.tag();
-    if (!tag || tag->isEmpty())
+    if (!isValidTag())
         return;
-    tag->setArtist(artist.toStdString());
-    this->file.save();
+    m_tag->setArtist(artist.toStdString());
+    m_file.save();
 }
 
 void TagInfo::setGenre(const QString &genre)
 {
-    auto *tag = this->file.tag();
-    if (!tag || tag->isEmpty())
+    if (!isValidTag())
         return;
-    tag->setGenre(genre.toStdString());
-    this->file.save();
+    m_tag->setGenre(genre.toStdString());
+    m_file.save();
 }

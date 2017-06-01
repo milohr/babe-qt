@@ -1,51 +1,54 @@
 #ifndef SCROLLTEXT_H
 #define SCROLLTEXT_H
 
-#include "scrolltext.h"
 #include <QLabel>
 #include <QTimer>
 #include <QPainter>
+#include <QWidget>
 
 class ScrollText : public QLabel
 {
     Q_OBJECT
+public:
+    ScrollText(QLabel *parent = 0);
+    ~ScrollText();
+    int getSpeed();
+    void show();
+    void setAlignment(Qt::Alignment);
+    void start();
+    void stop();
+    void setMaxSize(int size);
 
-    public: //Member Functions
-        enum Direction{LeftToRight,RightToLeft};
-        ScrollText(QWidget *parent = 0);
-        ~ScrollText();
-        void show();
-        void setAlignment(Qt::Alignment);
-        int getSpeed();
-        void start();
-        void stop();
-        void setMaxSize(int size);
+    enum Direction {
+        LeftToRight,
+        RightToLeft
+    };
 
-    public slots: //Public Member Slots
-        void setSpeed(int s);
-        void setDirection(int d);
-        void reset();
+public slots:
+    void setSpeed(int s);
+    void setDirection(int d);
+    void reset();
 
-    protected: //Member Functions
-        virtual void paintEvent(QPaintEvent *evt);
-        virtual void resizeEvent(QResizeEvent *evt);
-        virtual void updateCoordinates();
-        virtual void enterEvent(QEvent *event);
-        virtual void leaveEvent(QEvent *event);
+private slots:
+    void refreshLabel();
 
-    private: //Data Members
-        int px;
-        int py;
-        int maxSize;
-        QTimer timer;
-        Qt::Alignment m_align;
-        int speed;
-        int direction;
-        int fontPointSize;
-        int textLength;
+protected:
+    virtual void paintEvent(QPaintEvent *evt);
+    virtual void resizeEvent(QResizeEvent *evt);
+    virtual void updateCoordinates();
+    virtual void enterEvent(QEvent *event);
+    virtual void leaveEvent(QEvent *event);
 
-    private slots: //Private Member Slots
-        void refreshLabel();
+private:
+    int direction;
+    int fontPointSize;
+    int maxSize;
+    int px;
+    int py;
+    int speed;
+    int textLength;
+    QTimer timer;
+    Qt::Alignment m_align;
 };
 
 #endif // SCROLLTEXT_H

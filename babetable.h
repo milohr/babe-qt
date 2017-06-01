@@ -1,27 +1,8 @@
 #ifndef BABETABLE_H
 #define BABETABLE_H
 
-#include <QButtonGroup>
-#include <QEvent>
-#include <QFileInfo>
-#include <QFont>
-#include <QFontDatabase>
-#include <QGraphicsEffect>
-#include <QGraphicsOpacityEffect>
-#include <QHBoxLayout>
-#include <QHeaderView>
-#include <QLabel>
 #include <QMap>
-#include <QMenu>
-#include <QMouseEvent>
-#include <QProcess>
-#include <QStringList>
 #include <QTableWidget>
-#include <QTableWidgetItem>
-#include <QTimer>
-#include <QToolButton>
-#include <QWidget>
-#include <QWidgetAction>
 #include <QVector>
 
 #include "album.h"
@@ -29,6 +10,26 @@
 #include "metadataForm.h"
 #include "notify.h"
 #include "settings.h"
+
+class QButtonGroup;
+class QEvent;
+class QFileInfo;
+class QFont;
+class QFontDatabase;
+class QGraphicsEffect;
+class QGraphicsOpacityEffect;
+class QHBoxLayout;
+class QHeaderView;
+class QLabel;
+class QMenu;
+class QMouseEvent;
+class QProcess;
+class QStringList;
+class QTableWidgetItem;
+class QTimer;
+class QToolButton;
+class QWidget;
+class QWidgetAction;
 
 namespace Ui {
 class BabeTable;
@@ -54,14 +55,24 @@ public:
         BABEIT, QUEUEIT, INFOIT, EDITIT, SAVETO, REMOVEIT, RATEIT, MOODIT, SENDIT, ADDTO
     };
 
-    CollectionDB *connection = new CollectionDB;
-
-    const QMap<int, QString> columnsNames{{TRACK, "track"}, {TITLE, "title"}, {ARTIST, "artist"}, {ALBUM, "album"}, {GENRE, "genre"}, {LOCATION, "location"}, {STARS, "stars"}, {BABE, "babe"}, {ART, "art"}, {PLAYED, "played"}, {PLAYLIST, "playlist"}};
     QStringList playlistsMenus;
     QStringList colors = BaeUtils::getMoodColors();
+    const QMap<int, QString> columnsNames{
+        {TRACK, "track"},
+        {TITLE, "title"},
+        {ARTIST, "artist"},
+        {ALBUM, "album"},
+        {GENRE, "genre"},
+        {LOCATION, "location"},
+        {STARS, "stars"},
+        {BABE, "babe"},
+        {ART, "art"},
+        {PLAYED, "played"},
+        {PLAYLIST, "playlist"}
+    };
 
-    void populateTableView(const QList<QMap<int, QString> > &mapList, bool descriptiveTitle, bool coloring);
-    void populateTableView(const QString &indication, bool descriptiveTitle, bool coloring);
+    void populateTableView(const QList<QMap<int, QString>> &mapList, bool descriptiveTitle, bool coloring);
+    void populateTableView(const QVariantList &contentList, bool descriptiveTitle, bool coloring);
     void removeMissing(const QStringList &missingFiles);
     void setRating(int rate);
     void setTableOrder(int column, int order);
@@ -79,6 +90,7 @@ public:
     QMap<QString, QString> getKdeConnectDevices();
     QStringList getTableColumnContent(const columns &column);
     QList<QMap<int, QString>> getAllTableContent();
+    QString rowInfo(int column, int rowNumber = -1);
 
 protected:
     virtual void enterEvent(QEvent *event);
@@ -99,7 +111,7 @@ private slots:
     void moodIt_action(const QString &color);
     void queueIt_action();
     void moodTrack(int color);
-    void update();
+    void updateMusicMsg();
 
 public slots:
     QStringList getPlaylistMenus();
@@ -123,16 +135,16 @@ private:
     QMenu* playlistsMenu;
     QMap<QString, QString> devices;
     QLabel *addMusicTxt;
-    QTimer *updater = new QTimer(this);
     QString addMusicMsg = "oops... :(\nnothing here";
+    CollectionDB m_collectionDB;
 
 signals:
     void tableWidget_doubleClicked(const QList<QMap<int, QString>> &mapList);
-    void songRated(QStringList list);
+    void songRated(const QStringList &list);
     void enteredTable();
     void leftTable();
     void finishedPopulating();
-    void rightClicked(const int row, const int column);
+    void rightClicked(const int &row, const int &column);
     void babeIt_clicked(const QMap<int, QString> &track);
     void removeIt_clicked(int index);
     void createPlaylist_clicked();

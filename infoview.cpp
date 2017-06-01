@@ -12,35 +12,29 @@
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software Foundation,
    Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
+*/
 
-   */
-
+#include <QDebug>
+#include <QHBoxLayout>
+#include <QToolButton>
 
 #include "infoview.h"
 #include "ui_infoview.h"
 
-
-InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView)
+InfoView::InfoView(QWidget *parent) : QWidget(parent)
+  , ui(new Ui::InfoView)
 {
     ui->setupUi(this);
-
-    artist = new Album(":Data/data/cover.png", 120, 100,false,this);
-    connect(artist,&Album::playAlbum,this,&InfoView::playAlbum_clicked);
-
-    /* ui->lyricsText->setLineWrapMode(QTextEdit::NoWrap);
-    ui->lyricsText->setStyleSheet("QTextBrowser{background-color: #575757; color:white;}");
-    ui->artistText->setStyleSheet("QTextBrowser{background-color: #575757; color:white;}");
-    ui->albumText->setStyleSheet("QTextBrowser{background-color: #575757; color:white;}");
-    ui->tagsInfo->setStyleSheet("QTextBrowser{background-color: #575757; color:white;}");*/
+    artist = new Album(":Data/data/cover.png", 120, 100, false, this);
+    connect(artist, &Album::playAlbum, this, &InfoView::playAlbum_clicked);
 
     lyrics = new Lyrics();
-    connect(lyrics,SIGNAL(lyricsReady(QString)),this,SLOT(setLyrics(QString)));
+    connect(lyrics, SIGNAL(lyricsReady(QString)), this, SLOT(setLyrics(QString)));
 
     artist->titleVisible(false);
-    artist->borderColor = true;
+    artist->setBordercolor(true);
 
     auto artistContainer = new QWidget();
-    //artistContainer->setStyleSheet("QWidget{background-color: #575757; color:white;}");
 
     auto artistCLayout = new QHBoxLayout();
     auto *left_spacer = new QWidget();
@@ -57,8 +51,6 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView)
     ui->artistLayout->insertWidget(0, artistContainer);
 
     infoUtils = new QWidget();
-    // artistContainer->setStyleSheet("QWidget{background-color: #575757;
-    // color:white;}");
     infoUtils->setMaximumWidth(200);
     auto infoUtils_layout = new QHBoxLayout();
     infoUtils_layout->setContentsMargins(0, 0, 0, 0);
@@ -67,9 +59,10 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView)
     auto similarBtn = new QToolButton();
     connect(similarBtn, &QToolButton::clicked, [this]()
     {
-        auto list = ui->similarArtistInfo->toPlainText().trimmed().split(",");
+        auto list = ui->similarArtistInfo->toPlainText().trimmed().split(", ");
         QStringList query;
-        for (auto tag : list) query << QString("artist:"+tag).trimmed();
+        for (auto tag : list)
+            query << QString("artist: " + tag).trimmed();
         emit similarBtnClicked(query);
     });
 
@@ -80,16 +73,16 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView)
     auto moreBtn = new QToolButton();
     connect(moreBtn, &QToolButton::clicked, [this]()
     {
-        auto list = ui->tagsInfo->toPlainText().split(",");
+        auto list = ui->tagsInfo->toPlainText().split(", ");
         QStringList query;
-        for (auto tag : list) query <<tag.trimmed();
+        for (auto tag : list)
+            query << tag.trimmed();
         emit tagsBtnClicked(query);
     });
 
     moreBtn->setAutoRaise(true);
     moreBtn->setIcon(QIcon::fromTheme("filename-discnumber-amarok"));
     moreBtn->setToolTip("Similar tags...");
-
 
     hideBtn = new QToolButton();
     connect(hideBtn, SIGNAL(clicked()), this, SLOT(hideArtistInfo()));
@@ -108,25 +101,20 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView)
     infoUtils->hide();
     ui->customsearch->setVisible(false);
     ui->frame_2->setVisible(false);
-    //ui->searchBtn->setParent(ui->lyricsText);
-    // ui->searchBtn->setGeometry(5,5,22,22);
-
-    //ui->searchBtn->setVisible(false);
 
     ui->tagsInfo->setOpenLinks(false);
     ui->tagsInfo->setStyleSheet("QTextBrowser{background: transparent;}");
-
     ui->similarArtistInfo->setOpenLinks(false);
-
 }
 
-InfoView::~InfoView() { delete ui; }
+InfoView::~InfoView()
+{
+    delete ui;
+}
 
-
-void InfoView::playAlbum_clicked(QMap<int, QString> info)
+void InfoView::playAlbum_clicked(const QMap<int, QString> &info)
 {
     emit playAlbum(info);
-
 }
 
 void InfoView::hideArtistInfo()
@@ -145,58 +133,54 @@ void InfoView::hideArtistInfo()
     }
 }
 
-void InfoView::setArtistTagInfo(QStringList tags)
+void InfoView::setArtistTagInfo(const QStringList &tags)
 {    
-    if(!tags.isEmpty())
-    {
+    if (!tags.isEmpty()) {
         ui->similarArtistInfo->setVisible(true);
         QString htmlTags;
-        for(auto tag : tags) htmlTags+= "<a href=\""+tag+"\"> "+tag+"</a> , ";
+        for (auto tag : tags)
+            htmlTags += "<a href=\"" + tag + "\">" + tag + "</a>, ";
         ui->similarArtistInfo->setHtml(htmlTags);
     }
-
 }
 
 void InfoView::setTagsInfo(QStringList tags)
 {
-    if(!tags.isEmpty())
-    {
+    if (!tags.isEmpty()) {
         ui->tagsInfo->setVisible(true);
         QString htmlTags;
-        for(auto tag : tags) htmlTags+= "<a href=\""+tag+"\"> "+tag+"</a> , ";
+        for (auto tag : tags)
+            htmlTags += "<a href=\"" + tag + "\">" + tag + "</a>, ";
         ui->tagsInfo->setHtml(htmlTags);
     }
-
 }
 
 
-void InfoView::setAlbumInfo(QString info)
+void InfoView::setAlbumInfo(const QString &info)
 {
-    if (!info.isEmpty())
-    {
+    if (!info.isEmpty()) {
         ui->albumText->setVisible(true);
         ui->frame_5->show();
         ui->albumText->setHtml(info);
     }
 }
 
-void InfoView::setAlbumArt(QByteArray array) {Q_UNUSED(array)}
+void InfoView::setAlbumArt(const QByteArray &array)
+{
+    Q_UNUSED(array)
+}
 
 void InfoView::setArtistInfo(const QString &info)
 {
-
-    if(!info.isEmpty())
-    {
+    if (!info.isEmpty()) {
         ui->artistText->setVisible(true);
         ui->artistText->setHtml(info);
     }
-
 }
 
 void InfoView::setArtistArt(const QByteArray &array)
 {
     artist->putPixmap(array);
-
 }
 
 void InfoView::setArtistArt(const QString &url)
@@ -204,7 +188,7 @@ void InfoView::setArtistArt(const QString &url)
     artist->putPixmap(url);
 }
 
-void InfoView::setLyrics(QString lyrics)
+void InfoView::setLyrics(const QString &lyrics)
 {
     ui->lyricsText->setHtml(lyrics);
     ui->lyricsLayout->setAlignment(Qt::AlignCenter);
@@ -213,49 +197,32 @@ void InfoView::setLyrics(QString lyrics)
 
 void InfoView::on_searchBtn_clicked()
 {
-    if(!customsearch)
-    {
-        ui->customsearch->setVisible(true);
-        ui->frame_2->setVisible(true);
-        customsearch=!customsearch;
-    }
-    else
-    {
-        ui->customsearch->setVisible(false);
-        ui->frame_2->setVisible(false);
-        customsearch=!customsearch;
-    }
+    ui->customsearch->setVisible(!m_customSearch);
+    ui->frame_2->setVisible(!m_customSearch);
+    m_customSearch = !m_customSearch;
 }
-
 
 void InfoView::getTrackInfo(const QString &title_, const QString &artist_, const QString &album_)
 {
     clearInfoViews();
-
-    if(!album_.isEmpty()&&!artist_.isEmpty())
-    {
+    if (!album_.isEmpty() && !artist_.isEmpty()) {
         this->artist->setArtist(artist_);
-        //this->album->setAlbum(album);
-
-        Pulpo info(title_,artist_,album_);
+        Pulpo info(title_, artist_, album_);
         connect(&info, &Pulpo::albumWikiReady, this, &InfoView::setAlbumInfo);
         connect(&info, &Pulpo::artistWikiReady, this, &InfoView::setArtistInfo);
-        connect(&info, &Pulpo::artistSimilarReady, [this] (QMap<QString,QByteArray> info)
+        connect(&info, &Pulpo::artistSimilarReady, [this](QMap<QString, QByteArray> info)
         {
             this->setArtistTagInfo(info.keys());
         });
 
         connect(&info, &Pulpo::albumTagsReady, this, &InfoView::setTagsInfo);
-        connect(&info, &Pulpo::artistArtReady,[this](QByteArray array){this->setArtistArt(array);});
+        connect(&info, &Pulpo::artistArtReady, [this](QByteArray array){ this->setArtistArt(array); });
 
-        info.fetchAlbumInfo(Pulpo::AllAlbumInfo,Pulpo::LastFm);
-        info.fetchArtistInfo(Pulpo::AllArtistInfo,Pulpo::LastFm);
+        info.fetchAlbumInfo(Pulpo::AllAlbumInfo, Pulpo::LastFm);
+        info.fetchArtistInfo(Pulpo::AllArtistInfo, Pulpo::LastFm);
 
-        //info.fetchTrackInfo(Pulpo::TrackTags,Pulpo::LyricWikia,Pulpo::LastFm);
-
-        if(!title_.isEmpty())
-        {
-            lyrics->setData(artist_,title_);
+        if (!title_.isEmpty()) {
+            lyrics->setData(artist_, title_);
             ui->artistLine->setText(artist_);
             ui->titleLine->setText(title_);
         }
@@ -272,22 +239,20 @@ void InfoView::clearInfoViews()
 
 void InfoView::on_toolButton_clicked()
 {
-    QString artist=ui->artistLine->text();
-    QString title=ui->titleLine->text();
-
-    if(!artist.isEmpty()&&!title.isEmpty())
-        lyrics->setData(artist,title);
+    QString artist(ui->artistLine->text());
+    QString title(ui->titleLine->text());
+    if(!artist.isEmpty() && !title.isEmpty())
+        lyrics->setData(artist, title);
 }
-
 
 void InfoView::on_tagsInfo_anchorClicked(const QUrl &arg1)
 {
-    QString query = arg1.toString();
+    QString query(arg1.toString());
     emit tagClicked(query);
 }
 
 void InfoView::on_similarArtistInfo_anchorClicked(const QUrl &arg1)
 {
-    QString query = "artist:"+arg1.toString();
+    QString query("artist: " + arg1.toString());
     emit similarArtistTagClicked(query);
 }

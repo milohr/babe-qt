@@ -12,41 +12,94 @@
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software Foundation,
    Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
-
-   */
-
+*/
 
 #include "track.h"
 
-Track::Track() {}
+Track::Track()
+{
+}
 
-string Track::getName() { return name; }
+void Track::operator=(const Track &)
+{
+}
 
-string Track::getAlbum() { return album; }
+int Track::getTrack()
+{
+    return m_track;
+}
 
-string Track::getTitle() { return title; }
+QString Track::getName()
+{
+    return m_name;
+}
 
-string Track::getArtist() { return artist; }
+QString Track::getAlbum()
+{
+    return m_album;
+}
 
-string Track::getLocation() { return location; }
+QString Track::getTitle()
+{
+    return m_title;
+}
 
-int Track::getTrack() { return track; }
+QString Track::getArtist()
+{
+    return m_artist;
+}
 
-string Track::getGenre() { return genre; }
+QString Track::getLocation()
+{
+    return m_location;
+}
 
-string Track::getArtwork() { return artwork; }
+QString Track::getGenre()
+{
+    return m_genre;
+}
 
-void Track::setTrack(int track) { this->track = track; }
+QString Track::getArtwork()
+{
+    return m_artwork;
+}
 
-void Track::setGenre(string genre) { this->genre = genre; }
+void Track::setTrack(int track)
+{
+    m_track = track;
+}
 
-void Track::setArtwork(string artwork) { this->artwork = artwork; }
+void Track::setGenre(const QString &genre)
+{
+    m_genre = genre;
+}
 
-void Track::setAlbum(string album) { this->album = album; }
+void Track::setArtwork(const QString &artwork)
+{
+    m_artwork = artwork;
+}
 
-void Track::setArtist(string artist) { this->artist = artist; }
+void Track::setAlbum(const QString &album)
+{
+    m_album = album;
+}
 
-void Track::setTitle(string title) { this->title = title; }
+void Track::setArtist(const QString &artist)
+{
+    m_artist = artist;
+}
 
-void Track::setName(string name) { this->name = name; }
-void Track::setLocation(string location) { this->location = location; }
+void Track::setTitle(const QString &title)
+{
+    m_title = title;
+}
+
+void Track::setName(const QString &name)
+{
+    m_name = name;
+}
+
+void Track::setLocation(const QString &location)
+{
+    m_location = location;
+}

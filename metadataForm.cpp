@@ -12,41 +12,35 @@
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software Foundation,
    Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
-
-   */
-
+*/
 
 #include "metadataForm.h"
 #include "ui_metadataForm.h"
 
-metadataForm::metadataForm(QMap<int,QString> info, QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::metadataForm)
+metadataForm::metadataForm(const QMap<int, QString> &info, QWidget *parent) : QWidget(parent)
+  ,ui(new Ui::metadataForm)
 {
     ui->setupUi(this);
     Qt::WindowFlags flags = Qt::Dialog;
-     setWindowFlags(flags);
-     //mapFromParent(QPoint(100, 100));
+    setWindowFlags(flags);
 
-     track=info[BabeTable::TRACK];
-     title=info[BabeTable::TITLE];
-     artist=info[BabeTable::ARTIST];
-     album=info[BabeTable::ALBUM];
-     genre=info[BabeTable::GENRE];
+    track = info[BabeTable::TRACK];
+    title = info[BabeTable::TITLE];
+    artist = info[BabeTable::ARTIST];
+    album = info[BabeTable::ALBUM];
+    genre = info[BabeTable::GENRE];
 
-     ui->trackLine->setText(track);
-     ui->titleLine->setText(title);
-     ui->genreLine->setText(genre);
-     ui->artistLine->setText(artist);
-     ui->albumLine->setText(album);
-
+    ui->trackLine->setText(track);
+    ui->titleLine->setText(title);
+    ui->genreLine->setText(genre);
+    ui->artistLine->setText(artist);
+    ui->albumLine->setText(album);
 }
 
 metadataForm::~metadataForm()
 {
     delete ui;
 }
-
 
 void metadataForm::on_pushButton_2_clicked()
 {
@@ -62,15 +56,9 @@ void metadataForm::on_changebtn_clicked()
     QString _album = ui->albumLine->text();
     QString _genre = ui->genreLine->text();
 
-    if(_track!=this->track || _title!=this->title || _artist!=this->artist || _album!=this->album || _genre!=this->genre)
-    {
-        qDebug()<< "the info did changed";
+    if (_track != this->track || _title != this->title || _artist != this->artist || _album != this->album || _genre != this->genre) {
         const QMap<int, QString> map{{BabeTable::TRACK, _track}, {BabeTable::TITLE, _title}, {BabeTable::ARTIST, _artist},{BabeTable::ALBUM,_album},{BabeTable::GENRE,_genre}};
-
         emit infoModified(map);
-    }else
-    {
-        qDebug()<< "the info didn't changed";
     }
     this->close();
 }

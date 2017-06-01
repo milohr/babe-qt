@@ -1,17 +1,12 @@
 #include "database.h"
 
-#include <QDebug>
-
 #include <QUrl>
 #include <QDir>
 #include <QFile>
 #include <QSqlError>
-#include <QResource>
 #include <QSqlRecord>
 #include <QByteArray>
 #include <QStringList>
-#include <QVariantMap>
-#include <QVariantHash>
 #include <QApplication>
 #include <QStandardPaths>
 
@@ -20,7 +15,7 @@ Database* Database::m_instance = nullptr;
 Database::Database(QObject *parent) : QObject(parent)
 {
     m_applicationName = QApplication::applicationName();
-    setName();
+    setFileName();
     build();
 }
 
@@ -47,21 +42,22 @@ void Database::openConnection()
         m_qSqlDatabase = QSqlDatabase::database(m_applicationName);
         m_qsqlQuery = QSqlQuery(m_qSqlDatabase);
     }
+    if (!m_qSqlDatabase.isOpen())
+        emit logMessage(QStringLiteral("Fatal error on insert! Database connection cannot be opened!"));
 }
 
 void Database::build(bool forceRebuild)
 {
     if (forceRebuild) {
         if (m_databaseName.isEmpty())
-            setName();
+            setFileName();
         QFile(m_databaseName).remove();
     }
-    if (!sqliteFileExists() && !forceRebuild) {
+    if (!QFile(m_databaseName).exists() && !forceRebuild) {
         QFile file(":/database/DatabaseTables.sql");
         if (!file.exists()) {
             QString log = QStringLiteral("Fatal error on build database. The file '");
             log.append(file.fileName() + QStringLiteral("' for database and tables creation query cannot be not found!"));
-            qDebug() << log;
             emit logMessage(log);
             return;
         }
@@ -98,14 +94,14 @@ void Database::build(bool forceRebuild)
                 emit logMessage(m_qsqlQuery.lastError().text());
         }
         file.close();
-        QFile::setPermissions(m_databaseName, QFile::WriteOwner | QFile::ReadOwner);
+        QFile::setPermissions(m_databaseName, QFile::WriteOwner | QFile::ReadGroup | QFile::ReadUser | QFile::ReadOther);
         emit created();
     } else {
         emit logMessage(QStringLiteral("Database file already exists! The build was ignored."));
     }
 }
 
-void Database::setName()
+void Database::setFileName()
 {
     // set the absolute path for .db sqlite file
     QString fileName(m_applicationName+".db");
@@ -124,14 +120,9 @@ void Database::setName()
             qdir.mkpath(path);
         fileName.prepend(QUrl::fromLocalFile(path+"/").toLocalFile());
     }
-    // for sqlite, the databaseName is:
+    // for sqlite, the m_databaseName is:
     // the path (based on the OS) + the application name + .db
     m_databaseName = fileName;
-}
-
-bool Database::sqliteFileExists()
-{
-    return QFile(m_databaseName).exists();
 }
 
 bool Database::queryExec(const QString &sqlQueryString)
@@ -155,6 +146,7 @@ bool Database::queryExec(const QString &sqlQueryString)
 
 QVariantList Database::select(const QString &tableName, const QVariantMap &where, int limit, int offset, const QString &orderBy, bool descending, enum SELECT_TYPE select_type, const QString &whereOperator, const QString &whereComparator)
 {
+    bool withLikeClause = (whereComparator.compare("LIKE", Qt::CaseInsensitive) == 0);
     QVariantList resultSet;
     if (tableName.isEmpty()) {
         emit logMessage(QStringLiteral("Fatal error on select data! The table name is empty!"));
@@ -167,13 +159,9 @@ QVariantList Database::select(const QString &tableName, const QVariantMap &where
 
     if (!where.isEmpty()) {
         int k = 0;
-        QMap<QString, QVariant>::const_iterator i = where.constBegin();
-        while (i != where.constEnd()) {
-            QString key(i.key());
-            whereStr.append(QString(QStringLiteral("%1 %2 %3 '%4'")).arg((k++ == 0) ? "" : " " + whereOperator).arg(key).arg(whereComparator).arg(i.value().toString()));
-            ++i;
-        }
-        sqlQueryString.append(QStringLiteral(" WHERE ")).append(whereStr.remove("  "));
+        foreach (const QString &key, where.keys())
+            whereStr.append(QString(QStringLiteral("%1 %2 %3 %4")).arg(k++ == 0 ? "" : " " + whereOperator, key, whereComparator, "?"));
+        sqlQueryString.append(QStringLiteral(" WHERE ")).append(whereStr.remove("  ").trimmed().simplified());
     }
 
     if (!orderBy.isEmpty()) {
@@ -186,17 +174,28 @@ QVariantList Database::select(const QString &tableName, const QVariantMap &where
         sqlQueryString.append(QStringLiteral(" LIMIT ") + QString::number(limit));
     else if (offset > 0)
         sqlQueryString.append(QStringLiteral(" LIMIT ") + QString::number(limit) + " OFFSET " + QString::number(offset));
-    if (!queryExec(sqlQueryString))
+
+    openConnection();
+
+    m_qsqlQuery.prepare(sqlQueryString);
+
+    QVariant value;
+    foreach (const QString &key, where.keys()) {
+        value = where.value(key);
+        if (withLikeClause)
+            value = QVariant("\%"+where.value(key).toString()+"\%");
+        m_qsqlQuery.addBindValue(value);
+    }
+
+    if (!m_qsqlQuery.exec())
         return resultSet;
 
-    QSqlRecord resultRecord = m_qsqlQuery.record();
-    int totalColumns = resultRecord.count();
-    if (totalColumns == 0 || m_qsqlQuery.size() == 0)
+    int totalColumns = m_qsqlQuery.record().count();
+    if (!totalColumns || !m_qsqlQuery.size())
         return resultSet;
-
-    QSqlRecord record;
 
     int i = 0;
+    QSqlRecord record;
     while (m_qsqlQuery.next()) {
         record = m_qsqlQuery.record();
         if (record.isEmpty() || !m_qsqlQuery.isValid())
@@ -223,30 +222,31 @@ int Database::insert(const QString &tableName, const QVariantMap &insertData)
         return 0;
     }
 
-    QStringList values;
+    QStringList strValues;
     QStringList fields = insertData.keys();
+    QVariantList values = insertData.values();
     int totalFields = fields.size();
     for (int i = 0; i < totalFields; ++i)
-        values.append("?");
-    openConnection();
+        strValues.append("?");
 
+    openConnection();
     if (!m_qSqlDatabase.isOpen()) {
         emit logMessage(QStringLiteral("Fatal error on insert! Database connection cannot be opened!"));
         return 0;
     }
 
-    m_qsqlQuery.prepare(QString(QStringLiteral("INSERT INTO %1(%2) VALUES(%3)")).arg(tableName).arg(QString(fields.join(","))).arg(QString(values.join(","))));
+    QString sqlQueryString;
+    sqlQueryString = "INSERT INTO " + tableName + "(" + QString(fields.join(",")) + ") VALUES(" + QString(strValues.join(",")) + ")";
+    m_qsqlQuery.prepare(sqlQueryString);
 
-    for (int i = 0; i < totalFields; ++i)
-        m_qsqlQuery.addBindValue(insertData.value(QString(fields.at(i)), ""));
+    int k = 0;
+    foreach (const QVariant &value, values)
+        m_qsqlQuery.bindValue(k++, value);
 
-    if (m_qsqlQuery.exec())
-        return lastInsertId();
-
-    return 0;
+    return m_qsqlQuery.exec() ? lastInsertId() : 0;
 }
 
-int Database::remove(const QString &tableName, const QVariantMap &where, const QString &whereOperator)
+int Database::remove(const QString &tableName, const QVariantMap &where, const QString &whereComparator)
 {
     if (tableName.isEmpty()) {
         emit logMessage(QStringLiteral("Fatal error on remove! The table name is empty!"));
@@ -261,19 +261,18 @@ int Database::remove(const QString &tableName, const QVariantMap &where, const Q
     QMap<QString, QVariant>::const_iterator j = where.constBegin();
     while (j != where.constEnd()) {
         separator = (k++ == 0) ? QStringLiteral("") : QStringLiteral(" AND ");
-        whereStr += QString("%1%2 %3 '%4'").arg(separator).arg(j.key()).arg(whereOperator).arg(j.value().toString());
+        whereStr += QString("%1%2 %3 '%4'").arg(separator).arg(j.key()).arg(whereComparator).arg(j.value().toString());
         ++j;
     }
-    QString query(QStringLiteral("DELETE FROM %1"));
-    query.arg(tableName);
+    QString query(QStringLiteral("DELETE FROM ") + tableName);
     if (!where.isEmpty())
-        query.append(QStringLiteral("WHERE ") + whereStr);
+        query.append(QStringLiteral(" WHERE ") + whereStr);
     if (queryExec(query))
         return numRowsAffected();
     return 0;
 }
 
-int Database::update(const QString &tableName, const QVariantMap &updateMap, const QVariantMap &where, const QString &whereOperator)
+int Database::update(const QString &tableName, const QVariantMap &updateData, const QVariantMap &where, const QString &whereOperator, const QString &whereComparator)
 {
     if (tableName.isEmpty()) {
         emit logMessage(QStringLiteral("Fatal error on update! The table name is empty!"));
@@ -282,29 +281,47 @@ int Database::update(const QString &tableName, const QVariantMap &updateMap, con
         emit logMessage(QStringLiteral("Fatal error on update! The WHERE parameter must be set to update operation!"));
         return 0;
     }
+
+    QVariantList values;
     QString whereStr(QStringLiteral(""));
     QString updateValues(QStringLiteral(""));
     {
         int k = 0;
+        QString key;
         QString separator;
-        QMap<QString, QVariant>::const_iterator i = updateMap.constBegin();
-        while (i != updateMap.constEnd()) {
+        QMap<QString, QVariant>::const_iterator i = updateData.constBegin();
+        while (i != updateData.constEnd()) {
+            key = i.key();
             separator = (k++ == 0) ? "" : ",";
-            updateValues.append(QString("%1%2 = '%3'").arg(separator).arg(i.key()).arg(i.value().toString()));
+            updateValues.append(QString("%1%2=%3").arg(separator, key, ":"+key));
+            values << i.value();
             ++i;
         }
         k = 0;
         separator = "";
         i = where.constBegin();
         while (i != where.constEnd()) {
+            key = i.key();
             separator = (k++ == 0) ? "" : (QStringLiteral(" ") + whereOperator + QStringLiteral(" "));
-            whereStr += QString("%1%2 = '%3'").arg(separator).arg(i.key()).arg(i.value().toString());
+            whereStr += QString("%1%2%3%4").arg(separator, key, whereComparator, ":"+key);
+            values << i.value();
             ++i;
         }
     }
-    if (queryExec(QString("UPDATE %1 SET %2 WHERE %3").arg(tableName).arg(updateValues).arg(whereStr)))
-        return numRowsAffected();
-    return 0;
+    openConnection();
+    if (!m_qSqlDatabase.isOpen()) {
+        emit logMessage(QStringLiteral("Fatal error on insert! Database connection cannot be opened!"));
+        return 0;
+    }
+
+    QString sqlQueryString;
+    sqlQueryString = "UPDATE " + tableName + " SET " + updateValues + " WHERE " + whereStr +";";
+    m_qsqlQuery.prepare(sqlQueryString);
+
+    foreach (const QVariant &value, values)
+        m_qsqlQuery.addBindValue(value);
+
+    return m_qsqlQuery.exec() ? numRowsAffected() : 0;
 }
 
 int Database::lastInsertId() const
@@ -334,5 +351,10 @@ int Database::numRowsAffected() const
 
 QString Database::lastQuery() const
 {
-    return m_qsqlQuery.executedQuery();
+    return m_qsqlQuery.lastQuery();
+}
+
+QString Database::lastError() const
+{
+    return m_qsqlQuery.lastError().text();
 }

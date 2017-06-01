@@ -2,12 +2,18 @@
 #define PLAYLISTSVIEW_H
 
 #include <QWidget>
+
 #include <babetable.h>
-#include <QListWidget>
-#include <QToolButton>
-#include <QGridLayout>
-#include <QStandardPaths>
 #include "baeUtils.h"
+
+class TracksDB;
+class PlaylistsDB;
+
+class QGridLayout;
+class QListWidget;
+class QToolButton;
+class QListWidgetItem;
+
 namespace Ui {
 class PlaylistsView;
 }
@@ -15,51 +21,48 @@ class PlaylistsView;
 class PlaylistsView : public QWidget
 {
     Q_OBJECT
-
 public:
     explicit PlaylistsView(QWidget *parent = 0);
     ~PlaylistsView();
+
+    void setDefaultPlaylists();
+    void setPlaylists(const QStringList &playlists);
+    void setPlaylistsMoods(const QStringList &moods_n);
+    void definePlaylists(const QStringList &playlists);
+
     QToolButton *addToPlaylist;
     BabeTable *table;
     QListWidget *list;
     QListWidget *moodList;
-    void setPlaylists(QStringList playlists);
-    void setPlaylistsMoods(QStringList moods_n);
-    void setDefaultPlaylists();
-    void definePlaylists(QStringList playlists);
     QFrame *line_v;
     QWidget *btnContainer;
     QString currentPlaylist;
     QStringList playlists;
-    QStringList moods = BaeUtils::getMoodColors();
-    QString youtubeCachePath=BaeUtils::getYoutubeCachePath();
-
-   // QToolButton *removeBtn;
+    const QStringList moods = BaeUtils::getMoodColors();
+    const QString youtubeCachePath = BaeUtils::getYoutubeCachePath();
 
 private:
-
+    QFrame *frame;
+    QGridLayout *layout;
     QToolButton *addBtn;
     QToolButton *removeBtn;
-    QGridLayout *layout;
-
-    QFrame *frame;
+    TracksDB *m_tracksDB;
+    PlaylistsDB *m_playlistsDB;
 
 public slots:
-
+    void dummy();
     void createPlaylist();
     void removePlaylist();
-    void playlistName(QListWidgetItem *item);
     void on_removeBtn_clicked();
-    void populatePlaylist(QModelIndex index);
     void tableClicked(QStringList list);
-    void dummy();
+    void playlistName(QListWidgetItem *item);
+    void populatePlaylist(QModelIndex index);
 
 signals:
-    void playlistCreated(QString name);
-    void songClicked(QStringList list);
-    void playlistClicked(QString playlist);
-    void modifyPlaylistName(QString newName);
-
+    void playlistCreated(const QString &name);
+    void songClicked(const QStringList &list);
+    void playlistClicked(const QString &playlist);
+    void modifyPlaylistName(const QString &newName);
 };
 
 #endif // PLAYLISTSVIEW_H

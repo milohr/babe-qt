@@ -2,7 +2,6 @@
 #define BAEUTILS_H
 
 #include <QApplication>
-#include <QDebug>
 #include <QFileInfo>
 #include <QStandardPaths>
 #include <QString>
@@ -11,44 +10,33 @@ using namespace std;
 
 namespace BaeUtils
 {
-static inline QString getNameFromLocation(const QString &str)
-{
-    QString ret;
-    int index = 0;
-    for (int i = str.size() - 1; i >= 0; i--) {
-        if (str[i] == '/') {
-            index = i + 1;
-            i = -1;
-        }
-    }
-    for(; index < str.size(); index++)
-        ret.push_back(str[index]);
-    return ret;
-}
-
-static inline QString getSettingPath()
-{
-    return QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + "/" + QApplication::applicationName();
-}
-
-static inline QString getCollectionDBPath()
-{
-    return QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
-}
-
-static inline QString getCachePath()
-{
-    return QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation) + "/" + QApplication::applicationName();
-}
-
-static inline QString getYoutubeCachePath()
-{
-    return QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation) + "/" + QApplication::applicationName() + "/youtube/";
-}
 
 static inline QString getExtensionFetchingPath()
 {
     return QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
+}
+
+static inline QString getSettingPath()
+{
+    const QString appName = QApplication::applicationName();
+    return QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + "/" + appName;
+}
+
+static inline QString getGenericDataPath()
+{
+    const QString appName = QApplication::applicationName();
+    return QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/" + appName;
+}
+
+static inline QString getCachePath()
+{
+    const QString appName = QApplication::applicationName();
+    return QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation) + "/" + appName;
+}
+
+static inline QString getYoutubeCachePath()
+{
+    return BaeUtils::getCachePath() + "/youtube/";
 }
 
 static inline QString getNotifyDir()
@@ -56,10 +44,34 @@ static inline QString getNotifyDir()
     return QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
 }
 
+static inline QString getNameFromLocation(const QString &str)
+{
+    QString ret;
+    int index = 0;
+    int strSize = str.size();
+    for (int i = strSize - 1; i >= 0; i--) {
+        if (str[i] == '/') {
+            index = i + 1;
+            i = -1;
+        }
+    }
+    for(; index < strSize; index++)
+        ret.push_back(str[index]);
+    return ret;
+}
+
+static inline QString getLocationFromTrackPath(const QString &str)
+{
+    QStringList paths(str.split("/"));
+    paths.removeLast();
+    return paths.join("/");
+}
+
 static inline QString fixTitle(const QString &title, const QString &s, const QString &e)
 {
     QString newTitle;
-    for (int i = 0; i < title.size(); i++) {
+    int titleSize = title.size();
+    for (int i = 0; i < titleSize; i++) {
         if (title.at(i) == s) {
             while (title.at(i) != e) {
                 if (i == title.size()-1)

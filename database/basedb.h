@@ -12,7 +12,7 @@ public:
     explicit BaseDB(const QString &tableName, QObject *parent = 0);
 
     int save(const QVariantMap &data);
-    int update(const QVariantMap &data, const QVariantMap &where);
+    int update(const QVariantMap &data, const QVariantMap &where, const QString &whereOperator = QStringLiteral("AND"), const QString &whereComparator = QStringLiteral("="));
     int remove(const QVariantMap &where, const QString &whereOperator = QStringLiteral("="));
     int resetTable();
 
@@ -22,7 +22,7 @@ public:
 signals:
     void saved(const QVariantMap &track);
 
-private:
+protected:
     QString m_tableName;
     Database *m_database;
 };

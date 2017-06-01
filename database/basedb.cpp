@@ -12,9 +12,9 @@ int BaseDB::save(const QVariantMap &data)
     return m_database->insert(m_tableName, data);
 }
 
-int BaseDB::update(const QVariantMap &data, const QVariantMap &where)
+int BaseDB::update(const QVariantMap &data, const QVariantMap &where, const QString &whereOperator, const QString &whereComparator)
 {
-    return m_database->update(m_tableName, data, where);
+    return m_database->update(m_tableName, data, where, whereOperator, whereComparator);
 }
 
 int BaseDB::remove(const QVariantMap &where, const QString &whereOperator)
@@ -29,7 +29,10 @@ int BaseDB::resetTable()
 
 QVariantMap BaseDB::loadItem(const QVariantMap &filter, const QString &whereOperator, const QString &whereComparator)
 {
-    return m_database->select(m_tableName, filter, -1, 0, "title", false, Database::SELECT_TYPE::All_Itens_Int, whereOperator, whereComparator).at(0).toMap();
+    QVariantList result = m_database->select(m_tableName, filter, 1, 0, "title", false, Database::SELECT_TYPE::All_Itens_Int, whereOperator, whereComparator);
+    if (result.size() > 0)
+        return result.at(0).toMap();
+    return QVariantMap();
 }
 
 QVariantList BaseDB::loadList(const QVariantMap &filter, int limit, int offset, const QString &orderBy, bool descending, const QString &whereOperator, const QString &whereComparator)

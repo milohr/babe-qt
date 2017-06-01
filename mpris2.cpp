@@ -12,13 +12,11 @@
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software Foundation,
    Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
-
-   */
+*/
 
 #include "mpris2.h"
-#include<QDBusConnection>
+#include <QDBusConnection>
 #include <QDBusMessage>
-
 
 static inline qlonglong convertTime(int t)
 {
@@ -27,27 +25,10 @@ static inline qlonglong convertTime(int t)
 
 static QString mprisPath;
 
-Mpris::Mpris(QObject *p)
-    : QObject(p)
-    , pos(-1)
+Mpris::Mpris(QObject *parent) : QObject(parent), pos(-1)
 {
     QDBusConnection::sessionBus().registerService("org.mpris.MediaPlayer2.Babe");
-
-
     QDBusConnection::sessionBus().registerObject("/org/mpris/MediaPlayer2", this, QDBusConnection::ExportAdaptors);
-    /*connect(this, SIGNAL(setRandom(bool)), MPDConnection::self(), SLOT(setRandom(bool)));
-    connect(this, SIGNAL(setRepeat(bool)), MPDConnection::self(), SLOT(setRepeat(bool)));
-    connect(this, SIGNAL(setSeekId(qint32, quint32)), MPDConnection::self(), SLOT(setSeekId(qint32, quint32)));
-    connect(this, SIGNAL(setVolume(int)), MPDConnection::self(), SLOT(setVolume(int)));*/
-
-    //    connect(MPDConnection::self(), SIGNAL(currentSongUpdated(const Song &)), this, SLOT(updateCurrentSong(const Song &)));
-    //connect(MPDStatus::self(), SIGNAL(updated()), this, SLOT(updateStatus()));
-    /* if (mprisPath.isEmpty()) {
-        mprisPath=QLatin1String(CANTATA_REV_URL);
-        mprisPath.replace(".", "/");
-        mprisPath="/"+mprisPath+"/Track/%1";
-    }*/
-    //connect(CurrentCover::self(), SIGNAL(coverFile(const QString &)), this, SLOT(updateCurrentCover(const QString &)));
 }
 
 Mpris::~Mpris()
@@ -55,61 +36,222 @@ Mpris::~Mpris()
     QDBusConnection::sessionBus().unregisterService("org.mpris.MediaPlayer2.cantata");
 }
 
+void Mpris::Next()
+{
+    qDebug() << "next";
+}
+
+void Mpris::Previous()
+{
+    qDebug() << "previous";
+}
+
 void Mpris::Pause()
 {
-    qDebug()<<"pause";
+    qDebug() << "pause";
+}
 
+void Mpris::PlayPause()
+{
+    qDebug() << "pause";
+}
+
+void Mpris::Stop()
+{
+    qDebug() << "stop";
+}
+
+void Mpris::StopAfterCurrent()
+{
+    qDebug() << "stop after current";
 }
 
 void Mpris::Play()
 {
-    qDebug()<<"play";
+    qDebug() << "play";
+}
+
+void Mpris::Seek(qlonglong pos)
+{
+    qDebug() << pos;
+}
+
+void Mpris::SetPosition(const QDBusObjectPath &, qlonglong pos)
+{
+    qDebug() << pos;
+}
+
+void Mpris::OpenUri(const QString &)
+{
 }
 
 QString Mpris::PlaybackStatus() const
 {
-    qDebug()<<"PlaybackStatus";
+    qDebug() << "PlaybackStatus";
     return "PlaybackStatus";
+}
+
+QString Mpris::LoopStatus()
+{
+    return "sthm";
+}
+
+void Mpris::SetLoopStatus(const QString &s)
+{
+    emit setRepeat(QLatin1String("None") != s);
 }
 
 qlonglong Mpris::Position() const
 {
     // Cant use MPDStatus, as we dont poll for track position, but use a timer instead!
-    //return MPDStatus::self()->timeElapsed();
+    // return MPDStatus::self()->timeElapsed();
     return 1000000000;
+}
+
+double Mpris::MinimumRate() const
+{
+    return 1.0;
+}
+
+double Mpris::MaximumRate() const
+{
+    return 1.0;
+}
+
+bool Mpris::CanControl() const
+{
+    return true;
+}
+
+bool Mpris::CanPlay() const
+{
+    return true;
+}
+
+bool Mpris::CanPause() const
+{
+    return true;
+}
+
+bool Mpris::CanSeek() const
+{
+    return true;
+}
+
+bool Mpris::CanGoNext() const
+{
+    return true;
+}
+
+bool Mpris::CanGoPrevious() const
+{
+    return true;
+}
+
+bool Mpris::CanQuit() const
+{
+    return true;
+}
+
+bool Mpris::CanRaise() const
+{
+    return true;
+}
+
+bool Mpris::HasTrackList() const
+{
+    return false;
+}
+
+QString Mpris::Identity() const
+{
+    return QLatin1String("Cantata");
+}
+
+QString Mpris::DesktopEntry() const
+{
+#ifdef ENABLE_KDE_SUPPORT
+    // Desktop file is installed in $prefix/share/applications/kde4/
+    // rather than in $prefix/share/applications. The standard way to
+    // represent this dir is with a "kde4-" prefix. See:
+    // http://standards.freedesktop.org/menu-spec/1.0/go01.html#term-desktop-file-id
+    return QLatin1String("kde4-cantata");
+#else
+    return QLatin1String("cantata");
+#endif
+}
+
+QStringList Mpris::SupportedUriSchemes() const
+{
+    return QStringList();
+}
+
+QStringList Mpris::SupportedMimeTypes() const
+{
+    return QStringList();
 }
 
 void Mpris::updateStatus()
 {
-    QVariantMap map;
-    qDebug()<<"updateStatus";
-
-
+    qDebug() << "updateStatus";
 }
 
 void Mpris::updateCurrentCover(const QString &fileName)
 {
-    if (fileName!=currentCover) {
-        currentCover=fileName;
+    if (fileName != currentCover) {
+        currentCover = fileName;
         signalUpdate("Metadata", Metadata());
     }
 }
 
 void Mpris::updateCurrentSong()
 {
-    qDebug()<<"updateCurrentSong";
-
+    qDebug() << "updateCurrentSong";
 }
 
-QVariantMap Mpris::Metadata() const {
+QVariantMap Mpris::Metadata() const
+{
     QVariantMap metadataMap;
-
     return metadataMap;
+}
+
+int Mpris::Rate() const
+{
+    return 1.0;
+}
+
+void Mpris::SetRate(double)
+{
+}
+
+bool Mpris::Shuffle()
+{
+    return false;
+}
+
+void Mpris::SetShuffle(bool s)
+{
+    emit setRandom(s);
+}
+
+double Mpris::Volume() const
+{
+    return 100.0;
+}
+
+void Mpris::SetVolume(double v)
+{
+    emit setVolume(v*100);
 }
 
 void Mpris::Raise()
 {
     emit showMainWindow();
+}
+
+void Mpris::Quit()
+{
+    QApplication::quit();
 }
 
 void Mpris::signalUpdate(const QString &property, const QVariant &value)
@@ -121,9 +263,8 @@ void Mpris::signalUpdate(const QString &property, const QVariant &value)
 
 void Mpris::signalUpdate(const QVariantMap &map)
 {
-    if (map.isEmpty()) {
+    if (map.isEmpty())
         return;
-    }
     QDBusMessage signal = QDBusMessage::createSignal("/org/mpris/MediaPlayer2",
                                                      "org.freedesktop.DBus.Properties",
                                                      "PropertiesChanged");

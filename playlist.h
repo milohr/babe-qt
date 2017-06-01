@@ -1,44 +1,37 @@
 #ifndef PLAYLIST_H
 #define PLAYLIST_H
 
+#include <QObject>
+#include <babetable.h>
+#include <taginfo.h>
+
 #include "vector"
 #include "track.h"
 #include <fstream>
-#include <QDebug>
-#include <QStringList>
-#include <QFileInfo>
-#include <QMimeDatabase>
-#include <QMimeType>
-#include <QString>
-#include <taginfo.h>
-#include <babetable.h>
 
-//#include <QtMultimedia/QMediaPlayer>
+class QFileInfo;
+class QMimeDatabase;
+class QMimeType;
 
-class Playlist
+class Playlist : QObject
 {
+    Q_OBJECT
 public:
-    Playlist();
+    explicit Playlist(QObject *parent = 0);
     QStringList getList();
     void add(QStringList files);
     void addClean(QStringList files);
     void remove(int index);
     void removeAll();
-
-    bool isMusic(QString file);
+    bool isMusic(const QString &file);
     QStringList getTracksNameList();
     QStringList getTracksNameListSimple();
-    QList<QMap<int,QString>> getTracksData();
-
-    std::vector<Track> tracks;
-
+    QList<QMap<int, QString>> getTracksData();
     QList<Track> getTracks();
 
 private:
-
-    void setMetaData(QString,QString,QString,QString);
-
-
+    std::vector<Track> tracks;
+    void setMetaData(const QString &title, const QString &artist, const QString &album, const QString &location);
 };
 
 #endif // PLAYLIST_H

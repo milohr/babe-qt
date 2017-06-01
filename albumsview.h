@@ -1,23 +1,25 @@
 #ifndef ALBUMSVIEW_H
 #define ALBUMSVIEW_H
 
-#include <QComboBox>
-#include <QDebug>
-#include <QFrame>
-#include <QGridLayout>
-#include <QHeaderView>
-#include <QListWidgetItem>
-#include <QListWidget>
-#include <QShortcut>
-#include <QSplitter>
-#include <QSqlQuery>
-#include <QToolTip>
 #include <QWidget>
+#include <QComboBox>
 
 #include "album.h"
+#include "database/albumsdb.h"
+#include "database/tracksdb.h"
+#include "database/artistsdb.h"
 #include "babetable.h"
 #include "collectionDB.h"
 #include "scrolltext.h"
+
+class QFrame;
+class QGridLayout;
+class QHeaderView;
+class QListWidgetItem;
+class QListWidget;
+class QShortcut;
+class QSplitter;
+class QToolTip;
 
 namespace Ui {
 class AlbumsView;
@@ -29,17 +31,16 @@ class AlbumsView : public QWidget
 public:
     explicit AlbumsView(bool extraList = false, QWidget *parent = 0);
     ~AlbumsView();
-
-    void populateTableView(QSqlQuery query);
-    void populateTableViewHeads(QSqlQuery query);
-    void populateExtraList(QSqlQuery query);
+    void populateTableView(const QString &order = "");
+    void populateTableViewHeads();
+    void populateExtraList(const QString &artist = "");
     void flushGrid();
 
     int getAlbumSize();
-    QSlider *slider;
     QComboBox *order;
-    QListWidget *grid;
     QFrame *utilsFrame;
+    QListWidget *grid;
+    QSlider *slider;
     BabeTable *albumTable;
 
     enum ALBUMSVIEW_H {TITLE, ARTIST, ART};
@@ -60,7 +61,10 @@ private:
     QToolButton *closeBtn;
     QListWidget *artistList;
     QWidget *albumBox_frame;
-    CollectionDB *connection;
+    CollectionDB m_collectionDB;
+    AlbumsDB *m_albumsDB;
+    TracksDB *m_tracksDB;
+    ArtistsDB *m_artistsDB;
 
 public slots:
     void hideAlbumFrame();

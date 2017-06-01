@@ -11,6 +11,7 @@ class PlaylistsDB : public BaseDB
 private:
     explicit PlaylistsDB(QObject *parent = 0);
     PlaylistsDB(const PlaylistsDB &other);
+    virtual ~PlaylistsDB();
     void operator=(PlaylistsDB const &);
 
 public:

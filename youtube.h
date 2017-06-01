@@ -1,15 +1,12 @@
 #ifndef YOUTUBE_H
 #define YOUTUBE_H
 
-#include <QByteArray>
-#include <QDebug>
-#include <QDirIterator>
-#include <QMovie>
 #include <QObject>
 #include <QProcess>
-#include <QWidget>
 
 #include "baeUtils.h"
+
+class QDirIterator;
 
 class YouTube : public QObject
 {

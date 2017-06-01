@@ -4,18 +4,6 @@
 #include <fstream>
 #include <iostream>
 
-#include <QDebug>
-#include <QDir>
-#include <QDirIterator>
-#include <QFile>
-#include <QFileDialog>
-#include <QFileSystemWatcher>
-#include <QGridLayout>
-#include <QLabel>
-#include <QMovie>
-#include <QString>
-#include <QStringList>
-#include <QTimer>
 #include <QWidget>
 
 #include "about.h"
@@ -25,6 +13,11 @@
 #include "playlist.h"
 #include "pulpo/pulpo.h"
 #include "youtube.h"
+
+class QFileSystemWatcher;
+class QLabel;
+class QMovie;
+class QTimer;
 
 namespace Ui {
 class settings;
@@ -37,23 +30,20 @@ public:
     explicit settings(QWidget *parent = 0);
     ~settings();
 
-    const QString settingPath = BaeUtils::getSettingPath();
-    const QString collectionDBPath = BaeUtils::getCollectionDBPath();
     const QString cachePath = BaeUtils::getCachePath();
+    const QString settingPath = BaeUtils::getSettingPath();
     const QString youtubeCachePath = BaeUtils::getYoutubeCachePath();
     const QString extensionFetchingPath = BaeUtils::getExtensionFetchingPath();
     const QStringList formats {"*.mp4", "*.mp3", "*.wav", "*.flac", "*.ogg", "*.m4a"};
     int getToolbarIconSize();
-    CollectionDB &getCollectionDB();
 
-    void setSettings(const QStringList &setting);
     void readSettings();
+    void setSettings(const QStringList &setting);
     void removeSettings(const QStringList &setting);
     void refreshCollectionPaths();
     void collectionWatcher();
     void addToWatcher(QStringList paths);
     QStringList getCollectionPath();
-    CollectionDB collection_db;
     bool youtubeTrackDone = false;
 
     enum iconSizes
@@ -85,7 +75,6 @@ public slots:
 
 private:
     const QString notifyDir = BaeUtils::getNotifyDir();
-    const QString collectionDBName = "Babe.db";
     const QString settingsName = "settings.conf";
     int iconSize = 16;
     Notify nof;
@@ -93,6 +82,7 @@ private:
     QStringList files;
     QString pathToRemove;
     QStringList collectionPaths = {};
+    CollectionDB m_collectionDB;
 
     QMovie *movie;
     About *about_ui;
@@ -108,7 +98,7 @@ signals:
     void collectionPathChanged(const QString &newPath);
     void collectionDBFinishedAdding(bool state);
     void fileChanged(const QString &url);
-    void dirChanged(const QString &url, const QString &babe = "0");
+    void dirChanged(const QString &url, int babe = 0);
     void collectionPathRemoved(const QString &url);
     void refreshTables();
 };

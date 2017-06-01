@@ -12,73 +12,62 @@
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software Foundation,
    Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
-
-   */
-
+*/
 
 #include "notify.h"
 #include "babetable.h"
 
+#include <QDebug>
 
-Notify::Notify(QObject *parent) : QObject(parent){}
+#include <QByteArray>
+#include <QPixmap>
+#include <QStandardPaths>
+#include <QMap>
 
-void Notify::notify(  const QString &title, const QString &body)
+Notify::Notify(QObject *parent) : QObject(parent)
 {
-    KNotification *notification = new KNotification(QStringLiteral("Notify"),
-                                                    KNotification::CloseOnTimeout, this);
+}
 
-    // notification->setComponentName(QStringLiteral("Babe"));
+void Notify::notify(const QString &title, const QString &body)
+{
+    if (title.isEmpty())
+        return;
+    KNotification *notification = new KNotification(QStringLiteral("Notify"), KNotification::CloseOnTimeout, this);
     notification->setTitle(QStringLiteral("%1").arg(title));
     notification->setText(QStringLiteral("%1").arg(body));
     QPixmap babeIcon;
     babeIcon.load(":Data/data/babe_128.svg");
     notification->setPixmap(babeIcon);
-    //connect(notification, SIGNAL(ac), this, SLOT(notify()));
-
     notification->sendEvent();
-
+    qDebug() << "notification->appName(): " << notification->appName();
+    notification->update();
 }
 
-void Notify::notifySong(const QMap<int, QString> &trackMap,  const QPixmap &pix)
+void Notify::notifySong(const QMap<int, QString> &trackMap, const QPixmap &pix)
 {
     this->track = trackMap;
-
-    KNotification *notification = new KNotification(QStringLiteral("Playing"),
-                                                    KNotification::CloseOnTimeout, this);
-
-    // notification->setComponentName(QStringLiteral("Babe"));
+    KNotification *notification = new KNotification(QStringLiteral("Playing"), KNotification::CloseOnTimeout, this);
     notification->setTitle(QStringLiteral("%1").arg(track[BabeTable::TITLE]));
     notification->setText(QStringLiteral("by %1 - %2").arg(track[BabeTable::ARTIST],track[BabeTable::ALBUM]));
-    if(!pix.isNull()) notification->setPixmap(pix);
-
-    if(track[BabeTable::BABE].toInt()==1) notification->setActions(QStringList(i18n("Un-Babe it  \xe2\x99\xa1")));
-    else notification->setActions(QStringList(i18n("Babe it  \xe2\x99\xa1")));
-
+    if (!pix.isNull())
+        notification->setPixmap(pix);
+    if (track[BabeTable::BABE].toInt() == 1)
+        notification->setActions(QStringList(i18n("Un-Babe it \xe2\x99\xa1")));
+    else
+        notification->setActions(QStringList(i18n("Babe it \xe2\x99\xa1")));
     connect(notification, SIGNAL(activated(uint)), SLOT(babeIt()));
-
-
-    //connect(notification, SIGNAL(ac), this, SLOT(notify()));
-
     notification->sendEvent();
-
 }
 
-void Notify::notifyUrgent(  const QString &title, const QString &body)
+void Notify::notifyUrgent(const QString &title, const QString &body)
 {
-    KNotification *notification = new KNotification(QStringLiteral("Urgent"),
-                                                    KNotification::CloseOnTimeout, this);
-
-    // notification->setComponentName(QStringLiteral("Babe"));
+    KNotification *notification = new KNotification(QStringLiteral("Urgent"), KNotification::CloseOnTimeout, this);
     notification->setTitle(QStringLiteral("%1").arg(title));
     notification->setText(QStringLiteral("%1").arg(body));
-
     notification->sendEvent();
-
 }
 
 void Notify::babeIt()
 {
-    qDebug()<<"babe the shit out of it";
-     emit babeSong(track);
-
+    emit babeSong(track);
 }

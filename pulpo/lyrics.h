@@ -1,15 +1,16 @@
 #ifndef LYRICS_H
 #define LYRICS_H
-#include <QtNetwork>
-#include <QUrl>
-#include <QWidget>
-#include <QObject>
-#include <QNetworkAccessManager>
-#include <QNetworkRequest>
-#include <QNetworkReply>
-#include <QDomDocument>
-#include <QRegExp>
 
+#include <QObject>
+
+class QtNetwork;
+class QUrl;
+class QWidget;
+class QNetworkAccessManager;
+class QNetworkRequest;
+class QNetworkReply;
+class QDomDocument;
+class QRegExp;
 
 class Lyrics : public QObject
 {

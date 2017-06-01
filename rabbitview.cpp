@@ -1,8 +1,15 @@
 #include "rabbitview.h"
 
+#include <QFrame>
+#include <QGridLayout>
+#include <QListWidget>
+#include <QListWidgetItem>
+#include <QSplitter>
+#include <QString>
+
 RabbitView::RabbitView(QWidget *parent) : QWidget(parent)
 {
-    auto *suggestionWidget_layout = new QGridLayout();
+    QGridLayout *suggestionWidget_layout = new QGridLayout();
     suggestionWidget_layout->setContentsMargins(0, 0, 0, 0);
     suggestionWidget_layout->setSpacing(0);
 
@@ -23,14 +30,14 @@ RabbitView::RabbitView(QWidget *parent) : QWidget(parent)
     artistSuggestion->setStyleSheet("QListWidget {background:#575757; padding-top:10px; padding-left:15px;}");
 
     generalSuggestion = new BabeTable(this);
-    generalSuggestion->passStyle("QHeaderView::section { background-color:#333; color:white; }");
+    generalSuggestion->passStyle("QHeaderView::section {background-color:#333; color:white;}");
     generalSuggestion->setAddMusicMsg("\nCouldn't find similar music");
 
     QSplitter *splitter = new QSplitter(parent);
     splitter->setChildrenCollapsible(false);
     splitter->setOrientation(Qt::Vertical);
 
-    splitter->setStyleSheet("QSplitter::handle {background-color:black;} QSplitter::handle:horizontal { width: 1px; }");
+    splitter->setStyleSheet("QSplitter::handle {background-color:black;} QSplitter::handle:horizontal {width: 1px;}");
     splitter->addWidget(artistSuggestion);
     splitter->addWidget(generalSuggestion);
 
@@ -47,7 +54,7 @@ void RabbitView::populateArtistSuggestion(const QMap<QString,QByteArray> &info)
 
         art->setToolTip(BaeUtils::fixString(tag));
         art->putPixmap(info[tag]);
-        art->borderColor = true;
+        art->setBordercolor(true);
         art->setTitle(BaeUtils::fixString(tag));
         art->titleVisible(false);
 

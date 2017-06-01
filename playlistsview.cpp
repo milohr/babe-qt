@@ -12,14 +12,23 @@
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software Foundation,
    Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
-
-   */
-
+*/
 
 #include "playlistsview.h"
+#include "database/tracksdb.h"
+#include "database/playlistsdb.h"
 
+#include <QDebug>
+#include <QGridLayout>
+#include <QListWidget>
+#include <QListWidgetItem>
+#include <QStandardPaths>
+#include <QToolButton>
 
-PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent) {
+PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
+  ,m_tracksDB(TracksDB::instance())
+  ,m_playlistsDB(PlaylistsDB::instance())
+{
     layout = new QGridLayout();
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
@@ -32,29 +41,11 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent) {
     list->setFrameShape(QFrame::NoFrame);
     list->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-    // list->setStyleSheet("background: #575757; color:white;");
+    connect(list, SIGNAL(doubleClicked(QModelIndex)), list, SLOT(edit(QModelIndex)));
+    connect(list, SIGNAL(clicked(QModelIndex)), this, SLOT(populatePlaylist(QModelIndex)));
+    connect(list, SIGNAL(itemChanged(QListWidgetItem *)), this, SLOT(playlistName(QListWidgetItem *)));
 
-    connect(list, SIGNAL(doubleClicked(QModelIndex)), list,
-            SLOT(edit(QModelIndex)));
-    connect(list, SIGNAL(clicked(QModelIndex)), this,
-            SLOT(populatePlaylist(QModelIndex)));
-    connect(list, SIGNAL(itemChanged(QListWidgetItem *)), this,
-            SLOT(playlistName(QListWidgetItem *)));
-
-
-    // connect(table,SIGNAL(tableWidget_doubleClicked(QStringList)),this,SLOT(tableClicked(QStringList)));
-    // connect(table,SIGNAL(createPlaylist_clicked()),this,SLOT(createPlaylist()));
-    // auto item =new QListWidgetItem();
-
-    // list->addItem(item);
-    // auto color = new ColorTag();
-    // color->setStyleSheet("background-color: blue;");
-    // list->setItemWidget(list->item(1),color);
-    // list->setStyleSheet("background-color:transparent;");
-
-    // list->addItem("Favorites");
     table->setFrameShape(QFrame::NoFrame);
-    // table->setSizePolicy(QSizePolicy::Expanding);
 
     frame = new QFrame();
     frame->setFrameShadow(QFrame::Raised);
@@ -62,7 +53,6 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent) {
 
     addBtn = new QToolButton();
     removeBtn = new QToolButton();
-    // addBtn->setGeometry(50,50,16,16);
     connect(addBtn, SIGNAL(clicked()), this, SLOT(createPlaylist()));
     connect(removeBtn, SIGNAL(clicked()), this, SLOT(removePlaylist()));
     addBtn->setAutoRaise(true);
@@ -79,7 +69,6 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent) {
 
     btnContainer = new QWidget();
     btnContainer->setFixedWidth(120);
-    // btnContainer->setGeometry(0,150,150,30);
     auto *left_spacer = new QWidget();
     left_spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     auto btnLayout = new QHBoxLayout();
@@ -89,41 +78,30 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent) {
     btnLayout->addWidget(addBtn);
     btnLayout->addWidget(left_spacer);
     btnLayout->addWidget(removeBtn);
-    // btnLayout->addWidget(line);
 
     line_v = new QFrame();
     line_v->setFrameShape(QFrame::VLine);
     line_v->setFrameShadow(QFrame::Plain);
     line_v->setMaximumWidth(1);
-    // line->setMaximumHeight(2);
-    // btnContainer->setFixedHeight(32);
-
-    // auto sidebarLayout = new QGridLayout();
-    // sidebarLayout->setContentsMargins(0,0,0,0);
-    // sidebarLayout->setSpacing(0);
-    // sidebarLayout->addWidget(list,0,0);
-    // sidebarLayout->addWidget(line,1,0,Qt::AlignBottom);
-    // sidebarLayout->addWidget(btnContainer,2,0,Qt::AlignBottom);
-    // frame->setLayout(sidebarLayout);
 
     layout->addWidget(list, 0, 0, Qt::AlignLeft);
     layout->addWidget(line_v, 0, 1, Qt::AlignLeft);
     layout->addWidget(table, 0, 2);
 
-    // layout->addWidget(btnContainer,1,0);
-    // auto container = new QGridLayout();
-    // container->addWidget(frame);
-    // container->setContentsMargins(0,0,0,0);
     this->setLayout(layout);
 }
 
-void PlaylistsView::dummy() { qDebug() << "signal was recived"; }
+PlaylistsView::~PlaylistsView()
+{
+}
 
-void PlaylistsView::setDefaultPlaylists() {
-    /* auto title = new QListWidgetItem("PLAYLISTS");
-    title->setTextAlignment(Qt::AlignCenter);
-    list->addItem(title);*/
+void PlaylistsView::dummy()
+{
+    qDebug() << "signal was recived";
+}
 
+void PlaylistsView::setDefaultPlaylists()
+{
     auto mostPlayed = new QListWidgetItem();
     mostPlayed->setIcon(QIcon::fromTheme("favorite-genres-amarok"));
     mostPlayed->setText("Most Played");
@@ -134,7 +112,6 @@ void PlaylistsView::setDefaultPlaylists() {
     favorites->setText("Favorites");
     list->addItem(favorites);
 
-
     auto babes = new QListWidgetItem();
     babes->setIcon(QIcon::fromTheme("love-amarok"));
     babes->setText("Babes");
@@ -144,160 +121,119 @@ void PlaylistsView::setDefaultPlaylists() {
     online->setIcon(QIcon::fromTheme("kstars_constellationart"));
     online->setText("Online");
     list->addItem(online);
-
-
-
 }
 
-void PlaylistsView::tableClicked(QStringList list) {emit songClicked(list);}
+void PlaylistsView::tableClicked(QStringList list)
+{
+    emit songClicked(list);
+}
 
 void PlaylistsView::populatePlaylist(QModelIndex index)
 {
-    QString query;
     currentPlaylist = index.data().toString();
     emit playlistClicked(currentPlaylist);
     table->flushTable();
+    QVariantList list;
     if (currentPlaylist == "Most Played") {
         removeBtn->setEnabled(false);
         table->showColumn(BabeTable::PLAYED);
-        query = "SELECT * FROM tracks WHERE played > \"1\" ORDER  by played desc";
+        list = m_tracksDB->loadTracks(QVariantMap({{"played", 1}}), -1, 0, "played", false, "", ">");
     } else if (currentPlaylist == "Favorites") {
         removeBtn->setEnabled(true);
         table->showColumn(BabeTable::STARS);
-        query ="SELECT * FROM tracks WHERE stars > \"0\" ORDER  by stars desc";
-
+        list = m_tracksDB->loadTracks(QVariantMap({{"stars", 0}}), -1, 0, "stars", false, "", ">");
     } else if (currentPlaylist == "Babes") {
-        // table->showColumn(BabeTable::PLAYED);
         removeBtn->setEnabled(true);
-        query = "SELECT * FROM tracks WHERE babe = \"1\" ORDER  by played desc";
-    }else if (currentPlaylist == "Online") {
-        // table->showColumn(BabeTable::PLAYED);
+        list = m_tracksDB->loadTracks(QVariantMap({{"babe", 1}}), -1, 0, "played", true, "", ">");
+    } else if (currentPlaylist == "Online") {
         removeBtn->setEnabled(false);
-        query = "SELECT * FROM tracks WHERE location LIKE \"%" + youtubeCachePath + "%\"";
+        list = m_tracksDB->loadTracks(QVariantMap({{"location", youtubeCachePath}}), -1, 0, "title", false, "", "LIKE");
     } else if(!currentPlaylist.isEmpty()&&!currentPlaylist.contains("#")) {
         removeBtn->setEnabled(true);
         table->hideColumn(BabeTable::PLAYED);
-        query = "SELECT * FROM tracks WHERE playlist LIKE \"%" + currentPlaylist + "%\"";
-    }else if (currentPlaylist.contains("#")) {
+        list = m_tracksDB->loadTracks(QVariantMap({{"playlist", currentPlaylist}}), -1, 0, "title", false, "", "LIKE");
+    } else if (currentPlaylist.contains("#")) {
         removeBtn->setEnabled(true);
         table->hideColumn(BabeTable::PLAYED);
-        query = "SELECT * FROM tracks WHERE art = \"" + currentPlaylist + "\"";
+        list = m_tracksDB->loadTracks(QVariantMap({{"art", currentPlaylist}}), -1, 0, "title", false, "", "=");
     }
-
-    table->populateTableView(query,false,false);
-
+    table->populateTableView(list, false, false);
 }
 
 void PlaylistsView::createPlaylist()
 {
-
     auto *item = new QListWidgetItem("new playlist");
     item->setFlags(item->flags() | Qt::ItemIsEditable);
     list->addItem(item);
     currentPlaylist = "";
     emit list->doubleClicked(list->model()->index(list->count() - 1, 0));
-
-    // item->setFlags (item->flags () & Qt::ItemIsEditable);
 }
 
 void PlaylistsView::removePlaylist()
 {
-    QString query;
-    if (currentPlaylist == "Most Played")
-    {
-
+    if (currentPlaylist == "Most Played") {
+        // add this operation
     } else if (currentPlaylist == "Favorites") {
-        table->connection->execQuery("UPDATE tracks SET stars = \"0\" WHERE stars > \"0\"");
+        m_playlistsDB->update(QVariantMap({{"stars", 0}}), QVariantMap({{"stars", 0}}), "", ">");
         table->flushTable();
-        query = "SELECT * FROM tracks WHERE stars > \"0\" ORDER  by stars desc";
-
+        table->populateTableView(m_tracksDB->loadTracks(QVariantMap({{"stars", 0}}), -1, 0, "stars", true), false, false);
     } else if (currentPlaylist == "Babes") {
-        table->connection->execQuery("UPDATE tracks SET babe = \"0\" WHERE babe > \"0\"");
+        m_tracksDB->update(QVariantMap({{"babe", 0}}), QVariantMap({{"babe", 0}}), "", ">");
         table->flushTable();
-        query = "SELECT * FROM tracks WHERE babe = \"1\" ORDER  by played desc";
-    }else if (currentPlaylist == "Online") {
-        // table->showColumn(BabeTable::PLAYED);
-        /* table->populateTableView("SELECT * FROM tracks WHERE location LIKE \"%" +
-                                 youtubeCachePath + "%\"");*/
-    } else if(!currentPlaylist.isEmpty()&&!currentPlaylist.contains("#")) {
-
-        /* table->hideColumn(BabeTable::PLAYED);
-        table->populateTableView("SELECT * FROM tracks WHERE playlist LIKE \"%" +
-                                 currentPlaylist + "%\"");*/
-    }else if (currentPlaylist.contains("#")) {
-
-
-        table->connection->execQuery("UPDATE tracks SET art = \"\" WHERE art = \"" +
-                                     currentPlaylist + "\"");
-
-        table->connection->execQuery("DELETE FROM playlists  WHERE art = \""+currentPlaylist+"\"");
+        table->populateTableView(m_tracksDB->loadTracks(QVariantMap({{"babe", 1}}), -1, 0, "played", true), false, false);
+    } else if (currentPlaylist == "Online") {
+        // add this operation
+    } else if (!currentPlaylist.isEmpty() && !currentPlaylist.contains("#")) {
+        // add this operation
+    } else if (currentPlaylist.contains("#")) {
+        m_tracksDB->update(QVariantMap({{"art", ""}}), QVariantMap({{"art", currentPlaylist}}));
+        m_playlistsDB->remove(QVariantMap({{"art", currentPlaylist}}));
         table->flushTable();
-
-        query = "SELECT * FROM tracks WHERE art = \"" + currentPlaylist+ "\"";
+        table->populateTableView(m_tracksDB->loadTracks(QVariantMap({{"art", currentPlaylist}})), false, false);
     }
-
-    table->populateTableView(query,false,false);
-
 }
 
-
-void PlaylistsView::playlistName(QListWidgetItem *item) {
+void PlaylistsView::playlistName(QListWidgetItem *item)
+{
     qDebug() << "old playlist name: " << currentPlaylist
              << "new playlist name: " << item->text();
-    //  qDebug()<<"new playlist name: "<<item->text();
-
-    if(!playlists.contains(item->text()))
-    {
+    if (!playlists.contains(item->text())) {
         if (currentPlaylist.isEmpty())
             emit playlistCreated(item->text());
         else if (item->text() != currentPlaylist)
             emit modifyPlaylistName(item->text());
-    }else
-    {
-        qDebug()<<"that playlist already exists";
+    } else {
+        qDebug() << "that playlist already exists";
         list->takeItem(list->count() - 1);
     }
 }
 
-void PlaylistsView::on_removeBtn_clicked() {}
+void PlaylistsView::on_removeBtn_clicked()
+{
+}
 
-void PlaylistsView::setPlaylists(QStringList playlists) {
-    // list->addItems(playlists);
-
+void PlaylistsView::setPlaylists(const QStringList &playlists)
+{
     for (auto playlist : playlists) {
-
         auto item = new QListWidgetItem(playlist);
         item->setFlags(item->flags() | Qt::ItemIsEditable);
         list->addItem(item);
     }
-
-
-    // for (auto o: playlists) qDebug( )<<o;
 }
 
-void PlaylistsView::setPlaylistsMoods(QStringList moods_n) {
-    // list->addItems(playlists);
-
-    for (auto mood : moods_n)
-    {
+void PlaylistsView::setPlaylistsMoods(const QStringList &moods_n)
+{
+    QColor color;
+    for (auto mood : moods_n) {
         auto item = new QListWidgetItem(mood);
-        QColor color;
         color.setNamedColor(mood);
         color.setAlpha(40);
         item->setBackgroundColor(color);
-        /*QBrush brush;
-        brush.setColor(color.darker(160));
-        item->setForeground(brush);*/
         list->addItem(item);
     }
-
-    // for (auto o: playlists) qDebug( )<<o;
 }
 
-void PlaylistsView::definePlaylists(QStringList playlists)
+void PlaylistsView::definePlaylists(const QStringList &playlists)
 {
-    this->playlists=playlists;
+    this->playlists = playlists;
 }
-
-
-PlaylistsView::~PlaylistsView() {}

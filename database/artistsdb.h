@@ -11,10 +11,13 @@ class ArtistsDB : public BaseDB
 private:
     explicit ArtistsDB(QObject *parent = 0);
     ArtistsDB(const ArtistsDB &other);
+    virtual ~ArtistsDB();
     void operator=(ArtistsDB const &);
 
 public:
     static ArtistsDB* instance();
+    bool artistExists(const QString &title);
+    QString getArt(const QString &title);
     QVariantMap loadArtist(const QVariantMap &filter, const QString &whereOperator = QStringLiteral("AND"), const QString &whereComparator = QStringLiteral("="));
     QVariantList loadArtists(const QVariantMap &filter, int limit = -1, int offset = 0, const QString &orderBy = QStringLiteral(""), bool descending = false, const QString &whereOperator = QStringLiteral("AND"), const QString &whereComparator = QStringLiteral("="));
 

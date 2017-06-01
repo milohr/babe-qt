@@ -16,6 +16,10 @@
 
 #include "youtube.h"
 
+#include <QDebug>
+#include <QDirIterator>
+#include <QProcess>
+
 YouTube::YouTube(QObject *parent) : QObject(parent)
 {
 }
@@ -27,11 +31,14 @@ YouTube::~YouTube()
 void YouTube::searchPendingFiles()
 {
     QDirIterator it(extensionFetchingPath, QStringList() << "*.babe", QDir::Files);
+    QString id;
+    QString song;
+    QFileInfo fileInfo;
     while (it.hasNext()) {
-        QString song = it.next();
+        song = it.next();
         this->urls << song;
-        QFileInfo fileInfo(QFile(song).fileName());
-        QString id = fileInfo.fileName().section(".", 0, -2);
+        fileInfo = QFile(song).fileName();
+        id = fileInfo.fileName().section(".", 0, -2);
         this->ids << id;
     }
     if (!urls.isEmpty()) {

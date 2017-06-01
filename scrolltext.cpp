@@ -12,68 +12,78 @@
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software Foundation,
    Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
-
-   */
-
+*/
 
 #include "scrolltext.h"
 
-ScrollText::ScrollText(QWidget *parent) {
-
-    Q_UNUSED(parent);
+ScrollText::ScrollText(QLabel *parent) : QLabel(parent)
+{
     px = 0;
     py = 10;
     speed = 0;
     direction = RightToLeft;
     connect(&timer, SIGNAL(timeout()), this, SLOT(refreshLabel()));
-    //
 }
-void ScrollText::refreshLabel() { repaint(); }
 
-void ScrollText::start() {}
+ScrollText::~ScrollText()
+{
+}
 
+void ScrollText::refreshLabel()
+{
+    repaint();
+}
 
+void ScrollText::start()
+{
+}
 
-void ScrollText::enterEvent(QEvent *event) {
+void ScrollText::enterEvent(QEvent *event)
+{
     Q_UNUSED(event);
-    if (maxSize < this->sizeHint().width())
+    if (maxSize < sizeHint().width())
         speed = 1;
     timer.start(30);
-
 }
 
-void ScrollText::leaveEvent(QEvent *event) {
+void ScrollText::leaveEvent(QEvent *event)
+{
     Q_UNUSED(event);
     speed = 0;
     reset();
 }
-void ScrollText::setMaxSize(int size) {
-    this->setMaximumWidth(size);
+
+void ScrollText::setMaxSize(int size)
+{
+    setMaximumWidth(size);
     maxSize = size;
 }
 
-void ScrollText::stop() {
-    // connect(&timer, SIGNAL(timeout()), this, SLOT(refreshLabel()));
-    // timer.stop();
+void ScrollText::stop()
+{
 }
 
-void ScrollText::reset() {
+void ScrollText::reset()
+{
     px = 0;
     repaint();
     timer.stop();
 }
 
-ScrollText::~ScrollText() { }
+void ScrollText::show()
+{
+    QLabel::show();
+}
 
-void ScrollText::show() { QLabel::show(); }
-
-void ScrollText::setAlignment(Qt::Alignment al) {
+void ScrollText::setAlignment(Qt::Alignment al)
+{
     m_align = al;
     updateCoordinates();
     QLabel::setAlignment(al);
 }
 
-void ScrollText::paintEvent(QPaintEvent *evt) {
+void ScrollText::paintEvent(QPaintEvent *evt)
+{
     Q_UNUSED(evt);
     QPainter p(this);
     if (direction == RightToLeft) {
@@ -89,12 +99,14 @@ void ScrollText::paintEvent(QPaintEvent *evt) {
     p.translate(px, 0);
 }
 
-void ScrollText::resizeEvent(QResizeEvent *evt) {
+void ScrollText::resizeEvent(QResizeEvent *evt)
+{
     updateCoordinates();
     QLabel::resizeEvent(evt);
 }
 
-void ScrollText::updateCoordinates() {
+void ScrollText::updateCoordinates()
+{
     switch (m_align) {
     case Qt::AlignTop:
         py = 10;
@@ -110,11 +122,18 @@ void ScrollText::updateCoordinates() {
     textLength = fontMetrics().width(text());
 }
 
-void ScrollText::setSpeed(int s) { speed = s; }
+void ScrollText::setSpeed(int s)
+{
+    speed = s;
+}
 
-int ScrollText::getSpeed() { return speed; }
+int ScrollText::getSpeed()
+{
+    return speed;
+}
 
-void ScrollText::setDirection(int d) {
+void ScrollText::setDirection(int d)
+{
     direction = d;
     if (direction == RightToLeft)
         px = width() - textLength;
