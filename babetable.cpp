@@ -23,7 +23,7 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
 
 
     preview = new QMediaPlayer(this);
-
+    preview->setVolume(100);
     connect(this,&QTableWidget::doubleClicked, this, &BabeTable::on_tableWidget_doubleClicked);
     connect(this,&QTableWidget::itemSelectionChanged,[this](){this->stopPreview();});
     //    connect(this->selectionModel(),&QItemSelectionModel::selectionChanged,[this](){    this->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -326,6 +326,15 @@ void BabeTable::update()
         if(addMusicMsgWidget->isVisible()) addMusicMsgWidget->setVisible(false);
 
     }else addMusicMsgWidget->setVisible(true);
+
+    if(preview->state() == QMediaPlayer::StoppedState && previewRow!=-1)
+
+    {
+
+        this->item(this->previewRow,BabeTable::TITLE)->setIcon(QIcon::fromTheme(""));
+        emit previewFinished();
+        previewRow=-1;
+    }
 
 }
 
@@ -841,6 +850,21 @@ void BabeTable::keyPressEvent(QKeyEvent *event) {
         break;
     }
 
+    case Qt::Key_Right:
+    {
+
+        if(preview->state()==QMediaPlayer::PlayingState)
+        {
+            auto newPos = preview->position()+1000;
+            if(newPos>=preview->duration())
+                this->stopPreview();
+            else
+                preview->setPosition(newPos);
+
+        }
+        break;
+    }
+
     default: {
         QTableWidget::keyPressEvent(event);
         break;
@@ -886,6 +910,7 @@ void BabeTable::stopPreview()
         preview->stop();
         this->item(this->previewRow,BabeTable::TITLE)->setIcon(QIcon::fromTheme(""));
         emit previewFinished();
+        previewRow=-1;
     }
 }
 
