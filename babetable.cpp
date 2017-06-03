@@ -38,14 +38,14 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
     this->setHorizontalHeaderLabels({"Track", "Title", "Artist", "Album", "Genre",
                                      "Location", "Stars", "Babe", "Art", "Played",
                                      "Playlist", "Lyric"});
-        this->horizontalHeader()->setDefaultSectionSize(150);
+    this->horizontalHeader()->setDefaultSectionSize(150);
     //    this->setMinimumSize(0, 0);
     this->verticalHeader()->setVisible(false);
     this->setEditTriggers(QAbstractItemView::NoEditTriggers);
     this->setAlternatingRowColors(true);
     this->setSortingEnabled(true);
 
-//        this->horizontalHeader()->setHighlightSections(false);
+    //        this->horizontalHeader()->setHighlightSections(false);
 
     this->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
@@ -92,23 +92,19 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
 
     // this->horizontalHeaderItem(0);
     // this->horizontalHeader()->setHighlightSections(true);
-    contextMenu = new QMenu(this);
-    //this->setContextMenuPolicy(Qt::ActionsContextMenu);
 
+
+
+    contextMenu = new QMenu(this);
     auto babeIt = new QAction("Babe it \xe2\x99\xa1", contextMenu);
     contextMenu->addAction(babeIt);
 
     auto queueIt = new QAction("Queue", contextMenu);
     contextMenu->addAction(queueIt);
 
-    /*auto sendIt = new QAction("Send to phone... ", contextMenu);
-    this->addAction(sendIt);*/
-
     QAction *sendEntry = contextMenu->addAction("Send to phone...");
-    //this->addAction(sendEntry);
     sendToMenu = new QMenu("...");
     sendEntry->setMenu(sendToMenu);
-
 
     auto infoIt = new QAction("Info + ", contextMenu);
     contextMenu->addAction(infoIt);
@@ -122,29 +118,17 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
     auto removeIt = new QAction("Remove", contextMenu);
     contextMenu->addAction(removeIt);
 
-    QAction *addEntry = contextMenu->addAction("Add to...");
-    //this->addAction(addEntry);
-    playlistsMenu = new QMenu("...");
-    addEntry->setMenu(playlistsMenu);
+    auto addTo = new QAction("Add to...", contextMenu);
+    contextMenu->addAction(addTo);
 
-    // auto moodIt = new QAction("Mood..", contextMenu);
-    // this->addAction(moodIt);
-
-    /*QAction *moodEntry = contextMenu->addAction("Mood...");
-  this->addAction(moodEntry);
-  moodMenu = new QMenu("...");
-  moodEntry->setMenu(moodMenu);*/
-    // passPlaylists();
-    // playlistsMenu->addAction("hello rold");
 
     connect(this, &BabeTable::rightClicked, this,&BabeTable::setUpContextMenu);
-    connect(playlistsMenu, &QMenu::triggered, this, &BabeTable::addToPlaylist);
     connect(sendToMenu,&QMenu::triggered, this,&BabeTable::sendIt_action);
 
 
     connect(babeIt,&QAction::triggered, this, &BabeTable::babeIt_action);
     connect(queueIt,&QAction::triggered, this,&BabeTable::queueIt_action);
-    //connect(sendIt, SIGNAL(triggered()), this, SLOT(sendIt_action()));
+    connect(addTo,&QAction::triggered, this,&BabeTable::addToPlaylist);
     connect(infoIt, &QAction::triggered, this, &BabeTable::infoIt_action);
     connect(editIt,&QAction::triggered, this, &BabeTable::editIt_action);
     connect(removeIt,&QAction::triggered, this, &BabeTable::removeIt_action);
@@ -341,47 +325,15 @@ void BabeTable::update()
 
 void BabeTable::moodTrack(int color) { moodIt_action(colors.at(color)); }
 
-void BabeTable::addToPlaylist(QAction *action)
+void BabeTable::addToPlaylist()
 {
-    QString playlist = action->text().replace("&", "");
+    QList<QMap<int,QString>> mapList;
+    for(auto row : this->getSelectedRows())
+        mapList<< this->getRowData(row);
 
-    QStringList locations;
-    for(auto row : this->getSelectedRows()) locations<<getRowData(row)[LOCATION];
-
-    populatePlaylist(locations, playlist);
-
-    connect(this,&BabeTable::finishedPopulatingPlaylist,[this](QString playlist)
-    {
-        nof.notify(playlist, "Tracks added to playlist");
-    });
+    emit saveToPlaylist(mapList);
 }
 
-void BabeTable::populatePlaylist(const QStringList &urls, const QString &playlist)  //this needs to get fixed
-{
-    for (auto location : urls)
-    {
-        // ui->fav_btn->setIcon(QIcon::fromTheme("face-in-love"));
-        qDebug() << "Song to add: " << location << " to: " << playlist;
-
-        QSqlQuery query = connection.getQuery(
-                    "SELECT * FROM tracks WHERE location = \"" + location + "\"");
-
-        QString list;
-        while (query.next())
-            list = query.value(PLAYLIST).toString();
-        list += " " + playlist;
-        // qDebug()<<played;
-
-        if (connection.insertInto("tracks", "playlist", location, list))
-            qDebug() << list;
-
-    }
-
-    emit finishedPopulatingPlaylist(playlist);
-}
-
-
-void BabeTable::passPlaylists() {}
 
 void BabeTable::enterEvent(QEvent *event)
 {
@@ -732,11 +684,6 @@ void BabeTable::setUpContextMenu(const int row, const int column)
     this->rRow = row;
     this->rColumn= column;
 
-    playlistsMenu->clear();
-
-    for (auto playlist : connection.getPlaylists())
-        playlistsMenu->addAction(playlist);
-
     // playlistsMenu->addAction("Create new...");
     sendToMenu->clear();
     QMapIterator<QString, QString> i(getKdeConnectDevices());
@@ -769,17 +716,9 @@ void BabeTable::setUpContextMenu(const int row, const int column)
 
 }
 
-QStringList BabeTable::getPlaylistMenus()
+
+void BabeTable::keyPressEvent(QKeyEvent *event)
 {
-
-    playlistsMenus.clear();
-    for (auto playlist : connection.getPlaylists()) {
-        playlistsMenus << playlist;
-    }
-    return playlistsMenus;
-}
-
-void BabeTable::keyPressEvent(QKeyEvent *event) {
     switch (event->key()) {
     case Qt::Key_Return: {
 
@@ -807,7 +746,7 @@ void BabeTable::keyPressEvent(QKeyEvent *event) {
         this->setCurrentIndex(newIndex);
         this->setFocus();
 
-              break;
+        break;
     }
     case Qt::Key_Down: {
         QModelIndex index = this->currentIndex();
@@ -885,7 +824,7 @@ void BabeTable::keyPressEvent(QKeyEvent *event) {
         break;
     }
 
-    case Qt::Key_A :
+    case Qt::Key_L :
     {
         QList<QMap<int,QString>> mapList;
         for(auto row : this->getSelectedRows(false))
@@ -895,6 +834,19 @@ void BabeTable::keyPressEvent(QKeyEvent *event) {
         emit appendIt(mapList);
         break;
     }
+
+
+    case Qt::Key_S :
+    {
+        QList<QMap<int,QString>> mapList;
+        for(auto row : this->getSelectedRows(false))
+            mapList<< this->getRowData(row);
+
+        stopPreview();
+        emit saveToPlaylist(mapList);
+        break;
+    }
+
 
 
     default: {

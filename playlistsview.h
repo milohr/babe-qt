@@ -8,7 +8,10 @@
 #include <QGridLayout>
 #include <QStandardPaths>
 #include <QDialog>
+
 #include "baeUtils.h"
+#include "playlistform.h"
+
 namespace Ui {
 class PlaylistsView;
 }
@@ -20,15 +23,17 @@ class PlaylistsView : public QWidget
 public:
     explicit PlaylistsView(QWidget *parent = 0);
     ~PlaylistsView();
-    QToolButton *addToPlaylist;
     BabeTable *table;
     QListWidget *list;
     QListWidget *moodList;
-    void setPlaylists(QStringList playlists);
-    void setPlaylistsMoods(QStringList moods_n);
+    void setPlaylists(const QStringList &playlists);
+    void setPlaylistsMoods();
     void setDefaultPlaylists();
-    void definePlaylists(QStringList playlists);
     void showPlaylistDialog();
+    void saveToPlaylist(const QList<QMap<int,QString>> &tracks);
+    void addToPlaylist(const QString &playlist, const QList<QMap<int, QString> > &tracks);
+    void populatePlaylist(const QStringList &urls, const QString &playlist);
+    void insertPlaylist(const QString &playlist);
     QFrame *line_v;
     QWidget *btnContainer;
     QString currentPlaylist;
@@ -48,6 +53,8 @@ private:
     QFrame *frame;
 
     CollectionDB connection;
+    Notify nof;
+
 
 public slots:
 
@@ -59,10 +66,10 @@ public slots:
     void dummy();
 
 signals:
-    void playlistCreated(QString name);
     void songClicked(QStringList list);
     void playlistClicked(QString playlist);
     void modifyPlaylistName(QString newName);
+    void finishedPopulatingPlaylist(QString playlist);
 
 };
 

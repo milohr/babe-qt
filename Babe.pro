@@ -74,7 +74,8 @@ SOURCES += main.cpp\
     pulpo/services/musicbrainzService.cpp \
     pulpo/services/lyricwikiaService.cpp \
     pulpo/services/geniusService.cpp \
-    pulpo/htmlparser.cpp
+    pulpo/htmlparser.cpp \
+    playlistform.cpp
 
 HEADERS  += mainwindow.h \
             playlist.h \
@@ -102,13 +103,15 @@ HEADERS  += mainwindow.h \
     pulpo/services/musicbrainzService.h \
     pulpo/services/lyricwikiaService.h \
     pulpo/services/geniusService.h \
-    pulpo/htmlparser.h
+    pulpo/htmlparser.h \
+    playlistform.h
 
 FORMS    += mainwindow.ui \
     settings.ui \
     about.ui \
     infoview.ui \
-    metadataForm.ui
+    metadataForm.ui \
+    playlistform.ui
 
 RESOURCES += \
     data.qrc

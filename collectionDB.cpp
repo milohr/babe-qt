@@ -483,7 +483,7 @@ bool CollectionDB::insertInto(const QString &tableName, const QString &column, c
 }
 
 
-void CollectionDB::insertPlaylist(QString name)
+void CollectionDB::insertPlaylist(const QString &name)
 {
     if(!name.isEmpty())
     {

@@ -162,7 +162,6 @@ void MainWindow::setUpViews()
     settings_widget = new settings(this); //this needs to go first
 
     playlistTable = new PlaylistsView(this);
-    connect(playlistTable,&PlaylistsView::playlistCreated,&settings_widget->getCollectionDB(),&CollectionDB::insertPlaylist);
     connect(playlistTable->table,&BabeTable::tableWidget_doubleClicked, [this] (QList<QMap<int, QString>> list) { addToPlaylist(list,false,APPENDBOTTOM);});
     connect(playlistTable->table,&BabeTable::removeIt_clicked,this,&MainWindow::removeSong);
     connect(playlistTable->table,&BabeTable::babeIt_clicked,this,&MainWindow::babeIt);
@@ -172,6 +171,7 @@ void MainWindow::setUpViews()
     connect(playlistTable->table,&BabeTable::previewFinished,this,&MainWindow::play);
     connect(playlistTable->table,&BabeTable::playItNow,this,&MainWindow::playItNow);
     connect(playlistTable->table,&BabeTable::appendIt, [this] (QList<QMap<int, QString>> list) { addToPlaylist(list,false,APPENDAFTER);});
+    connect(playlistTable->table,&BabeTable::saveToPlaylist,playlistTable,&PlaylistsView::saveToPlaylist);
 
 
     collectionTable = new BabeTable(this);
@@ -191,6 +191,7 @@ void MainWindow::setUpViews()
     connect(collectionTable,&BabeTable::previewFinished,this,&MainWindow::play);
     connect(collectionTable,&BabeTable::playItNow,this,&MainWindow::playItNow);
     connect(collectionTable,&BabeTable::appendIt, [this] (QList<QMap<int, QString>> list) { addToPlaylist(list,false,APPENDAFTER);});
+    connect(collectionTable,&BabeTable::saveToPlaylist,playlistTable,&PlaylistsView::saveToPlaylist);
 
 
     mainList = new BabeTable(this);
@@ -224,7 +225,7 @@ void MainWindow::setUpViews()
     connect(mainList,&BabeTable::queueIt_clicked,this,&MainWindow::addToQueue);
     connect(mainList,&BabeTable::moodIt_clicked,mainList,&BabeTable::colorizeRow);
     connect(mainList,&BabeTable::infoIt_clicked,this,&MainWindow::infoIt);
-    //    connect(mainList->model(),&QAbstractItemModel::rowsInserted,this,&MainWindow::on_rowInserted);
+    connect(mainList,&BabeTable::saveToPlaylist,playlistTable,&PlaylistsView::saveToPlaylist);
 
 
     filterList = new BabeTable(this);
@@ -255,6 +256,8 @@ void MainWindow::setUpViews()
         mainListView->setCurrentIndex(0);
         ui->filter->setText("");
     });
+    connect(filterList,&BabeTable::saveToPlaylist,playlistTable,&PlaylistsView::saveToPlaylist);
+
 
     mainListView = new QStackedWidget(this);
     mainListView->setFrameShape(QFrame::NoFrame);
@@ -277,6 +280,7 @@ void MainWindow::setUpViews()
     connect(resultsTable,&BabeTable::previewFinished,this,&MainWindow::play);
     connect(resultsTable,&BabeTable::playItNow,this,&MainWindow::playItNow);
     connect(resultsTable,&BabeTable::appendIt, [this] (QList<QMap<int, QString>> list) { addToPlaylist(list,false,APPENDAFTER);});
+    connect(resultsTable,&BabeTable::saveToPlaylist,playlistTable,&PlaylistsView::saveToPlaylist);
 
 
     rabbitTable = new RabbitView(this);
@@ -289,6 +293,7 @@ void MainWindow::setUpViews()
     connect(rabbitTable->getTable(),&BabeTable::previewFinished,this,&MainWindow::play);
     connect(rabbitTable->getTable(),&BabeTable::playItNow,this,&MainWindow::playItNow);
     connect(rabbitTable->getTable(),&BabeTable::appendIt, [this] (QList<QMap<int, QString>> list) { addToPlaylist(list,false,APPENDAFTER);});
+    connect(rabbitTable->getTable(),&BabeTable::saveToPlaylist,playlistTable,&PlaylistsView::saveToPlaylist);
 
 
     albumsTable = new AlbumsView(false,this);
@@ -305,6 +310,7 @@ void MainWindow::setUpViews()
     connect(albumsTable->albumTable,&BabeTable::previewFinished,this,&MainWindow::play);
     connect(albumsTable->albumTable,&BabeTable::playItNow,this,&MainWindow::playItNow);
     connect(albumsTable->albumTable,&BabeTable::appendIt, [this] (QList<QMap<int, QString>> list) { addToPlaylist(list,false,APPENDAFTER);});
+    connect(albumsTable->albumTable,&BabeTable::saveToPlaylist,playlistTable,&PlaylistsView::saveToPlaylist);
 
 
     artistsTable = new AlbumsView(true,this);
@@ -322,6 +328,7 @@ void MainWindow::setUpViews()
     connect(artistsTable->albumTable,&BabeTable::previewFinished,this,&MainWindow::play);
     connect(artistsTable->albumTable,&BabeTable::playItNow,this,&MainWindow::playItNow);
     connect(artistsTable->albumTable,&BabeTable::appendIt, [this] (QList<QMap<int, QString>> list) { addToPlaylist(list,false,APPENDAFTER);});
+    connect(artistsTable->albumTable,&BabeTable::saveToPlaylist,playlistTable,&PlaylistsView::saveToPlaylist);
 
 
     infoTable = new InfoView(this);
@@ -471,10 +478,7 @@ void MainWindow::setUpCollectionViewer()
     ui->search->setClearButtonEnabled(true);
     ui->search->setPlaceholderText("Search...");
 
-    saveResults_menu = new QMenu(this);
-    connect(saveResults_menu, SIGNAL(triggered(QAction*)), this, SLOT(saveResultsTo(QAction*)));
-    ui->saveResults->setMenu(saveResults_menu);
-    ui->saveResults->setStyleSheet("QToolButton::menu-indicator { image: none; }");
+    connect(ui->saveResults,&QToolButton::clicked, this, &MainWindow::saveResultsTo);
 
     leftFrame_layout->addWidget(ui->mainToolBar,0,0,3,1,Qt::AlignLeft);
     leftFrame_layout->addWidget(lineV,0,1,3,1,Qt::AlignLeft);
@@ -886,11 +890,8 @@ void MainWindow::refreshTables() //tofix
 
     playlistTable->list->clear();
     playlistTable->setDefaultPlaylists();
-    playlistTable->setPlaylistsMoods(BaeUtils::MoodColors);
-
-    QStringList playLists =settings_widget->getCollectionDB().getPlaylists();
-    playlistTable->definePlaylists(playLists);
-    playlistTable->setPlaylists(playLists);
+    playlistTable->setPlaylistsMoods();
+    playlistTable->setPlaylists(connection.getPlaylists());
 
 }
 
@@ -1681,7 +1682,7 @@ void MainWindow::on_play_btn_clicked()
         if(player->state() == QMediaPlayer::PlayingState) this->pause();
         else
         {
-             wasPlaying = true;
+            wasPlaying = true;
             this->play();
         }
     }
@@ -1900,24 +1901,38 @@ void MainWindow::addToPlaylist(const QList<QMap<int, QString> > &mapList, const 
                 {
                 case APPENDBOTTOM:
                     mainList->addRow(track,true);
+                    mainList->scrollToBottom();
+
                     break;
                 case APPENDTOP:
                     mainList->addRowAt(0,track,true);
+                    mainList->scrollToItem(mainList->item(0,BabeTable::TITLE),QAbstractItemView::PositionAtTop);
+
                     break;
                 case APPENDAFTER:
                     mainList->addRowAt(current_song_pos+1,track,true);
+                    mainList->scrollToItem(mainList->item(current_song_pos+1,BabeTable::TITLE),QAbstractItemView::PositionAtTop);
+
                     break;
                 case APPENDBEFORE:
                     mainList->addRowAt(current_song_pos,track,true);
+                    mainList->scrollToItem(mainList->item(current_song_pos,BabeTable::TITLE),QAbstractItemView::PositionAtTop);
+
                     break;
                 case APPENDINDEX:
                     mainList->addRowAt(mainList->getIndex(),track,true);
+                    mainList->scrollToItem(mainList->item(mainList->getIndex(),BabeTable::TITLE),QAbstractItemView::PositionAtTop);
+
                     break;
                 }
+
+                mainList->resizeRowsToContents();
             }
         }
 
         currentList+=newList;
+
+
     }else
     {
         currentList+=mapList;
@@ -1926,47 +1941,33 @@ void MainWindow::addToPlaylist(const QList<QMap<int, QString> > &mapList, const 
             {
             case APPENDBOTTOM:
                 mainList->addRow(track,true);
+                mainList->scrollToBottom();
+
                 break;
             case APPENDTOP:
                 mainList->addRowAt(0,track,true);
+                mainList->scrollToItem(mainList->item(0,BabeTable::TITLE),QAbstractItemView::PositionAtTop);
+
                 break;
             case APPENDAFTER:
                 mainList->addRowAt(current_song_pos+1,track,true);
+                mainList->scrollToItem(mainList->item(current_song_pos+1,BabeTable::TITLE),QAbstractItemView::PositionAtTop);
+
                 break;
             case APPENDBEFORE:
                 mainList->addRowAt(current_song_pos,track,true);
+                mainList->scrollToItem(mainList->item(current_song_pos,BabeTable::TITLE),QAbstractItemView::PositionAtTop);
+
                 break;
             case APPENDINDEX:
                 mainList->addRowAt(mainList->getIndex(),track,true);
+                mainList->scrollToItem(mainList->item(mainList->getIndex(),BabeTable::TITLE),QAbstractItemView::PositionAtTop);
+
                 break;
             }
+        mainList->resizeRowsToContents();
 
     }
-
-
-    switch(pos)
-    {
-    case APPENDBOTTOM:
-        mainList->scrollToBottom();
-        break;
-    case APPENDTOP:
-        mainList->scrollToItem(mainList->item(0,BabeTable::TITLE),QAbstractItemView::PositionAtTop);
-        break;
-    case APPENDAFTER:
-        mainList->scrollToItem(mainList->item(current_song_pos+1,BabeTable::TITLE),QAbstractItemView::PositionAtTop);
-        break;
-    case APPENDBEFORE:
-        mainList->scrollToItem(mainList->item(current_song_pos,BabeTable::TITLE),QAbstractItemView::PositionAtTop);
-
-        break;
-    case APPENDINDEX:
-        mainList->scrollToItem(mainList->item(mainList->getIndex(),BabeTable::TITLE),QAbstractItemView::PositionAtTop);
-
-        break;
-    }
-
-    mainList->resizeRowsToContents();
-
 }
 
 
@@ -2130,31 +2131,16 @@ void MainWindow::on_addAll_clicked()
     }
 }
 
-void MainWindow::on_saveResults_clicked()
+
+void MainWindow::saveResultsTo()
 {
-
-    qDebug()<<"on_saveResults_clicked";
-    saveResults_menu->clear();
-
-    for(auto action: collectionTable->getPlaylistMenus()) saveResults_menu->addAction(action);
-    ui->saveResults->showMenu();
-
-}
-
-
-
-void MainWindow::saveResultsTo(QAction *action)
-{
-    QString playlist=action->text().replace("&","");
     switch(views->currentIndex())
     {
-    case COLLECTION: collectionTable->populatePlaylist(collectionTable->getTableColumnContent(BabeTable::LOCATION),playlist); break;
-    case ALBUMS: albumsTable->albumTable->populatePlaylist(albumsTable->albumTable->getTableColumnContent(BabeTable::LOCATION),playlist); break;
-    case ARTISTS: artistsTable->albumTable->populatePlaylist(artistsTable->albumTable->getTableColumnContent(BabeTable::LOCATION),playlist); break;
-    case PLAYLISTS: playlistTable->table->populatePlaylist(playlistTable->table->getTableColumnContent(BabeTable::LOCATION),playlist); break;
-        //case INFO: collectionTable->populatePlaylist(collectionTable->getTableColumnContent(BabeTable::LOCATION),playlist); break;
-        //case SETTINGS:  collectionTable->populatePlaylist(collectionTable->getTableColumnContent(BabeTable::LOCATION),playlist); break;
-    case RESULTS: resultsTable->populatePlaylist(resultsTable->getTableColumnContent(BabeTable::LOCATION),playlist); break;
+    case COLLECTION: emit collectionTable->saveToPlaylist(collectionTable->getAllTableContent()); break;
+    case ALBUMS: emit albumsTable->albumTable->saveToPlaylist(albumsTable->albumTable->getAllTableContent()); break;
+    case ARTISTS: emit artistsTable->albumTable->saveToPlaylist(artistsTable->albumTable->getAllTableContent()); break;
+    case PLAYLISTS: emit playlistTable->table->saveToPlaylist(playlistTable->table->getAllTableContent()); break;
+    case RESULTS: emit resultsTable->saveToPlaylist(resultsTable->getAllTableContent()); break;
 
     }
 }

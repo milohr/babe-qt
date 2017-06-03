@@ -161,8 +161,7 @@ private slots:
     void addToPlayed(const QString &url);
     void on_tracks_view_2_clicked();
     void on_addAll_clicked();
-    void saveResultsTo(QAction *action);
-    void on_saveResults_clicked();
+    void saveResultsTo();
 
     void removeSong(const int &index);
     void putAlbumOnPlay(const QMap<int,QString> &info);
@@ -258,7 +257,6 @@ private:
     QTimer *timer;
 
     QSlider *seekBar;
-    QMenu *saveResults_menu;
     QMenu *calibrateBtn_menu;
 
     QMap<QString, QMap<int, QString>> queued_songs;

@@ -62,7 +62,6 @@ public:
 
 
     //    const QMap<int, QString> columnsNames{{TRACK, "track"}, {TITLE, "title"}, {ARTIST, "artist"},{ALBUM,"album"},{GENRE,"genre"},{LOCATION,"location"},{STARS,"stars"},{BABE,"babe"},{ART,"art"},{PLAYED,"played"},{PLAYLIST,"playlist"}};
-    QStringList playlistsMenus;
     QStringList colors = BaeUtils::MoodColors;
     void populateTableView(const QList<QMap<int,QString>> &mapList, const bool &descriptiveTitle);
     void populateTableView(const QString &indication, const bool &descriptiveTitle);
@@ -73,8 +72,6 @@ public:
     void addRow(const QMap<int, QString> &map, const bool &descriptiveTooltip);
     void addRowAt(const int &row, const QMap<int, QString> &map, const bool &descriptiveTooltip);
     void passStyle(QString style);
-    void passPlaylists();
-    void populatePlaylist(const QStringList &urls, const QString &playlist);
     void setAddMusicMsg(const QString &msg, const QString &icon);
     int getIndex();
     void enablePreview(const bool state);
@@ -107,7 +104,7 @@ private slots:
     void on_tableWidget_doubleClicked(const QModelIndex &index);
     void rateGroup(int id);
     void setUpContextMenu(const int row, const int column);
-    void addToPlaylist(QAction* action);
+    void addToPlaylist();
     void babeIt_action();
     void sendIt_action(QAction *device);
     void infoIt_action();
@@ -119,7 +116,6 @@ private slots:
     void update();
 
 public slots:
-    QStringList getPlaylistMenus();
     void itemEdited(QMap<int, QString> map);
     void flushTable();
     void colorizeRow(const QList<int> &rows, const QString &color);
@@ -143,7 +139,6 @@ private:
     bool rowDragging=false;
     bool rowPreview=true;
     QMenu *contextMenu;
-    QMenu* playlistsMenu;
     QMenu* sendToMenu;
     QMenu* moodMenu;
     QMap<QString,QString> devices;
@@ -165,17 +160,15 @@ signals:
     void rightClicked(const int row, const int column);
     void babeIt_clicked(QList<QMap<int,QString>> tracks);
     void removeIt_clicked(int index);
-    void createPlaylist_clicked();
-    void refreshPlaylistsMenu(QStringList list);
     void moodIt_clicked(QList<int> rows, QString color);
     void queueIt_clicked(QList<QMap<int,QString>> track);
     void infoIt_clicked(QString title, QString artist, QString album);
-    void finishedPopulatingPlaylist(QString playlist);
     void indexesMoved(int track,int newRow);
     void previewStarted();
     void previewFinished();
     void playItNow(QList<QMap<int,QString>> tracks);
     void appendIt(QList<QMap<int,QString>> tracks);
+    void saveToPlaylist(QList<QMap<int,QString>> tracks);
 
 };
 

@@ -60,7 +60,7 @@ private:
 public slots:
 
     void closeConnection();
-    void insertPlaylist(QString name);
+    void insertPlaylist(const QString &name);
 
     bool removePath(const QString &path);
     void setCollectionLists();
