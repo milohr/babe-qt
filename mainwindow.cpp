@@ -108,7 +108,7 @@ MainWindow::MainWindow(const QStringList &files, QWidget *parent) :
     }else  current_song_pos = this->loadSettings("PLAYLIST_POS","MAINWINDOW",QVariant(0)).toInt();
 
 
-    mainList->setCurrentCell(current_song_pos,BabeTable::TITLE);
+    mainList->setCurrentCell(current_song_pos>=mainList->rowCount()? 0 : current_song_pos,BabeTable::TITLE);
 
     if(mainList->rowCount()>0)
     {
@@ -171,6 +171,7 @@ void MainWindow::setUpViews()
     connect(playlistTable->table,&BabeTable::previewStarted,this,&MainWindow::pause);
     connect(playlistTable->table,&BabeTable::previewFinished,this,&MainWindow::play);
     connect(playlistTable->table,&BabeTable::playItNow,this,&MainWindow::playItNow);
+    connect(playlistTable->table,&BabeTable::appendIt, [this] (QList<QMap<int, QString>> list) { addToPlaylist(list,false,APPENDAFTER);});
 
 
     collectionTable = new BabeTable(this);
@@ -189,6 +190,8 @@ void MainWindow::setUpViews()
     connect(collectionTable,&BabeTable::previewStarted,this,&MainWindow::pause);
     connect(collectionTable,&BabeTable::previewFinished,this,&MainWindow::play);
     connect(collectionTable,&BabeTable::playItNow,this,&MainWindow::playItNow);
+    connect(collectionTable,&BabeTable::appendIt, [this] (QList<QMap<int, QString>> list) { addToPlaylist(list,false,APPENDAFTER);});
+
 
     mainList = new BabeTable(this);
     mainList->hideColumn(BabeTable::ALBUM);
@@ -233,7 +236,7 @@ void MainWindow::setUpViews()
     filterList->setAddMusicMsg("\nDidn't find anything!","face-surprise");
     connect(filterList,&BabeTable::tableWidget_doubleClicked, [this] (QList<QMap<int, QString>> list)
     {
-       playItNow(list);
+        playItNow(list);
         mainListView->setCurrentIndex(0);
         ui->filter->setText("");
 
@@ -246,6 +249,12 @@ void MainWindow::setUpViews()
     connect(filterList,&BabeTable::infoIt_clicked,this,&MainWindow::infoIt);
     connect(filterList,&BabeTable::previewStarted,this,&MainWindow::pause);
     connect(filterList,&BabeTable::previewFinished,this,&MainWindow::play);
+    connect(filterList,&BabeTable::appendIt, [this] (QList<QMap<int, QString>> list)
+    {
+        addToPlaylist(list,false,APPENDAFTER);
+        mainListView->setCurrentIndex(0);
+        ui->filter->setText("");
+    });
 
     mainListView = new QStackedWidget(this);
     mainListView->setFrameShape(QFrame::NoFrame);
@@ -267,6 +276,7 @@ void MainWindow::setUpViews()
     connect(resultsTable,&BabeTable::previewStarted,this,&MainWindow::pause);
     connect(resultsTable,&BabeTable::previewFinished,this,&MainWindow::play);
     connect(resultsTable,&BabeTable::playItNow,this,&MainWindow::playItNow);
+    connect(resultsTable,&BabeTable::appendIt, [this] (QList<QMap<int, QString>> list) { addToPlaylist(list,false,APPENDAFTER);});
 
 
     rabbitTable = new RabbitView(this);
@@ -278,6 +288,7 @@ void MainWindow::setUpViews()
     connect(rabbitTable->getTable(),&BabeTable::previewStarted,this,&MainWindow::pause);
     connect(rabbitTable->getTable(),&BabeTable::previewFinished,this,&MainWindow::play);
     connect(rabbitTable->getTable(),&BabeTable::playItNow,this,&MainWindow::playItNow);
+    connect(rabbitTable->getTable(),&BabeTable::appendIt, [this] (QList<QMap<int, QString>> list) { addToPlaylist(list,false,APPENDAFTER);});
 
 
     albumsTable = new AlbumsView(false,this);
@@ -293,6 +304,7 @@ void MainWindow::setUpViews()
     connect(albumsTable->albumTable,&BabeTable::previewStarted,this,&MainWindow::pause);
     connect(albumsTable->albumTable,&BabeTable::previewFinished,this,&MainWindow::play);
     connect(albumsTable->albumTable,&BabeTable::playItNow,this,&MainWindow::playItNow);
+    connect(albumsTable->albumTable,&BabeTable::appendIt, [this] (QList<QMap<int, QString>> list) { addToPlaylist(list,false,APPENDAFTER);});
 
 
     artistsTable = new AlbumsView(true,this);
@@ -309,6 +321,7 @@ void MainWindow::setUpViews()
     connect(artistsTable->albumTable,&BabeTable::previewStarted,this,&MainWindow::pause);
     connect(artistsTable->albumTable,&BabeTable::previewFinished,this,&MainWindow::play);
     connect(artistsTable->albumTable,&BabeTable::playItNow,this,&MainWindow::playItNow);
+    connect(artistsTable->albumTable,&BabeTable::appendIt, [this] (QList<QMap<int, QString>> list) { addToPlaylist(list,false,APPENDAFTER);});
 
 
     infoTable = new InfoView(this);
@@ -624,12 +637,12 @@ void MainWindow::albumDoubleClicked(const QMap<int, QString> &info)
 }
 
 
+
 void MainWindow::playItNow(const QList<QMap<int,QString>> &list)
 {
     addToPlaylist(list,false,APPENDBOTTOM);
     mainList->setCurrentCell(mainList->rowCount()-list.size(),BabeTable::TITLE);
     this->loadTrack();
-
 }
 
 void MainWindow::putAlbumOnPlay(const QMap<int,QString> &info)
@@ -1883,7 +1896,15 @@ void MainWindow::addToPlaylist(const QList<QMap<int, QString> > &mapList, const 
                 case APPENDTOP:
                     mainList->addRowAt(0,track,true);
                     break;
-                default: qDebug()<<"error appending track to mainlist";
+                case APPENDAFTER:
+                    mainList->addRowAt(current_song_pos+1,track,true);
+                    break;
+                case APPENDBEFORE:
+                    mainList->addRowAt(current_song_pos-1>0? 0:current_song_pos-1,track,true);
+                    break;
+                case APPENDINDEX:
+                    mainList->addRowAt(mainList->getIndex(),track,true);
+                    break;
                 }
 
             }
@@ -1901,6 +1922,15 @@ void MainWindow::addToPlaylist(const QList<QMap<int, QString> > &mapList, const 
                 break;
             case APPENDTOP:
                 mainList->addRowAt(0,track,true);
+                break;
+            case APPENDAFTER:
+                mainList->addRowAt(current_song_pos+1,track,true);
+                break;
+            case APPENDBEFORE:
+                mainList->addRowAt(current_song_pos,track,true);
+                break;
+            case APPENDINDEX:
+                mainList->addRowAt(mainList->getIndex(),track,true);
                 break;
             }
 

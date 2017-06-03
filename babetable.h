@@ -175,6 +175,7 @@ signals:
     void previewStarted();
     void previewFinished();
     void playItNow(QList<QMap<int,QString>> tracks);
+    void appendIt(QList<QMap<int,QString>> tracks);
 
 };
 

@@ -792,6 +792,7 @@ void BabeTable::keyPressEvent(QKeyEvent *event) {
             qDebug()<<row;
         }
 
+        stopPreview();
 
         emit tableWidget_doubleClicked(list);
 
@@ -806,10 +807,7 @@ void BabeTable::keyPressEvent(QKeyEvent *event) {
         this->setCurrentIndex(newIndex);
         this->setFocus();
 
-        qDebug()
-                << this->model()->data(this->model()->index(row, LOCATION)).toString();
-
-        break;
+              break;
     }
     case Qt::Key_Down: {
         QModelIndex index = this->currentIndex();
@@ -820,8 +818,6 @@ void BabeTable::keyPressEvent(QKeyEvent *event) {
         this->setCurrentIndex(newIndex);
         this->setFocus();
 
-        qDebug()
-                << this->model()->data(this->model()->index(row, LOCATION)).toString();
         break;
     }
     case Qt::Key_Space:
@@ -871,6 +867,7 @@ void BabeTable::keyPressEvent(QKeyEvent *event) {
         QList<QMap<int,QString>> mapList;
         for(auto row : this->getSelectedRows(false))
             mapList<< this->getRowData(row);
+        stopPreview();
 
         emit queueIt_clicked(mapList);
         break;
@@ -882,9 +879,23 @@ void BabeTable::keyPressEvent(QKeyEvent *event) {
         for(auto row : this->getSelectedRows(false))
             mapList<< this->getRowData(row);
 
+        stopPreview();
+
         emit playItNow(mapList);
         break;
     }
+
+    case Qt::Key_A :
+    {
+        QList<QMap<int,QString>> mapList;
+        for(auto row : this->getSelectedRows(false))
+            mapList<< this->getRowData(row);
+
+        stopPreview();
+        emit appendIt(mapList);
+        break;
+    }
+
 
     default: {
         QTableWidget::keyPressEvent(event);

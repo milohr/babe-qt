@@ -82,7 +82,7 @@ public:
     };
     enum appendPos
     {
-        APPENDTOP,APPENDBOTTOM
+        APPENDTOP,APPENDBOTTOM, APPENDAFTER, APPENDBEFORE, APPENDINDEX
     };
 
     void setStyle();
