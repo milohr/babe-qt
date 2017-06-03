@@ -62,6 +62,7 @@ set(babe_SRCS
   pulpo/services/spotifyService.cpp
   pulpo/services/lyricwikiaService.cpp
   pulpo/services/geniusService.cpp
+  playlistform.cpp
 
 )
 
@@ -71,6 +72,7 @@ ki18n_wrap_ui(babe_SRCS
   about.ui
   infoview.ui
   metadataForm.ui
+  playlistform.ui
 )
 
 qt5_add_resources(babe_SRCS data.qrc)
