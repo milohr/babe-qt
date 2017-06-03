@@ -277,6 +277,7 @@ private:
     bool muted = false;
     bool shuffle = false;
     bool stopped = false;
+    bool wasPlaying = true;
 
 signals:
     void finishedPlayingSong(QString url);

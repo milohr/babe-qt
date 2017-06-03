@@ -1347,7 +1347,6 @@ void MainWindow::updateList()
 void MainWindow::on_mainList_clicked(const QList<QMap<int, QString> > &list)
 {
     Q_UNUSED(list);
-
     loadTrack();
     if(!currentList.contains(current_song)) currentList<<current_song;
 
@@ -1412,6 +1411,7 @@ void MainWindow::loadTrack()
     if(BaeUtils::fileExists(current_song[BabeTable::LOCATION]))
     {
         player->setMedia(QUrl::fromLocalFile(current_song[BabeTable::LOCATION]));
+        wasPlaying = true;
         this->play();
 
         timer->start(3000);
@@ -1679,20 +1679,28 @@ void MainWindow::on_play_btn_clicked()
     if(mainList->rowCount() > 0 || !current_song.isEmpty())
     {
         if(player->state() == QMediaPlayer::PlayingState) this->pause();
-        else this->play();
+        else
+        {
+             wasPlaying = true;
+            this->play();
+        }
     }
 }
 
 void MainWindow::play()
 {
-    player->play();
-    ui->play_btn->setIcon(QIcon(":Data/data/media-playback-pause.svg"));
-    this->setWindowTitle(current_song[BabeTable::TITLE]+" \xe2\x99\xa1 "+current_song[BabeTable::ARTIST]);
+    if(wasPlaying)
+    {
+        player->play();
+        ui->play_btn->setIcon(QIcon(":Data/data/media-playback-pause.svg"));
+        this->setWindowTitle(current_song[BabeTable::TITLE]+" \xe2\x99\xa1 "+current_song[BabeTable::ARTIST]);
+    }
 
 }
 
 void MainWindow::pause()
 {
+    wasPlaying = player->state() == QMediaPlayer::PlayingState? true : false;
     player->pause();
     ui->play_btn->setIcon(QIcon(":Data/data/media-playback-start.svg"));
 }
@@ -1900,13 +1908,12 @@ void MainWindow::addToPlaylist(const QList<QMap<int, QString> > &mapList, const 
                     mainList->addRowAt(current_song_pos+1,track,true);
                     break;
                 case APPENDBEFORE:
-                    mainList->addRowAt(current_song_pos-1>0? 0:current_song_pos-1,track,true);
+                    mainList->addRowAt(current_song_pos,track,true);
                     break;
                 case APPENDINDEX:
                     mainList->addRowAt(mainList->getIndex(),track,true);
                     break;
                 }
-
             }
         }
 
@@ -1934,6 +1941,28 @@ void MainWindow::addToPlaylist(const QList<QMap<int, QString> > &mapList, const 
                 break;
             }
 
+    }
+
+
+    switch(pos)
+    {
+    case APPENDBOTTOM:
+        mainList->scrollToBottom();
+        break;
+    case APPENDTOP:
+        mainList->scrollToItem(mainList->item(0,BabeTable::TITLE),QAbstractItemView::PositionAtTop);
+        break;
+    case APPENDAFTER:
+        mainList->scrollToItem(mainList->item(current_song_pos+1,BabeTable::TITLE),QAbstractItemView::PositionAtTop);
+        break;
+    case APPENDBEFORE:
+        mainList->scrollToItem(mainList->item(current_song_pos,BabeTable::TITLE),QAbstractItemView::PositionAtTop);
+
+        break;
+    case APPENDINDEX:
+        mainList->scrollToItem(mainList->item(mainList->getIndex(),BabeTable::TITLE),QAbstractItemView::PositionAtTop);
+
+        break;
     }
 
     mainList->resizeRowsToContents();
