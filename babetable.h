@@ -174,6 +174,7 @@ signals:
     void indexesMoved(int track,int newRow);
     void previewStarted();
     void previewFinished();
+    void playItNow(QList<QMap<int,QString>> tracks);
 
 };
 

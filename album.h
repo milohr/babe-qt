@@ -77,6 +77,7 @@ signals:
     void changedArt( QMap<int, QString> albumMap);
     void babeAlbum_clicked( QMap<int, QString> albumMap);
     void albumDragged();
+    void albumDragStarted();
     void albumCoverEnter();
     void albumCoverLeft();
 

@@ -167,6 +167,7 @@ private slots:
     void removeSong(const int &index);
     void putAlbumOnPlay(const QMap<int,QString> &info);
     void putOnPlay(const QList<QMap<int,QString>> &mapList);
+    void playItNow(const QList<QMap<int,QString>> &list);
     void changedArt(const QMap<int, QString> &info);
     void babeAlbum(const QMap<int, QString> &info);
     bool loadCover(const QString &artist, const QString &album, const QString &title);

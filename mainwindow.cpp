@@ -166,11 +166,11 @@ void MainWindow::setUpViews()
     connect(playlistTable->table,&BabeTable::tableWidget_doubleClicked, [this] (QList<QMap<int, QString>> list) { addToPlaylist(list,false,APPENDBOTTOM);});
     connect(playlistTable->table,&BabeTable::removeIt_clicked,this,&MainWindow::removeSong);
     connect(playlistTable->table,&BabeTable::babeIt_clicked,this,&MainWindow::babeIt);
-    //connect(playlistTable->table,SIGNAL(createPlaylist_clicked()),this,SLOT(playlistsView()));
     connect(playlistTable->table,&BabeTable::queueIt_clicked,this,&MainWindow::addToQueue);
     connect(playlistTable->table,&BabeTable::infoIt_clicked,this,&MainWindow::infoIt);
     connect(playlistTable->table,&BabeTable::previewStarted,this,&MainWindow::pause);
     connect(playlistTable->table,&BabeTable::previewFinished,this,&MainWindow::play);
+    connect(playlistTable->table,&BabeTable::playItNow,this,&MainWindow::playItNow);
 
 
     collectionTable = new BabeTable(this);
@@ -188,6 +188,7 @@ void MainWindow::setUpViews()
     connect(collectionTable,&BabeTable::infoIt_clicked,this,&MainWindow::infoIt);
     connect(collectionTable,&BabeTable::previewStarted,this,&MainWindow::pause);
     connect(collectionTable,&BabeTable::previewFinished,this,&MainWindow::play);
+    connect(collectionTable,&BabeTable::playItNow,this,&MainWindow::playItNow);
 
     mainList = new BabeTable(this);
     mainList->hideColumn(BabeTable::ALBUM);
@@ -232,11 +233,10 @@ void MainWindow::setUpViews()
     filterList->setAddMusicMsg("\nDidn't find anything!","face-surprise");
     connect(filterList,&BabeTable::tableWidget_doubleClicked, [this] (QList<QMap<int, QString>> list)
     {
-        addToPlaylist(list,false,APPENDBOTTOM);
+       playItNow(list);
         mainListView->setCurrentIndex(0);
         ui->filter->setText("");
-        mainList->setCurrentCell(mainList->rowCount()-list.size(),BabeTable::TITLE);
-        this->loadTrack();
+
 
     });
     connect(filterList,&BabeTable::removeIt_clicked,this,&MainWindow::removeSong);
@@ -266,6 +266,7 @@ void MainWindow::setUpViews()
     connect(resultsTable,&BabeTable::infoIt_clicked,this,&MainWindow::infoIt);
     connect(resultsTable,&BabeTable::previewStarted,this,&MainWindow::pause);
     connect(resultsTable,&BabeTable::previewFinished,this,&MainWindow::play);
+    connect(resultsTable,&BabeTable::playItNow,this,&MainWindow::playItNow);
 
 
     rabbitTable = new RabbitView(this);
@@ -276,6 +277,8 @@ void MainWindow::setUpViews()
     connect(rabbitTable->getTable(),&BabeTable::infoIt_clicked,this,&MainWindow::infoIt);
     connect(rabbitTable->getTable(),&BabeTable::previewStarted,this,&MainWindow::pause);
     connect(rabbitTable->getTable(),&BabeTable::previewFinished,this,&MainWindow::play);
+    connect(rabbitTable->getTable(),&BabeTable::playItNow,this,&MainWindow::playItNow);
+
 
     albumsTable = new AlbumsView(false,this);
     connect(albumsTable,&AlbumsView::populateCoversFinished,[this](){qDebug()<<"finished populateHeadsFinished";});
@@ -289,6 +292,8 @@ void MainWindow::setUpViews()
     connect(albumsTable,&AlbumsView::albumDoubleClicked,this,&MainWindow::albumDoubleClicked);
     connect(albumsTable->albumTable,&BabeTable::previewStarted,this,&MainWindow::pause);
     connect(albumsTable->albumTable,&BabeTable::previewFinished,this,&MainWindow::play);
+    connect(albumsTable->albumTable,&BabeTable::playItNow,this,&MainWindow::playItNow);
+
 
     artistsTable = new AlbumsView(true,this);
     artistsTable->albumTable->showColumn(BabeTable::ALBUM);
@@ -303,6 +308,7 @@ void MainWindow::setUpViews()
     connect(artistsTable,&AlbumsView::albumDoubleClicked,this,&MainWindow::albumDoubleClicked);
     connect(artistsTable->albumTable,&BabeTable::previewStarted,this,&MainWindow::pause);
     connect(artistsTable->albumTable,&BabeTable::previewFinished,this,&MainWindow::play);
+    connect(artistsTable->albumTable,&BabeTable::playItNow,this,&MainWindow::playItNow);
 
 
     infoTable = new InfoView(this);
@@ -614,6 +620,15 @@ void MainWindow::albumDoubleClicked(const QMap<int, QString> &info)
         mapList = settings_widget->getCollectionDB().getTrackData(QString("SELECT * FROM tracks WHERE artist = \""+artist+"\" AND album = \""+album+"\" ORDER by track asc"));
 
     if(!mapList.isEmpty()) addToPlaylist(mapList,false, APPENDBOTTOM);
+
+}
+
+
+void MainWindow::playItNow(const QList<QMap<int,QString>> &list)
+{
+    addToPlaylist(list,false,APPENDBOTTOM);
+    mainList->setCurrentCell(mainList->rowCount()-list.size(),BabeTable::TITLE);
+    this->loadTrack();
 
 }
 

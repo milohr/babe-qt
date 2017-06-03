@@ -866,6 +866,26 @@ void BabeTable::keyPressEvent(QKeyEvent *event) {
         break;
     }
 
+    case Qt::Key_Q :
+    {
+        QList<QMap<int,QString>> mapList;
+        for(auto row : this->getSelectedRows(false))
+            mapList<< this->getRowData(row);
+
+        emit queueIt_clicked(mapList);
+        break;
+    }
+
+    case Qt::Key_P :
+    {
+        QList<QMap<int,QString>> mapList;
+        for(auto row : this->getSelectedRows(false))
+            mapList<< this->getRowData(row);
+
+        emit playItNow(mapList);
+        break;
+    }
+
     default: {
         QTableWidget::keyPressEvent(event);
         break;

@@ -259,14 +259,7 @@ void AlbumsView::populateTableView(QSqlQuery query)
             connect(artwork,&Album::babeAlbum_clicked,this,&AlbumsView::babeAlbum);
             //connect(artwork,SIGNAL(albumDragged()),grid,SLOT(clear()));
 
-            connect(artwork, &Album::albumDragged, [this]()
-            {
-                //grid->adjustSize();
-                //grid->update();
-                // grid->updateGeometry();
-
-                //grid->clearMask();
-            });
+            connect(artwork, &Album::albumDragStarted, this, &AlbumsView::hideAlbumFrame);
 
             auto item = new QListWidgetItem();
             itemsList.push_back(item);
@@ -318,6 +311,7 @@ void AlbumsView::populateTableViewHeads(QSqlQuery query)
             connect(album,&Album::playAlbum,[this](QMap<int,QString> info) { emit this->playAlbum(info);});
             connect(album,&Album::changedArt,this,&AlbumsView::changedArt_head);
             connect(album,&Album::babeAlbum_clicked,this,&AlbumsView::babeAlbum);
+            connect(album, &Album::albumDragStarted, this, &AlbumsView::hideAlbumFrame);
 
             auto item =new QListWidgetItem();
             itemsList.push_back(item);

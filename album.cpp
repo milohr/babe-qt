@@ -262,6 +262,7 @@ void Album::mouseMoveEvent(QMouseEvent *event)
 
 void Album::performDrag()
 {
+    emit albumDragStarted();
     qDebug()<<"trying to drag and album";
     QMimeData *mimeData = new QMimeData;
     mimeData->setText(album.isEmpty()? this->artist : this->album+" /by/ "+this->artist);
