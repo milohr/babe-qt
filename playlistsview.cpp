@@ -27,7 +27,7 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
     layout->setSpacing(0);
 
     table = new BabeTable(this);
-    table->setAddMusicMsg("\nSelect a Playlist...","face-hug-right");
+    table->setAddMusicMsg("\nPlaylist is empty\nPick another one...","face-hug-right");
 
     list = new QListWidget(this);
     connect(list, SIGNAL(doubleClicked(QModelIndex)), list,
@@ -280,7 +280,7 @@ void PlaylistsView::addToPlaylist(const QString &playlist,const QList<QMap<int,Q
 
     connect(this,&PlaylistsView::finishedPopulatingPlaylist,[&tracks,this](QString playlist)
     {
-        nof.notify(playlist, QString ("%1 Tracks added to playlist").arg(tracks.size()));
+        nof.notify(playlist, QString ("%1 Track%2 added to playlist").arg(QString::number(tracks.size()),tracks.size()>1?"s":""));
     });
 }
 

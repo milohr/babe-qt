@@ -1,9 +1,13 @@
 #include "album.h"
 
 
-Album::Album(QString imagePath, BaeUtils::ALbumSizeHint widgetSize, int widgetRadius, bool isDraggable, QWidget *parent) : QLabel(parent)
+Album::Album(QWidget *parent) : QLabel(parent)
 {
 
+}
+
+void Album::createAlbum(QString imagePath,BaeUtils::ALbumSizeHint widgetSize, int widgetRadius, bool isDraggable)
+{
     switch (widgetSize)
     {
     case BaeUtils::BIG_ALBUM:
@@ -53,11 +57,7 @@ Album::Album(QString imagePath, BaeUtils::ALbumSizeHint widgetSize, int widgetRa
     layout->addWidget(right_spacer);
 
     playBtn = new QToolButton(this);
-    connect(playBtn,&QToolButton::clicked,[this]()
-    {
-        qDebug()<<this->albumMap;
-        emit playAlbum(this->albumMap);
-    });
+    connect(playBtn,&QToolButton::clicked,[this]() { emit playAlbum(this->albumMap); });
 
     playBtn->installEventFilter(this);
     playBtn->setIcon(QIcon(":Data/data/playBtn.svg"));
@@ -82,6 +82,8 @@ Album::Album(QString imagePath, BaeUtils::ALbumSizeHint widgetSize, int widgetRa
     auto artIt = new QAction("Change art...",contextMenu);
     connect(artIt, SIGNAL(triggered()), this, SLOT(artIt_action()));
     this->addAction(artIt);
+
+    emit albumCreated(this);
 }
 
 bool Album::eventFilter(QObject * watched, QEvent * event)

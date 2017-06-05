@@ -27,8 +27,9 @@ class Album : public QLabel
 public:
 
 
-    explicit Album(QString imagePath,BaeUtils::ALbumSizeHint widgetSize, int widgetRadius=0, bool isDraggable=false, QWidget *parent = 0);
+    explicit Album(QWidget *parent = 0);
     ~Album(){}
+    void createAlbum(QString imagePath,BaeUtils::ALbumSizeHint widgetSize, int widgetRadius=0, bool isDraggable=false);
     void setArtist(const QString &artistTitle);
     void setAlbum(const QString &albumTitle);
     void setTitle(const QString &artistTitle, const QString &albumTitle="");
@@ -80,6 +81,7 @@ signals:
     void albumDragStarted();
     void albumCoverEnter();
     void albumCoverLeft();
+    void albumCreated(Album *album);
 
 public slots:
 

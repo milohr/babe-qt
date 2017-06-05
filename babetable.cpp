@@ -125,7 +125,6 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
     connect(this, &BabeTable::rightClicked, this,&BabeTable::setUpContextMenu);
     connect(sendToMenu,&QMenu::triggered, this,&BabeTable::sendIt_action);
 
-
     connect(babeIt,&QAction::triggered, this, &BabeTable::babeIt_action);
     connect(queueIt,&QAction::triggered, this,&BabeTable::queueIt_action);
     connect(addTo,&QAction::triggered, this,&BabeTable::addToPlaylist);
@@ -684,7 +683,6 @@ void BabeTable::setUpContextMenu(const int row, const int column)
     this->rRow = row;
     this->rColumn= column;
 
-    // playlistsMenu->addAction("Create new...");
     sendToMenu->clear();
     QMapIterator<QString, QString> i(getKdeConnectDevices());
     while (i.hasNext())
@@ -847,6 +845,15 @@ void BabeTable::keyPressEvent(QKeyEvent *event)
         break;
     }
 
+    case Qt::Key_I:
+
+    {
+        QString artist = this->model()->data(this->model()->index(this->getIndex(), ARTIST)).toString();
+        QString album = this->model()->data(this->model()->index(this->getIndex(), ALBUM)).toString();
+        QString title = this->model()->data(this->model()->index(this->getIndex(), TITLE)).toString();
+        emit infoIt_clicked(title, artist, album);
+        break;
+    }
 
 
     default: {

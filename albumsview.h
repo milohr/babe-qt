@@ -44,6 +44,7 @@ public:
     QFrame *utilsFrame;
     BabeTable *albumTable;
     QListWidget *grid;
+    QToolButton *expandBtn;
 
 
     enum ALBUMSVIEW_H{ TITLE, ARTIST, ART };
@@ -68,17 +69,18 @@ private:
 public slots:
 
     void hideAlbumFrame();
+    void expandList();
     void changedArt_cover(QMap<int,QString> info);
     void changedArt_head(QMap<int,QString> info);
     void babeAlbum(QMap<int,QString> info);
     void setAlbumsSize(int value);
+    void getAlbumInfo(QMap<int,QString> info);
+    void getArtistInfo(QMap<int,QString> info);
 
 
 private slots:
 
-    void getAlbumInfo(QMap<int,QString> info);
-    void getArtistInfo(QMap<int,QString> info);
-    void albumHover();    
+    void albumHover();
     void orderChanged(const QString &order);
     void filterAlbum(QModelIndex index);
 
@@ -90,7 +92,7 @@ signals:
     void babeAlbum_clicked( QMap<int,QString> info);
     void populateCoversFinished();
     void populateHeadsFinished();
-
+    void expandTo(QString artist, QString album);
 
 };
 

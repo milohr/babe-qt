@@ -49,11 +49,19 @@ void PlaylistForm::on_saveBtn_clicked()
 
         auto playlist = selection.first()->text();
         if(!playlist.isEmpty())
-        {   emit saved(playlist,this->tracks);
+        {
+            emit saved(playlist,this->tracks);
 
             this->close();
             this->destroy();
         }
+    }else if(!ui->lineEdit->text().isEmpty() && !this->playlists.contains(ui->lineEdit->text()))
+    {
+        auto playlist =ui->lineEdit->text();
+        emit created(playlist);
+        emit saved(playlist,this->tracks);
+        this->close();
+        this->destroy();
     }
 
 }

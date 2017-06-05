@@ -24,8 +24,9 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView)
 {
     ui->setupUi(this);
 
-    artist = new Album(":Data/data/cover.png", BaeUtils::MEDIUM_ALBUM, 100,false,this);
+    artist = new Album(this);
     connect(artist,&Album::playAlbum,this,&InfoView::playAlbum_clicked);
+    artist->createAlbum(":Data/data/cover.png", BaeUtils::MEDIUM_ALBUM, 100,false);
 
     /* ui->lyricsText->setLineWrapMode(QTextEdit::NoWrap);
     ui->lyricsText->setStyleSheet("QTextBrowser{background-color: #575757; color:white;}");

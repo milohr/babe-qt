@@ -45,9 +45,10 @@ void RabbitView::populateArtistSuggestion(QMap<QString,QByteArray> info)
 {
     for(auto tag: info.keys())
     {
-        auto art = new Album("",BaeUtils::SMALL_ALBUM,2,true,this);
+        auto art = new Album(this);
         connect(art, &Album::albumCoverClicked,this,&RabbitView:: filterByArtist);
         connect(art,&Album::playAlbum, [this] (QMap<int,QString> info) { emit playAlbum(info); });
+        art->createAlbum("",BaeUtils::SMALL_ALBUM,2,true);
         // connect(art,&Album::changedArt,this,&RabbitView::changedArt_cover);
         //connect(art,&Album::babeAlbum_clicked,this,&RabbitView::babeAlbum);
         art->setToolTip(BaeUtils::fixString(tag));

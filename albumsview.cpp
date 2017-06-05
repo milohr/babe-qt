@@ -85,7 +85,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
 
     albumTable = new BabeTable(this);
     albumTable->setFrameShape(QFrame::NoFrame);
-//    albumTable->horizontalHeader()->setVisible(false);
+    //    albumTable->horizontalHeader()->setVisible(false);
     albumTable->showColumn(BabeTable::TRACK);
     albumTable->showColumn(BabeTable::STARS);
     albumTable->hideColumn(BabeTable::ARTIST);
@@ -104,16 +104,24 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     line_h->setFrameShadow(QFrame::Plain);
     line_h->setMaximumHeight(1);
 
-    cover = new Album(":Data/data/cover.svg",BaeUtils::MEDIUM_ALBUM,0,true,this);
+    cover = new Album(this);
     connect(cover,&Album::playAlbum,[this] (QMap<int,QString> info) { emit this->playAlbum(info); });
     connect(cover,&Album::changedArt,this,&AlbumsView::changedArt_cover);
     connect(cover,&Album::babeAlbum_clicked,this,&AlbumsView::babeAlbum);
+    cover->createAlbum(":Data/data/cover.svg",BaeUtils::MEDIUM_ALBUM,0,true);
 
     closeBtn = new QToolButton(cover);
-    connect(closeBtn,SIGNAL(clicked()),SLOT(hideAlbumFrame()));
+    connect(closeBtn,&QToolButton::clicked,this,&AlbumsView::hideAlbumFrame);
+
     closeBtn->setGeometry(2,2,16,16);
     closeBtn->setIcon(QIcon::fromTheme("tab-close"));
     closeBtn->setAutoRaise(true);
+
+    expandBtn = new QToolButton(cover);
+    connect(expandBtn,&QToolButton::clicked,this,&AlbumsView::expandList);
+    expandBtn->setGeometry(cover->getSize()-18,2,16,16);
+    expandBtn->setIcon(QIcon::fromTheme("amarok_artist"));
+    expandBtn->setAutoRaise(true);
 
     auto line = new QFrame(this);
     line->setFrameShape(QFrame::VLine);
@@ -167,6 +175,15 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
 }
 
 AlbumsView::~AlbumsView(){}
+
+
+void AlbumsView::expandList()
+{
+    auto album = cover->getAlbum();
+    auto artist = cover->getArtist();
+
+    emit expandTo(artist, album);
+}
 
 
 void AlbumsView::hideAlbumFrame()
@@ -246,28 +263,28 @@ void AlbumsView::populateTableView(QSqlQuery query)
                 art = query.value(ART).toString();
             else art = connection.getArtistArt(artist);
 
-            auto artwork= new Album(art,BaeUtils::MEDIUM_ALBUM,4,true,this);
-            albumsList.push_back(artwork);
-
-            artwork->borderColor=true;
-            artwork->setTitle(artist,album);
+            auto artwork= new Album(this);
 
             connect(artwork,&Album::albumCoverClicked,this,&AlbumsView::getAlbumInfo);
             connect(artwork,&Album::albumCoverDoubleClicked, [this] (QMap<int, QString> info) { emit albumDoubleClicked(info); });
             connect(artwork,&Album::playAlbum, [this] (QMap<int,QString> info) { emit this->playAlbum(info); });
             connect(artwork,&Album::changedArt,this,&AlbumsView::changedArt_cover);
             connect(artwork,&Album::babeAlbum_clicked,this,&AlbumsView::babeAlbum);
-            //connect(artwork,SIGNAL(albumDragged()),grid,SLOT(clear()));
-
             connect(artwork, &Album::albumDragStarted, this, &AlbumsView::hideAlbumFrame);
+            artwork->createAlbum(art,BaeUtils::MEDIUM_ALBUM,4,true);
+            artwork->setTitle(artist,album);
+            albumsList.push_back(artwork);
+
+            artwork->borderColor=true;
 
             auto item = new QListWidgetItem();
             itemsList.push_back(item);
             item->setSizeHint(QSize(artwork->getSize(),artwork->getSize()));
-            item->setText(album);
+            item->setText(artwork->getAlbum());
             item->setTextAlignment(Qt::AlignCenter);
             grid->addItem(item);
             grid->setItemWidget(item,artwork);
+
         }
 
     }
@@ -300,26 +317,28 @@ void AlbumsView::populateTableViewHeads(QSqlQuery query)
             if(!query.value(1).toString().isEmpty()&&query.value(1).toString()!="NULL")
                 art=(query.value(1).toString());
 
-            Album *album= new Album(art,BaeUtils::MEDIUM_ALBUM,4,true,this);
-            albumsList.push_back(album);
+            auto artwork= new Album(this);
 
-            album->borderColor=true;
-            album->setTitle(artist);
+            connect(artwork,&Album::albumCoverClicked,this,&AlbumsView::getArtistInfo);
+            connect(artwork,&Album::albumCoverDoubleClicked, [this] (QMap<int, QString> info) { emit albumDoubleClicked(info); });
+            connect(artwork,&Album::playAlbum, [this] (QMap<int,QString> info) { emit this->playAlbum(info); });
+            connect(artwork,&Album::changedArt,this,&AlbumsView::changedArt_cover);
+            connect(artwork,&Album::babeAlbum_clicked,this,&AlbumsView::babeAlbum);
+            connect(artwork, &Album::albumDragStarted, this, &AlbumsView::hideAlbumFrame);
+            artwork->createAlbum(art,BaeUtils::MEDIUM_ALBUM,4,true);
+            artwork->setTitle(artist);
 
-            connect(album, &Album::albumCoverClicked,this,&AlbumsView::getArtistInfo);
-            connect(album, &Album::albumCoverDoubleClicked, [this] (QMap<int, QString> info) { emit albumDoubleClicked(info); });
-            connect(album,&Album::playAlbum,[this](QMap<int,QString> info) { emit this->playAlbum(info);});
-            connect(album,&Album::changedArt,this,&AlbumsView::changedArt_head);
-            connect(album,&Album::babeAlbum_clicked,this,&AlbumsView::babeAlbum);
-            connect(album, &Album::albumDragStarted, this, &AlbumsView::hideAlbumFrame);
+            albumsList.push_back(artwork);
 
-            auto item =new QListWidgetItem();
+            artwork->borderColor=true;
+
+            auto item = new QListWidgetItem();
             itemsList.push_back(item);
-            item->setSizeHint( QSize( album->getSize(), album->getSize()));
-            item->setText(artist);
+            item->setSizeHint(QSize(artwork->getSize(),artwork->getSize()));
+            item->setText(artwork->getArtist());
             item->setTextAlignment(Qt::AlignCenter);
             grid->addItem(item);
-            grid->setItemWidget(item,album);
+            grid->setItemWidget(item,artwork);
 
         }
     }

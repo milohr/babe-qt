@@ -92,7 +92,7 @@ public:
     bool babeTrack(const QMap<int, QString> &track);
     QList<QMap<int,QString>> searchFor(const QStringList &queries);
 
-    QStringList searchKeys = {"location:","artist:","album:","title:","genre:","online:","playlist:"};
+    QStringList searchKeys = {"location:","artist:","album:","title:","genre:","online:","playlist:", "stars:"};
 
 protected:
 
@@ -247,6 +247,7 @@ private:
     void populateMainList();
     bool isBabed(const QMap<int, QString> &track);
     void feedRabbit();
+    void expandAlbumList(const QString &artist, const QString &album);
 
     void saveSettings(const QString &key, const QVariant &value,const QString &group);
     QVariant loadSettings(const QString &key, const QString &group, const QVariant &defaultValue = QVariant());

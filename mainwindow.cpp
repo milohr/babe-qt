@@ -34,8 +34,19 @@ MainWindow::MainWindow(const QStringList &files, QWidget *parent) :
     this->defaultWindowFlags = this->windowFlags();
 
 
-    album_art = new Album(":Data/data/babe.png",BaeUtils::BIG_ALBUM,0,false);
+    album_art = new Album(this);
+
+    connect(album_art,&Album::playAlbum,this,&MainWindow::putAlbumOnPlay);
+    connect(album_art,&Album::changedArt,this,&MainWindow::changedArt);
+    connect(album_art,&Album::babeAlbum_clicked,this,&MainWindow::babeAlbum);
+    album_art->createAlbum(":Data/data/babe.png",BaeUtils::BIG_ALBUM,0,false);
+
     ALBUM_SIZE = album_art->getSize();
+
+    album_art->setFixedSize(ALBUM_SIZE,ALBUM_SIZE);
+    album_art->setTitleGeometry(0,0,ALBUM_SIZE,static_cast<int>(ALBUM_SIZE*0.15));
+    album_art->titleVisible(false);
+
 
     ui->controls->installEventFilter(this);
 
@@ -306,6 +317,7 @@ void MainWindow::setUpViews()
     connect(albumsTable,&AlbumsView::playAlbum,this,&MainWindow::putAlbumOnPlay);
     connect(albumsTable,&AlbumsView::babeAlbum_clicked,this,&MainWindow::babeAlbum);
     connect(albumsTable,&AlbumsView::albumDoubleClicked,this,&MainWindow::albumDoubleClicked);
+    connect(albumsTable,&AlbumsView::expandTo,this,&MainWindow::expandAlbumList);
     connect(albumsTable->albumTable,&BabeTable::previewStarted,this,&MainWindow::pause);
     connect(albumsTable->albumTable,&BabeTable::previewFinished,this,&MainWindow::play);
     connect(albumsTable->albumTable,&BabeTable::playItNow,this,&MainWindow::playItNow);
@@ -314,6 +326,7 @@ void MainWindow::setUpViews()
 
 
     artistsTable = new AlbumsView(true,this);
+    artistsTable->expandBtn->setVisible(false);
     artistsTable->albumTable->showColumn(BabeTable::ALBUM);
     connect(artistsTable,&AlbumsView::populateHeadsFinished,[this](){qDebug()<<"finished populateHeadsFinished";});
     connect(artistsTable->albumTable,&BabeTable::tableWidget_doubleClicked, [this] (QList<QMap<int, QString>> list) { addToPlaylist(list,false,APPENDBOTTOM);});
@@ -506,14 +519,6 @@ void MainWindow::setUpPlaylist()
     playlistWidget->setLayout(playlistWidget_layout);
     playlistWidget->setFixedWidth(ALBUM_SIZE);
 
-    album_art = new Album(":Data/data/babe.png",BaeUtils::BIG_ALBUM,0,false);
-    connect(album_art,&Album::playAlbum,this,&MainWindow::putAlbumOnPlay);
-    connect(album_art,&Album::changedArt,this,&MainWindow::changedArt);
-    connect(album_art,&Album::babeAlbum_clicked,this,&MainWindow::babeAlbum);
-
-    album_art->setFixedSize(ALBUM_SIZE,ALBUM_SIZE);
-    album_art->setTitleGeometry(0,0,ALBUM_SIZE,static_cast<int>(ALBUM_SIZE*0.15));
-    album_art->titleVisible(false);
 
     ui->controls->setParent(album_art);
     ui->controls->setGeometry(0,ALBUM_SIZE-static_cast<int>(ALBUM_SIZE*0.25),ALBUM_SIZE,static_cast<int>(ALBUM_SIZE*0.25));
@@ -1025,6 +1030,7 @@ void MainWindow::collectionView()
 void MainWindow::albumsView()
 {
     views->setCurrentIndex(ALBUMS);
+    ui->albums_view->setChecked(true);
 
     if(this->viewMode != FULLMODE) expand();
 
@@ -1085,7 +1091,7 @@ void MainWindow::infoView()
 void MainWindow::artistsView()
 {
     views->setCurrentIndex(ARTISTS);
-
+    ui->artists_view->setChecked(true);
     if(this->viewMode != FULLMODE) expand();
 
     utilsBar->actions().at(ALBUMS_UB)->setVisible(false);
@@ -1385,6 +1391,18 @@ void MainWindow::feedRabbit()
     rabbitTable->flushSuggestions();
     rabbitTable->populateGeneralSuggestion(connection.getTrackData(QString("SELECT * FROM tracks WHERE artist = \""+current_song[BabeTable::ARTIST]+"\"")));
     //    rabbitTable->populateGeneralSuggestion(connection.getTrackData(QString("SELECT * FROM tracks WHERE genre = \""+current_song[BabeTable::GENRE]+"\"")));
+}
+
+void MainWindow::expandAlbumList(const QString &artist, const QString &album)
+{
+    if(!artist.isEmpty())
+
+    {
+        emit ui->artists_view->clicked();
+        artistsTable->getArtistInfo({{Album::ARTIST,artist},{Album::ALBUM,album}});
+
+    }
+
 }
 
 void MainWindow::loadTrack()
@@ -2061,6 +2079,9 @@ QList<QMap<int, QString> > MainWindow::searchFor(const QStringList &queries)
 
             else if(key==  "playlist:")
                 mapList += settings_widget->getCollectionDB().getTrackData(QString("SELECT * FROM tracks WHERE playlist LIKE \"%"+searchQuery+"%\""));
+
+            else if(key==  "stars:")
+                mapList += settings_widget->getCollectionDB().getTrackData(QString("SELECT * FROM tracks WHERE stars = "+searchQuery));
 
             else
                 mapList += settings_widget->getCollectionDB().getTrackData(QString("SELECT * FROM tracks WHERE title LIKE \"%"+searchQuery+"%\" OR artist LIKE \"%"+searchQuery+"%\" OR album LIKE \"%"+searchQuery+"%\"OR genre LIKE \"%"+searchQuery+"%\""));
