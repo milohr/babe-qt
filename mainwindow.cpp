@@ -2103,7 +2103,7 @@ void MainWindow::on_search_textChanged(const QString &arg1)
     {
         QStringList searchList=arg1.split(",");
 
-        if(searchList.size()==1 && !arg1.contains(":"))
+        if(searchList.size()==1 && !arg1.contains(":") && (views->currentIndex()==ALBUMS || views->currentIndex()==ARTISTS))
         {
             if(views->currentIndex()==ALBUMS )
                 albumsTable->filter(arg1);
