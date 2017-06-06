@@ -29,23 +29,19 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
 
     QAction *zoomIn = new QAction(this);
     zoomIn->setShortcut(tr("CTRL++"));
-    connect(zoomIn, &QAction::triggered,[this](){
-        if(albumSize+5<=300)
-        {
+    connect(zoomIn, &QAction::triggered,[this]()
+    {
+        if(albumSize+5<=BaeUtils::MAX_MID_ALBUM_SIZE)
             this->setAlbumsSize(albumSize+5);
-            /* slider->setValue(ALBUM_SIZE_MEDIUM+5);
-            slider->setSliderPosition(ALBUM_SIZE_MEDIUM+5);*/
-        }
+
     });
 
     QAction *zoomOut = new QAction(this);
     zoomOut->setShortcut(tr("CTRL+-"));
-    connect(zoomOut, &QAction::triggered,[this](){
-        if(albumSize-5>=80){
+    connect(zoomOut, &QAction::triggered,[this]()
+    {
+        if(albumSize-5>=BaeUtils::MAX_MIN_ALBUM_SIZE)
             this->setAlbumsSize(albumSize-5);
-            /* slider->setValue(ALBUM_SIZE_MEDIUM-5);
-            slider->setSliderPosition(ALBUM_SIZE_MEDIUM-5);*/
-        }
     });
 
     this->addAction(zoomIn);
@@ -112,15 +108,15 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
 
     closeBtn = new QToolButton(cover);
     connect(closeBtn,&QToolButton::clicked,this,&AlbumsView::hideAlbumFrame);
-
     closeBtn->setGeometry(2,2,16,16);
     closeBtn->setIcon(QIcon::fromTheme("tab-close"));
     closeBtn->setAutoRaise(true);
+    closeBtn->setToolTip("Close");
 
     expandBtn = new QToolButton(cover);
     connect(expandBtn,&QToolButton::clicked,this,&AlbumsView::expandList);
     expandBtn->setGeometry(cover->getSize()-18,2,16,16);
-    expandBtn->setIcon(QIcon::fromTheme("amarok_artist"));
+    expandBtn->setIcon(QIcon(":/Data/data/icons/artists_selected.svg"));
     expandBtn->setAutoRaise(true);
 
     auto line = new QFrame(this);
@@ -211,7 +207,7 @@ void AlbumsView::setAlbumsSize(int value)
 {
     albumSize=value;
     /*slider->setToolTip(QString::number(value));
-    QToolTip::showText( slider->mapToGlobal( QPoint( 0, 0 ) ), QString::number(value) );*/
+            QToolTip::showText( slider->mapToGlobal( QPoint( 0, 0 ) ), QString::number(value) );*/
     for(auto album : albumsList)
     {
         album->setSize(albumSize);
@@ -266,7 +262,11 @@ void AlbumsView::populateTableView(QSqlQuery query)
             auto artwork= new Album(this);
 
             connect(artwork,&Album::albumCoverClicked,this,&AlbumsView::getAlbumInfo);
-            connect(artwork,&Album::albumCoverDoubleClicked, [this] (QMap<int, QString> info) { emit albumDoubleClicked(info); });
+            connect(artwork,&Album::albumCoverDoubleClicked, [this] (QMap<int, QString> info)
+            {
+                emit albumDoubleClicked(info);
+                hideAlbumFrame();
+            });
             connect(artwork,&Album::playAlbum, [this] (QMap<int,QString> info) { emit this->playAlbum(info); });
             connect(artwork,&Album::changedArt,this,&AlbumsView::changedArt_cover);
             connect(artwork,&Album::babeAlbum_clicked,this,&AlbumsView::babeAlbum);
@@ -320,7 +320,11 @@ void AlbumsView::populateTableViewHeads(QSqlQuery query)
             auto artwork= new Album(this);
 
             connect(artwork,&Album::albumCoverClicked,this,&AlbumsView::getArtistInfo);
-            connect(artwork,&Album::albumCoverDoubleClicked, [this] (QMap<int, QString> info) { emit albumDoubleClicked(info); });
+            connect(artwork,&Album::albumCoverDoubleClicked, [this] (QMap<int, QString> info)
+            {
+                emit albumDoubleClicked(info);
+                hideAlbumFrame();
+            });
             connect(artwork,&Album::playAlbum, [this] (QMap<int,QString> info) { emit this->playAlbum(info); });
             connect(artwork,&Album::changedArt,this,&AlbumsView::changedArt_cover);
             connect(artwork,&Album::babeAlbum_clicked,this,&AlbumsView::babeAlbum);
@@ -436,6 +440,7 @@ void AlbumsView::getAlbumInfo(QMap<int,QString> info)
     QString album = info[Album::ALBUM];
 
     cover->setTitle(artist,album);
+    expandBtn->setToolTip("Visit "+ cover->getArtist());
 
     albumTable->flushTable();
 

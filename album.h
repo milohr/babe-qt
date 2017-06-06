@@ -49,8 +49,7 @@ public:
     QString getBGcolor();
     QPixmap image;
     QPixmap getPixmap();
-    QToolButton *playBtn;
-
+    bool showPlayBtn=true;
     enum albumField
     {
         ALBUM, ARTIST, ART
@@ -68,6 +67,8 @@ private:
     QColor borderQColor;
     QPoint oldPos;
     QPoint startPos;
+    QToolButton *playBtn;
+
     void performDrag();
 
 signals:
@@ -80,7 +81,7 @@ signals:
     void albumDragged();
     void albumDragStarted();
     void albumCoverEnter();
-    void albumCoverLeft();
+    void albumCoverLeave();
     void albumCreated(Album *album);
 
 public slots:

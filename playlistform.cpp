@@ -91,5 +91,7 @@ void PlaylistForm::addPlaylist()
         ui->listWidget->addItem(newPlaylist);
         ui->listWidget->setCurrentRow(ui->listWidget->count()-1);
         emit created(newPlaylist);
-    }else ui->lineEdit->setText("");
+    }
+
+    ui->lineEdit->setText("");
 }

@@ -68,6 +68,11 @@ public:
     {
         COLLECTION,ALBUMS,ARTISTS,PLAYLISTS,RABBIT,INFO,SETTINGS,RESULTS
     };
+    enum playlistViews
+    {
+        MAINPLAYLIST, FILTERLIST
+    };
+
     enum utilsBar
     {
         INFO_UB,PLAYLISTS_UB,SEARCH_UB,ALBUMS_UB,ARTISTS_UB,COLLECTION_UB,FAVORITES_UB,RABBIT_UB
@@ -181,6 +186,8 @@ private slots:
     void albumDoubleClicked(const QMap<int, QString> &info);
     void on_playAll_clicked();
 
+    void on_miniPlaybackBtn_clicked();
+
 private:
 
     Ui::MainWindow *ui;
@@ -277,6 +284,7 @@ private:
     bool shuffle = false;
     bool stopped = false;
     bool wasPlaying = true;
+    bool miniPlayback =false;
 
 signals:
     void finishedPlayingSong(QString url);

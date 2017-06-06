@@ -45,5 +45,9 @@
         <file>data/pattern.png</file>
         <file>data/LilyScriptOne-Regular.ttf</file>
         <file>data/media-playback-stop.svg</file>
+        <file>data/empty.svg</file>
+        <file>data/go-top.svg</file>
+        <file>data/go-bottom.svg</file>
+        <file>data/appointment-new.svg</file>
     </qresource>
 </RCC>

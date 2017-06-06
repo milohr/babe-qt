@@ -118,7 +118,7 @@ private slots:
 public slots:
     void itemEdited(QMap<int, QString> map);
     void flushTable();
-    void colorizeRow(const QList<int> &rows, const QString &color);
+    void colorizeRow(const QList<int> &rows, const QString &color, const bool &dark=false);
 
 private:
 
@@ -154,13 +154,13 @@ signals:
 
     void tableWidget_doubleClicked(QList<QMap<int,QString>> mapList);
     void songRated(QStringList list);
-    void enteredTable();
-    void leftTable();
+    void enterTable();
+    void leaveTable();
     void finishedPopulating();
     void rightClicked(const int row, const int column);
     void babeIt_clicked(QList<QMap<int,QString>> tracks);
     void removeIt_clicked(int index);
-    void moodIt_clicked(QList<int> rows, QString color);
+    void moodIt_clicked(QList<int> rows, QString color, bool dark);
     void queueIt_clicked(QList<QMap<int,QString>> track);
     void infoIt_clicked(QString title, QString artist, QString album);
     void indexesMoved(int track,int newRow);

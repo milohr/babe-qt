@@ -16,8 +16,9 @@ namespace BaeUtils
 
 enum ALbumSizeHint {BIG_ALBUM=200,MEDIUM_ALBUM=120,SMALL_ALBUM=80};
 
-static const int MAX_ALBUM_SIZE=300;
-static const int MIN_ALBUM_SIZE=80;
+static const int MAX_BIG_ALBUM_SIZE=300;
+static const int MAX_MID_ALBUM_SIZE=200;
+static const int MAX_MIN_ALBUM_SIZE=80;
 
 static const double BIG_ALBUM_FACTOR = 0.039;
 static const double BIG_ALBUM_FACTOR_SUBWIDGET = 0.27;
@@ -28,13 +29,24 @@ static const double MEDIUM_ALBUM_FACTOR_SUBWIDGET = 0.4;
 static const double SMALL_ALBUM_FACTOR = 0.006;
 static const double SMALL_ALBUM_FACTOR_SUBWIDGET = 0.5;
 
-inline int getWidgetSizeHint(const double &factor, const int &deafultValue)
+inline int getWidgetSizeHint(const double &factor, const ALbumSizeHint &deafultValue)
 {
     int ALBUM_SIZE = deafultValue;
     auto screenSize = QApplication::desktop()->availableGeometry().size();
     int albumSizeHint =  static_cast<int>(sqrt((screenSize.height()*screenSize.width())*factor));
     ALBUM_SIZE = albumSizeHint > ALBUM_SIZE? albumSizeHint : ALBUM_SIZE;
-    return ALBUM_SIZE;
+
+
+    switch(deafultValue)
+    {
+
+    case BIG_ALBUM:  return ALBUM_SIZE > MAX_BIG_ALBUM_SIZE? MAX_BIG_ALBUM_SIZE : ALBUM_SIZE;
+    case MEDIUM_ALBUM:  return ALBUM_SIZE > MAX_MID_ALBUM_SIZE? MAX_MID_ALBUM_SIZE : ALBUM_SIZE;
+    case SMALL_ALBUM:  return ALBUM_SIZE > MAX_MIN_ALBUM_SIZE ? MAX_MIN_ALBUM_SIZE :ALBUM_SIZE;
+
+    }
+
+    return MAX_MID_ALBUM_SIZE;
 }
 
 inline QString getNameFromLocation(const QString &str)

@@ -181,6 +181,7 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
 
     QFont helvetica("Helvetica", 10);
     addMusicTxt = new QLabel();
+    addMusicTxt->setObjectName("addMusicTxt");
     addMusicTxt->setStyleSheet("QLabel{background-color:transparent;}");
     addMusicTxt->setText(addMusicMsg);
     addMusicTxt->setFont(helvetica);
@@ -336,6 +337,7 @@ void BabeTable::addToPlaylist()
 
 void BabeTable::enterEvent(QEvent *event)
 {
+    emit enterTable();
 
     QTableWidget::enterEvent(event);
 
@@ -345,7 +347,9 @@ void BabeTable::leaveEvent(QEvent *event)
 {
 
     this->stopPreview();
+    emit leaveTable();
     QTableWidget::leaveEvent(event);
+
 
 }
 
@@ -394,6 +398,8 @@ void BabeTable::addRow(const QMap<int, QString> &map, const  bool &descriptiveTo
     if(this->rowColoring && !map[ART].isEmpty())
         this->colorizeRow({this->rowCount()-1},map[ART]);
 
+
+
     if(descriptiveTooltip)
         this->item(this->rowCount()-1,TITLE)->setToolTip( "by "+map[ARTIST]);
 }
@@ -416,6 +422,7 @@ void BabeTable::addRowAt(const int &row,const QMap<int, QString> &map,const  boo
 
     if(this->rowColoring && !map[ART].isEmpty())
         this->colorizeRow({row},map[ART]);
+
 
     if(descriptiveTooltip)
         this->item(row,TITLE)->setToolTip( "by "+map[ARTIST]);
@@ -1072,21 +1079,24 @@ void BabeTable::moodIt_action(const QString &color)
         }
 
         contextMenu->close();
-        emit moodIt_clicked(this->getSelectedRows(),color);
+        emit moodIt_clicked(this->getSelectedRows(),color,false);
     }
 }
 
-void BabeTable::colorizeRow(const QList<int> &rows, const QString &color)
+void BabeTable::colorizeRow(const QList<int> &rows, const QString &color, const bool &dark)
 {
     for(auto row : rows)
     {
         QColor coloring;
         coloring.setNamedColor(color);
-        coloring.setAlpha(40);
+        if(!dark) coloring.setAlpha(60);
         this->item(row,TITLE)->setBackgroundColor(coloring);
-        /* QBrush brush;
-    brush.setColor("#fff");
-    this->item(row,TITLE)->setForeground(brush);*/
+        if(dark)
+        {
+            QBrush brush;
+            brush.setColor("#fff");
+            this->item(row,TITLE)->setForeground(brush);
+        }
         //this->item(row,TITLE)->setTextAlignment(Qt::AlignCenter);
     }
 }

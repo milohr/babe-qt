@@ -61,7 +61,6 @@ void Album::createAlbum(QString imagePath,BaeUtils::ALbumSizeHint widgetSize, in
 
     playBtn->installEventFilter(this);
     playBtn->setIcon(QIcon(":Data/data/playBtn.svg"));
-    playBtn->setToolTip("Play all - "+artist+" "+album);
     playBtn->setStyleSheet("QToolButton{border:none;}");
     playBtn->setAutoRaise(true);
     playBtn->setVisible(false);
@@ -279,11 +278,14 @@ void Album::performDrag()
 
 void Album::enterEvent(QEvent *event)
 {
-     emit albumCoverEnter();
+    emit albumCoverEnter();
     event->accept();
 
-    playBtn->setVisible(true);
-    //    playBtn->setToolTip("Play all - "+artist+" "+album);
+    if(showPlayBtn)
+    {
+        playBtn->setVisible(true);
+        playBtn->setToolTip("Play all - "+artist+" "+album);
+    }
 
     widget->setStyleSheet( QString(" background: %4; border-top: 1px solid rgba(%1,%1,%1,120); border-top-left-radius:0; border-top-right-radius:0; border-bottom-right-radius:%2px; border-bottom-left-radius:%3px;").arg( QString::number(this->palette().color(QPalette::WindowText).blue()), QString::number(border_radius-1),QString::number(border_radius-1),"#000"));
 
@@ -292,10 +294,10 @@ void Album::enterEvent(QEvent *event)
 
 void Album::leaveEvent(QEvent *event)
 {
-    emit albumCoverLeft();
+    emit albumCoverLeave();
     event->accept();
-    playBtn->setVisible(false);
-    //this->titleVisible(false);
+    if(showPlayBtn)
+        playBtn->setVisible(false);
 
     widget->setStyleSheet( QString(" background: rgba(0,0,0,150); border-top: 1px solid rgba(%1,%1,%1,120); border-top-left-radius:0; border-top-right-radius:0; border-bottom-right-radius:%2px; border-bottom-left-radius:%3px;").arg( QString::number(this->palette().color(QPalette::WindowText).blue()), QString::number(border_radius-1),QString::number(border_radius-1)));
 
