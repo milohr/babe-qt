@@ -231,10 +231,12 @@ void InfoView::on_searchBtn_clicked()
 
 void InfoView::getTrackInfo(const QString &title, const QString &artist, const QString &album)
 {
+    bool repeatedLyrics = title==trackTitle && artist== artistTitle;
+    bool repeatedAlbum = album==albumTitle && artist==artistTitle;
+    bool repeatedArtist = artist==artistTitle;
     this->trackTitle= title;
     this->albumTitle = album;
     this->artistTitle = artist;
-    clearInfoViews();
 
     if(!albumTitle.isEmpty()&&!artistTitle.isEmpty())
     {
@@ -260,13 +262,30 @@ void InfoView::getTrackInfo(const QString &title, const QString &artist, const Q
 
         connect(&info, &Pulpo::artistArtReady,[this](QByteArray array){this->setArtistArt(array);});
 
-        info.fetchAlbumInfo(Pulpo::AllAlbumInfo,Pulpo::LastFm);
-        info.fetchArtistInfo(Pulpo::AllArtistInfo,Pulpo::LastFm);
 
-
-
-        if(!trackTitle.isEmpty())
+        if(!repeatedAlbum)
         {
+            ui->albumText->setVisible(false);
+
+            ui->tagsInfo->setVisible(false);
+            ui->tagsInfo->clear();
+            ui->albumText->clear();
+            info.fetchAlbumInfo(Pulpo::AllAlbumInfo,Pulpo::LastFm);
+        }
+
+        if(!repeatedArtist)
+        {
+            ui->artistText->setVisible(false);
+            ui->similarArtistInfo->setVisible(false);
+
+            ui->artistText->clear();
+            info.fetchArtistInfo(Pulpo::AllArtistInfo,Pulpo::LastFm);
+        }
+
+
+        if(!trackTitle.isEmpty() && !repeatedLyrics)
+        {
+            ui->lyricsText->clear();
             info.fetchTrackInfo(Pulpo::NoneTrackInfo,Pulpo::LyricWikia,Pulpo::NoneInfoService);
             ui->titleLine->setText(this->trackTitle);
             ui->artistLine->setText(this->artistTitle);
@@ -276,11 +295,8 @@ void InfoView::getTrackInfo(const QString &title, const QString &artist, const Q
 
 void InfoView::clearInfoViews()
 {
-    ui->similarArtistInfo->setVisible(false);
-    ui->tagsInfo->setVisible(false);
-    ui->artistText->setVisible(false);
-    ui->albumText->setVisible(false);
-    ui->lyricsText->clear();
+
+
 }
 
 void InfoView::on_toolButton_clicked()

@@ -120,19 +120,22 @@ MainWindow::MainWindow(const QStringList &files, QWidget *parent) :
     }else  current_song_pos = this->loadSettings("PLAYLIST_POS","MAINWINDOW",QVariant(0)).toInt();
 
 
-    mainList->setCurrentCell(current_song_pos>=mainList->rowCount()? 0 : current_song_pos,BabeTable::TITLE);
 
     if(mainList->rowCount()>0)
     {
+        mainList->setCurrentCell(current_song_pos>=mainList->rowCount()? 0 : current_song_pos,BabeTable::TITLE);
         loadTrack();
         collectionView();
         go_playlistMode();
 
-    }
-    else if(collectionTable->rowCount()>0) collectionView();
+    }else if(collectionTable->rowCount()>0) collectionView();
     else settingsView();
 
     updater->start(100);
+
+    if(this->loadSettings("MINIPLAYBACK","MAINWINDOW",false).toBool())
+        emit ui->miniPlaybackBtn->clicked();
+    else ui->controls->setVisible(false);
 }
 
 
@@ -468,10 +471,19 @@ void MainWindow::setUpCollectionViewer()
     //    utilsBar->setBackgroundRole(QPalette::Midlight);
 
     utilsBar->setMovable(false);
-    utilsBar->setContentsMargins(0,0,0,0);
-    utilsBar->layout()->setMargin(0);
-    utilsBar->layout()->setSpacing(0);
-    //    utilsBar->setStyleSheet("margin:0;");
+    //    utilsBar->layout()->setContentsMargins(0,0,0,0);
+    //    utilsBar-> setContentsMargins(0,0,0,0);
+    //    utilsBar->layout()->setMargin(0);
+    //    utilsBar->layout()->setSpacing(0);
+
+
+    //    ui->searchWidget->layout()->setContentsMargins(0,0,0,0);
+    //    ui->searchWidget-> setContentsMargins(0,0,0,0);
+    ui->searchWidget->layout()->setMargin(0);
+    ui->searchWidget->layout()->setSpacing(0);
+    //ui->search->layout()->setMargin(0);
+    utilsBar->setStyleSheet("margin:0;");
+    ui->playlistUtils->setStyleSheet("margin:0;");
 
     utilsBar->addWidget(infoTable->infoUtils);
     utilsBar->addWidget(playlistTable->btnContainer);
@@ -522,9 +534,8 @@ void MainWindow::setUpPlaylist()
     //    ui->controls->setGeometry(0,0,ALBUM_SIZE,ALBUM_SIZE);
     ui->controls->setMinimumSize(ALBUM_SIZE,ALBUM_SIZE);
     ui->controls->setMaximumSize(ALBUM_SIZE,ALBUM_SIZE);
-    this->hideControls();
     auto controlsColor = this->palette().color(QPalette::Window);
-    ui->controls->setStyleSheet(QString("QWidget#controls{background-color: rgba(%1,%2,%3,60%);}").arg(QString::number(controlsColor.red()),QString::number(controlsColor.green()),QString::number(controlsColor.blue())));
+    ui->controls->setStyleSheet(QString("QWidget#controls{background-color: rgba(%1,%2,%3,50%);}").arg(QString::number(controlsColor.red()),QString::number(controlsColor.green()),QString::number(controlsColor.blue())));
     ui->miniPlaybackBtn->setVisible(false);
 
     seekBar = new QSlider(this);
@@ -727,29 +738,13 @@ bool MainWindow::eventFilter(QObject *object, QEvent *event)
 {
     if(object == this->ui->controls)
     {
-        QGraphicsBlurEffect* effect	= new QGraphicsBlurEffect();
-
         if(event->type()==QEvent::Enter)
         {
-            //            ui->controls->setStyleSheet("QGroupBox{\nbackground-color: rgba(0,0,0,120);border-radius:0;}");
-           if(!miniPlayback) effect->setBlurRadius(9);
-           else  effect->setBlurRadius(20);
-
-            album_art->setGraphicsEffect(effect);
             if(viewMode!=MINIMODE) ui->miniPlaybackBtn->setVisible(true);
 
-
-
-        }else if(event->type()==QEvent::Leave && !miniPlayback)
-        {
-            //            ui->controls->setStyleSheet("QGroupBox{\nbackground-color: rgba(0,0,0,120);border-radius:0;}");
-            effect->setBlurRadius(0);
-            album_art->setGraphicsEffect(effect);
-            if(ui->miniPlaybackBtn->isVisible()) ui->miniPlaybackBtn->setVisible(false);
-
         }
-
-
+        else if(event->type()==QEvent::Leave && !miniPlayback)
+            if(ui->miniPlaybackBtn->isVisible()) ui->miniPlaybackBtn->setVisible(false);
     }
 
 
@@ -788,12 +783,18 @@ bool MainWindow::eventFilter(QObject *object, QEvent *event)
 
     if(object == rightFrame)
     {
+
+
         if(event->type()==QEvent::Enter)
             this->showControls();
 
 
+
+
         if(event->type()==QEvent::Leave)
             this->hideControls();
+
+
 
 
         if(event->type()==QEvent::DragEnter)
@@ -880,7 +881,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
     this->saveSettings("PLAYLIST_POS", current_song_pos,"MAINWINDOW");
     qDebug()<<this->ui->mainToolBar->iconSize().height();
     this->saveSettings("TOOLBAR", this->ui->mainToolBar->iconSize().height(),"MAINWINDOW");
-
+    this->saveSettings("MINIPLAYBACK",miniPlayback,"MAINWINDOW");
 
 
 
@@ -981,9 +982,36 @@ void MainWindow::leaveEvent(QEvent *event)
     event->accept();
 }
 
-void MainWindow::hideControls() { if(ui->controls->isVisible() && !miniPlayback) ui->controls->setVisible(false); }
+void MainWindow::hideControls()
+{
+    if(ui->controls->isVisible() && !miniPlayback)
+    {
+        QGraphicsBlurEffect* effect	= new QGraphicsBlurEffect();
+        effect->setBlurRadius(0);
+        album_art->setGraphicsEffect(effect);
+        ui->controls->setVisible(false);
+    }
 
-void MainWindow::showControls() { if(!ui->controls->isVisible()  && !stopped) ui->controls->setVisible(true); }
+
+}
+
+void MainWindow::showControls() {
+
+    if(!ui->controls->isVisible()  && !stopped)
+    {
+        QGraphicsBlurEffect* effect	= new QGraphicsBlurEffect();
+
+        if(!miniPlayback) effect->setBlurRadius(9);
+        else  effect->setBlurRadius(20);
+        album_art->setGraphicsEffect(effect);
+
+        ui->controls->setVisible(true);
+
+    }
+
+
+
+}
 
 void MainWindow::dummy() { qDebug()<<"TEST on DUMMYT"; }
 
@@ -2315,6 +2343,7 @@ void MainWindow::on_miniPlaybackBtn_clicked()
 
     if(!miniPlayback)
     {
+        if(!ui->miniPlaybackBtn->isVisible()) ui->miniPlaybackBtn->setVisible(true);
         ui->controls->setFixedHeight(ui->controls->minimumSizeHint().height()-40);
         album_art->setFixedHeight(ui->controls->minimumSizeHint().height()-40);
         ui->miniPlaybackBtn->setIcon(QIcon::fromTheme("go-bottom"));
@@ -2335,4 +2364,6 @@ void MainWindow::on_miniPlaybackBtn_clicked()
 
 
     }
+
+    ui->controls->update();
 }

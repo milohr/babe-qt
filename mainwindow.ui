@@ -374,92 +374,12 @@
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QWidget" name="searchWidget" native="true">
-    <property name="geometry">
-     <rect>
-      <x>70</x>
-      <y>60</y>
-      <width>171</width>
-      <height>28</height>
-     </rect>
-    </property>
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <property name="spacing">
-      <number>0</number>
-     </property>
-     <property name="sizeConstraint">
-      <enum>QLayout::SetMaximumSize</enum>
-     </property>
-     <property name="leftMargin">
-      <number>0</number>
-     </property>
-     <property name="topMargin">
-      <number>0</number>
-     </property>
-     <property name="rightMargin">
-      <number>0</number>
-     </property>
-     <property name="bottomMargin">
-      <number>0</number>
-     </property>
-     <item>
-      <widget class="QFrame" name="frame_3">
-       <property name="maximumSize">
-        <size>
-         <width>1</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::VLine</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Plain</enum>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLineEdit" name="search">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="autoFillBackground">
-        <bool>false</bool>
-       </property>
-       <property name="frame">
-        <bool>false</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QFrame" name="frame">
-       <property name="maximumSize">
-        <size>
-         <width>1</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::VLine</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Plain</enum>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
    <widget class="QWidget" name="collectionUtils" native="true">
-    <property name="geometry">
-     <rect>
-      <x>70</x>
-      <y>100</y>
-      <width>78</width>
-      <height>31</height>
-     </rect>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <property name="spacing">
@@ -479,6 +399,12 @@
      </property>
      <item>
       <widget class="QToolButton" name="addAll">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="toolTip">
         <string>Add...</string>
        </property>
@@ -489,6 +415,12 @@
         <iconset theme="list-add">
          <normaloff>.</normaloff>.</iconset>
        </property>
+       <property name="iconSize">
+        <size>
+         <width>22</width>
+         <height>22</height>
+        </size>
+       </property>
        <property name="autoRaise">
         <bool>true</bool>
        </property>
@@ -496,6 +428,12 @@
      </item>
      <item>
       <widget class="QToolButton" name="playAll">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="toolTip">
         <string>Play results...</string>
        </property>
@@ -506,6 +444,12 @@
         <iconset theme="media-playback-start">
          <normaloff>.</normaloff>.</iconset>
        </property>
+       <property name="iconSize">
+        <size>
+         <width>22</width>
+         <height>22</height>
+        </size>
+       </property>
        <property name="autoRaise">
         <bool>true</bool>
        </property>
@@ -513,6 +457,12 @@
      </item>
      <item>
       <widget class="QToolButton" name="saveResults">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="toolTip">
         <string>Save results...</string>
        </property>
@@ -522,6 +472,12 @@
        <property name="icon">
         <iconset theme="document-save-as">
          <normaloff>.</normaloff>.</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>22</width>
+         <height>22</height>
+        </size>
        </property>
        <property name="autoRaise">
         <bool>true</bool>
@@ -629,6 +585,12 @@
        <property name="icon">
         <iconset theme="go-top"/>
        </property>
+       <property name="iconSize">
+        <size>
+         <width>22</width>
+         <height>22</height>
+        </size>
+       </property>
        <property name="autoRaise">
         <bool>true</bool>
        </property>
@@ -651,6 +613,12 @@
        <property name="icon">
         <iconset theme="media-skip-backward"/>
        </property>
+       <property name="iconSize">
+        <size>
+         <width>22</width>
+         <height>22</height>
+        </size>
+       </property>
        <property name="autoRaise">
         <bool>true</bool>
        </property>
@@ -672,6 +640,12 @@
        </property>
        <property name="icon">
         <iconset theme="media-skip-forward"/>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>22</width>
+         <height>22</height>
+        </size>
        </property>
        <property name="autoRaise">
         <bool>true</bool>
@@ -721,6 +695,12 @@
        <property name="icon">
         <iconset theme="object-columns"/>
        </property>
+       <property name="iconSize">
+        <size>
+         <width>22</width>
+         <height>22</height>
+        </size>
+       </property>
        <property name="autoRaise">
         <bool>true</bool>
        </property>
@@ -742,6 +722,12 @@
        </property>
        <property name="icon">
         <iconset theme="media-playback-start"/>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>22</width>
+         <height>22</height>
+        </size>
        </property>
        <property name="autoRaise">
         <bool>true</bool>
@@ -765,6 +751,12 @@
        <property name="icon">
         <iconset theme="love"/>
        </property>
+       <property name="iconSize">
+        <size>
+         <width>22</width>
+         <height>22</height>
+        </size>
+       </property>
        <property name="autoRaise">
         <bool>true</bool>
        </property>
@@ -786,6 +778,12 @@
        </property>
        <property name="icon">
         <iconset theme="source-playlist"/>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>22</width>
+         <height>22</height>
+        </size>
        </property>
        <property name="autoRaise">
         <bool>true</bool>
@@ -824,9 +822,9 @@
     <property name="geometry">
      <rect>
       <x>70</x>
-      <y>10</y>
-      <width>292</width>
-      <height>40</height>
+      <y>20</y>
+      <width>321</width>
+      <height>41</height>
      </rect>
     </property>
     <property name="autoFillBackground">
@@ -850,11 +848,11 @@
      </property>
      <item>
       <widget class="QToolButton" name="calibrateBtn">
-       <property name="minimumSize">
-        <size>
-         <width>36</width>
-         <height>0</height>
-        </size>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
        </property>
        <property name="toolTip">
         <string>Calibrations</string>
@@ -868,6 +866,12 @@
        <property name="icon">
         <iconset theme="filename-bpm-amarok">
          <normaloff>.</normaloff>.</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>22</width>
+         <height>22</height>
+        </size>
        </property>
        <property name="popupMode">
         <enum>QToolButton::InstantPopup</enum>
@@ -885,6 +889,12 @@
        <property name="enabled">
         <bool>true</bool>
        </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="toolTip">
         <string>Back</string>
        </property>
@@ -894,6 +904,12 @@
        <property name="icon">
         <iconset theme="filename-filetype-amarok">
          <normaloff>.</normaloff>.</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>22</width>
+         <height>22</height>
+        </size>
        </property>
        <property name="checkable">
         <bool>false</bool>
@@ -908,6 +924,12 @@
      </item>
      <item>
       <widget class="QWidget" name="filterBox" native="true">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <layout class="QHBoxLayout" name="horizontalLayout_3">
         <property name="spacing">
          <number>0</number>
@@ -967,6 +989,12 @@
      </item>
      <item>
       <widget class="QToolButton" name="filterBtn">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="toolTip">
         <string>Filter..</string>
        </property>
@@ -976,6 +1004,12 @@
        <property name="icon">
         <iconset theme="view-filter">
          <normaloff>.</normaloff>.</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>22</width>
+         <height>22</height>
+        </size>
        </property>
        <property name="checkable">
         <bool>true</bool>
@@ -987,6 +1021,12 @@
      </item>
      <item>
       <widget class="QToolButton" name="open_btn">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="toolTip">
         <string>Open...</string>
        </property>
@@ -997,8 +1037,104 @@
         <iconset theme="filename-title-amarok">
          <normaloff>.</normaloff>.</iconset>
        </property>
+       <property name="iconSize">
+        <size>
+         <width>22</width>
+         <height>22</height>
+        </size>
+       </property>
        <property name="autoRaise">
         <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="searchWidget" native="true">
+    <property name="geometry">
+     <rect>
+      <x>380</x>
+      <y>50</y>
+      <width>129</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="autoFillBackground">
+     <bool>true</bool>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_9">
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="QFrame" name="frame_3">
+       <property name="maximumSize">
+        <size>
+         <width>1</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::VLine</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Plain</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="search">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="frame">
+        <bool>false</bool>
+       </property>
+       <property name="placeholderText">
+        <string>Search...</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QFrame" name="frame_11">
+       <property name="maximumSize">
+        <size>
+         <width>1</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::VLine</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Plain</enum>
        </property>
       </widget>
      </item>
@@ -1011,7 +1147,6 @@
    <zorder>albums_view</zorder>
    <zorder>tracks_view</zorder>
    <zorder>info_view</zorder>
-   <zorder>searchWidget</zorder>
    <zorder>collectionUtils</zorder>
    <zorder>frame_4</zorder>
    <zorder>frame_5</zorder>
@@ -1019,6 +1154,7 @@
    <zorder>controls</zorder>
    <zorder>playlistUtils</zorder>
    <zorder>horizontalSpacer_6</zorder>
+   <zorder>searchWidget</zorder>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <property name="styleSheet">
