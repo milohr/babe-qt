@@ -39,6 +39,8 @@ public:
     void populateExtraList(QSqlQuery query);
     void flushGrid();
     int getAlbumSize() { return this->albumSize; }
+    void hide_all(bool state);
+    void filter(const QString &filter_string);
     QSlider *slider;
     QComboBox *order;
     QFrame *utilsFrame;
@@ -93,7 +95,7 @@ signals:
     void populateCoversFinished();
     void populateHeadsFinished();
     void expandTo(QString artist, QString album);
-
+    void createdAlbum(Album *album);
 };
 
 #endif // ALBUMSVIEW_H

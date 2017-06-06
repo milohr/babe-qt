@@ -27,6 +27,40 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     grid->setStyleSheet("QListWidget {background:transparent; padding-top:15px; padding-left:15px; color:transparent; }");
     grid->setGridSize(QSize(albumSize+10,albumSize+10));
 
+
+    connect(this, &AlbumsView::createdAlbum,[this](Album *artwork)
+    {
+        albumsList.push_back(artwork);
+
+        if(artwork->getAlbum().isEmpty()) connect(artwork,&Album::albumCoverClicked,this,&AlbumsView::getArtistInfo);
+        else  connect(artwork,&Album::albumCoverClicked,this,&AlbumsView::getAlbumInfo);
+        connect(artwork,&Album::albumCoverDoubleClicked, [this] (QMap<int, QString> info)
+        {
+            emit albumDoubleClicked(info);
+            hideAlbumFrame();
+        });
+        connect(artwork,&Album::playAlbum, [this] (QMap<int,QString> info) { emit this->playAlbum(info); });
+        connect(artwork,&Album::changedArt,this,&AlbumsView::changedArt_cover);
+        connect(artwork,&Album::babeAlbum_clicked,this,&AlbumsView::babeAlbum);
+        connect(artwork, &Album::albumDragStarted, this, &AlbumsView::hideAlbumFrame);
+
+
+        artwork->borderColor=true;
+        artwork->setUpMenu();
+        auto item = new QListWidgetItem();
+        itemsList.push_back(item);
+        item->setSizeHint(QSize(artwork->getSize(),artwork->getSize()));
+
+        if(artwork->getAlbum().isEmpty()) item->setText(artwork->getArtist());
+        else item->setText(artwork->getAlbum()+" "+artwork->getArtist());
+
+        item->setTextAlignment(Qt::AlignCenter);
+        grid->addItem(item);
+        grid->setItemWidget(item,artwork);
+
+    });
+
+
     QAction *zoomIn = new QAction(this);
     zoomIn->setShortcut(tr("CTRL++"));
     connect(zoomIn, &QAction::triggered,[this]()
@@ -104,7 +138,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     connect(cover,&Album::playAlbum,[this] (QMap<int,QString> info) { emit this->playAlbum(info); });
     connect(cover,&Album::changedArt,this,&AlbumsView::changedArt_cover);
     connect(cover,&Album::babeAlbum_clicked,this,&AlbumsView::babeAlbum);
-    cover->createAlbum(":Data/data/cover.svg",BaeUtils::MEDIUM_ALBUM,0,true);
+    cover->createAlbum("","",":Data/data/cover.svg",BaeUtils::MEDIUM_ALBUM,0,true);
 
     closeBtn = new QToolButton(cover);
     connect(closeBtn,&QToolButton::clicked,this,&AlbumsView::hideAlbumFrame);
@@ -244,7 +278,7 @@ void AlbumsView::orderChanged(const QString &order)
 void AlbumsView::populateTableView(QSqlQuery query)
 {
     qDebug()<<"ON POPULATE ALBUM VIEW:";
-
+    int i =0;
     while (query.next())
     {
         QString artist = query.value(ARTIST).toString();
@@ -260,41 +294,35 @@ void AlbumsView::populateTableView(QSqlQuery query)
             else art = connection.getArtistArt(artist);
 
             auto artwork= new Album(this);
-
-            connect(artwork,&Album::albumCoverClicked,this,&AlbumsView::getAlbumInfo);
-            connect(artwork,&Album::albumCoverDoubleClicked, [this] (QMap<int, QString> info)
-            {
-                emit albumDoubleClicked(info);
-                hideAlbumFrame();
-            });
-            connect(artwork,&Album::playAlbum, [this] (QMap<int,QString> info) { emit this->playAlbum(info); });
-            connect(artwork,&Album::changedArt,this,&AlbumsView::changedArt_cover);
-            connect(artwork,&Album::babeAlbum_clicked,this,&AlbumsView::babeAlbum);
-            connect(artwork, &Album::albumDragStarted, this, &AlbumsView::hideAlbumFrame);
-            artwork->createAlbum(art,BaeUtils::MEDIUM_ALBUM,4,true);
-            artwork->setTitle(artist,album);
-            albumsList.push_back(artwork);
-
-            artwork->borderColor=true;
-
-            auto item = new QListWidgetItem();
-            itemsList.push_back(item);
-            item->setSizeHint(QSize(artwork->getSize(),artwork->getSize()));
-            item->setText(artwork->getAlbum());
-            item->setTextAlignment(Qt::AlignCenter);
-            grid->addItem(item);
-            grid->setItemWidget(item,artwork);
+            connect(artwork,&Album::albumCreated,[this](Album *album){emit createdAlbum(album);});
+            artwork->createAlbum(artist,album,art,BaeUtils::MEDIUM_ALBUM,4,true);
 
         }
 
+        qDebug()<<"oi"<<i++;
     }
 
     //grid->adjustSize();
     //    qDebug()<<grid->width()<<grid->size().height();
-    emit populateCoversFinished();
     orderChanged("Ascending");
 
 }
+
+
+void AlbumsView::filter(const QString &filter_string)
+{
+  hide_all(true);
+  QList<QListWidgetItem*> matches ( grid->findItems(filter_string, Qt::MatchFlag::MatchContains) );
+  for(QListWidgetItem* item : matches)
+    item->setHidden(false);
+}
+
+void AlbumsView::hide_all(bool state)
+{
+  for(int row(0); row < grid->count(); row++ )
+    grid->item(row)->setHidden(state);
+}
+
 
 void AlbumsView::babeAlbum(QMap<int,QString> info)
 {
@@ -319,35 +347,11 @@ void AlbumsView::populateTableViewHeads(QSqlQuery query)
 
             auto artwork= new Album(this);
 
-            connect(artwork,&Album::albumCoverClicked,this,&AlbumsView::getArtistInfo);
-            connect(artwork,&Album::albumCoverDoubleClicked, [this] (QMap<int, QString> info)
-            {
-                emit albumDoubleClicked(info);
-                hideAlbumFrame();
-            });
-            connect(artwork,&Album::playAlbum, [this] (QMap<int,QString> info) { emit this->playAlbum(info); });
-            connect(artwork,&Album::changedArt,this,&AlbumsView::changedArt_cover);
-            connect(artwork,&Album::babeAlbum_clicked,this,&AlbumsView::babeAlbum);
-            connect(artwork, &Album::albumDragStarted, this, &AlbumsView::hideAlbumFrame);
-            artwork->createAlbum(art,BaeUtils::MEDIUM_ALBUM,4,true);
-            artwork->setTitle(artist);
-
-            albumsList.push_back(artwork);
-
-            artwork->borderColor=true;
-
-            auto item = new QListWidgetItem();
-            itemsList.push_back(item);
-            item->setSizeHint(QSize(artwork->getSize(),artwork->getSize()));
-            item->setText(artwork->getArtist());
-            item->setTextAlignment(Qt::AlignCenter);
-            grid->addItem(item);
-            grid->setItemWidget(item,artwork);
-
+            connect(artwork,&Album::albumCreated,[this](Album *album){emit createdAlbum(album);});
+            artwork->createAlbum(artist,"",art,BaeUtils::MEDIUM_ALBUM,4,true);
         }
     }
 
-    emit populateHeadsFinished();
     orderChanged("Ascending");
 }
 
@@ -440,7 +444,7 @@ void AlbumsView::getAlbumInfo(QMap<int,QString> info)
     QString album = info[Album::ALBUM];
 
     cover->setTitle(artist,album);
-    expandBtn->setToolTip("Visit "+ cover->getArtist());
+    expandBtn->setToolTip("View "+ cover->getArtist());
 
     albumTable->flushTable();
 

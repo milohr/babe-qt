@@ -40,7 +40,7 @@ MainWindow::MainWindow(const QStringList &files, QWidget *parent) :
     connect(album_art,&Album::changedArt,this,&MainWindow::changedArt);
     connect(album_art,&Album::babeAlbum_clicked,this,&MainWindow::babeAlbum);
 
-    album_art->createAlbum(":Data/data/babe.png",BaeUtils::BIG_ALBUM,0,false);
+    album_art->createAlbum("","",":Data/data/babe.png",BaeUtils::BIG_ALBUM,0,false);
 
     ALBUM_SIZE = album_art->getSize();
 
@@ -351,6 +351,7 @@ void MainWindow::setUpViews()
     connect(infoTable,&InfoView::similarArtistTagClicked,[this](QString query) { this->ui->search->setText(query);});
     connect(infoTable,&InfoView::artistSimilarReady, [this] (QMap<QString,QByteArray> info)
     {
+         feedRabbit();
         calibrateBtn_menu->actions().at(3)->setEnabled(true);
         rabbitTable->flushSuggestions(RabbitView::SIMILAR);
         qDebug()<<"&InfoView::artistSimilarReady:"<<info.keys();
@@ -1069,6 +1070,7 @@ void MainWindow::setToolbarIconSize(const int &iconSize) //tofix
 void MainWindow::collectionView()
 {
     views->setCurrentIndex(COLLECTION);
+    ui->tracks_view->setChecked(true);
 
     if(this->viewMode != FULLMODE) expand();
 
@@ -1077,7 +1079,7 @@ void MainWindow::collectionView()
     utilsBar->actions().at(COLLECTION_UB)->setVisible(true);
     utilsBar->actions().at(PLAYLISTS_UB)->setVisible(false); ui->frame_3->setVisible(false);
     utilsBar->actions().at(INFO_UB)->setVisible(false);
-
+    ui->search->setPlaceholderText("Search all...");
     ui->tracks_view->setChecked(true);
     prevIndex=views->currentIndex();
 }
@@ -1094,6 +1096,7 @@ void MainWindow::albumsView()
     utilsBar->actions().at(COLLECTION_UB)->setVisible(true);
     utilsBar->actions().at(PLAYLISTS_UB)->setVisible(false); ui->frame_3->setVisible(false);
     utilsBar->actions().at(INFO_UB)->setVisible(false);
+    ui->search->setPlaceholderText("Filter albums...");
 
     prevIndex = views->currentIndex();
 }
@@ -1101,7 +1104,7 @@ void MainWindow::albumsView()
 void MainWindow::playlistsView()
 {
     views->setCurrentIndex(PLAYLISTS);
-
+    ui->playlists_view->setChecked(true);
     if(this->viewMode != FULLMODE) expand();
 
     utilsBar->actions().at(ALBUMS_UB)->setVisible(false);
@@ -1109,6 +1112,7 @@ void MainWindow::playlistsView()
     utilsBar->actions().at(COLLECTION_UB)->setVisible(true);
     utilsBar->actions().at(PLAYLISTS_UB)->setVisible(true); ui->frame_3->setVisible(true);
     utilsBar->actions().at(INFO_UB)->setVisible(false);
+    ui->search->setPlaceholderText("Search all...");
 
     prevIndex = views->currentIndex();
 }
@@ -1116,7 +1120,7 @@ void MainWindow::playlistsView()
 void MainWindow::rabbitView()
 {
     views->setCurrentIndex(RABBIT);
-
+    ui->rabbit_view->setChecked(true);
     if(this->viewMode != FULLMODE) expand();
 
     utilsBar->actions().at(COLLECTION_UB)->setVisible(true);
@@ -1124,6 +1128,7 @@ void MainWindow::rabbitView()
     utilsBar->actions().at(ARTISTS_UB)->setVisible(false);
     utilsBar->actions().at(PLAYLISTS_UB)->setVisible(false); ui->frame_3->setVisible(false);
     utilsBar->actions().at(INFO_UB)->setVisible(false);
+    ui->search->setPlaceholderText("Search all...");
 
     prevIndex = views->currentIndex();
 }
@@ -1131,6 +1136,7 @@ void MainWindow::rabbitView()
 void MainWindow::infoView()
 {
     views->setCurrentIndex(INFO);
+    ui->info_view->setChecked(true);
 
     if(this->viewMode != FULLMODE) expand();
 
@@ -1139,6 +1145,7 @@ void MainWindow::infoView()
     utilsBar->actions().at(COLLECTION_UB)->setVisible(false);
     utilsBar->actions().at(PLAYLISTS_UB)->setVisible(false);
     utilsBar->actions().at(INFO_UB)->setVisible(true); ui->frame_3->setVisible(true);
+    ui->search->setPlaceholderText("Search all...");
 
     prevIndex = views->currentIndex();
 }
@@ -1154,6 +1161,7 @@ void MainWindow::artistsView()
     utilsBar->actions().at(COLLECTION_UB)->setVisible(true);
     utilsBar->actions().at(PLAYLISTS_UB)->setVisible(false); ui->frame_3->hide();
     utilsBar->actions().at(INFO_UB)->setVisible(false);
+    ui->search->setPlaceholderText("Filter artists...");
 
     prevIndex = views->currentIndex();
 }
@@ -1162,7 +1170,7 @@ void MainWindow::artistsView()
 void MainWindow::settingsView()
 {
     views->setCurrentIndex(SETTINGS);
-
+    ui->settings_view->setChecked(true);
     if(this->viewMode != FULLMODE) expand();
 
     utilsBar->actions().at(ALBUMS_UB)->setVisible(false);
@@ -1170,6 +1178,7 @@ void MainWindow::settingsView()
     utilsBar->actions().at(COLLECTION_UB)->setVisible(true);
     utilsBar->actions().at(PLAYLISTS_UB)->setVisible(false); ui->frame_3->setVisible(false);
     utilsBar->actions().at(INFO_UB)->setVisible(false);
+    ui->search->setPlaceholderText("Search all...");
 
     prevIndex = views->currentIndex();
 }
@@ -1449,7 +1458,7 @@ void MainWindow::removeSong(const int &index)
 
 void MainWindow::feedRabbit()
 {
-    rabbitTable->flushSuggestions();
+    rabbitTable->flushSuggestions(RabbitView::GENERAL);
     rabbitTable->populateGeneralSuggestion(connection.getTrackData(QString("SELECT * FROM tracks WHERE artist = \""+current_song[BabeTable::ARTIST]+"\"")));
     //    rabbitTable->populateGeneralSuggestion(connection.getTrackData(QString("SELECT * FROM tracks WHERE genre = \""+current_song[BabeTable::GENRE]+"\"")));
 }
@@ -1498,7 +1507,7 @@ void MainWindow::loadTrack()
 
         album_art->setTitle(current_song[BabeTable::ARTIST],current_song[BabeTable::ALBUM]);
 
-        feedRabbit();
+
 
         //CHECK IF THE SONG IS BABED IT OR IT ISN'T
         if(isBabed(current_song))
@@ -2060,12 +2069,7 @@ void MainWindow::addToPlaylist(const QList<QMap<int, QString> > &mapList, const 
             ui->controls->setVisible(true);
             loadTrack();
         }
-
-
-
     }
-
-
 }
 
 
@@ -2077,14 +2081,19 @@ void  MainWindow::clearCurrentList()
 
 void MainWindow::on_search_returnPressed()
 {
-    if(resultsTable->rowCount()<1)
+
+    if(views->currentIndex()!=ALBUMS && views->currentIndex()!=ARTISTS)
     {
-        views->setCurrentIndex(prevIndex);
-        if(views->currentIndex()==ALBUMS)  utilsBar->actions().at(ALBUMS_UB)->setVisible(true);;
-        if(views->currentIndex()==PLAYLISTS) {utilsBar->actions().at(PLAYLISTS_UB)->setVisible(true); ui->frame_3->setVisible(true);}
-        resultsTable->flushTable();
-        // ui->saveResults->setEnabled(false);
-    }else views->setCurrentIndex(RESULTS);
+
+        if(resultsTable->rowCount()<1)
+        {
+            views->setCurrentIndex(prevIndex);
+            if(views->currentIndex()==ALBUMS)  utilsBar->actions().at(ALBUMS_UB)->setVisible(true);;
+            if(views->currentIndex()==PLAYLISTS) {utilsBar->actions().at(PLAYLISTS_UB)->setVisible(true); ui->frame_3->setVisible(true);}
+            resultsTable->flushTable();
+            // ui->saveResults->setEnabled(false);
+        }else views->setCurrentIndex(RESULTS);
+    }
 }
 
 void MainWindow::on_search_textChanged(const QString &arg1)
@@ -2094,17 +2103,44 @@ void MainWindow::on_search_textChanged(const QString &arg1)
     {
         QStringList searchList=arg1.split(",");
 
-        auto searchResults = searchFor(searchList);
+        if(searchList.size()==1 && !arg1.contains(":"))
+        {
+            if(views->currentIndex()==ALBUMS )
+                albumsTable->filter(arg1);
 
-        if(!searchResults.isEmpty()) populateResultsTable(searchResults);
+            else if(views->currentIndex()==ARTISTS)
+                artistsTable->filter(arg1);
+        }
+        else
+        {
+            auto searchResults = searchFor(searchList);
+            if(!searchResults.isEmpty()) populateResultsTable(searchResults);
+
+        }
 
     }else
     {
-        views->setCurrentIndex(prevIndex);
-        if(views->currentIndex()==PLAYLISTS)
+
+        if(views->currentIndex()==ALBUMS)
+            albumsTable->hide_all(false);
+
+        else if(views->currentIndex()==ARTISTS)
+            artistsTable->hide_all(false);
+
+        else
         {
-            utilsBar->actions().at(PLAYLISTS_UB)->setVisible(true);
-            ui->frame_3->setVisible(true);
+
+            views->setCurrentIndex(prevIndex);
+            if(views->currentIndex()==PLAYLISTS)
+            {
+                utilsBar->actions().at(PLAYLISTS_UB)->setVisible(true);
+                ui->frame_3->setVisible(true);
+
+            }else if(views->currentIndex()==ALBUMS)
+                albumsTable->hide_all(false);
+
+            else if(views->currentIndex()==ARTISTS)
+                artistsTable->hide_all(false);
 
         }
     }
@@ -2215,21 +2251,10 @@ void MainWindow::on_tracks_view_2_clicked()
 
 void MainWindow::on_addAll_clicked()
 {
-    switch(views->currentIndex())
-    {
-    case COLLECTION:
-        addToPlaylist(collectionTable->getAllTableContent(),false, APPENDBOTTOM); break;
-    case ALBUMS:
-        addToPlaylist(albumsTable->albumTable->getAllTableContent(),false, APPENDBOTTOM); break;
-    case ARTISTS:
-        addToPlaylist(artistsTable->albumTable->getAllTableContent(),false,APPENDBOTTOM); break;
-    case PLAYLISTS:
-        addToPlaylist(playlistTable->table->getAllTableContent(),false,APPENDBOTTOM); break;
-    case RABBIT:
-        addToPlaylist(rabbitTable->getTable()->getAllTableContent(),false, APPENDBOTTOM); break;
-    case RESULTS:
-        addToPlaylist(resultsTable->getAllTableContent(),false, APPENDBOTTOM); break;
-    }
+    albumsTable->flushGrid();
+    albumsTable->populateTableView(settings_widget->getCollectionDB().getQuery("SELECT * FROM albums ORDER by title asc"));
+    albumsTable->hideAlbumFrame();
+
 }
 
 

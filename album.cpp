@@ -6,7 +6,7 @@ Album::Album(QWidget *parent) : QLabel(parent)
 
 }
 
-void Album::createAlbum(QString imagePath,BaeUtils::ALbumSizeHint widgetSize, int widgetRadius, bool isDraggable)
+void Album::createAlbum(const QString &artist, const QString &album, const QString &imagePath,const BaeUtils::ALbumSizeHint &widgetSize, const int &widgetRadius, const bool &isDraggable)
 {
     switch (widgetSize)
     {
@@ -42,19 +42,11 @@ void Album::createAlbum(QString imagePath,BaeUtils::ALbumSizeHint widgetSize, in
 
     title->setMaxSize(size+10);
 
-    auto *left_spacer = new QWidget(this);
-    left_spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-
-    auto *right_spacer = new QWidget(this);
-    right_spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-
     title->setStyleSheet("QLabel{background:transparent; color:white; border:none;}");
-    right_spacer->setStyleSheet("background:transparent;  border:none;");
-    left_spacer->setStyleSheet("background:transparent;  border:none;");
 
-    layout->addWidget(left_spacer);
+    layout->addStretch();
     layout->addWidget(title);
-    layout->addWidget(right_spacer);
+    layout->addStretch();
 
     playBtn = new QToolButton(this);
     connect(playBtn,&QToolButton::clicked,[this]() { emit playAlbum(this->albumMap); });
@@ -67,6 +59,13 @@ void Album::createAlbum(QString imagePath,BaeUtils::ALbumSizeHint widgetSize, in
 
     this->setSize(size);
 
+    this->setTitle(artist,album);
+
+    emit albumCreated(this);
+}
+
+void Album::setUpMenu()
+{
     auto contextMenu = new QMenu(this);
     this->setContextMenuPolicy(Qt::ActionsContextMenu);
 
@@ -81,8 +80,6 @@ void Album::createAlbum(QString imagePath,BaeUtils::ALbumSizeHint widgetSize, in
     auto artIt = new QAction("Change art...",contextMenu);
     connect(artIt, SIGNAL(triggered()), this, SLOT(artIt_action()));
     this->addAction(artIt);
-
-    emit albumCreated(this);
 }
 
 bool Album::eventFilter(QObject * watched, QEvent * event)

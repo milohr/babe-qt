@@ -29,12 +29,14 @@ public:
 
     explicit Album(QWidget *parent = 0);
     ~Album(){}
-    void createAlbum(QString imagePath,BaeUtils::ALbumSizeHint widgetSize, int widgetRadius=0, bool isDraggable=false);
+    void createAlbumx(QString imagePath,BaeUtils::ALbumSizeHint widgetSize,int widgetRadius, bool isDraggable);
+    void createAlbum(const QString &artist, const QString &album, const QString &imagePath, const BaeUtils::ALbumSizeHint &widgetSize, const int &widgetRadius=0, const bool &isDraggable=false);
     void setArtist(const QString &artistTitle);
     void setAlbum(const QString &albumTitle);
     void setTitle(const QString &artistTitle, const QString &albumTitle="");
     void setBGcolor(const QString &bgColor);
     void titleVisible(const bool &state);
+    void setUpMenu();
     void setTitleGeometry(const int &x, const int &y, const int &w, const int &h);
     void setSize(const int &value);
     int getSize();
