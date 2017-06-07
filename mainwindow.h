@@ -90,7 +90,6 @@ public:
         APPENDTOP,APPENDBOTTOM, APPENDAFTER, APPENDBEFORE, APPENDINDEX
     };
 
-    void setStyle();
     void appendFiles(const QStringList &paths, const appendPos &pos = APPENDBOTTOM);
     void loadTrack();
     void loadTrackAt(const int &pos);

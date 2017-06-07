@@ -351,7 +351,7 @@ void MainWindow::setUpViews()
     connect(infoTable,&InfoView::similarArtistTagClicked,[this](QString query) { this->ui->search->setText(query);});
     connect(infoTable,&InfoView::artistSimilarReady, [this] (QMap<QString,QByteArray> info)
     {
-         feedRabbit();
+        feedRabbit();
         calibrateBtn_menu->actions().at(3)->setEnabled(true);
         rabbitTable->flushSuggestions(RabbitView::SIMILAR);
         qDebug()<<"&InfoView::artistSimilarReady:"<<info.keys();
@@ -756,10 +756,8 @@ bool MainWindow::eventFilter(QObject *object, QEvent *event)
             auto mevent = static_cast<QMouseEvent *>(event);
             qreal value = seekBar->minimum() + (seekBar->maximum() - seekBar->minimum()) * mevent->localPos().x() / seekBar->width();
             if (mevent->button() == Qt::LeftButton)
-            {
-                //                seekBar->setValue(qRound(value));
                 emit seekBar->sliderMoved(qRound(value));
-            }
+
             event->accept();
             return true;
         }
@@ -769,9 +767,8 @@ bool MainWindow::eventFilter(QObject *object, QEvent *event)
             auto mevent = static_cast<QMouseEvent *>(event);
             qreal value = seekBar->minimum() + (seekBar->maximum() - seekBar->minimum()) * mevent->localPos().x() / seekBar->width();
             if (mevent->buttons() & Qt::LeftButton)
-            {
                 emit seekBar->sliderMoved(qRound(value));
-            }
+
             event->accept();
             return true;
         }
@@ -784,19 +781,12 @@ bool MainWindow::eventFilter(QObject *object, QEvent *event)
 
     if(object == rightFrame)
     {
-
-
         if(event->type()==QEvent::Enter)
             this->showControls();
 
 
-
-
         if(event->type()==QEvent::Leave)
             this->hideControls();
-
-
-
 
         if(event->type()==QEvent::DragEnter)
         {
@@ -1319,15 +1309,7 @@ void MainWindow::keepOnTop(bool state)
     this->show();
 }
 
-void MainWindow::setStyle()
-{
 
-    /* ui->mainToolBar->setStyleSheet(" QToolBar { border-right: 1px solid #575757; } QToolButton:hover { background-color: #d8dfe0; border-right: 1px solid #575757;}");
-    playback->setStyleSheet("QToolBar { border:none;} QToolBar QToolButton { border:none;} QToolBar QSlider { border:none;}");
-    this->setStyleSheet("QToolButton { border: none; padding: 5px; }  QMainWindow { border-top: 1px solid #575757; }");*/
-    //status->setStyleSheet("QToolButton { color:#fff; } QToolBar {background-color:#575757; color:#fff; border:1px solid #575757;} QToolBar QLabel { color:#fff;}" );
-
-}
 
 
 
@@ -2251,9 +2233,22 @@ void MainWindow::on_tracks_view_2_clicked()
 
 void MainWindow::on_addAll_clicked()
 {
-    albumsTable->flushGrid();
-    albumsTable->populateTableView(settings_widget->getCollectionDB().getQuery("SELECT * FROM albums ORDER by title asc"));
-    albumsTable->hideAlbumFrame();
+
+    switch(views->currentIndex())
+    {
+    case COLLECTION:
+        addToPlaylist(collectionTable->getAllTableContent(),false, APPENDBOTTOM); break;
+    case ALBUMS:
+        addToPlaylist(albumsTable->albumTable->getAllTableContent(),false, APPENDBOTTOM); break;
+    case ARTISTS:
+        addToPlaylist(artistsTable->albumTable->getAllTableContent(),false,APPENDBOTTOM); break;
+    case PLAYLISTS:
+        addToPlaylist(playlistTable->table->getAllTableContent(),false,APPENDBOTTOM); break;
+    case RABBIT:
+        addToPlaylist(rabbitTable->getTable()->getAllTableContent(),false, APPENDBOTTOM); break;
+    case RESULTS:
+        addToPlaylist(resultsTable->getAllTableContent(),false, APPENDBOTTOM); break;
+    }
 
 }
 
