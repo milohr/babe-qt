@@ -309,18 +309,38 @@ void AlbumsView::populateTableView(QSqlQuery query)
 }
 
 
-void AlbumsView::filter(const QString &filter_string)
+void AlbumsView::filter(const QList<QMap<int,QString>> &filter, const BabeTable::columns &type)
 {
-  hide_all(true);
-  QList<QListWidgetItem*> matches ( grid->findItems(filter_string, Qt::MatchFlag::MatchContains) );
-  for(QListWidgetItem* item : matches)
-    item->setHidden(false);
+
+    hide_all(true);
+
+
+    QList<QListWidgetItem*> matches;
+
+    for(auto result : filter)
+{
+
+        switch(type)
+
+        {
+        case BabeTable::ALBUM:
+             matches<<grid->findItems(result[BabeTable::ALBUM]+" "+result[BabeTable::ARTIST], Qt::MatchFlag::MatchContains);
+            break;
+        case BabeTable::ARTIST:
+             matches<<grid->findItems(result[BabeTable::ARTIST], Qt::MatchFlag::MatchContains);
+            break;
+        }
+
+
+}
+    for(QListWidgetItem* item : matches)
+        item->setHidden(false);
 }
 
 void AlbumsView::hide_all(bool state)
 {
-  for(int row(0); row < grid->count(); row++ )
-    grid->item(row)->setHidden(state);
+    for(int row(0); row < grid->count(); row++ )
+        grid->item(row)->setHidden(state);
 }
 
 

@@ -1499,7 +1499,7 @@ void MainWindow::loadTrack()
         if(miniPlayback)
         {
             this->blurWidget(*album_art,28);
-            album_art->saturatePixmap(255);
+            album_art->saturatePixmap(100);
         }
 
         if(!this->isActiveWindow())
@@ -2084,32 +2084,30 @@ void MainWindow::on_search_textChanged(const QString &arg1)
     if(!ui->search->text().isEmpty())
     {
         QStringList searchList=arg1.split(",");
+        auto searchResults = searchFor(searchList);
 
-        if(searchList.size()==1 && !arg1.contains(":") && (views->currentIndex()==ALBUMS || views->currentIndex()==ARTISTS))
+        if(!searchResults.isEmpty())
         {
+
             if(views->currentIndex()==ALBUMS )
-                albumsTable->filter(arg1);
+                albumsTable->filter(searchResults,BabeTable::ALBUM);
 
             else if(views->currentIndex()==ARTISTS)
-                artistsTable->filter(arg1);
-        }
-        else
-        {
-            auto searchResults = searchFor(searchList);
-            if(!searchResults.isEmpty()) populateResultsTable(searchResults);
+                artistsTable->filter(searchResults,BabeTable::ARTIST);
 
+            else populateResultsTable(searchResults);
         }
+
 
     }else
     {
 
-        if(views->currentIndex()==ALBUMS)
+
             albumsTable->hide_all(false);
 
-        else if(views->currentIndex()==ARTISTS)
             artistsTable->hide_all(false);
 
-        else
+        if(views->currentIndex()!=ALBUMS||views->currentIndex()!=ARTISTS)
         {
 
             views->setCurrentIndex(prevIndex);
@@ -2118,11 +2116,7 @@ void MainWindow::on_search_textChanged(const QString &arg1)
                 utilsBar->actions().at(PLAYLISTS_UB)->setVisible(true);
                 ui->frame_3->setVisible(true);
 
-            }else if(views->currentIndex()==ALBUMS)
-                albumsTable->hide_all(false);
-
-            else if(views->currentIndex()==ARTISTS)
-                artistsTable->hide_all(false);
+            }
 
         }
     }
@@ -2369,7 +2363,7 @@ void MainWindow::on_miniPlaybackBtn_clicked()
         ui->miniPlaybackBtn->setIcon(QIcon::fromTheme("go-bottom"));
         miniPlayback=!miniPlayback;
         this->blurWidget(*album_art,28);
-        album_art->saturatePixmap(255);
+        album_art->saturatePixmap(100);
 
     }else
     {

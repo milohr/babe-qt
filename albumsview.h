@@ -40,7 +40,7 @@ public:
     void flushGrid();
     int getAlbumSize() { return this->albumSize; }
     void hide_all(bool state);
-    void filter(const QString &filter_string);
+    void filter(const QList<QMap<int, QString> > &filter, const BabeTable::columns &type);
     QSlider *slider;
     QComboBox *order;
     QFrame *utilsFrame;
