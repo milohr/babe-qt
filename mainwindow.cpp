@@ -1219,6 +1219,10 @@ void MainWindow::go_mini()
     this->viewMode=MINIMODE;
 
     this->miniPlayback =false;
+
+    this->blurWidget(*album_art,9);
+    album_art->restoreSaturation();
+
     ui->miniPlaybackBtn->setVisible(false);
     ui->miniPlaybackBtn->setIcon(QIcon::fromTheme("go-top"));
 
@@ -1496,6 +1500,7 @@ void MainWindow::loadTrack()
         loadMood();
 
         loadCover(current_song[BabeTable::ARTIST],current_song[BabeTable::ALBUM],current_song[BabeTable::TITLE]);
+
         if(miniPlayback)
         {
             this->blurWidget(*album_art,28);
