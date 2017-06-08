@@ -977,9 +977,7 @@ void MainWindow::hideControls()
 {
     if(ui->controls->isVisible() && !miniPlayback)
     {
-        QGraphicsBlurEffect* effect	= new QGraphicsBlurEffect();
-        effect->setBlurRadius(0);
-        album_art->setGraphicsEffect(effect);
+        this->blurWidget(*album_art,0);
         ui->controls->setVisible(false);
     }
 
@@ -990,11 +988,9 @@ void MainWindow::showControls() {
 
     if(!ui->controls->isVisible()  && !stopped)
     {
-        QGraphicsBlurEffect* effect	= new QGraphicsBlurEffect();
 
-        if(!miniPlayback) effect->setBlurRadius(9);
-        else  effect->setBlurRadius(20);
-        album_art->setGraphicsEffect(effect);
+        if(!miniPlayback) this->blurWidget(*album_art,9);
+        else this->blurWidget(*album_art,28);
 
         ui->controls->setVisible(true);
 
@@ -1500,7 +1496,11 @@ void MainWindow::loadTrack()
         loadMood();
 
         loadCover(current_song[BabeTable::ARTIST],current_song[BabeTable::ALBUM],current_song[BabeTable::TITLE]);
-
+        if(miniPlayback)
+        {
+            this->blurWidget(*album_art,28);
+            album_art->saturatePixmap(255);
+        }
 
         if(!this->isActiveWindow())
             nof.notifySong(current_song,album_art->getPixmap());
@@ -2368,12 +2368,8 @@ void MainWindow::on_miniPlaybackBtn_clicked()
         album_art->setFixedHeight(ui->controls->minimumSizeHint().height()-40);
         ui->miniPlaybackBtn->setIcon(QIcon::fromTheme("go-bottom"));
         miniPlayback=!miniPlayback;
-        QGraphicsBlurEffect* effect	= new QGraphicsBlurEffect();
-
-        effect->setBlurRadius(20);
-
-        album_art->setGraphicsEffect(effect);
-
+        this->blurWidget(*album_art,28);
+        album_art->saturatePixmap(255);
 
     }else
     {
@@ -2381,9 +2377,21 @@ void MainWindow::on_miniPlaybackBtn_clicked()
         album_art->setFixedHeight(ALBUM_SIZE);
         ui->miniPlaybackBtn->setIcon(QIcon::fromTheme("go-top"));
         miniPlayback=!miniPlayback;
-
+        this->blurWidget(*album_art,9);
+        album_art->restoreSaturation();
 
     }
 
     ui->controls->update();
+}
+
+
+void MainWindow::blurWidget(Album &widget, const int &radius )
+{
+    QGraphicsBlurEffect* effect	= new QGraphicsBlurEffect();
+
+    effect->setBlurRadius(radius);
+
+    widget.setGraphicsEffect(effect);
+
 }

@@ -39,8 +39,9 @@ public:
     void setUpMenu();
     void setTitleGeometry(const int &x, const int &y, const int &w, const int &h);
     void setSize(const int &value);
+    void saturatePixmap(const int &value);
+    void restoreSaturation();
     int getSize();
-    int border_radius;
     int size;
     double subSize;
     bool borderColor=false;
@@ -70,6 +71,9 @@ private:
     QPoint oldPos;
     QPoint startPos;
     QToolButton *playBtn;
+    QPixmap unsaturated;
+
+    int border_radius=0;
 
     void performDrag();
 
@@ -89,6 +93,7 @@ signals:
 public slots:
 
     void putPixmap(const QByteArray &pix);
+    void putPixmap(const QPixmap &pix);
     void putPixmap(const QString &path);
     void putDefaultPixmap();
     void babeIt_action();

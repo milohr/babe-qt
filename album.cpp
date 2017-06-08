@@ -126,6 +126,40 @@ int Album::getSize()
     return this->size;
 }
 
+void Album::saturatePixmap(const int &value)
+{
+    auto saturationValue = value;
+    this->unsaturated = this->getPixmap();
+
+    auto image = this->getPixmap().toImage();
+
+
+    for(int i=0; i<image.width(); i++)
+    {
+        for(int j=0; j<image.height(); j++)
+        {
+            QColor color = image.pixelColor(i,j);
+            if(color.black()<150)
+            {
+
+                int hue = color.hue();
+                int saturation = color.saturation()+saturationValue;
+
+                // modify hue as you’d like and write back to the image
+                color.setHsv(hue, saturation>255?255:saturation, color.value(), color.alpha());
+                image.setPixelColor(i, j, color);
+            }
+        }
+    }
+
+    this->putPixmap(QPixmap::fromImage(image));
+}
+
+void Album::restoreSaturation()
+{
+   this->putPixmap(this->unsaturated);
+}
+
 void Album::setSize(const int &value)
 {
     this->size=value;
@@ -159,6 +193,12 @@ void Album::putPixmap(const QByteArray &pix)
     if(!pix.isEmpty()) this->image.loadFromData(pix);
     else this->image.load(":Data/data/cover.svg");
 
+    this->setPixmap(image);
+}
+
+void Album::putPixmap(const QPixmap &pix)
+{
+    this->image=pix;
     this->setPixmap(image);
 }
 
