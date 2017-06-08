@@ -166,6 +166,7 @@ signals:
     void indexesMoved(int track,int newRow);
     void previewStarted();
     void previewFinished();
+    void indexRemoved(int row);
     void playItNow(QList<QMap<int,QString>> tracks);
     void appendIt(QList<QMap<int,QString>> tracks);
     void saveToPlaylist(QList<QMap<int,QString>> tracks);

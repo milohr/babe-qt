@@ -375,6 +375,14 @@
     </property>
    </widget>
    <widget class="QWidget" name="collectionUtils" native="true">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>0</y>
+      <width>102</width>
+      <height>34</height>
+     </rect>
+    </property>
     <property name="sizePolicy">
      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
       <horstretch>0</horstretch>
@@ -583,7 +591,8 @@
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset theme="go-top"/>
+        <iconset theme="go-top">
+         <normaloff>.</normaloff>.</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -611,7 +620,8 @@
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset theme="media-skip-backward"/>
+        <iconset theme="media-skip-backward">
+         <normaloff>.</normaloff>.</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -639,7 +649,8 @@
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset theme="media-skip-forward"/>
+        <iconset theme="media-skip-forward">
+         <normaloff>.</normaloff>.</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -693,7 +704,8 @@
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset theme="object-columns"/>
+        <iconset theme="object-columns">
+         <normaloff>.</normaloff>.</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -721,7 +733,8 @@
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset theme="media-playback-start"/>
+        <iconset theme="media-playback-start">
+         <normaloff>.</normaloff>.</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -749,7 +762,8 @@
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset theme="love"/>
+        <iconset theme="love">
+         <normaloff>.</normaloff>.</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -777,7 +791,8 @@
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset theme="source-playlist"/>
+        <iconset theme="source-playlist">
+         <normaloff>.</normaloff>.</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -821,8 +836,8 @@
    <widget class="QWidget" name="playlistUtils" native="true">
     <property name="geometry">
      <rect>
-      <x>70</x>
-      <y>20</y>
+      <x>50</x>
+      <y>50</y>
       <width>321</width>
       <height>41</height>
      </rect>
@@ -1140,21 +1155,6 @@
      </item>
     </layout>
    </widget>
-   <zorder>playlists_view</zorder>
-   <zorder>artists_view</zorder>
-   <zorder>rabbit_view</zorder>
-   <zorder>settings_view</zorder>
-   <zorder>albums_view</zorder>
-   <zorder>tracks_view</zorder>
-   <zorder>info_view</zorder>
-   <zorder>collectionUtils</zorder>
-   <zorder>frame_4</zorder>
-   <zorder>frame_5</zorder>
-   <zorder>frame_6</zorder>
-   <zorder>controls</zorder>
-   <zorder>playlistUtils</zorder>
-   <zorder>horizontalSpacer_6</zorder>
-   <zorder>searchWidget</zorder>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <property name="styleSheet">

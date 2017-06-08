@@ -1160,11 +1160,13 @@ void BabeTable::removeRepeated()//tofix
         auto track = this->getRowData(row);
         auto trackInfo = track[TITLE]+"/&/"+track[ARTIST]+"/&/"+track[ALBUM];
 
-        if(index.contains(trackInfo))
+        if(index.contains(trackInfo) && this->item(row,TITLE)->icon().name().isEmpty())
         {
             qDebug()<<"index contains:"<<track[TITLE]<<row;;
             this->removeRow(row);
+            emit indexRemoved(row);
             row--;
+
         }
         else
         {

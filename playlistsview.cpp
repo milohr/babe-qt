@@ -37,7 +37,7 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
     connect(list, SIGNAL(itemChanged(QListWidgetItem *)), this,
             SLOT(playlistName(QListWidgetItem *)));
 
-    list->setFixedWidth(120);
+    list->setFixedWidth(160);
     list->setAlternatingRowColors(true);
     list->setFrameShape(QFrame::NoFrame);
     list->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -69,7 +69,7 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
     line->setMaximumWidth(1);
 
     btnContainer = new QWidget();
-    btnContainer->setFixedWidth(120);
+    btnContainer->setFixedWidth(160);
 
     auto btnLayout = new QHBoxLayout();
     btnLayout->setSpacing(0);

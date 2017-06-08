@@ -39,22 +39,18 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView)
     artist->borderColor = true;
 
     auto artistContainer = new QWidget();
-    //artistContainer->setStyleSheet("QWidget{background-color: #575757; color:white;}");
+    artistContainer->setObjectName("artistContainer");
+    artistContainer->setStyleSheet("QWidget#artistContainer{background-color: #575757; color:white;}");
 
     auto artistCLayout = new QHBoxLayout();
-    auto *left_spacer = new QWidget();
-    left_spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    auto *right_spacer = new QWidget();
-    right_spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     ui->artistFrame->setMaximumWidth(ALBUM_SIZE_BIG);
 
-    artistCLayout->addWidget(left_spacer);
+    artistCLayout->addStretch();
     artistCLayout->addWidget(artist);
-    artistCLayout->addWidget(right_spacer);
+    artistCLayout->addStretch();
     artistContainer->setLayout(artistCLayout);
-    artistContainer->setFixedHeight(ALBUM_SIZE_MEDIUM);
-    artistContainer->setContentsMargins(0,0,0,0);
+    artistContainer->setFixedHeight(artist->getSize()+12);
     ui->artistLayout->insertWidget(0, artistContainer);
 
     infoUtils = new QWidget();

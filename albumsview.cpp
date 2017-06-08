@@ -24,8 +24,8 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     grid->setSizePolicy(QSizePolicy ::Expanding , QSizePolicy ::Expanding );
     grid->setSizeAdjustPolicy(QListWidget::AdjustToContentsOnFirstShow);
     //grid->setStyleSheet("QListWidget {background:#2E2F30; border:1px solid black; border-radius: 2px; }");
-    grid->setStyleSheet("QListWidget {background:transparent; padding-top:15px; padding-left:15px; color:transparent; }");
-    grid->setGridSize(QSize(albumSize+10,albumSize+10));
+    grid->setStyleSheet("QListWidget,::item:selected,::item:selected:active {background:transparent; padding-top:15px; padding-left:15px; color:transparent; }");
+    grid->setGridSize(QSize(albumSize+20,albumSize+20));
 
 
     connect(this, &AlbumsView::createdAlbum,[this](Album *artwork)
@@ -44,10 +44,17 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
         connect(artwork,&Album::babeAlbum_clicked,this,&AlbumsView::babeAlbum);
         connect(artwork, &Album::albumDragStarted, this, &AlbumsView::hideAlbumFrame);
 
+        auto shadow = new QGraphicsDropShadowEffect();
+        shadow->setColor(QColor(0, 0, 0, 100));
+        shadow->setBlurRadius(9);
+        shadow->setOffset(3,5);
 
-        artwork->borderColor=true;
+        artwork->setGraphicsEffect(shadow);
+        artwork->borderColor=false;
         artwork->setUpMenu();
         auto item = new QListWidgetItem();
+
+
         itemsList.push_back(item);
         item->setSizeHint(QSize(artwork->getSize(),artwork->getSize()));
 
@@ -99,16 +106,14 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     slider->setSliderPosition(ALBUM_SIZE_MEDIUM);
     slider->setOrientation(Qt::Orientation::Horizontal);*/
 
-    order = new QComboBox();
-    connect(order, SIGNAL(currentIndexChanged(QString)),this,SLOT(orderChanged(QString)));
-    order->setFrame(false);
-    /*order->setMaximumWidth(70);
-    order->setMaximumHeight(22);*/
-    order->setContentsMargins(0,0,0,0);
+    order = new QToolButton();
+    connect(order, &QToolButton::clicked,this,&AlbumsView::orderChanged);
+    order->setIcon(QIcon::fromTheme("view-sort-descending"));
+    order->setToolTip("Go Descending");
 
-    order->addItem("Ascending");
-    order->addItem("Descending");
-    order->setCurrentIndex(0);
+    order->setAutoRaise(true);
+//    order->setIconSize(QSize(22,22));
+
 
     utilsLayout->addWidget(order);
     // utilsLayout->addWidget(slider);
@@ -245,7 +250,7 @@ void AlbumsView::setAlbumsSize(int value)
     for(auto album : albumsList)
     {
         album->setSize(albumSize);
-        grid->setGridSize(QSize(albumSize+10,albumSize+10));
+        grid->setGridSize(QSize(albumSize+20,albumSize+20));
         grid->update();
 
     }
@@ -265,13 +270,25 @@ void  AlbumsView::flushGrid()
     grid->clear();
 }
 
-void AlbumsView::orderChanged(const QString &order)
+void AlbumsView::orderChanged()
 {
-    qDebug()<<"order changed:" <<order;
-    if(order =="Ascending")
-        grid->sortItems(Qt::AscendingOrder);
-    else if (order=="Descending")
+    if(ascending)
+    {
         grid->sortItems(Qt::DescendingOrder);
+        order->setToolTip("Go Ascending");
+        order->setIcon(QIcon::fromTheme("view-sort-ascending"));
+
+        ascending=!ascending;
+    }else
+    {
+        grid->sortItems(Qt::AscendingOrder);
+        order->setToolTip("Go Descending");
+        order->setIcon(QIcon::fromTheme("view-sort-descending"));
+
+
+        ascending=!ascending;
+    }
+
 
 }
 
@@ -304,7 +321,7 @@ void AlbumsView::populateTableView(QSqlQuery query)
 
     //grid->adjustSize();
     //    qDebug()<<grid->width()<<grid->size().height();
-    orderChanged("Ascending");
+    grid->sortItems(Qt::AscendingOrder);
 
 }
 
@@ -369,10 +386,11 @@ void AlbumsView::populateTableViewHeads(QSqlQuery query)
 
             connect(artwork,&Album::albumCreated,[this](Album *album){emit createdAlbum(album);});
             artwork->createAlbum(artist,"",art,BaeUtils::MEDIUM_ALBUM,4,true);
+
         }
     }
 
-    orderChanged("Ascending");
+    grid->sortItems(Qt::AscendingOrder);
 }
 
 void AlbumsView::populateExtraList(QSqlQuery query)

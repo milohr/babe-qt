@@ -42,7 +42,7 @@ public:
     void hide_all(bool state);
     void filter(const QList<QMap<int, QString> > &filter, const BabeTable::columns &type);
     QSlider *slider;
-    QComboBox *order;
+    QToolButton *order;
     QFrame *utilsFrame;
     BabeTable *albumTable;
     QListWidget *grid;
@@ -56,6 +56,7 @@ private:
     int gridSize;
     int albumSize;
     bool extraList=false;
+    bool ascending=true;
     QList<Album*> albumsList;
     QList<QListWidgetItem*> itemsList;
     QStringList albums;
@@ -83,7 +84,7 @@ public slots:
 private slots:
 
     void albumHover();
-    void orderChanged(const QString &order);
+    void orderChanged();
     void filterAlbum(QModelIndex index);
 
 signals:

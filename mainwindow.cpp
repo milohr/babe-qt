@@ -233,6 +233,17 @@ void MainWindow::setUpViews()
 
         }
     });
+
+    connect(mainList,&BabeTable::indexRemoved,[this](int  row)
+    {
+        if(row<current_song_pos)
+        {
+            current_song_pos--; prev_song_pos--;
+            if(prev_queued_song_pos!=-1) prev_queued_song_pos--;
+        }
+
+    });
+
     connect(mainList,&BabeTable::tableWidget_doubleClicked,this,&MainWindow::on_mainList_clicked);
     connect(mainList,&BabeTable::removeIt_clicked,this,&MainWindow::removeSong);
     connect(mainList,&BabeTable::babeIt_clicked,this,&MainWindow::babeIt);
@@ -500,7 +511,6 @@ void MainWindow::setUpCollectionViewer()
 
 
     ui->search->setClearButtonEnabled(true);
-    ui->search->setPlaceholderText("Search...");
 
     connect(ui->saveResults,&QToolButton::clicked, this, &MainWindow::saveResultsTo);
 
@@ -622,6 +632,8 @@ void MainWindow::setUpPlaylist()
 
 void MainWindow::setUpRightFrame()
 {
+
+
     auto *rightFrame_layout = new QGridLayout();
     rightFrame_layout->setContentsMargins(0,0,0,0);
     rightFrame_layout->setSpacing(0);
@@ -865,10 +877,8 @@ void MainWindow::closeEvent(QCloseEvent* event)
         qDebug()<<"saved geometry: "<<this->geometry();
     }
 
-    QStringList list;
-    for(auto track : currentList) list<<track[BabeTable::LOCATION];
 
-    this->saveSettings("PLAYLIST",list,"MAINWINDOW");
+    this->saveSettings("PLAYLIST",mainList->getTableColumnContent(BabeTable::LOCATION),"MAINWINDOW");
     this->saveSettings("PLAYLIST_POS", current_song_pos,"MAINWINDOW");
     qDebug()<<this->ui->mainToolBar->iconSize().height();
     this->saveSettings("TOOLBAR", this->ui->mainToolBar->iconSize().height(),"MAINWINDOW");
@@ -1068,7 +1078,6 @@ void MainWindow::collectionView()
     utilsBar->actions().at(COLLECTION_UB)->setVisible(true);
     utilsBar->actions().at(PLAYLISTS_UB)->setVisible(false); ui->frame_3->setVisible(false);
     utilsBar->actions().at(INFO_UB)->setVisible(false);
-    ui->search->setPlaceholderText("Search all...");
     ui->tracks_view->setChecked(true);
     prevIndex=views->currentIndex();
 }
@@ -1085,7 +1094,6 @@ void MainWindow::albumsView()
     utilsBar->actions().at(COLLECTION_UB)->setVisible(true);
     utilsBar->actions().at(PLAYLISTS_UB)->setVisible(false); ui->frame_3->setVisible(false);
     utilsBar->actions().at(INFO_UB)->setVisible(false);
-    ui->search->setPlaceholderText("Filter albums...");
 
     prevIndex = views->currentIndex();
 }
@@ -1101,7 +1109,6 @@ void MainWindow::playlistsView()
     utilsBar->actions().at(COLLECTION_UB)->setVisible(true);
     utilsBar->actions().at(PLAYLISTS_UB)->setVisible(true); ui->frame_3->setVisible(true);
     utilsBar->actions().at(INFO_UB)->setVisible(false);
-    ui->search->setPlaceholderText("Search all...");
 
     prevIndex = views->currentIndex();
 }
@@ -1117,7 +1124,6 @@ void MainWindow::rabbitView()
     utilsBar->actions().at(ARTISTS_UB)->setVisible(false);
     utilsBar->actions().at(PLAYLISTS_UB)->setVisible(false); ui->frame_3->setVisible(false);
     utilsBar->actions().at(INFO_UB)->setVisible(false);
-    ui->search->setPlaceholderText("Search all...");
 
     prevIndex = views->currentIndex();
 }
@@ -1134,7 +1140,6 @@ void MainWindow::infoView()
     utilsBar->actions().at(COLLECTION_UB)->setVisible(false);
     utilsBar->actions().at(PLAYLISTS_UB)->setVisible(false);
     utilsBar->actions().at(INFO_UB)->setVisible(true); ui->frame_3->setVisible(true);
-    ui->search->setPlaceholderText("Search all...");
 
     prevIndex = views->currentIndex();
 }
@@ -1150,7 +1155,6 @@ void MainWindow::artistsView()
     utilsBar->actions().at(COLLECTION_UB)->setVisible(true);
     utilsBar->actions().at(PLAYLISTS_UB)->setVisible(false); ui->frame_3->hide();
     utilsBar->actions().at(INFO_UB)->setVisible(false);
-    ui->search->setPlaceholderText("Filter artists...");
 
     prevIndex = views->currentIndex();
 }
@@ -1167,7 +1171,6 @@ void MainWindow::settingsView()
     utilsBar->actions().at(COLLECTION_UB)->setVisible(true);
     utilsBar->actions().at(PLAYLISTS_UB)->setVisible(false); ui->frame_3->setVisible(false);
     utilsBar->actions().at(INFO_UB)->setVisible(false);
-    ui->search->setPlaceholderText("Search all...");
 
     prevIndex = views->currentIndex();
 }
@@ -2019,7 +2022,6 @@ void MainWindow::addToPlaylist(const QList<QMap<int, QString> > &mapList, const 
 
         }else
         {
-            currentList+=mapList;
             for(auto track:mapList)
                 switch(pos)
                 {
@@ -2050,6 +2052,7 @@ void MainWindow::addToPlaylist(const QList<QMap<int, QString> > &mapList, const 
                     break;
                 }
             mainList->resizeRowsToContents();
+            currentList+=mapList;
 
         }
 
