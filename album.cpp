@@ -192,6 +192,7 @@ QPixmap Album::getPixmap()
     return image;
 }
 
+
 void Album::putPixmap(const QByteArray &pix)
 {
     if(!pix.isEmpty()) this->image.loadFromData(pix);

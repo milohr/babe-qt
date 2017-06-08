@@ -25,7 +25,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     grid->setSizeAdjustPolicy(QListWidget::AdjustToContentsOnFirstShow);
     //grid->setStyleSheet("QListWidget {background:#2E2F30; border:1px solid black; border-radius: 2px; }");
     grid->setStyleSheet("QListWidget,::item:selected,::item:selected:active {background:transparent; padding-top:15px; padding-left:15px; color:transparent; }");
-    grid->setGridSize(QSize(albumSize+20,albumSize+20));
+    grid->setGridSize(QSize(albumSize+25,albumSize+25));
 
 
     connect(this, &AlbumsView::createdAlbum,[this](Album *artwork)
@@ -250,7 +250,7 @@ void AlbumsView::setAlbumsSize(int value)
     for(auto album : albumsList)
     {
         album->setSize(albumSize);
-        grid->setGridSize(QSize(albumSize+20,albumSize+20));
+        grid->setGridSize(QSize(albumSize+25,albumSize+25));
         grid->update();
 
     }
