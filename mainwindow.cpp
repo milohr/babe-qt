@@ -1055,7 +1055,10 @@ void MainWindow::setToolbarIconSize(const int &iconSize) //tofix
 
 void MainWindow::collectionView()
 {
-    views->setCurrentIndex(COLLECTION);
+
+    if(resultsTable->rowCount()>0) views->setCurrentIndex(RESULTS);
+    else views->setCurrentIndex(COLLECTION);
+
     ui->tracks_view->setChecked(true);
 
     if(this->viewMode != FULLMODE) expand();
@@ -2094,13 +2097,10 @@ void MainWindow::on_search_textChanged(const QString &arg1)
         if(!searchResults.isEmpty())
         {
 
-            if(views->currentIndex()==ALBUMS )
-                albumsTable->filter(searchResults,BabeTable::ALBUM);
+            albumsTable->filter(searchResults,BabeTable::ALBUM);
+            artistsTable->filter(searchResults,BabeTable::ARTIST);
 
-            else if(views->currentIndex()==ARTISTS)
-                artistsTable->filter(searchResults,BabeTable::ARTIST);
-
-            else populateResultsTable(searchResults);
+            populateResultsTable(searchResults);
         }
 
 
@@ -2108,14 +2108,17 @@ void MainWindow::on_search_textChanged(const QString &arg1)
     {
 
 
-            albumsTable->hide_all(false);
+        albumsTable->hide_all(false);
 
-            artistsTable->hide_all(false);
+        artistsTable->hide_all(false);
+        resultsTable->flushTable();
+
 
         if(views->currentIndex()!=ALBUMS||views->currentIndex()!=ARTISTS)
         {
+            if(prevIndex==RESULTS) views->setCurrentIndex(COLLECTION);
+            else  views->setCurrentIndex(prevIndex);
 
-            views->setCurrentIndex(prevIndex);
             if(views->currentIndex()==PLAYLISTS)
             {
                 utilsBar->actions().at(PLAYLISTS_UB)->setVisible(true);
@@ -2131,7 +2134,8 @@ void MainWindow::on_search_textChanged(const QString &arg1)
 
 void MainWindow::populateResultsTable(const QList<QMap<int, QString> > &mapList)
 {
-    views->setCurrentIndex(RESULTS);
+    if(views->currentIndex()!=ALBUMS&&views->currentIndex()!=ARTISTS)
+        views->setCurrentIndex(RESULTS);
     utilsBar->actions().at(ALBUMS_UB)->setVisible(false);
     resultsTable->flushTable();
     resultsTable->populateTableView(mapList,false);
