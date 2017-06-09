@@ -266,7 +266,7 @@ void CollectionDB::refreshArtistsTable()
             QString file = query.value(LOCATION).toString();
             if(!artists.contains(artist))
             {
-                query.prepare("INSERT INTO artists (title, art, location)" "VALUES (:title, :art, :location)");
+                query.prepare("INSERT INTO artists (title, art, location) VALUES (:title, :art, :location)");
                 query.bindValue(":title", artist);
                 query.bindValue(":art", "");
                 query.bindValue(":location", QFileInfo(file).dir().path());
@@ -314,7 +314,7 @@ void CollectionDB::addTrack(const QStringList &paths,const int &babe)
 
                 album=BaeUtils::fixString(album);
 
-                query.prepare("INSERT INTO tracks (track, title, artist, album, genre, location, stars, babe, art, played, playlist, lyric)" "VALUES (:track, :title, :artist, :album, :genre, :location, :stars, :babe, :art, :played, :playlist, :lyric) ");
+                query.prepare("INSERT INTO tracks (track, title, artist, album, genre, location, stars, babe, art, played, playlist, lyric) VALUES (:track, :title, :artist, :album, :genre, :location, :stars, :babe, :art, :played, :playlist, :lyric) ");
                 query.bindValue(":track", track);
                 query.bindValue(":title", title);
                 query.bindValue(":artist", artist);
@@ -330,10 +330,10 @@ void CollectionDB::addTrack(const QStringList &paths,const int &babe)
 
                 if(query.exec())
                 {
-                    qDebug()<< "writting to db: "<< title;
+                    qDebug()<< "added to db: "<< title;
                     if(!albums.contains(artist+" "+album))
                     {
-                        query.prepare("INSERT INTO albums (title, artist, art, wiki)" "VALUES (:title, :artist, :art, :wiki)");
+                        query.prepare("INSERT INTO albums (title, artist, art, wiki) VALUES (:title, :artist, :art, :wiki)");
                         query.bindValue(":title", album);
                         query.bindValue(":artist", artist);
                         query.bindValue(":art", "");
@@ -343,7 +343,7 @@ void CollectionDB::addTrack(const QStringList &paths,const int &babe)
 
                     if(!artists.contains(artist))
                     {
-                        query.prepare("INSERT INTO artists (title, art, wiki)" "VALUES (:title, :art, :wiki)");
+                        query.prepare("INSERT INTO artists (title, art, wiki) VALUES (:title, :art, :wiki)");
                         query.bindValue(":title", artist);
                         query.bindValue(":art", "");
                         query.bindValue(":wiki", "");
@@ -488,7 +488,7 @@ void CollectionDB::insertPlaylist(const QString &name)
     if(!name.isEmpty())
     {
         QSqlQuery query;
-        query.prepare("INSERT INTO playlists (title)" "VALUES (:title) ");
+        query.prepare("INSERT INTO playlists (title) VALUES (:title) ");
 
         query.bindValue(":title", name);
 
