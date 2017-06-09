@@ -485,7 +485,7 @@ void MainWindow::setUpCollectionViewer()
     utilsBar->setMovable(false);
 
     //ui->search->layout()->setMargin(0);
-    //    utilsBar->setStyleSheet("margin:0;");
+        utilsBar->setStyleSheet("QToolBar{margin:0;}");
     //    ui->playlistUtils->setStyleSheet("margin:0;");
 
     utilsBar->addWidget(infoTable->infoUtils);
@@ -500,16 +500,6 @@ void MainWindow::setUpCollectionViewer()
     utilsBar-> setContentsMargins(0,0,0,0);
     utilsBar->layout()->setMargin(0);
     utilsBar->layout()->setSpacing(0);
-
-
-    ui->searchWidget->layout()->setContentsMargins(0,0,0,0);
-    ui->searchWidget-> setContentsMargins(0,0,0,0);
-    ui->searchWidget->layout()->setMargin(0);
-    ui->searchWidget->layout()->setSpacing(0);
-
-    ui->searchWidget->adjustSize();
-    utilsBar->adjustSize();
-
 
     utilsBar->actions().at(PLAYLISTS_UB)->setVisible(false); ui->frame_3->setVisible(false);
     utilsBar->actions().at(INFO_UB)->setVisible(false);
