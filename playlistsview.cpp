@@ -27,7 +27,7 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
     layout->setSpacing(0);
 
     table = new BabeTable(this);
-    table->setAddMusicMsg("\nPlaylist is empty\nPick another one...","face-hug-right");
+    table->setAddMusicMsg("\nPlaylist is empty...","face-hug-right");
 
     list = new QListWidget(this);
     connect(list, SIGNAL(doubleClicked(QModelIndex)), list,

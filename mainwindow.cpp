@@ -1799,8 +1799,12 @@ void MainWindow::pause()
 void MainWindow::stop()
 {
     album_art->putPixmap(QString(":/Data/data/empty.svg"));
-    album_art->titleVisible(false);
     ui->controls->setVisible(false);
+    album_art->setVisible(false);
+    ui->frame_4->setVisible(false);
+    seekBar->setVisible(false);
+    ui->frame_5->setVisible(false);
+
     current_song.clear();
     prev_song = current_song;
     current_song_pos =0;
@@ -2066,7 +2070,12 @@ void MainWindow::addToPlaylist(const QList<QMap<int, QString> > &mapList, const 
         if(stopped)
         {
             mainList->setCurrentCell(0,BabeTable::TITLE);
+            album_art->setVisible(true);
+            ui->frame_4->setVisible(true);
+            seekBar->setVisible(true);
+            ui->frame_5->setVisible(true);
             ui->controls->setVisible(true);
+
             loadTrack();
             stopped=!stopped;
         }
