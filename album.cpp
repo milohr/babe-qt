@@ -260,8 +260,8 @@ void Album::setTitleGeometry(const int &x, const int &y, const int &w, const int
 void Album::titleVisible(const bool &state)
 {
     this->visibleTitle=state;
-    if(state) widget->setVisible(visibleTitle);
-    else widget->setVisible(visibleTitle);
+    if(visibleTitle) showTitle();
+    else hideTitle();
 }
 
 void Album::mouseDoubleClickEvent(QMouseEvent * event)
@@ -330,7 +330,7 @@ void Album::enterEvent(QEvent *event)
         playBtn->setToolTip("Play all - "+artist+" "+album);
     }
 
-    if(!widget->isVisible() && visibleTitle) widget->setVisible(true);
+    if(!widget->isVisible() && visibleTitle) showTitle();
 
     widget->setStyleSheet( QString(" background: %4; border-top: 1px solid rgba(%1,%1,%1,120); border-top-left-radius:0; border-top-right-radius:0; border-bottom-right-radius:%2px; border-bottom-left-radius:%3px;").arg( QString::number(0), QString::number(border_radius-1),QString::number(border_radius-1),"#000"));
 
@@ -345,6 +345,15 @@ void Album::leaveEvent(QEvent *event)
         playBtn->setVisible(false);
 
     widget->setStyleSheet( QString(" background: rgba(0,0,0,150); border-top: 1px solid rgba(%1,%1,%1,120); border-top-left-radius:0; border-top-right-radius:0; border-bottom-right-radius:%2px; border-bottom-left-radius:%3px;").arg( QString::number(0), QString::number(border_radius-1),QString::number(border_radius-1)));
-    if(!visibleTitle) this->widget->setVisible(false);
+    if(!visibleTitle)  hideTitle();
 
+}
+
+void Album::hideTitle()
+{
+   if(!visibleTitle) this->widget->setVisible(false);
+}
+void Album::showTitle()
+{
+    this->widget->setVisible(true);
 }

@@ -52,6 +52,8 @@ public:
     QString getBGcolor();
     QPixmap image;
     QPixmap getPixmap();
+    void showTitle();
+    void hideTitle();
     bool showPlayBtn=true;
     enum albumField
     {

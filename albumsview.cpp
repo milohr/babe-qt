@@ -43,6 +43,8 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
         connect(artwork,&Album::changedArt,this,&AlbumsView::changedArt_cover);
         connect(artwork,&Album::babeAlbum_clicked,this,&AlbumsView::babeAlbum);
         connect(artwork, &Album::albumDragStarted, this, &AlbumsView::hideAlbumFrame);
+        connect(artwork, &Album::albumCoverEnter,artwork, &Album::showTitle);
+        connect(artwork, &Album::albumCoverLeave,artwork, &Album::hideTitle);
 
         auto shadow = new QGraphicsDropShadowEffect();
         shadow->setColor(QColor(0, 0, 0, 100));
