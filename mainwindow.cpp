@@ -1799,6 +1799,7 @@ void MainWindow::pause()
 void MainWindow::stop()
 {
     album_art->putPixmap(QString(":/Data/data/empty.svg"));
+    album_art->titleVisible(false);
     ui->controls->setVisible(false);
     current_song.clear();
     prev_song = current_song;

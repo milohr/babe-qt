@@ -330,7 +330,7 @@ void Album::enterEvent(QEvent *event)
         playBtn->setToolTip("Play all - "+artist+" "+album);
     }
 
-    if(!widget->isVisible()) widget->setVisible(true);
+    if(!widget->isVisible() && visibleTitle) widget->setVisible(true);
 
     widget->setStyleSheet( QString(" background: %4; border-top: 1px solid rgba(%1,%1,%1,120); border-top-left-radius:0; border-top-right-radius:0; border-bottom-right-radius:%2px; border-bottom-left-radius:%3px;").arg( QString::number(0), QString::number(border_radius-1),QString::number(border_radius-1),"#000"));
 
