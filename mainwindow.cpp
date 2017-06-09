@@ -460,6 +460,7 @@ void MainWindow::setUpCollectionViewer()
     leftFrame_layout = new QGridLayout();
     leftFrame_layout->setContentsMargins(0,0,0,0);
     leftFrame_layout->setSpacing(0);
+    leftFrame_layout->setMargin(0);
 
     leftFrame = new QFrame(this);
     leftFrame->setObjectName("leftFrame");
@@ -481,21 +482,11 @@ void MainWindow::setUpCollectionViewer()
     utilsBar = new QToolBar(this);
     utilsBar->setAutoFillBackground(true);
     //    utilsBar->setBackgroundRole(QPalette::Midlight);
-
     utilsBar->setMovable(false);
-    //    utilsBar->layout()->setContentsMargins(0,0,0,0);
-    //    utilsBar-> setContentsMargins(0,0,0,0);
-    //    utilsBar->layout()->setMargin(0);
-    //    utilsBar->layout()->setSpacing(0);
 
-
-    //    ui->searchWidget->layout()->setContentsMargins(0,0,0,0);
-    //    ui->searchWidget-> setContentsMargins(0,0,0,0);
-    ui->searchWidget->layout()->setMargin(0);
-    ui->searchWidget->layout()->setSpacing(0);
     //ui->search->layout()->setMargin(0);
-    utilsBar->setStyleSheet("margin:0;");
-    ui->playlistUtils->setStyleSheet("margin:0;");
+    //    utilsBar->setStyleSheet("margin:0;");
+    //    ui->playlistUtils->setStyleSheet("margin:0;");
 
     utilsBar->addWidget(infoTable->infoUtils);
     utilsBar->addWidget(playlistTable->btnContainer);
@@ -503,6 +494,22 @@ void MainWindow::setUpCollectionViewer()
     utilsBar->addWidget(albumsTable->utilsFrame);
     utilsBar->addWidget(artistsTable->utilsFrame);
     utilsBar->addWidget(ui->collectionUtils);
+
+
+    utilsBar->layout()->setContentsMargins(0,0,0,0);
+    utilsBar-> setContentsMargins(0,0,0,0);
+    utilsBar->layout()->setMargin(0);
+    utilsBar->layout()->setSpacing(0);
+
+
+    ui->searchWidget->layout()->setContentsMargins(0,0,0,0);
+    ui->searchWidget-> setContentsMargins(0,0,0,0);
+    ui->searchWidget->layout()->setMargin(0);
+    ui->searchWidget->layout()->setSpacing(0);
+
+    ui->searchWidget->adjustSize();
+    utilsBar->adjustSize();
+
 
     utilsBar->actions().at(PLAYLISTS_UB)->setVisible(false); ui->frame_3->setVisible(false);
     utilsBar->actions().at(INFO_UB)->setVisible(false);
@@ -999,7 +1006,7 @@ void MainWindow::showControls() {
     if(!ui->controls->isVisible()  && !stopped)
     {
 
-        if(!miniPlayback) this->blurWidget(*album_art,9);
+        if(!miniPlayback) this->blurWidget(*album_art,10);
         else this->blurWidget(*album_art,28);
 
         ui->controls->setVisible(true);
@@ -1226,7 +1233,7 @@ void MainWindow::go_mini()
 
     this->miniPlayback =false;
 
-    this->blurWidget(*album_art,9);
+    this->blurWidget(*album_art,10);
     album_art->restoreSaturation();
 
     ui->miniPlaybackBtn->setVisible(false);
@@ -2013,7 +2020,6 @@ void MainWindow::addToPlaylist(const QList<QMap<int, QString> > &mapList, const 
                         break;
                     }
 
-                    mainList->resizeRowsToContents();
                 }
             }
 
@@ -2051,7 +2057,6 @@ void MainWindow::addToPlaylist(const QList<QMap<int, QString> > &mapList, const 
 
                     break;
                 }
-            mainList->resizeRowsToContents();
             currentList+=mapList;
 
         }
@@ -2383,7 +2388,7 @@ void MainWindow::on_miniPlaybackBtn_clicked()
         album_art->setFixedHeight(ALBUM_SIZE);
         ui->miniPlaybackBtn->setIcon(QIcon::fromTheme("go-top"));
         miniPlayback=!miniPlayback;
-        this->blurWidget(*album_art,9);
+        this->blurWidget(*album_art,10);
         album_art->restoreSaturation();
 
     }

@@ -36,6 +36,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     a.setApplicationName("Babe");
     a.setDesktopFileName("Babe");
+    a.setApplicationVersion("0.5 Beta");
     MainWindow w(files);
     w.show();
 

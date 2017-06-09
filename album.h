@@ -62,6 +62,7 @@ private:
 
     QMap<int, QString> albumMap;
     bool draggable;
+    bool visibleTitle=true;
     QString imagePath;
     QString artist="";
     QString album="";

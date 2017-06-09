@@ -67,9 +67,32 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
 
     });
 
+    this->setContextMenuPolicy(Qt::ContextMenuPolicy::ActionsContextMenu);
+
+    auto hideLabels = new QAction("Hide titles",this);
+    this->addAction(hideLabels);
+    connect(hideLabels, &QAction::triggered,[hideLabels,this]()
+    {
+        if (hideLabels->text().contains("Hide titles"))
+        {
+            for(auto album: albumsList)
+                album->titleVisible(false);
+            hideLabels->setText("Show titles");
+
+        }
+        else
+        {
+            for(auto album: albumsList)
+                album->titleVisible(true);
+            hideLabels->setText("Hide titles");
+        }
+
+    });
 
     QAction *zoomIn = new QAction(this);
+    zoomIn->setText("Zoom in");
     zoomIn->setShortcut(tr("CTRL++"));
+    this->addAction(zoomIn);
     connect(zoomIn, &QAction::triggered,[this]()
     {
         if(albumSize+5<=BaeUtils::MAX_MID_ALBUM_SIZE)
@@ -78,7 +101,9 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     });
 
     QAction *zoomOut = new QAction(this);
+    zoomOut->setText("Zoom out");
     zoomOut->setShortcut(tr("CTRL+-"));
+    this->addAction(zoomOut);
     connect(zoomOut, &QAction::triggered,[this]()
     {
         if(albumSize-5>=BaeUtils::MAX_MIN_ALBUM_SIZE)
@@ -112,7 +137,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     order->setToolTip("Go Descending");
 
     order->setAutoRaise(true);
-//    order->setIconSize(QSize(22,22));
+    //    order->setIconSize(QSize(22,22));
 
 
     utilsLayout->addWidget(order);
@@ -246,7 +271,7 @@ void AlbumsView::setAlbumsSize(int value)
 {
     albumSize=value;
     /*slider->setToolTip(QString::number(value));
-            QToolTip::showText( slider->mapToGlobal( QPoint( 0, 0 ) ), QString::number(value) );*/
+                QToolTip::showText( slider->mapToGlobal( QPoint( 0, 0 ) ), QString::number(value) );*/
     for(auto album : albumsList)
     {
         album->setSize(albumSize);
