@@ -481,8 +481,8 @@ void MainWindow::setUpCollectionViewer()
     //    lineV->setMaximumWidth(1);
 
 
-    ui->playAll->setParent(ui->search);
-    ui->playAll->setVisible(false);
+//    ui->playAll->setParent(ui->search);
+//    ui->playAll->setVisible(false);
     ui->search->installEventFilter(this);
     utilsBar = new QToolBar(this);
     utilsBar->setAutoFillBackground(true);
@@ -792,14 +792,14 @@ bool MainWindow::eventFilter(QObject *object, QEvent *event)
         }
     }
 
-    if(object==ui->search)
-    {
-        if(event->type()==QEvent::Resize)
-        {
-            ui->playAll->setGeometry(ui->search->size().width()-48,(ui->search->size().height()/2)-8,16,16);
+//    if(object==ui->search)
+//    {
+//        if(event->type()==QEvent::Resize)
+//        {
+//            ui->playAll->setGeometry(ui->search->size().width()-48,(ui->search->size().height()/2)-8,16,16);
 
-        }
-    }
+//        }
+//    }
 
 
     if(object == rightFrame)
@@ -2127,7 +2127,7 @@ void MainWindow::on_search_textChanged(const QString &arg1)
 
         if(!searchResults.isEmpty())
         {
-            ui->playAll->setVisible(true);
+//            ui->playAll->setVisible(true);
 
             albumsTable->filter(searchResults,BabeTable::ALBUM);
             artistsTable->filter(searchResults,BabeTable::ARTIST);
@@ -2139,7 +2139,6 @@ void MainWindow::on_search_textChanged(const QString &arg1)
     }else
     {
 
-        ui->playAll->setVisible(false);
 
         albumsTable->hide_all(false);
 
@@ -2369,9 +2368,21 @@ void MainWindow::calibrateMainList()
 void MainWindow::on_playAll_clicked()
 {
 
-
-        putOnPlay(resultsTable->getAllTableContent());
-
+    switch(views->currentIndex())
+    {
+    case COLLECTION:
+        putOnPlay(collectionTable->getAllTableContent()); break;
+    case ALBUMS:
+        putOnPlay(albumsTable->albumTable->getAllTableContent()); break;
+    case ARTISTS:
+        putOnPlay(artistsTable->albumTable->getAllTableContent()); break;
+    case PLAYLISTS:
+        putOnPlay(playlistTable->table->getAllTableContent()); break;
+    case RABBIT:
+        putOnPlay(rabbitTable->getTable()->getAllTableContent()); break;
+    case RESULTS:
+        putOnPlay(resultsTable->getAllTableContent()); break;
+    }
 }
 
 void MainWindow::on_miniPlaybackBtn_clicked()
