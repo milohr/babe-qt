@@ -1511,7 +1511,7 @@ void MainWindow::loadTrack()
         }
 
         if(!this->isActiveWindow())
-            nof.notifySong(current_song,album_art->getPixmap());
+            nof.notifySong(current_song,album_art->unsaturated.isNull()?album_art->getPixmap():album_art->unsaturated);
 
 
     }else removeSong(current_song_pos);

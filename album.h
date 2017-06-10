@@ -52,6 +52,8 @@ public:
     QString getBGcolor();
     QPixmap image;
     QPixmap getPixmap();
+    QPixmap unsaturated;
+
     void showTitle();
     void hideTitle();
     bool showPlayBtn=true;
@@ -74,7 +76,6 @@ private:
     QPoint oldPos;
     QPoint startPos;
     QToolButton *playBtn;
-    QPixmap unsaturated;
 
     int border_radius=0;
 
