@@ -1510,8 +1510,9 @@ void MainWindow::loadTrack()
             album_art->saturatePixmap(100);
         }
 
+
         if(!this->isActiveWindow())
-            nof.notifySong(current_song,album_art->unsaturated.isNull()?album_art->getPixmap():album_art->unsaturated);
+            nof.notifySong(current_song,QPixmap(current_artwork));
 
 
     }else removeSong(current_song_pos);
@@ -1568,7 +1569,6 @@ bool MainWindow::loadCover(const QString &artist, const QString &album, const QS
 {
     Q_UNUSED(title);
     QString artistHead;
-    QString albumCover;
 
     //IF CURRENT SONG EXISTS IN THE COLLECTION THEN GET THE COVER FROM DB
     if(settings_widget->getCollectionDB().checkQuery("SELECT * FROM tracks WHERE location = \""+current_song[BabeTable::LOCATION]+"\""))
@@ -1583,11 +1583,15 @@ bool MainWindow::loadCover(const QString &artist, const QString &album, const QS
         }else infoTable->setArtistArt(QString(":Data/data/cover.svg"));
 
 
-        albumCover = settings_widget->getCollectionDB().getAlbumArt(album, artist);
+        current_artwork = settings_widget->getCollectionDB().getAlbumArt(album, artist);
 
-        if(!albumCover.isEmpty())
-            album_art->putPixmap(albumCover);
-        else  if (!artistHead.isEmpty()) album_art->putPixmap(artistHead);
+        if(!current_artwork.isEmpty())
+            album_art->putPixmap(current_artwork);
+        else  if (!artistHead.isEmpty())
+        {
+            current_artwork = artistHead;
+            album_art->putPixmap(current_artwork);
+        }
         else album_art->putDefaultPixmap();
 
         return true;
@@ -1600,11 +1604,15 @@ bool MainWindow::loadCover(const QString &artist, const QString &album, const QS
         {
             artistHead = settings_widget->getCollectionDB().getArtistArt(artist);
 
-            albumCover = settings_widget->getCollectionDB().getAlbumArt(album, artist);
+            current_artwork = settings_widget->getCollectionDB().getAlbumArt(album, artist);
 
-            if(!albumCover.isEmpty())
-                album_art->putPixmap(albumCover);
-            else  if (!artistHead.isEmpty()) album_art->putPixmap(artistHead);
+            if(!current_artwork.isEmpty())
+                album_art->putPixmap(current_artwork);
+            else  if (!artistHead.isEmpty())
+            {
+                current_artwork = artistHead;
+                album_art->putPixmap(current_artwork);
+            }
             else album_art->putDefaultPixmap();
 
             return true;

@@ -272,6 +272,7 @@ private:
     QList<QMap<int,QString>> currentList;
     QMap<int, QString> current_song;
     int current_song_pos=0;
+    QString current_artwork;
 
     QMap<int, QString> prev_song;
     int prev_song_pos=0;

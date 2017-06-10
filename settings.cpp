@@ -64,7 +64,7 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
     connect(&collection_db,&CollectionDB::progress, ui->progressBar,&QProgressBar::setValue);
     connect(this, &settings::collectionPathChanged, this, &settings::populateDB);
 
-
+    ui->ytLineEdit->setText(extensionFetchingPath);
     ytFetch = new YouTube(this);
     connect(ytFetch,&YouTube::youtubeTrackReady,this,&settings::youtubeTrackReady);
     ytFetch->searchPendingFiles();
