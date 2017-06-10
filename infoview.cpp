@@ -51,15 +51,16 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView)
     artistCLayout->addStretch();
     artistContainer->setLayout(artistCLayout);
     artistContainer->setFixedHeight(artist->getSize()+12);
-    ui->artistLayout->insertWidget(0, artistContainer);
 
-    infoUtils = new QWidget();
-    // artistContainer->setStyleSheet("QWidget{background-color: #575757;
-    // color:white;}");
+
+    infoUtils = new QWidget();  
     infoUtils->setMaximumWidth(ALBUM_SIZE_BIG);
     auto infoUtils_layout = new QHBoxLayout();
     infoUtils_layout->setContentsMargins(0, 0, 0, 0);
     infoUtils_layout->setSpacing(0);
+
+    ui->artistLayout->insertWidget(0, artistContainer);
+    ui->artistLayout->insertWidget(1,infoUtils);
 
     auto similarBtn = new QToolButton();
     connect(similarBtn, &QToolButton::clicked, [this]()
@@ -69,7 +70,7 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView)
         for (auto tag : list) query << QString("artist:"+tag).trimmed();
         emit similarBtnClicked(query);
     });
-
+    similarBtn->setIconSize(QSize(16,16));
     similarBtn->setAutoRaise(true);
     similarBtn->setIcon(QIcon::fromTheme("similarartists-amarok"));
     similarBtn->setToolTip("Similar artists...");
@@ -85,24 +86,27 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView)
 
     moreBtn->setAutoRaise(true);
     moreBtn->setIcon(QIcon::fromTheme("filename-discnumber-amarok"));
+    moreBtn->setIconSize(QSize(16,16));
     moreBtn->setToolTip("Similar tags...");
 
 
     hideBtn = new QToolButton();
     connect(hideBtn, SIGNAL(clicked()), this, SLOT(hideArtistInfo()));
-
+    hideBtn->setIconSize(QSize(16,16));
     hideBtn->setAutoRaise(true);
     hideBtn->setIcon(QIcon::fromTheme("hide_table_column"));
+    hideBtn->setVisible(false);
+
+    ui->searchBtn->setIconSize(QSize(16,16));
 
     infoUtils_layout->addWidget(similarBtn);
     infoUtils_layout->addWidget(moreBtn);
-
     infoUtils_layout->addWidget(hideBtn);
     infoUtils_layout->addWidget(ui->searchBtn);
     infoUtils->setLayout(infoUtils_layout);
-    ui->artistFrame->setVisible(false);
-    ui->frame_4->setVisible(false);
-    infoUtils->hide();
+//    ui->artistFrame->setVisible(false);
+//    ui->frame_4->setVisible(false);
+//    infoUtils->hide();
     ui->customsearch->setVisible(false);
     ui->frame_2->setVisible(false);
     //ui->searchBtn->setParent(ui->lyricsText);

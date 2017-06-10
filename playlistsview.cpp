@@ -58,8 +58,8 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
 
     addBtn->setAutoRaise(true);
     removeBtn->setAutoRaise(true);
-    addBtn->setMaximumSize(16, 16);
-    removeBtn->setMaximumSize(16, 16);
+    addBtn->setIconSize(QSize(16, 16));
+    removeBtn->setIconSize(QSize(16, 16));
     addBtn->setIcon(QIcon::fromTheme("list-add"));
     removeBtn->setIcon(QIcon::fromTheme("entry-delete"));
 
@@ -75,16 +75,38 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
     btnLayout->setSpacing(0);
     btnLayout->setContentsMargins(5, 0, 5, 0);
     btnContainer->setLayout(btnLayout);
-    btnLayout->addWidget(addBtn);
+
+    btnLayout->addWidget(new QLabel("Playlists"));
     btnLayout->addStretch();
+    btnLayout->addWidget(addBtn);
+
+
     btnLayout->addWidget(removeBtn);
 
-    line_v = new QFrame();
+    line_v = new QFrame(this);
     line_v->setFrameShape(QFrame::VLine);
     line_v->setFrameShadow(QFrame::Plain);
     line_v->setMaximumWidth(1);
 
-    layout->addWidget(list, 0, 0, Qt::AlignLeft);
+    auto line_h = new QFrame(this);
+    line_h->setFrameShape(QFrame::HLine);
+    line_h->setFrameShadow(QFrame::Plain);
+    line_h->setMaximumHeight(1);
+
+    auto playlistsWidget = new QWidget(this);
+    auto playlistsWidget_layout = new QVBoxLayout();
+    playlistsWidget_layout->setContentsMargins(0,0,0,0);
+    playlistsWidget_layout->setMargin(0);
+    playlistsWidget_layout->setSpacing(0);
+    playlistsWidget->setLayout(playlistsWidget_layout);
+    playlistsWidget_layout->addWidget(btnContainer);
+    playlistsWidget_layout->addWidget(line_h);
+    playlistsWidget_layout->addWidget(list);
+
+
+
+
+    layout->addWidget(playlistsWidget, 0, 0, Qt::AlignLeft);
     layout->addWidget(line_v, 0, 1, Qt::AlignLeft);
     layout->addWidget(table, 0, 2);
 

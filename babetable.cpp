@@ -35,7 +35,7 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
     this->setFrameShape(QFrame::NoFrame);
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     this->setColumnCount(columnsCOUNT-1);
-    this->setHorizontalHeaderLabels({"Track", "Title", "Artist", "Album", "Genre",
+    this->setHorizontalHeaderLabels({"#", "Title", "Artist", "Album", "Genre",
                                      "Location", "Stars", "Babe", "Art", "Played",
                                      "Playlist", "Lyric"});
     this->horizontalHeader()->setDefaultSectionSize(150);
@@ -45,12 +45,11 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
     this->setAlternatingRowColors(true);
     this->setSortingEnabled(true);
 
-    //        this->horizontalHeader()->setHighlightSections(false);
+    this->horizontalHeader()->setHighlightSections(false);
 
-    this->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    this->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
+    this->horizontalHeader()->setStretchLastSection(true);
 
-
-    this->verticalHeader()->resizeSections(QHeaderView::ResizeToContents);
     this->setShowGrid(false);
 
 

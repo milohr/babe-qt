@@ -970,6 +970,50 @@
       </widget>
      </item>
      <item>
+      <widget class="QToolButton" name="rabbit_view">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Online</string>
+       </property>
+       <property name="text">
+        <string>Queue</string>
+       </property>
+       <property name="icon">
+        <iconset theme="kstars_constellationart">
+         <normaloff>.</normaloff>.</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>22</width>
+         <height>22</height>
+        </size>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="autoExclusive">
+        <bool>true</bool>
+       </property>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonIconOnly</enum>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QToolButton" name="playlists_view">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -1055,56 +1099,6 @@
       </widget>
      </item>
     </layout>
-   </widget>
-   <widget class="QToolButton" name="rabbit_view">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>180</y>
-      <width>24</width>
-      <height>34</height>
-     </rect>
-    </property>
-    <property name="sizePolicy">
-     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-      <horstretch>0</horstretch>
-      <verstretch>0</verstretch>
-     </sizepolicy>
-    </property>
-    <property name="minimumSize">
-     <size>
-      <width>24</width>
-      <height>24</height>
-     </size>
-    </property>
-    <property name="toolTip">
-     <string>Online</string>
-    </property>
-    <property name="text">
-     <string>Queue</string>
-    </property>
-    <property name="icon">
-     <iconset theme="kstars_constellationart">
-      <normaloff>.</normaloff>.</iconset>
-    </property>
-    <property name="iconSize">
-     <size>
-      <width>22</width>
-      <height>22</height>
-     </size>
-    </property>
-    <property name="checkable">
-     <bool>true</bool>
-    </property>
-    <property name="autoExclusive">
-     <bool>true</bool>
-    </property>
-    <property name="toolButtonStyle">
-     <enum>Qt::ToolButtonIconOnly</enum>
-    </property>
-    <property name="autoRaise">
-     <bool>true</bool>
-    </property>
    </widget>
    <widget class="QToolButton" name="playAll">
     <property name="geometry">

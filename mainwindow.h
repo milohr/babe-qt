@@ -75,7 +75,7 @@ public:
 
     enum utilsBar
     {
-        INFO_UB,PLAYLISTS_UB,SEARCH_UB,ALBUMS_UB,ARTISTS_UB,COLLECTION_UB,FAVORITES_UB,RABBIT_UB
+        VIEWS_UB,ALBUMS_UB,ARTISTS_UB
     };
     enum viewModes
     {
@@ -192,7 +192,7 @@ private:
     Ui::MainWindow *ui;
 
     int ALBUM_SIZE;
-
+    int iconSize = 22;
     CollectionDB connection;
 
     const QString stylePath = BaeUtils::SettingPath+"style.qss";
@@ -265,6 +265,8 @@ private:
 
     QSlider *seekBar;
     QMenu *calibrateBtn_menu;
+
+    QString transformTime(const qint64 &value);
 
     QMap<QString, QMap<int, QString>> queued_songs;
     int prev_queued_song_pos = -1;

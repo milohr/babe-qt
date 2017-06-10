@@ -13,6 +13,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     albumSize = BaeUtils::getWidgetSizeHint(BaeUtils::MEDIUM_ALBUM_FACTOR,BaeUtils::MEDIUM_ALBUM);
     this->setAcceptDrops(false);
     grid = new QListWidget(this);
+    grid->setObjectName("grid");
     grid->setMinimumHeight(albumSize);
     grid->setViewMode(QListWidget::IconMode);
     grid->setResizeMode(QListWidget::Adjust);
@@ -24,7 +25,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     grid->setSizePolicy(QSizePolicy ::Expanding , QSizePolicy ::Expanding );
     grid->setSizeAdjustPolicy(QListWidget::AdjustToContentsOnFirstShow);
     //grid->setStyleSheet("QListWidget {background:#2E2F30; border:1px solid black; border-radius: 2px; }");
-    grid->setStyleSheet("QListWidget,::item:selected,::item:selected:active {background:transparent; padding-top:15px; padding-left:15px; color:transparent; }");
+    grid->setStyleSheet("QListWidget,QListWidget::item:selected,QListWidget::item:selected:active {background:transparent; padding-top:15px; padding-left:15px; color:transparent; }");
     grid->setGridSize(QSize(albumSize+25,albumSize+25));
 
 
@@ -69,10 +70,10 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
 
     });
 
-    this->setContextMenuPolicy(Qt::ContextMenuPolicy::ActionsContextMenu);
+    grid->setContextMenuPolicy(Qt::ContextMenuPolicy::ActionsContextMenu);
 
     auto hideLabels = new QAction("Hide titles",this);
-    this->addAction(hideLabels);
+    grid->addAction(hideLabels);
     connect(hideLabels, &QAction::triggered,[hideLabels,this]()
     {
         if (hideLabels->text().contains("Hide titles"))
@@ -94,7 +95,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     QAction *zoomIn = new QAction(this);
     zoomIn->setText("Zoom in");
     zoomIn->setShortcut(tr("CTRL++"));
-    this->addAction(zoomIn);
+    grid->addAction(zoomIn);
     connect(zoomIn, &QAction::triggered,[this]()
     {
         if(albumSize+5<=BaeUtils::MAX_MID_ALBUM_SIZE)
@@ -105,15 +106,13 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     QAction *zoomOut = new QAction(this);
     zoomOut->setText("Zoom out");
     zoomOut->setShortcut(tr("CTRL+-"));
-    this->addAction(zoomOut);
+    grid->addAction(zoomOut);
     connect(zoomOut, &QAction::triggered,[this]()
     {
         if(albumSize-5>=BaeUtils::MAX_MIN_ALBUM_SIZE)
             this->setAlbumsSize(albumSize-5);
     });
 
-    this->addAction(zoomIn);
-    this->addAction(zoomOut);
 
     auto utilsLayout = new QHBoxLayout();
     utilsLayout->setContentsMargins(0,0,0,0);
