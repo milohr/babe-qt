@@ -152,8 +152,7 @@ private slots:
     void setToolbarIconSize(const int &iconSize);
     void collectionDBFinishedAdding();
     void on_fav_btn_clicked();
-    void hideControls();
-    void showControls();
+    void showControls(const bool &state);
     void on_search_returnPressed();
     void on_search_textChanged(const QString &arg1);
 

@@ -257,12 +257,6 @@ void Album::setTitle(const QString &artistTitle, const QString &albumTitle)
 
 void Album::setTitleGeometry(const int &x, const int &y, const int &w, const int &h) { widget->setGeometry(x,y,w,h); }
 
-void Album::titleVisible(const bool &state)
-{
-    this->visibleTitle=state;
-    if(visibleTitle) showTitle();
-    else hideTitle();
-}
 
 void Album::mouseDoubleClickEvent(QMouseEvent * event)
 {
@@ -347,11 +341,12 @@ void Album::leaveEvent(QEvent *event)
 
 }
 
-void Album::hideTitle()
+void Album::showTitle(const bool &state)
 {
-   if(!visibleTitle) this->widget->setVisible(false);
-}
-void Album::showTitle()
-{
-    this->widget->setVisible(true);
+    this->visibleTitle=state;
+
+    if(visibleTitle)
+        this->widget->setVisible(true);
+    else
+        if(!visibleTitle) this->widget->setVisible(false);
 }

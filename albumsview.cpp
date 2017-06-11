@@ -57,13 +57,13 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
         connect(artwork,&Album::albumDragStarted, this, &AlbumsView::hideAlbumFrame);
         connect(artwork,&Album::albumCoverEnter,[artwork,shadow,this]()
         {
-            artwork->showTitle();
+            artwork->showTitle(true);
             shadow->setColor(QColor(0, 0, 0, 180));
             shadow->setOffset(2,3);
         });
         connect(artwork, &Album::albumCoverLeave,[artwork,shadow,this]()
         {
-            artwork->hideTitle();
+            artwork->showTitle(false);
             shadow->setColor(QColor(0, 0, 0, 140));
             shadow->setOffset(3,5);
         });
@@ -97,14 +97,14 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
         if (hideLabels->text().contains("Hide titles"))
         {
             for(auto album: albumsList)
-                album->titleVisible(false);
+                album->showTitle(false);
             hideLabels->setText("Show titles");
 
         }
         else
         {
             for(auto album: albumsList)
-                album->titleVisible(true);
+                album->showTitle(true);
             hideLabels->setText("Hide titles");
         }
 
@@ -182,6 +182,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     connect(cover,&Album::changedArt,this,&AlbumsView::changedArt_cover);
     connect(cover,&Album::babeAlbum_clicked,this,&AlbumsView::babeAlbum);
     cover->createAlbum("","",":Data/data/cover.svg",BaeUtils::MEDIUM_ALBUM,0,true);
+    cover->showTitle(false);
 
     closeBtn = new QToolButton(cover);
     connect(closeBtn,&QToolButton::clicked,this,&AlbumsView::hideAlbumFrame);

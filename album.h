@@ -35,7 +35,6 @@ public:
     void setAlbum(const QString &albumTitle);
     void setTitle(const QString &artistTitle, const QString &albumTitle="");
     void setBGcolor(const QString &bgColor);
-    void titleVisible(const bool &state);
     void setUpMenu();
     void setTitleGeometry(const int &x, const int &y, const int &w, const int &h);
     void setSize(const int &value);
@@ -54,8 +53,7 @@ public:
     QPixmap getPixmap();
     QPixmap unsaturated;
 
-    void showTitle();
-    void hideTitle();
+    void showTitle(const bool &state);
     bool showPlayBtn=true;
     enum albumField
     {

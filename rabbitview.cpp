@@ -55,7 +55,7 @@ void RabbitView::populateArtistSuggestion(QMap<QString,QByteArray> info)
         art->putPixmap(info[tag]);
         art->borderColor=true;
         art->setTitle(BaeUtils::fixString(tag));
-        art->titleVisible(false);
+        art->showTitle(false);
         auto item = new QListWidgetItem();
         item->setSizeHint(QSize(ALBUM_SIZE_SMALL,ALBUM_SIZE_SMALL));
         artistSuggestion->addItem(item);

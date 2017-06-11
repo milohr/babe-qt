@@ -40,7 +40,7 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView)
     ui->tagsInfo->setStyleSheet("QTextBrowser{background-color: #575757; color:white;}");*/
 
 
-    artist->titleVisible(false);
+    artist->showTitle(false);
     artist->borderColor = true;
 
     auto artistContainer = new QWidget();

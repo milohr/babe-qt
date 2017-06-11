@@ -46,7 +46,7 @@ MainWindow::MainWindow(const QStringList &files, QWidget *parent) :
 
     album_art->setFixedSize(ALBUM_SIZE,ALBUM_SIZE);
     album_art->setTitleGeometry(0,0,ALBUM_SIZE,static_cast<int>(ALBUM_SIZE*0.15));
-    album_art->titleVisible(false);
+    album_art->showTitle(false);
     album_art->showPlayBtn=false;
 
     ui->controls->installEventFilter(this);
@@ -491,7 +491,7 @@ void MainWindow::setUpCollectionViewer()
 
 
     ui->search->setClearButtonEnabled(true);
-   ui->collectionUtils->setVisible(false);
+    ui->collectionUtils->setVisible(false);
     connect(ui->saveResults,&QToolButton::clicked, this, &MainWindow::saveResultsTo);
 
     //    leftFrame_layout->addWidget(ui->mainToolBar,0,0,3,1,Qt::AlignLeft);
@@ -525,6 +525,25 @@ void MainWindow::setUpPlaylist()
     //    ui->controls->setGeometry(0,0,ALBUM_SIZE,ALBUM_SIZE);
     ui->controls->setMinimumSize(ALBUM_SIZE,ALBUM_SIZE);
     ui->controls->setMaximumSize(ALBUM_SIZE,ALBUM_SIZE);
+
+    auto hideTimeLabels = new QAction("Hide time labels");
+    connect (hideTimeLabels, &QAction::triggered,[hideTimeLabels,this]()
+    {
+        if(ui->time->isVisible()&&ui->duration->isVisible())
+        {
+            ui->time->setVisible(false);
+            ui->duration->setVisible(false);
+            hideTimeLabels->setText("Show time labels");
+        }else
+        {
+            ui->time->setVisible(true);
+            ui->duration->setVisible(true);
+        }
+    });
+    ui->controls->addAction(hideTimeLabels);
+    ui->controls->setContextMenuPolicy(Qt::ActionsContextMenu);
+
+
     auto controlsColor = this->palette().color(QPalette::Window);
     ui->controls->setStyleSheet(QString("QWidget#controls{background-color: rgba(%1,%2,%3,70%);}").arg(QString::number(controlsColor.red()),QString::number(controlsColor.green()),QString::number(controlsColor.blue())));
     ui->miniPlaybackBtn->setVisible(false);
@@ -784,11 +803,11 @@ bool MainWindow::eventFilter(QObject *object, QEvent *event)
     if(object == rightFrame)
     {
         if(event->type()==QEvent::Enter)
-            this->showControls();
+            this->showControls(true);
 
 
         if(event->type()==QEvent::Leave)
-            this->hideControls();
+            this->showControls(false);
 
         if(event->type()==QEvent::DragEnter)
         {
@@ -972,27 +991,37 @@ void MainWindow::leaveEvent(QEvent *event)
     event->accept();
 }
 
-void MainWindow::hideControls()
+
+
+void MainWindow::showControls(const bool &state)
 {
-    if(ui->controls->isVisible() && !miniPlayback)
+
+    if(state)
+
     {
-        this->blurWidget(*album_art,0);
-        ui->controls->setVisible(false);
-    }
+        if(!ui->controls->isVisible())
+        {
 
 
-}
 
-void MainWindow::showControls() {
+            if(!miniPlayback) this->blurWidget(*album_art,15);
+            else this->blurWidget(*album_art,28);
 
-    if(!ui->controls->isVisible()  && !stopped)
+            ui->controls->setVisible(true);
+
+        }
+    }else
     {
+        if(ui->controls->isVisible() && !miniPlayback)
+        {
+            this->blurWidget(*album_art,0);
 
-        if(!miniPlayback) this->blurWidget(*album_art,15);
-        else this->blurWidget(*album_art,28);
 
-        ui->controls->setVisible(true);
+            ui->controls->setVisible(false);
 
+
+
+        }
     }
 
 
