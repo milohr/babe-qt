@@ -42,7 +42,7 @@ public:
     void hide_all(bool state);
     void filter(const QList<QMap<int, QString> > &filter, const BabeTable::columns &type);
     QSlider *slider;
-    QToolButton *order;
+    QAction *order;
     QFrame *utilsFrame;
     BabeTable *albumTable;
     QListWidget *grid;
@@ -57,6 +57,7 @@ private:
     int albumSize;
     bool extraList=false;
     bool ascending=true;
+
     QList<Album*> albumsList;
     QList<QListWidgetItem*> itemsList;
     QStringList albums;

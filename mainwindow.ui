@@ -924,6 +924,9 @@
        <property name="toolTip">
         <string>Play results...</string>
        </property>
+       <property name="autoFillBackground">
+        <bool>true</bool>
+       </property>
        <property name="text">
         <string>...</string>
        </property>

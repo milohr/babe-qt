@@ -480,46 +480,25 @@ void MainWindow::setUpCollectionViewer()
     //    lineV->setFrameShadow(QFrame::Plain);
     //    lineV->setMaximumWidth(1);
 
-
-//    ui->playAll->setParent(ui->search);
-//    ui->playAll->setVisible(false);
-    ui->search->installEventFilter(this);
-    utilsBar = new QToolBar(this);
-    utilsBar->setAutoFillBackground(true);
-    //    utilsBar->setBackgroundRole(QPalette::Midlight);
-    utilsBar->setMovable(false);
-
-    //ui->search->layout()->setMargin(0);
-    utilsBar->setStyleSheet("QToolBar{margin:0;}");
-    //    ui->playlistUtils->setStyleSheet("margin:0;");
+    //    ui->playAll->setAutoFillBackground(true);
+    //    ui->playAll->setPalette(ui->search->palette());
+    //    ui->playAll->setBackgroundRole(ui->search->backgroundRole());
+    //    ui->playAll->setParent(ui->search);
+    //    ui->playAll->setVisible(false);
+    //    ui->search->installEventFilter(this);
 
 
-    utilsBar->addWidget(ui->viewsUtils);
-    utilsBar->addWidget(albumsTable->utilsFrame);
-    utilsBar->addWidget(artistsTable->utilsFrame);
-    //    utilsBar->addWidget(ui->collectionUtils);
-
-
-    utilsBar->layout()->setContentsMargins(0,0,0,0);
-    utilsBar-> setContentsMargins(0,0,0,0);
-    utilsBar->layout()->setMargin(0);
-    utilsBar->layout()->setSpacing(0);
-
-    utilsBar->actions().at(ALBUMS_UB)->setVisible(false);
-    utilsBar->actions().at(ARTISTS_UB)->setVisible(false);
 
 
     ui->search->setClearButtonEnabled(true);
-
-    ui->saveResults->setVisible(false);
-    ui->addAll->setVisible(false);
+   ui->collectionUtils->setVisible(false);
     connect(ui->saveResults,&QToolButton::clicked, this, &MainWindow::saveResultsTo);
 
     //    leftFrame_layout->addWidget(ui->mainToolBar,0,0,3,1,Qt::AlignLeft);
     //    leftFrame_layout->addWidget(lineV,0,1,3,1,Qt::AlignLeft);
     leftFrame_layout->addWidget(views,0,0);
     leftFrame_layout->addWidget(line,1,0);
-    leftFrame_layout->addWidget(utilsBar,2,0);
+    leftFrame_layout->addWidget(ui->viewsUtils,2,0);
 
     mainLayout->addWidget(leftFrame, 0,0);
     mainLayout->addWidget(rightFrame,0,1, Qt::AlignRight);
@@ -792,14 +771,14 @@ bool MainWindow::eventFilter(QObject *object, QEvent *event)
         }
     }
 
-//    if(object==ui->search)
-//    {
-//        if(event->type()==QEvent::Resize)
-//        {
-//            ui->playAll->setGeometry(ui->search->size().width()-48,(ui->search->size().height()/2)-8,16,16);
+    //    if(object==ui->search)
+    //    {
+    //        if(event->type()==QEvent::Resize)
+    //        {
+    //            ui->playAll->setGeometry(ui->search->size().width()-48,(ui->search->size().height()/2)-8,16,16);
 
-//        }
-//    }
+    //        }
+    //    }
 
 
     if(object == rightFrame)
@@ -1052,9 +1031,9 @@ void MainWindow::setToolbarIconSize(const int &iconSize) //tofix
         if(qobject_cast<QToolButton *>(obj)!=NULL)
             qobject_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
 
-//    for(auto obj: ui->collectionUtils->children())
-//        if(qobject_cast<QToolButton *>(obj)!=NULL)
-//            qobject_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
+    //    for(auto obj: ui->collectionUtils->children())
+    //        if(qobject_cast<QToolButton *>(obj)!=NULL)
+    //            qobject_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
 
     for(auto obj: ui->viewsUtils->children())
         if(qobject_cast<QToolButton *>(obj)!=NULL)
@@ -1073,7 +1052,7 @@ void MainWindow::setToolbarIconSize(const int &iconSize) //tofix
     ui->playlistUtils->update();
     //    infoTable->infoUtils->update();
     //    playlistTable->btnContainer->update();
-//    ui->collectionUtils->update();
+    //    ui->collectionUtils->update();
     ui->viewsUtils->update();
 
 }
@@ -1088,8 +1067,6 @@ void MainWindow::collectionView()
 
     if(this->viewMode != FULLMODE) expand();
 
-    utilsBar->actions().at(ALBUMS_UB)->setVisible(false);
-    utilsBar->actions().at(ARTISTS_UB)->setVisible(false);
     ui->tracks_view->setChecked(true);
     prevIndex=views->currentIndex();
 }
@@ -1101,8 +1078,6 @@ void MainWindow::albumsView()
 
     if(this->viewMode != FULLMODE) expand();
 
-    utilsBar->actions().at(ALBUMS_UB)->setVisible(true);
-    utilsBar->actions().at(ARTISTS_UB)->setVisible(false);
 
     prevIndex = views->currentIndex();
 }
@@ -1113,8 +1088,6 @@ void MainWindow::playlistsView()
     ui->playlists_view->setChecked(true);
     if(this->viewMode != FULLMODE) expand();
 
-    utilsBar->actions().at(ALBUMS_UB)->setVisible(false);
-    utilsBar->actions().at(ARTISTS_UB)->setVisible(false);
 
     prevIndex = views->currentIndex();
 }
@@ -1125,8 +1098,6 @@ void MainWindow::rabbitView()
     ui->rabbit_view->setChecked(true);
     if(this->viewMode != FULLMODE) expand();
 
-    utilsBar->actions().at(ALBUMS_UB)->setVisible(false);
-    utilsBar->actions().at(ARTISTS_UB)->setVisible(false);
 
     prevIndex = views->currentIndex();
 }
@@ -1138,8 +1109,6 @@ void MainWindow::infoView()
 
     if(this->viewMode != FULLMODE) expand();
 
-    utilsBar->actions().at(ALBUMS_UB)->setVisible(false);
-    utilsBar->actions().at(ARTISTS_UB)->setVisible(false);
 
     prevIndex = views->currentIndex();
 }
@@ -1150,9 +1119,6 @@ void MainWindow::artistsView()
     ui->artists_view->setChecked(true);
     if(this->viewMode != FULLMODE) expand();
 
-    utilsBar->actions().at(ALBUMS_UB)->setVisible(false);
-    utilsBar->actions().at(ARTISTS_UB)->setVisible(true);
-
     prevIndex = views->currentIndex();
 }
 
@@ -1162,9 +1128,6 @@ void MainWindow::settingsView()
     views->setCurrentIndex(SETTINGS);
     ui->settings_view->setChecked(true);
     if(this->viewMode != FULLMODE) expand();
-
-    utilsBar->actions().at(ALBUMS_UB)->setVisible(false);
-    utilsBar->actions().at(ARTISTS_UB)->setVisible(false);
 
     prevIndex = views->currentIndex();
 }
@@ -1535,12 +1498,15 @@ void MainWindow::loadMood()
             color=query.value(BabeTable::ART).toString();
 
     auto seekbarEffect = new QGraphicsColorizeEffect(this);
+    //    auto controlsEffect = new QGraphicsColorizeEffect(this);
 
     if(!color.isEmpty())
     {
         seekbarEffect->setColor(QColor(color));
-
         seekbarEffect->setStrength(1.0);
+
+        //        controlsEffect->setColor(QColor(color));
+        //        controlsEffect->setStrength(0.2);
 
         //        seekBar->setStyleSheet(QString("QSlider\n{\nbackground:transparent;}\nQSlider::groove:horizontal {border: none; background: transparent; height: 5px; border-radius: 0; } QSlider::sub-page:horizontal {\nbackground: %1 ;border: none; height: 5px;border-radius: 0;} QSlider::add-page:horizontal {\nbackground: transparent; border: none; height: 5px; border-radius: 0; } QSlider::handle:horizontal {background: %1; width: 8px; } QSlider::handle:horizontal:hover {background: qlineargradient(x1:0, y1:0, x2:1, y2:1,stop:0 #fff, stop:1 #ddd);border: 1px solid #444;border-radius: 4px;}QSlider::sub-page:horizontal:disabled {background: transparent;border-color: #999;}QSlider::add-page:horizontal:disabled {background: transparent;border-color: #999;}QSlider::handle:horizontal:disabled {background: transparent;border: 1px solid #aaa;border-radius: 4px;}").arg(color));
         //        //mainList->setStyleSheet(QString("QTableWidget::item:selected {background:rgba( %1, %2, %3, 40); color: %4}").arg(QString::number(QColor(color).toRgb().red()),QString::number(QColor(color).toRgb().green()),QString::number(QColor(color).toRgb().blue()),mainList->palette().color(QPalette::WindowText).name()));
@@ -1550,6 +1516,7 @@ void MainWindow::loadMood()
     }else
     {
         seekbarEffect->setStrength(0);
+        //        controlsEffect->setStrength(0);
 
         //        seekBar->setStyleSheet(QString("QSlider { background:transparent;} QSlider::groove:horizontal {border: none; background: transparent; height: 5px; border-radius: 0; } QSlider::sub-page:horizontal { background: %1;border: none; height: 5px;border-radius: 0;} QSlider::add-page:horizontal {background: transparent; border: none; height: 5px; border-radius: 0; } QSlider::handle:horizontal {background: %1; width: 8px; } QSlider::handle:horizontal:hover {background: qlineargradient(x1:0, y1:0, x2:1, y2:1,stop:0 #fff, stop:1 #ddd);border: 1px solid #444;border-radius: 4px;}QSlider::sub-page:horizontal:disabled {background: transparent;border-color: #999;}QSlider::add-page:horizontal:disabled {background: transparent;border-color: #999;}QSlider::handle:horizontal:disabled {background: transparent;border: 1px solid #aaa;border-radius: 4px;}").arg(this->palette().color(QPalette::Highlight).name()));
         //        //mainList->setStyleSheet(QString("QTableWidget::item:selected {background:%1; color: %2}").arg(this->palette().color(QPalette::Highlight).name(),this->palette().color(QPalette::BrightText).name()));
@@ -1558,7 +1525,7 @@ void MainWindow::loadMood()
     }
 
     seekBar->setGraphicsEffect(seekbarEffect);
-
+    //    ui->controls->setGraphicsEffect(controlsEffect);
 }
 
 
@@ -2110,7 +2077,6 @@ void MainWindow::on_search_returnPressed()
         if(resultsTable->rowCount()<1)
         {
             views->setCurrentIndex(prevIndex);
-            if(views->currentIndex()==ALBUMS)  utilsBar->actions().at(ALBUMS_UB)->setVisible(true);;
             resultsTable->flushTable();
             // ui->saveResults->setEnabled(false);
         }else views->setCurrentIndex(RESULTS);
@@ -2127,7 +2093,7 @@ void MainWindow::on_search_textChanged(const QString &arg1)
 
         if(!searchResults.isEmpty())
         {
-//            ui->playAll->setVisible(true);
+            //            ui->playAll->setVisible(true);
 
             albumsTable->filter(searchResults,BabeTable::ALBUM);
             artistsTable->filter(searchResults,BabeTable::ARTIST);
@@ -2162,7 +2128,6 @@ void MainWindow::populateResultsTable(const QList<QMap<int, QString> > &mapList)
 {
     if(views->currentIndex()!=ALBUMS&&views->currentIndex()!=ARTISTS)
         views->setCurrentIndex(RESULTS);
-    utilsBar->actions().at(ALBUMS_UB)->setVisible(false);
     resultsTable->flushTable();
     resultsTable->populateTableView(mapList,false);
 }

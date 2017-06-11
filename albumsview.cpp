@@ -35,6 +35,17 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
 
         if(artwork->getAlbum().isEmpty()) connect(artwork,&Album::albumCoverClicked,this,&AlbumsView::getArtistInfo);
         else  connect(artwork,&Album::albumCoverClicked,this,&AlbumsView::getAlbumInfo);
+
+
+        auto shadow = new QGraphicsDropShadowEffect();
+        shadow->setColor(QColor(0, 0, 0, 140));
+        shadow->setBlurRadius(9);
+        shadow->setOffset(3,5);
+
+        artwork->setGraphicsEffect(shadow);
+        artwork->borderColor=false;
+        artwork->setUpMenu();
+
         connect(artwork,&Album::albumCoverDoubleClicked, [this] (QMap<int, QString> info)
         {
             emit albumDoubleClicked(info);
@@ -43,18 +54,20 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
         connect(artwork,&Album::playAlbum, [this] (QMap<int,QString> info) { emit this->playAlbum(info); });
         connect(artwork,&Album::changedArt,this,&AlbumsView::changedArt_cover);
         connect(artwork,&Album::babeAlbum_clicked,this,&AlbumsView::babeAlbum);
-        connect(artwork, &Album::albumDragStarted, this, &AlbumsView::hideAlbumFrame);
-        connect(artwork, &Album::albumCoverEnter,artwork, &Album::showTitle);
-        connect(artwork, &Album::albumCoverLeave,artwork, &Album::hideTitle);
+        connect(artwork,&Album::albumDragStarted, this, &AlbumsView::hideAlbumFrame);
+        connect(artwork,&Album::albumCoverEnter,[artwork,shadow,this]()
+        {
+            artwork->showTitle();
+            shadow->setColor(QColor(0, 0, 0, 180));
+            shadow->setOffset(2,2);
+        });
+        connect(artwork, &Album::albumCoverLeave,[artwork,shadow,this]()
+        {
+            artwork->hideTitle();
+            shadow->setColor(QColor(0, 0, 0, 140));
+            shadow->setOffset(3,5);
+        });
 
-        auto shadow = new QGraphicsDropShadowEffect();
-        shadow->setColor(QColor(0, 0, 0, 100));
-        shadow->setBlurRadius(9);
-        shadow->setOffset(3,5);
-
-        artwork->setGraphicsEffect(shadow);
-        artwork->borderColor=false;
-        artwork->setUpMenu();
         auto item = new QListWidgetItem();
 
 
@@ -72,6 +85,11 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
 
     grid->setContextMenuPolicy(Qt::ContextMenuPolicy::ActionsContextMenu);
 
+
+
+    order  = new QAction("Go Descending");
+    connect(order, &QAction::triggered,this,&AlbumsView::orderChanged);
+    grid->addAction(order);
     auto hideLabels = new QAction("Hide titles",this);
     grid->addAction(hideLabels);
     connect(hideLabels, &QAction::triggered,[hideLabels,this]()
@@ -132,16 +150,10 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     slider->setSliderPosition(ALBUM_SIZE_MEDIUM);
     slider->setOrientation(Qt::Orientation::Horizontal);*/
 
-    order = new QToolButton();
-    connect(order, &QToolButton::clicked,this,&AlbumsView::orderChanged);
-    order->setIcon(QIcon::fromTheme("view-sort-descending"));
-    order->setToolTip("Go Descending");
-
-    order->setAutoRaise(true);
-    //    order->setIconSize(QSize(22,22));
 
 
-    utilsLayout->addWidget(order);
+
+
     // utilsLayout->addWidget(slider);
 
     albumTable = new BabeTable(this);
@@ -301,17 +313,12 @@ void AlbumsView::orderChanged()
     if(ascending)
     {
         grid->sortItems(Qt::DescendingOrder);
-        order->setToolTip("Go Ascending");
-        order->setIcon(QIcon::fromTheme("view-sort-ascending"));
-
+        order->setText("Go Ascending");
         ascending=!ascending;
     }else
     {
         grid->sortItems(Qt::AscendingOrder);
-        order->setToolTip("Go Descending");
-        order->setIcon(QIcon::fromTheme("view-sort-descending"));
-
-
+        order->setText("Go Descending");
         ascending=!ascending;
     }
 

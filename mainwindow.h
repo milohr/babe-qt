@@ -75,7 +75,7 @@ public:
 
     enum utilsBar
     {
-        VIEWS_UB,ALBUMS_UB,ARTISTS_UB
+        VIEWS_UB
     };
     enum viewModes
     {
@@ -217,7 +217,6 @@ private:
     QFrame *line;
     QFrame *lineV;
 
-    QToolBar *utilsBar;
     Album *album_art;
     QWidget *playlistWidget;
 
