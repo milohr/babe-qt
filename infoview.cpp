@@ -25,7 +25,12 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView)
     ui->setupUi(this);
 
     artist = new Album(this);
-    connect(artist,&Album::playAlbum,this,&InfoView::playAlbum_clicked);
+    connect(artist,&Album::playAlbum,[this](QMap<int,QString> info)
+    {
+        qDebug()<<"head on info view clicked!";
+        emit this->playAlbum(info);
+
+    });
     artist->createAlbum("","",":Data/data/cover.png", BaeUtils::MEDIUM_ALBUM, 100,false);
 
     /* ui->lyricsText->setLineWrapMode(QTextEdit::NoWrap);
@@ -124,11 +129,7 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView)
 InfoView::~InfoView() { delete ui; }
 
 
-void InfoView::playAlbum_clicked(QMap<int, QString> info)
-{
-    emit playAlbum(info);
 
-}
 
 void InfoView::hideArtistInfo()
 {

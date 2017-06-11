@@ -254,6 +254,7 @@ private:
     void feedRabbit();
     void expandAlbumList(const QString &artist, const QString &album);
     void blurWidget(Album &widget, const int &radius );
+    void babedIcon(const bool &state);
     void saveSettings(const QString &key, const QVariant &value,const QString &group);
     QVariant loadSettings(const QString &key, const QString &group, const QVariant &defaultValue = QVariant());
 

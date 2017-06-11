@@ -22,7 +22,6 @@ public:
     explicit InfoView(QWidget *parent = 0);
     ~InfoView();
 
-    Album *album;
     Album *artist;
     QWidget *infoUtils;
 
@@ -54,7 +53,6 @@ public slots:
     QStringList getTags();
     QStringList getSimilarArtistTags();
     void hideArtistInfo();
-    void playAlbum_clicked(QMap<int,QString> info);
     void getTrackInfo(const QString &title, const QString &artist, const QString &album);
     void on_searchBtn_clicked();
 

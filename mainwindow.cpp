@@ -1455,10 +1455,8 @@ void MainWindow::loadTrack()
 
 
         //CHECK IF THE SONG IS BABED IT OR IT ISN'T
-        if(isBabed(current_song))
-            ui->fav_btn->setIcon(QIcon(":Data/data/loved.svg"));
-        else
-            ui->fav_btn->setIcon(QIcon::fromTheme("love-amarok"));
+        if(isBabed(current_song)) babedIcon(true);
+        else babedIcon(false);
 
         loadMood();
 
@@ -1794,7 +1792,7 @@ void MainWindow::stop()
 
     current_song.clear();
     prev_song = current_song;
-    current_song_pos =0;
+    current_song_pos = 0;
     prev_song_pos =current_song_pos;
     ui->play_btn->setIcon(QIcon::fromTheme("media-playback-stop"));
 
@@ -1833,16 +1831,27 @@ void MainWindow::collectionDBFinishedAdding()
 }
 
 
+void MainWindow::babedIcon(const bool &state)
+{
+    auto effect = new QGraphicsColorizeEffect(this);
+    effect->setColor(QColor("#dc042c"));
+
+    if(state)  effect->setStrength(1.0);
+    else effect->setStrength(0);
+
+    ui->fav_btn->setGraphicsEffect(effect);
+}
+
 void MainWindow::on_fav_btn_clicked()
 {
     if(!current_song.isEmpty())
     {
         if(!isBabed(current_song))
         {
-            if(babeTrack(current_song))  ui->fav_btn->setIcon(QIcon(":Data/data/loved.svg"));
+            if(babeTrack(current_song))  babedIcon(true);
         }else
         {
-            if(unbabeIt(current_song)) ui->fav_btn->setIcon(QIcon::fromTheme("love-amarok"));
+            if(unbabeIt(current_song)) babedIcon(false);
         }
     }
 }
