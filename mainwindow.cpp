@@ -526,7 +526,7 @@ void MainWindow::setUpPlaylist()
     ui->controls->setMinimumSize(ALBUM_SIZE,ALBUM_SIZE);
     ui->controls->setMaximumSize(ALBUM_SIZE,ALBUM_SIZE);
     auto controlsColor = this->palette().color(QPalette::Window);
-    ui->controls->setStyleSheet(QString("QWidget#controls{background-color: rgba(%1,%2,%3,50%);}").arg(QString::number(controlsColor.red()),QString::number(controlsColor.green()),QString::number(controlsColor.blue())));
+    ui->controls->setStyleSheet(QString("QWidget#controls{background-color: rgba(%1,%2,%3,70%);}").arg(QString::number(controlsColor.red()),QString::number(controlsColor.green()),QString::number(controlsColor.blue())));
     ui->miniPlaybackBtn->setVisible(false);
 
     seekBar = new QSlider(this);
@@ -988,7 +988,7 @@ void MainWindow::showControls() {
     if(!ui->controls->isVisible()  && !stopped)
     {
 
-        if(!miniPlayback) this->blurWidget(*album_art,10);
+        if(!miniPlayback) this->blurWidget(*album_art,15);
         else this->blurWidget(*album_art,28);
 
         ui->controls->setVisible(true);
@@ -1183,7 +1183,7 @@ void MainWindow::go_mini()
 
     this->miniPlayback =false;
 
-    this->blurWidget(*album_art,10);
+    this->blurWidget(*album_art,15);
     album_art->restoreSaturation();
 
     ui->miniPlaybackBtn->setVisible(false);
@@ -2184,7 +2184,7 @@ QList<QMap<int, QString> > MainWindow::searchFor(const QStringList &queries)
                 mapList += settings_widget->getCollectionDB().getTrackData(QString("SELECT * FROM tracks WHERE stars = "+searchQuery));
 
             else
-                mapList += settings_widget->getCollectionDB().getTrackData(QString("SELECT * FROM tracks WHERE title LIKE \"%"+searchQuery+"%\" OR artist LIKE \"%"+searchQuery+"%\" OR album LIKE \"%"+searchQuery+"%\"OR genre LIKE \"%"+searchQuery+"%\""));
+                mapList += settings_widget->getCollectionDB().getTrackData(QString("SELECT * FROM tracks WHERE title LIKE \"%"+searchQuery+"%\" OR artist LIKE \"%"+searchQuery+"%\" OR album LIKE \"%"+searchQuery+"%\"OR genre LIKE \"%"+searchQuery+"%\"OR location LIKE \"%"+searchQuery+"%\""));
 
         }
     }
@@ -2379,7 +2379,7 @@ void MainWindow::on_miniPlaybackBtn_clicked()
         album_art->setFixedHeight(ALBUM_SIZE);
         ui->miniPlaybackBtn->setIcon(QIcon::fromTheme("go-top"));
         miniPlayback=!miniPlayback;
-        this->blurWidget(*album_art,10);
+        this->blurWidget(*album_art,15);
         album_art->restoreSaturation();
 
     }

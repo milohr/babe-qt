@@ -59,7 +59,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
         {
             artwork->showTitle();
             shadow->setColor(QColor(0, 0, 0, 180));
-            shadow->setOffset(2,2);
+            shadow->setOffset(2,3);
         });
         connect(artwork, &Album::albumCoverLeave,[artwork,shadow,this]()
         {
