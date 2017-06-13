@@ -947,7 +947,7 @@
         <bool>true</bool>
        </property>
        <property name="text">
-        <string>...</string>
+        <string/>
        </property>
        <property name="icon">
         <iconset theme="media-playback-start">

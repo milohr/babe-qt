@@ -771,7 +771,7 @@ bool MainWindow::eventFilter(QObject *object, QEvent *event)
 
     if(object == rightFrame)
     {
-        if(event->type()==QEvent::Enter)
+        if(event->type()==QEvent::Enter && !stopped)
             this->showControls(true);
 
 
