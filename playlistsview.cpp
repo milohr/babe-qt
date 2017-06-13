@@ -245,7 +245,6 @@ void PlaylistsView::removePlaylist()
 void PlaylistsView::insertPlaylist(const QString &playlist)
 {
 
-
     connection.insertPlaylist(playlist);
 }
 
@@ -285,7 +284,13 @@ void PlaylistsView::saveToPlaylist(const QList<QMap<int,QString>> &tracks)
 {
     auto form = new PlaylistForm (connection.getPlaylists(),tracks,this);
     connect(form,&PlaylistForm::saved,this,&PlaylistsView::addToPlaylist);
-    connect(form,&PlaylistForm::created,this,&PlaylistsView::insertPlaylist);
+    connect(form,&PlaylistForm::created,[this](QString playlist)
+    {
+        auto *item = new QListWidgetItem(playlist);
+        item->setFlags(item->flags() | Qt::ItemIsEditable);
+        list->addItem(item);
+        insertPlaylist(playlist);
+    });
     form->show();
 }
 
