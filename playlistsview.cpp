@@ -244,9 +244,7 @@ void PlaylistsView::removePlaylist()
 
 void PlaylistsView::insertPlaylist(const QString &playlist)
 {
-    auto *item = new QListWidgetItem(playlist);
-    item->setFlags(item->flags() | Qt::ItemIsEditable);
-    list->addItem(item);
+
 
     connection.insertPlaylist(playlist);
 }
