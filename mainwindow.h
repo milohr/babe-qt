@@ -236,7 +236,6 @@ private:
 
     void setUpViews();
     void setUpWidgets();
-    void setUpSidebar();
     void setUpCollectionViewer();
     void setUpPlaylist();
     void setUpRightFrame();

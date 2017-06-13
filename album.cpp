@@ -347,6 +347,5 @@ void Album::showTitle(const bool &state)
 
     if(visibleTitle)
         this->widget->setVisible(true);
-    else
-        if(!visibleTitle) this->widget->setVisible(false);
+    else if(!visibleTitle) this->widget->setVisible(false);
 }

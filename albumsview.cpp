@@ -17,7 +17,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     grid->setMinimumHeight(albumSize);
     grid->setViewMode(QListWidget::IconMode);
     grid->setResizeMode(QListWidget::Adjust);
-    grid->setUniformItemSizes(true);
+//    grid->setUniformItemSizes(true);
     grid->setWrapping(true);
     grid->setAcceptDrops(false);
     grid->setDragDropMode(QAbstractItemView::DragOnly);
@@ -57,16 +57,17 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
         connect(artwork,&Album::albumDragStarted, this, &AlbumsView::hideAlbumFrame);
         connect(artwork,&Album::albumCoverEnter,[artwork,shadow,this]()
         {
-            artwork->showTitle(true);
+            if(hiddenLabels) artwork->showTitle(true);
             shadow->setColor(QColor(0, 0, 0, 180));
             shadow->setOffset(2,3);
         });
         connect(artwork, &Album::albumCoverLeave,[artwork,shadow,this]()
         {
-            artwork->showTitle(false);
+            if(hiddenLabels) artwork->showTitle(false);
             shadow->setColor(QColor(0, 0, 0, 140));
             shadow->setOffset(3,5);
         });
+
 
         auto item = new QListWidgetItem();
 
@@ -99,6 +100,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
             for(auto album: albumsList)
                 album->showTitle(false);
             hideLabels->setText("Show titles");
+            hiddenLabels = true;
 
         }
         else
@@ -106,6 +108,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
             for(auto album: albumsList)
                 album->showTitle(true);
             hideLabels->setText("Hide titles");
+            hiddenLabels = false;
         }
 
     });

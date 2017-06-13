@@ -370,7 +370,8 @@
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset theme="zoom"/>
+        <iconset theme="zoom">
+         <normaloff>.</normaloff>.</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -669,7 +670,8 @@
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset theme="edit-find"/>
+        <iconset theme="edit-find">
+         <normaloff>.</normaloff>.</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -700,7 +702,8 @@
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset theme="document-open"/>
+        <iconset theme="document-open">
+         <normaloff>.</normaloff>.</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -975,11 +978,15 @@
          <height>24</height>
         </size>
        </property>
+       <property name="toolTip">
+        <string>Info</string>
+       </property>
        <property name="text">
         <string>Info</string>
        </property>
        <property name="icon">
-        <iconset theme="help-about"/>
+        <iconset theme="help-about">
+         <normaloff>.</normaloff>.</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -1016,10 +1023,10 @@
         </size>
        </property>
        <property name="toolTip">
-        <string>Online</string>
+        <string>Discover</string>
        </property>
        <property name="text">
-        <string>Queue</string>
+        <string>Discover</string>
        </property>
        <property name="icon">
         <iconset theme="kstars_constellationart">
@@ -1058,6 +1065,9 @@
          <width>24</width>
          <height>24</height>
         </size>
+       </property>
+       <property name="toolTip">
+        <string>Playlists</string>
        </property>
        <property name="text">
         <string>Playlists</string>
@@ -1099,6 +1109,9 @@
          <width>24</width>
          <height>24</height>
         </size>
+       </property>
+       <property name="toolTip">
+        <string>Settings</string>
        </property>
        <property name="styleSheet">
         <string notr="true"/>

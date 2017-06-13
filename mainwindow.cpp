@@ -72,7 +72,6 @@ MainWindow::MainWindow(const QStringList &files, QWidget *parent) :
 
     //* SETUP BABE PARTS *//
     this->setUpViews();
-    this->setUpSidebar();
     this->setUpPlaylist();
     this->setUpRightFrame();
     this->setUpCollectionViewer();
@@ -410,50 +409,6 @@ void MainWindow::setUpViews()
 
 }
 
-void MainWindow::setUpSidebar()
-{
-    //    auto *left_spacer = new QWidget(this);
-    //    left_spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-
-    //    auto *right_spacer = new QWidget(this);
-    //    right_spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-
-    //    /*ui->mainToolBar->setContentsMargins(0,0,0,0);
-    //    ui->mainToolBar->layout()->setMargin(0);
-    //    ui->mainToolBar->layout()->setSpacing(0);*/
-
-    //    //ui->mainToolBar->setStyleSheet(QString("QToolBar{margin:0 background-image:url('%1') repeat; }QToolButton{ border-radius:0;} QToolButton:checked{border-radius:0; background: rgba(0,0,0,50)}").arg(":Data/data/pattern.png"));
-    //    ui->mainToolBar->setOrientation(Qt::Vertical);
-    //    ui->mainToolBar->setAutoFillBackground(true);
-    //    //    ui->mainToolBar->setBackgroundRole(QPalette::Dark);
-
-    //    ui->mainToolBar->addWidget(left_spacer);
-
-    //    ui->tracks_view->setToolTip("Collection");
-    //    ui->mainToolBar->addWidget(ui->tracks_view);
-
-    //    ui->albums_view->setToolTip("Albums");
-    //    ui->mainToolBar->addWidget(ui->albums_view);
-
-    //    ui->artists_view->setToolTip("Artists");
-    //    ui->mainToolBar->addWidget(ui->artists_view);
-
-    //    ui->playlists_view->setToolTip("Playlists");
-    //    ui->mainToolBar->addWidget(ui->playlists_view);
-
-    //    ui->rabbit_view->setToolTip("Rabbit");
-    //    ui->mainToolBar->addWidget(ui->rabbit_view);
-
-    //    ui->info_view->setToolTip("Info");
-    //    ui->mainToolBar->addWidget(ui->info_view);
-
-    //    ui->settings_view->setToolTip("Setings");
-    //    ui->mainToolBar->addWidget(ui->settings_view);
-
-    //    ui->mainToolBar->addWidget(right_spacer);
-
-}
-
 void MainWindow::setUpCollectionViewer()
 {
     mainLayout = new QGridLayout();
@@ -475,27 +430,41 @@ void MainWindow::setUpCollectionViewer()
     line->setFrameShadow(QFrame::Plain);
     line->setMaximumHeight(1);
 
-    //    lineV = new QFrame(this);
-    //    lineV->setFrameShape(QFrame::VLine);
-    //    lineV->setFrameShadow(QFrame::Plain);
-    //    lineV->setMaximumWidth(1);
 
-    //    ui->playAll->setAutoFillBackground(true);
-    //    ui->playAll->setPalette(ui->search->palette());
-    //    ui->playAll->setBackgroundRole(ui->search->backgroundRole());
-    //    ui->playAll->setParent(ui->search);
-    //    ui->playAll->setVisible(false);
-    //    ui->search->installEventFilter(this);
+    ui->viewsUtils->setContextMenuPolicy(Qt::ActionsContextMenu);
 
+    auto showText = new QAction("Show text");
+    ui->viewsUtils->addAction(showText);
+    connect(showText,&QAction::triggered,[showText,this]()
+    {
 
+        for(auto btn : ui->viewsUtils->children())
+        {
+            if(qobject_cast<QToolButton *>(btn)!=NULL)
+            {
+                if(qobject_cast<QToolButton *>(btn)->toolButtonStyle()==Qt::ToolButtonTextBesideIcon)
+                {
+                    qobject_cast<QToolButton *>(btn)->setToolButtonStyle(Qt::ToolButtonIconOnly);
+                    showText->setText("Show text");
+
+                }
+                else
+                {
+                    qobject_cast<QToolButton *>(btn)->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+                    showText->setText("Hide text");
+                }
+
+            }
+        }
+
+    });
 
 
     ui->search->setClearButtonEnabled(true);
     ui->collectionUtils->setVisible(false);
     connect(ui->saveResults,&QToolButton::clicked, this, &MainWindow::saveResultsTo);
 
-    //    leftFrame_layout->addWidget(ui->mainToolBar,0,0,3,1,Qt::AlignLeft);
-    //    leftFrame_layout->addWidget(lineV,0,1,3,1,Qt::AlignLeft);
+
     leftFrame_layout->addWidget(views,0,0);
     leftFrame_layout->addWidget(line,1,0);
     leftFrame_layout->addWidget(ui->viewsUtils,2,0);

@@ -57,7 +57,7 @@ private:
     int albumSize;
     bool extraList=false;
     bool ascending=true;
-
+    bool hiddenLabels=false;
     QList<Album*> albumsList;
     QList<QListWidgetItem*> itemsList;
     QStringList albums;
