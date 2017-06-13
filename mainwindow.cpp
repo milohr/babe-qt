@@ -1592,12 +1592,15 @@ void MainWindow::addToQueue(const QList<QMap<int, QString>> &tracks)
     QStringList queuedList;
     for(auto track : tracks)
     {
-        mainList->addRowAt(queued_songs.size(),track,true);
-        mainList->item(queued_songs.size(),BabeTable::TITLE)->setIcon(QIcon::fromTheme("clock"));
-        mainList->colorizeRow({queued_songs.size()},"#333");
-        queued_songs.insert(track[BabeTable::LOCATION],track);
-        queuedList<<track[BabeTable::TITLE]+" by "+track[BabeTable::ARTIST];
-        current_song_pos++;
+        if(!queued_songs.contains(track[BabeTable::LOCATION]))
+        {
+            mainList->addRowAt(queued_songs.size(),track,true);
+            mainList->item(queued_songs.size(),BabeTable::TITLE)->setIcon(QIcon::fromTheme("clock"));
+            mainList->colorizeRow({queued_songs.size()},"#333");
+            queued_songs.insert(track[BabeTable::LOCATION],track);
+            queuedList<<track[BabeTable::TITLE]+" by "+track[BabeTable::ARTIST];
+            current_song_pos++;
+        }
 
     }
     //mainList->addRowAt(current_song_pos+1,track,true);
