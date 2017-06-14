@@ -304,6 +304,7 @@ signals:
     void finishedPlayingSong(QString url);
     void collectionChecked();
     void fetchCover(QString artist, QString album,QString title);
+    void finishRefresh();
 
 };
 

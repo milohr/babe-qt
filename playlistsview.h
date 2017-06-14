@@ -8,6 +8,7 @@
 #include <QGridLayout>
 #include <QStandardPaths>
 #include <QDialog>
+#include <QSplitter>
 
 #include "baeUtils.h"
 #include "playlistform.h"
@@ -51,7 +52,7 @@ private:
     QToolButton *removeBtn;
     QGridLayout *layout;
     QFrame *frame;
-
+    QWidget *moodWidget;
     CollectionDB connection;
     Notify nof;
 

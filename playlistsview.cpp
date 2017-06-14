@@ -36,8 +36,8 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
             SLOT(populatePlaylist(QModelIndex)));
     connect(list, SIGNAL(itemChanged(QListWidgetItem *)), this,
             SLOT(playlistName(QListWidgetItem *)));
-
-    list->setFixedWidth(160);
+    list->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Expanding);
+    //    list->setFixedWidth(160);
     list->setAlternatingRowColors(true);
     list->setFrameShape(QFrame::NoFrame);
     list->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -68,8 +68,7 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
     line->setFrameShadow(QFrame::Plain);
     line->setMaximumWidth(1);
 
-    btnContainer = new QWidget();
-    btnContainer->setFixedWidth(160);
+    btnContainer = new QWidget(list);
 
     auto btnLayout = new QHBoxLayout();
     btnLayout->setSpacing(0);
@@ -86,12 +85,17 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
     line_v = new QFrame(this);
     line_v->setFrameShape(QFrame::VLine);
     line_v->setFrameShadow(QFrame::Plain);
-    line_v->setMaximumWidth(1);
+    line_v->setFixedWidth(1);
 
     auto line_h = new QFrame(this);
     line_h->setFrameShape(QFrame::HLine);
     line_h->setFrameShadow(QFrame::Plain);
     line_h->setMaximumHeight(1);
+
+    moodWidget = new QWidget();
+    moodWidget->setAutoFillBackground(true);
+    moodWidget->setBackgroundRole(QPalette::Light);
+    this->setPlaylistsMoods();
 
     auto playlistsWidget = new QWidget(this);
     auto playlistsWidget_layout = new QVBoxLayout();
@@ -102,13 +106,21 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
     playlistsWidget_layout->addWidget(btnContainer);
     playlistsWidget_layout->addWidget(line_h);
     playlistsWidget_layout->addWidget(list);
+    playlistsWidget_layout->addWidget(moodWidget);
 
 
+    QSplitter *splitter = new QSplitter(parent);
+    splitter->setChildrenCollapsible(false);
 
+    splitter->addWidget(playlistsWidget);
+    splitter->addWidget(line_v);
+    splitter->addWidget(table);
 
-    layout->addWidget(playlistsWidget, 0, 0, Qt::AlignLeft);
-    layout->addWidget(line_v, 0, 1, Qt::AlignLeft);
-    layout->addWidget(table, 0, 2);
+    //    splitter->setSizes({0,0});
+    splitter->setStretchFactor(0, 0);
+    splitter->setStretchFactor(2, 1);
+
+    layout->addWidget(splitter, 0, 0);
 
     this->setLayout(layout);
 }
@@ -156,7 +168,6 @@ void PlaylistsView::populatePlaylist(const QModelIndex &index)
 {
     QString query;
     currentPlaylist = index.data().toString();
-    emit playlistClicked(currentPlaylist);
     table->flushTable();
     if (currentPlaylist == "Most Played") {
         removeBtn->setEnabled(false);
@@ -175,14 +186,10 @@ void PlaylistsView::populatePlaylist(const QModelIndex &index)
         // table->showColumn(BabeTable::PLAYED);
         removeBtn->setEnabled(false);
         query = "SELECT * FROM tracks WHERE location LIKE \"%" + youtubeCachePath + "%\"";
-    } else if(!currentPlaylist.isEmpty()&&!currentPlaylist.contains("#")) {
+    } else if(!currentPlaylist.isEmpty()) {
         removeBtn->setEnabled(true);
         table->hideColumn(BabeTable::PLAYED);
         query = "SELECT * FROM tracks WHERE playlist LIKE \"%" + currentPlaylist + "%\"";
-    }else if (currentPlaylist.contains("#")) {
-        removeBtn->setEnabled(true);
-        table->hideColumn(BabeTable::PLAYED);
-        query = "SELECT * FROM tracks WHERE art = \"" + currentPlaylist + "\"";
     }
 
     table->populateTableView(query,false);
@@ -332,18 +339,36 @@ void PlaylistsView::populatePlaylist(const QStringList &urls, const QString &pla
 void PlaylistsView::setPlaylistsMoods()
 {
 
-    for (auto mood : this->moods)
+    auto moodsLayout = new QHBoxLayout();
+    QButtonGroup *moodGroup = new QButtonGroup(list);
+    connect(moodGroup, static_cast<void(QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked), [this](int mood)
     {
-        auto item = new QListWidgetItem(mood);
-        QColor color;
-        color.setNamedColor(mood);
-        color.setAlpha(40);
-        item->setBackgroundColor(color);
-        /*QBrush brush;
-        brush.setColor(color.darker(160));
-        item->setForeground(brush);*/
-        list->addItem(item);
+        currentPlaylist = this->moods.at(mood);
+        table->flushTable();
+        removeBtn->setEnabled(true);
+        table->hideColumn(BabeTable::PLAYED);
+        QString query = "SELECT * FROM tracks WHERE art = \"" + currentPlaylist + "\"";
+
+
+        table->populateTableView(query,false);
+    });
+
+    moodsLayout->addStretch();
+    for(int i=0; i<this->moods.size(); i++)
+    {
+        auto  *colorTag = new QToolButton();
+        //colorTag->setIconSize(QSize(10,10));
+        colorTag->setFixedSize(15,15);
+        // colorTag->setAutoRaise(true);
+        colorTag->setStyleSheet(QString("QToolButton { background-color: %1;}").arg(this->moods.at(i)));
+        moodGroup->addButton(colorTag,i);
+        moodsLayout->addWidget(colorTag);
     }
+    moodsLayout->addStretch();
+
+    moodWidget->setLayout(moodsLayout);
+
+
 
 }
 

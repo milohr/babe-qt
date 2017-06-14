@@ -33,7 +33,10 @@ MainWindow::MainWindow(const QStringList &files, QWidget *parent) :
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     this->defaultWindowFlags = this->windowFlags();
 
-
+    connect(this, &MainWindow::finishRefresh,[=]()
+    {
+        qDebug()<<"FINISHED REFRESHING";
+    });
     album_art = new Album(this);
 
     connect(album_art,&Album::playAlbum,this,&MainWindow::putAlbumOnPlay);
@@ -948,8 +951,9 @@ void MainWindow::refreshTables() //tofix
 
     playlistTable->list->clear();
     playlistTable->setDefaultPlaylists();
-    playlistTable->setPlaylistsMoods();
     playlistTable->setPlaylists(connection.getPlaylists());
+
+    emit finishRefresh();
 
 }
 
