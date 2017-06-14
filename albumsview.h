@@ -35,8 +35,8 @@ public:
 
     explicit AlbumsView(bool extraList=false, QWidget *parent = 0);
     ~AlbumsView();
-    void populateTableView(QSqlQuery query);
-    void populateTableViewHeads(QSqlQuery query);
+    void populateTableView();
+    void populateTableViewHeads();
     void populateExtraList(QSqlQuery query);
     void flushGrid();
     int getAlbumSize() { return this->albumSize; }
@@ -98,8 +98,7 @@ signals:
     void albumOrderChanged(QString order);
     void playAlbum(QMap<int,QString> info);
     void babeAlbum_clicked( QMap<int,QString> info);
-    void populateCoversFinished();
-    void populateHeadsFinished();
+    void populateFinished();
     void expandTo(QString artist, QString album);
     void createdAlbum(Album *album);
 };

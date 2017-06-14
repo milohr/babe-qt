@@ -90,6 +90,11 @@ public:
         APPENDTOP,APPENDBOTTOM, APPENDAFTER, APPENDBEFORE, APPENDINDEX
     };
 
+    enum position
+    {
+        RIGHT,LEFT
+    };
+
     void appendFiles(const QStringList &paths, const appendPos &pos = APPENDBOTTOM);
     void loadTrack();
     void loadTrackAt(const int &pos);
@@ -192,6 +197,9 @@ private:
 
     int ALBUM_SIZE;
     int iconSize = 22;
+
+    int playlistPos = RIGHT;
+
     CollectionDB connection;
 
     const QString stylePath = BaeUtils::SettingPath+"style.qss";
@@ -205,7 +213,7 @@ private:
     Mpris *mpris;
 
     QWidget *mainWidget;
-    QGridLayout * mainLayout;
+    QHBoxLayout * mainLayout;
     QStackedWidget *views;
     QStackedWidget *mainListView;
 
@@ -224,7 +232,10 @@ private:
     BabeTable *filterList;
     BabeTable *collectionTable;
     BabeTable *resultsTable;
+    QThread* albumsThread;
     AlbumsView* albumsTable;
+    QThread* artistsThread;
+
     AlbumsView* artistsTable;
     PlaylistsView *playlistTable;
     InfoView *infoTable;
@@ -236,6 +247,7 @@ private:
 
     void setUpViews();
     void setUpWidgets();
+    void setUpSidebar();
     void setUpCollectionViewer();
     void setUpPlaylist();
     void setUpRightFrame();
@@ -254,6 +266,8 @@ private:
     void blurWidget(Album &widget, const int &radius );
     void babedIcon(const bool &state);
     void saveSettings(const QString &key, const QVariant &value,const QString &group);
+    void movePlaylist(const int &pos);
+
     QVariant loadSettings(const QString &key, const QString &group, const QVariant &defaultValue = QVariant());
 
     /*the streaming */

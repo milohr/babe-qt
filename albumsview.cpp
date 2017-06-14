@@ -338,10 +338,12 @@ void AlbumsView::orderChanged()
 
 }
 
-void AlbumsView::populateTableView(QSqlQuery query)
+void AlbumsView::populateTableView()
 {
+    QSqlQuery query = connection.getQuery("SELECT * FROM albums");
+
     qDebug()<<"ON POPULATE ALBUM VIEW:";
-    int i =0;
+//    int i =0;
     while (query.next())
     {
         QString artist = query.value(ARTIST).toString();
@@ -362,13 +364,12 @@ void AlbumsView::populateTableView(QSqlQuery query)
 
         }
 
-        qDebug()<<"oi"<<i++;
+//        qDebug()<<"oi"<<i++;
     }
 
     //grid->adjustSize();
     //    qDebug()<<grid->width()<<grid->size().height();
     grid->sortItems(Qt::AscendingOrder);
-
 }
 
 
@@ -412,8 +413,10 @@ void AlbumsView::babeAlbum(QMap<int,QString> info)
     emit babeAlbum_clicked(info);
 }
 
-void AlbumsView::populateTableViewHeads(QSqlQuery query)
+void AlbumsView::populateTableViewHeads()
 {
+    QSqlQuery query = connection.getQuery("SELECT * FROM artists");
+
     qDebug()<<"ON POPULATE HEADS VIEW:";
     while (query.next())
     {
