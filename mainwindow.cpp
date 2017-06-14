@@ -716,7 +716,8 @@ void MainWindow::addToPlayed(const QString &url)
 
 
 bool MainWindow::eventFilter(QObject *object, QEvent *event)
-{
+{    
+
     if(object == this->ui->controls)
     {
         if(event->type()==QEvent::Enter)
@@ -868,12 +869,16 @@ void MainWindow::closeEvent(QCloseEvent* event)
 
 void MainWindow::resizeEvent(QResizeEvent* event)
 {
-    //    if(this->viewMode == FULLMODE && this->size().width() < this->minWidth)
-    //    {
-    //        this->saveSettings("GEOMETRY",this->defaultGeometry,"MAINWINDOW");
 
-    //        go_playlistMode();
-    //    }
+//    if(views->currentIndex()==ALBUMS)
+//    {
+//        auto scrollSize = albumsTable->grid->verticalScrollBar()->size().width()+1;
+//        auto gridSize = albumsTable->grid->size().width()-scrollSize;
+//        auto amount = (gridSize/(albumsTable->getAlbumSize()+25));
+//        auto leftSpace = gridSize-amount*albumsTable->getAlbumSize();
+//        if(albumsTable->grid->isVisibleTo(this)) albumsTable->grid->setGridSize(QSize(albumsTable->getAlbumSize()+(leftSpace/amount),albumsTable->getAlbumSize()+25));
+//        qDebug()<<"gridSize:"<<gridSize<<"amount:"<<amount<<"left space: "<<leftSpace<<"scroll width:"<<scrollSize;
+//    }
 
     if(this->viewMode==MINIMODE)
     {

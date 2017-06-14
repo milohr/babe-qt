@@ -13,11 +13,12 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     albumSize = BaeUtils::getWidgetSizeHint(BaeUtils::MEDIUM_ALBUM_FACTOR,BaeUtils::MEDIUM_ALBUM);
     this->setAcceptDrops(false);
     grid = new QListWidget(this);
+    grid->installEventFilter(this);
     grid->setObjectName("grid");
     grid->setMinimumHeight(albumSize);
     grid->setViewMode(QListWidget::IconMode);
     grid->setResizeMode(QListWidget::Adjust);
-//    grid->setUniformItemSizes(true);
+    //    grid->setUniformItemSizes(true);
     grid->setWrapping(true);
     grid->setAcceptDrops(false);
     grid->setDragDropMode(QAbstractItemView::DragOnly);
@@ -25,7 +26,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     grid->setSizePolicy(QSizePolicy ::Expanding , QSizePolicy ::Expanding );
     grid->setSizeAdjustPolicy(QListWidget::AdjustToContentsOnFirstShow);
     //grid->setStyleSheet("QListWidget {background:#2E2F30; border:1px solid black; border-radius: 2px; }");
-    grid->setStyleSheet("QListWidget,QListWidget::item:selected,QListWidget::item:selected:active {background:transparent; padding-top:15px; padding-left:15px; color:transparent; }");
+    grid->setStyleSheet("QListWidget,QListWidget::item:selected,QListWidget::item:selected:active {background:transparent; color:transparent; }");
     grid->setGridSize(QSize(albumSize+25,albumSize+25));
 
 
@@ -508,6 +509,32 @@ void AlbumsView::getArtistInfo(QMap<int,QString> info)
     //    albumBox_frame->setGraphicsEffect(effect);
 
     if(extraList) populateExtraList(connection.getQuery("SELECT * FROM albums WHERE artist = \""+artist+"\" ORDER by title asc"));
+
+}
+
+bool AlbumsView::eventFilter(QObject *obj, QEvent *event)
+{
+    if(obj==grid)
+    {
+        if(event->type()==QEvent::Resize)
+        {
+            auto scrollSize = this->grid->verticalScrollBar()->size().width()+1;
+            auto gridSize = this->grid->size().width()-scrollSize;
+            auto amount = (gridSize/(albumSize+25));
+            auto leftSpace = gridSize-amount*albumSize;
+
+
+           if(gridSize>albumSize)
+           {
+
+               grid->setGridSize(QSize(albumSize+(leftSpace/amount),albumSize+25));
+           }
+
+            qDebug()<<"gridSize:"<<gridSize<<"amount:"<<amount<<"left space: "<<leftSpace<<"scroll width:"<<scrollSize;
+        }
+    }
+
+    return QWidget::eventFilter(obj, event);
 
 }
 

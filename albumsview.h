@@ -13,6 +13,7 @@
 #include <QDebug>
 #include <QShortcut>
 #include <QSplitter>
+#include <QScrollBar>
 //#include <QGraphicsBlurEffect>
 //#include <QGraphicsScene>
 //#include <QGraphicsPixmapItem>
@@ -53,7 +54,6 @@ public:
 
 private:
 
-    int gridSize;
     int albumSize;
     bool extraList=false;
     bool ascending=true;
@@ -81,6 +81,9 @@ public slots:
     void getAlbumInfo(QMap<int,QString> info);
     void getArtistInfo(QMap<int,QString> info);
 
+protected:
+
+    virtual bool eventFilter(QObject *obj, QEvent *event) Q_DECL_OVERRIDE;
 
 private slots:
 
