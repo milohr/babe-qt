@@ -121,7 +121,11 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     connect(zoomIn, &QAction::triggered,[this]()
     {
         if(albumSize+5<=BaeUtils::MAX_MID_ALBUM_SIZE)
+        {
             this->setAlbumsSize(albumSize+5);
+            this->adjustGrid();
+
+        }
 
     });
 
@@ -132,7 +136,11 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     connect(zoomOut, &QAction::triggered,[this]()
     {
         if(albumSize-5>=BaeUtils::MAX_MIN_ALBUM_SIZE)
+        {
             this->setAlbumsSize(albumSize-5);
+            this->adjustGrid();
+
+        }
     });
 
 
@@ -514,28 +522,28 @@ void AlbumsView::getArtistInfo(QMap<int,QString> info)
 
 bool AlbumsView::eventFilter(QObject *obj, QEvent *event)
 {
-    if(obj==grid)
-    {
-        if(event->type()==QEvent::Resize)
-        {
-            auto scrollSize = this->grid->verticalScrollBar()->size().width()+1;
-            auto gridSize = this->grid->size().width()-scrollSize;
-            auto amount = (gridSize/(albumSize+25));
-            auto leftSpace = gridSize-amount*albumSize;
-
-
-           if(gridSize>albumSize)
-           {
-
-               grid->setGridSize(QSize(albumSize+(leftSpace/amount),albumSize+25));
-           }
-
-            qDebug()<<"gridSize:"<<gridSize<<"amount:"<<amount<<"left space: "<<leftSpace<<"scroll width:"<<scrollSize;
-        }
-    }
+    if(obj==grid && event->type()==QEvent::Resize)
+        this->adjustGrid();
 
     return QWidget::eventFilter(obj, event);
 
+}
+
+void AlbumsView::adjustGrid()
+{
+    auto scrollSize = this->grid->verticalScrollBar()->size().width()+1;
+    auto gridSize = this->grid->size().width()-scrollSize;
+    auto amount = (gridSize/(albumSize+25));
+    auto leftSpace = gridSize-amount*albumSize;
+
+
+    if(gridSize>albumSize)
+    {
+
+        grid->setGridSize(QSize(albumSize+(leftSpace/amount),albumSize+25));
+    }
+
+    qDebug()<<"gridSize:"<<gridSize<<"amount:"<<amount<<"left space: "<<leftSpace<<"scroll width:"<<scrollSize;
 }
 
 void AlbumsView::getAlbumInfo(QMap<int,QString> info)

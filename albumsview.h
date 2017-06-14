@@ -58,6 +58,7 @@ private:
     bool extraList=false;
     bool ascending=true;
     bool hiddenLabels=false;
+    void adjustGrid();
     QList<Album*> albumsList;
     QList<QListWidgetItem*> itemsList;
     QStringList albums;
