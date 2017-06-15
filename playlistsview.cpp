@@ -36,7 +36,6 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
             SLOT(populatePlaylist(QModelIndex)));
     connect(list, SIGNAL(itemChanged(QListWidgetItem *)), this,
             SLOT(playlistName(QListWidgetItem *)));
-    list->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Expanding);
     //    list->setFixedWidth(160);
     list->setAlternatingRowColors(true);
     list->setFrameShape(QFrame::NoFrame);
@@ -106,7 +105,7 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
     auto playlistsWidget = new QWidget(this);
     auto playlistsWidget_layout = new QVBoxLayout();
     playlistsWidget->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Expanding);
-
+    playlistsWidget->setMinimumWidth(ALBUM_SIZE_MEDIUM);
     playlistsWidget_layout->setContentsMargins(0,0,0,0);
     playlistsWidget_layout->setMargin(0);
     playlistsWidget_layout->setSpacing(0);
@@ -126,7 +125,7 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
     splitter->addWidget(line_v);
     splitter->addWidget(table);
 
-    //    splitter->setSizes({0,0});
+        splitter->setSizes({0,0,0});
     splitter->setStretchFactor(0, 0);
     splitter->setStretchFactor(2, 1);
 
@@ -363,7 +362,7 @@ void PlaylistsView::setPlaylistsMoods()
         table->populateTableView(query,false);
     });
 
-//    moodsLayout->addStretch();
+    //    moodsLayout->addStretch();
     for(int i=0; i<this->moods.size(); i++)
     {
         auto  *colorTag = new QToolButton();
@@ -374,7 +373,7 @@ void PlaylistsView::setPlaylistsMoods()
         moodGroup->addButton(colorTag,i);
         moodsLayout->addWidget(colorTag);
     }
-//    moodsLayout->addStretch();
+    //    moodsLayout->addStretch();
 
     moodWidget->setLayout(moodsLayout);
 
