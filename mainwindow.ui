@@ -39,8 +39,8 @@
    <widget class="QWidget" name="collectionUtils" native="true">
     <property name="geometry">
      <rect>
-      <x>70</x>
-      <y>240</y>
+      <x>60</x>
+      <y>230</y>
       <width>181</width>
       <height>41</height>
      </rect>
@@ -515,25 +515,27 @@
       <number>0</number>
      </property>
      <item>
-      <widget class="QToolButton" name="calibrateBtn">
+      <widget class="QToolButton" name="playlists_view">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
-       <property name="toolTip">
-        <string>Calibrations</string>
+       <property name="minimumSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
        </property>
-       <property name="toolTipDuration">
-        <number>-1</number>
+       <property name="toolTip">
+        <string>Playlists</string>
        </property>
        <property name="text">
-        <string>...</string>
+        <string>Playlists</string>
        </property>
        <property name="icon">
-        <iconset theme="filename-bpm-amarok">
-         <normaloff>.</normaloff>.</iconset>
+        <iconset theme="view-media-playlist"/>
        </property>
        <property name="iconSize">
         <size>
@@ -541,14 +543,17 @@
          <height>22</height>
         </size>
        </property>
-       <property name="popupMode">
-        <enum>QToolButton::InstantPopup</enum>
+       <property name="checkable">
+        <bool>false</bool>
+       </property>
+       <property name="autoExclusive">
+        <bool>false</bool>
+       </property>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonIconOnly</enum>
        </property>
        <property name="autoRaise">
         <bool>true</bool>
-       </property>
-       <property name="arrowType">
-        <enum>Qt::NoArrow</enum>
        </property>
       </widget>
      </item>
@@ -688,7 +693,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QToolButton" name="open_btn">
+      <widget class="QToolButton" name="calibrateBtn">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
          <horstretch>0</horstretch>
@@ -696,14 +701,16 @@
         </sizepolicy>
        </property>
        <property name="toolTip">
-        <string>Open...</string>
+        <string>Calibrations</string>
+       </property>
+       <property name="toolTipDuration">
+        <number>-1</number>
        </property>
        <property name="text">
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset theme="document-open">
-         <normaloff>.</normaloff>.</iconset>
+        <iconset theme="tools-wizard"/>
        </property>
        <property name="iconSize">
         <size>
@@ -711,8 +718,14 @@
          <height>22</height>
         </size>
        </property>
+       <property name="popupMode">
+        <enum>QToolButton::InstantPopup</enum>
+       </property>
        <property name="autoRaise">
         <bool>true</bool>
+       </property>
+       <property name="arrowType">
+        <enum>Qt::NoArrow</enum>
        </property>
       </widget>
      </item>
@@ -786,7 +799,7 @@
         <bool>true</bool>
        </property>
        <property name="toolButtonStyle">
-        <enum>Qt::ToolButtonIconOnly</enum>
+        <enum>Qt::ToolButtonTextBesideIcon</enum>
        </property>
        <property name="autoRaise">
         <bool>true</bool>
@@ -830,7 +843,7 @@
         <bool>true</bool>
        </property>
        <property name="toolButtonStyle">
-        <enum>Qt::ToolButtonIconOnly</enum>
+        <enum>Qt::ToolButtonTextBesideIcon</enum>
        </property>
        <property name="autoRaise">
         <bool>true</bool>
@@ -871,7 +884,51 @@
         <bool>true</bool>
        </property>
        <property name="toolButtonStyle">
-        <enum>Qt::ToolButtonIconOnly</enum>
+        <enum>Qt::ToolButtonTextBesideIcon</enum>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="info_view">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Info</string>
+       </property>
+       <property name="text">
+        <string>Info</string>
+       </property>
+       <property name="icon">
+        <iconset theme="help-about">
+         <normaloff>.</normaloff>.</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>22</width>
+         <height>22</height>
+        </size>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="autoExclusive">
+        <bool>true</bool>
+       </property>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonTextBesideIcon</enum>
        </property>
        <property name="autoRaise">
         <bool>true</bool>
@@ -965,50 +1022,6 @@
       </widget>
      </item>
      <item>
-      <widget class="QToolButton" name="info_view">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>24</width>
-         <height>24</height>
-        </size>
-       </property>
-       <property name="toolTip">
-        <string>Info</string>
-       </property>
-       <property name="text">
-        <string>Info</string>
-       </property>
-       <property name="icon">
-        <iconset theme="help-about">
-         <normaloff>.</normaloff>.</iconset>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>22</width>
-         <height>22</height>
-        </size>
-       </property>
-       <property name="checkable">
-        <bool>true</bool>
-       </property>
-       <property name="autoExclusive">
-        <bool>true</bool>
-       </property>
-       <property name="toolButtonStyle">
-        <enum>Qt::ToolButtonIconOnly</enum>
-       </property>
-       <property name="autoRaise">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
       <widget class="QToolButton" name="rabbit_view">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
@@ -1026,54 +1039,10 @@
         <string>Discover</string>
        </property>
        <property name="text">
-        <string>Discover</string>
+        <string/>
        </property>
        <property name="icon">
         <iconset theme="kstars_constellationart">
-         <normaloff>.</normaloff>.</iconset>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>22</width>
-         <height>22</height>
-        </size>
-       </property>
-       <property name="checkable">
-        <bool>true</bool>
-       </property>
-       <property name="autoExclusive">
-        <bool>true</bool>
-       </property>
-       <property name="toolButtonStyle">
-        <enum>Qt::ToolButtonIconOnly</enum>
-       </property>
-       <property name="autoRaise">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QToolButton" name="playlists_view">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>24</width>
-         <height>24</height>
-        </size>
-       </property>
-       <property name="toolTip">
-        <string>Playlists</string>
-       </property>
-       <property name="text">
-        <string>Playlists</string>
-       </property>
-       <property name="icon">
-        <iconset theme="amarok_lyrics">
          <normaloff>.</normaloff>.</iconset>
        </property>
        <property name="iconSize">
@@ -1117,7 +1086,7 @@
         <string notr="true"/>
        </property>
        <property name="text">
-        <string>Settings</string>
+        <string/>
        </property>
        <property name="icon">
         <iconset theme="games-config-options">
@@ -1141,68 +1110,6 @@
        <property name="autoRaise">
         <bool>true</bool>
        </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QWidget" name="title" native="true">
-    <property name="geometry">
-     <rect>
-      <x>70</x>
-      <y>310</y>
-      <width>161</width>
-      <height>45</height>
-     </rect>
-    </property>
-    <property name="sizePolicy">
-     <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-      <horstretch>0</horstretch>
-      <verstretch>0</verstretch>
-     </sizepolicy>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color:red;</string>
-    </property>
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <property name="spacing">
-      <number>0</number>
-     </property>
-     <property name="leftMargin">
-      <number>0</number>
-     </property>
-     <property name="topMargin">
-      <number>0</number>
-     </property>
-     <property name="rightMargin">
-      <number>0</number>
-     </property>
-     <property name="bottomMargin">
-      <number>0</number>
-     </property>
-     <item>
-      <widget class="QWidget" name="widget" native="true">
-       <layout class="QHBoxLayout" name="horizontalLayout_4">
-        <item>
-         <widget class="QLabel" name="label">
-          <property name="text">
-           <string>Playlist</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QToolButton" name="toolButton">
-          <property name="text">
-           <string>...</string>
-          </property>
-          <property name="icon">
-           <iconset theme="window-maximize-symbolic"/>
-          </property>
-          <property name="autoRaise">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-       </layout>
       </widget>
      </item>
     </layout>

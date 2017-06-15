@@ -243,7 +243,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
 
     auto spacer = new QWidget(this);
     spacer->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
-    spacer->setFixedHeight(25);
+    spacer->setFixedHeight(15);
 //    spacer->setStyleSheet("QWidget{background-color:transparent;");
 
     QSplitter *splitter = new QSplitter(parent);

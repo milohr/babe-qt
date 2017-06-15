@@ -437,7 +437,7 @@ void MainWindow::setUpCollectionViewer()
 
     ui->viewsUtils->setContextMenuPolicy(Qt::ActionsContextMenu);
 
-    auto showText = new QAction("Show text");
+    auto showText = new QAction("Hide text");
     ui->viewsUtils->addAction(showText);
     connect(showText,&QAction::triggered,[showText,this]()
     {
@@ -449,13 +449,13 @@ void MainWindow::setUpCollectionViewer()
                 if(qobject_cast<QToolButton *>(btn)->toolButtonStyle()==Qt::ToolButtonTextBesideIcon)
                 {
                     qobject_cast<QToolButton *>(btn)->setToolButtonStyle(Qt::ToolButtonIconOnly);
-                    showText->setText("Show text");
+                    showText->setText("Hide text");
 
                 }
                 else
                 {
                     qobject_cast<QToolButton *>(btn)->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-                    showText->setText("Hide text");
+                    showText->setText("Show text");
                 }
 
             }
@@ -607,6 +607,10 @@ void MainWindow::setUpPlaylist()
         //        this->addToPlaylist(searchFor(infoTable->getTags()),true);
     });
     calibrateBtn_menu->addAction(similarIt);
+
+    auto open = new QAction("Open...");
+    connect(open, &QAction::triggered,this,&MainWindow::on_open_btn_clicked);
+    calibrateBtn_menu->addAction(open);
 
 
     playlistWidget_layout->addWidget(album_art, 0,0,Qt::AlignTop);
@@ -2325,7 +2329,7 @@ void MainWindow::on_filterBtn_clicked()
         ui->filterBtn->setChecked(true);
         ui->filterBox->setVisible(true);
         ui->calibrateBtn->setVisible(false);
-        ui->open_btn->setVisible(false);
+        ui->playlists_view->setVisible(false);
         if(ui->tracks_view_2->isVisible()) ui->tracks_view_2->setVisible(false);
         mainListView->setCurrentIndex(FILTERLIST);
         ui->filter->setFocus();
@@ -2334,7 +2338,7 @@ void MainWindow::on_filterBtn_clicked()
         ui->filterBtn->setChecked(false);
         ui->filterBox->setVisible(false);
         ui->calibrateBtn->setVisible(true);
-        ui->open_btn->setVisible(true);
+        ui->playlists_view->setVisible(true);
         if(!ui->tracks_view_2->isVisible() && viewMode==PLAYLISTMODE)ui->tracks_view_2->setVisible(true);
         mainListView->setCurrentIndex(MAINPLAYLIST);
 
