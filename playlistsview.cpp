@@ -90,7 +90,13 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
     auto line_h = new QFrame(this);
     line_h->setFrameShape(QFrame::HLine);
     line_h->setFrameShadow(QFrame::Plain);
-    line_h->setMaximumHeight(1);
+    line_h->setFixedHeight(1);
+
+    auto line_h2 = new QFrame(this);
+    line_h2->setFrameShape(QFrame::HLine);
+    line_h2->setFrameShadow(QFrame::Plain);
+    line_h2->setFixedHeight(1);
+
 
     moodWidget = new QWidget();
     moodWidget->setAutoFillBackground(true);
@@ -99,14 +105,18 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
 
     auto playlistsWidget = new QWidget(this);
     auto playlistsWidget_layout = new QVBoxLayout();
+    playlistsWidget->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Expanding);
+
     playlistsWidget_layout->setContentsMargins(0,0,0,0);
     playlistsWidget_layout->setMargin(0);
     playlistsWidget_layout->setSpacing(0);
+
     playlistsWidget->setLayout(playlistsWidget_layout);
     playlistsWidget_layout->addWidget(btnContainer);
     playlistsWidget_layout->addWidget(line_h);
-    playlistsWidget_layout->addWidget(list);
     playlistsWidget_layout->addWidget(moodWidget);
+    playlistsWidget_layout->addWidget(line_h2);
+    playlistsWidget_layout->addWidget(list);
 
 
     QSplitter *splitter = new QSplitter(parent);
@@ -353,7 +363,7 @@ void PlaylistsView::setPlaylistsMoods()
         table->populateTableView(query,false);
     });
 
-    moodsLayout->addStretch();
+//    moodsLayout->addStretch();
     for(int i=0; i<this->moods.size(); i++)
     {
         auto  *colorTag = new QToolButton();
@@ -364,7 +374,7 @@ void PlaylistsView::setPlaylistsMoods()
         moodGroup->addButton(colorTag,i);
         moodsLayout->addWidget(colorTag);
     }
-    moodsLayout->addStretch();
+//    moodsLayout->addStretch();
 
     moodWidget->setLayout(moodsLayout);
 
