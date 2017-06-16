@@ -861,6 +861,37 @@ void BabeTable::keyPressEvent(QKeyEvent *event)
         break;
     }
 
+    case Qt::Key_0:
+    {
+        this->rateGroup(0,false);
+        break;
+    }
+    case Qt::Key_1:
+    {
+        this->rateGroup(1,false);
+        break;
+    }
+    case Qt::Key_2:
+    {
+        this->rateGroup(2,false);
+        break;
+    }
+    case Qt::Key_3:
+    {
+        this->rateGroup(3,false);
+        break;
+    }
+    case Qt::Key_4:
+    {
+        this->rateGroup(4,false);
+        break;
+    }
+    case Qt::Key_5:
+    {
+        this->rateGroup(5,false);
+        break;
+    }
+
 
     default: {
         QTableWidget::keyPressEvent(event);
@@ -912,11 +943,11 @@ void BabeTable::stopPreview()
 }
 
 
-void BabeTable::rateGroup(int id)
+void BabeTable::rateGroup(const int &id, const bool &rightClick)
 {
     qDebug() << "rated with: " << id;
 
-    for(auto row : this->getSelectedRows())
+    for(auto row : this->getSelectedRows(rightClick))
     {
 
         QString location = this->getRowData(row)[LOCATION];

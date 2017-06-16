@@ -102,7 +102,7 @@ protected:
 private slots:
 
     void on_tableWidget_doubleClicked(const QModelIndex &index);
-    void rateGroup(int id);
+    void rateGroup(const int &id, const bool &rightClick=true);
     void setUpContextMenu(const int row, const int column);
     void addToPlaylist();
     void babeIt_action();
