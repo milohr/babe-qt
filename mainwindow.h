@@ -92,8 +92,10 @@ public:
 
     enum position
     {
-        RIGHT,LEFT
+        RIGHT,LEFT, IN, OUT
     };
+
+
 
     void appendFiles(const QStringList &paths, const appendPos &pos = APPENDBOTTOM);
     void loadTrack();
@@ -199,6 +201,7 @@ private:
     int iconSize = 22;
 
     int playlistPos = RIGHT;
+    int playlistSta = IN;
 
     CollectionDB connection;
 
@@ -266,7 +269,7 @@ private:
     void blurWidget(Album &widget, const int &radius );
     void babedIcon(const bool &state);
     void saveSettings(const QString &key, const QVariant &value,const QString &group);
-    void movePlaylist(const int &pos);
+    void movePanel(const int &pos);
 
     QVariant loadSettings(const QString &key, const QString &group, const QVariant &defaultValue = QVariant());
 

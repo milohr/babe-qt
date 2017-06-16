@@ -158,7 +158,7 @@ void Album::saturatePixmap(const int &value)
 
 void Album::restoreSaturation()
 {
-    this->putPixmap(this->unsaturated);
+    if(!unsaturated.isNull())this->putPixmap(this->unsaturated);
 }
 
 void Album::setSize(const int &value)

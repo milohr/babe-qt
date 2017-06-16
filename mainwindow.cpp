@@ -139,7 +139,7 @@ MainWindow::MainWindow(const QStringList &files, QWidget *parent) :
         emit ui->miniPlaybackBtn->clicked();
     else ui->controls->setVisible(false);
 
-    movePlaylist(this->loadSettings("PANEL_POS","MAINWINDOW",RIGHT).toInt());
+    movePanel(this->loadSettings("PANEL_POS","MAINWINDOW",RIGHT).toInt());
 
 }
 
@@ -195,6 +195,8 @@ void MainWindow::setUpViews()
 
 
     collectionTable = new BabeTable(this);
+    collectionTable->showColumn(BabeTable::STARS);
+    collectionTable->showColumn(BabeTable::GENRE);
     //connect(collectionTable, &BabeTable::tableWidget_doubleClicked, this, &MainWindow::addToPlaylist);
     connect(collectionTable,&BabeTable::tableWidget_doubleClicked, [this] (QList<QMap<int, QString>> list) { addToPlaylist(list,false,APPENDBOTTOM);});
     connect(collectionTable,&BabeTable::finishedPopulating,[this]()
@@ -493,30 +495,48 @@ void MainWindow::setUpPlaylist()
     playlistWidget->setLayout(playlistWidget_layout);
     playlistWidget->setFixedWidth(ALBUM_SIZE);
 
-
     //    ui->controls->setParent(album_art);
     //    ui->controls->setGeometry(0,0,ALBUM_SIZE,ALBUM_SIZE);
     ui->controls->setMinimumSize(ALBUM_SIZE,ALBUM_SIZE);
     ui->controls->setMaximumSize(ALBUM_SIZE,ALBUM_SIZE);
 
-    auto movePanel = new QAction("Move to left");
-    connect (movePanel, &QAction::triggered,[movePanel,this]()
+    auto moveIt= new QAction("Move to left");
+    moveIt->setShortcut(QKeySequence("Ctrl+m"));
+    connect (moveIt, &QAction::triggered,[moveIt,this]()
     {
         if(playlistPos==RIGHT)
         {
-            movePlaylist(LEFT);
-            movePanel->setText("Move to right");
+            movePanel(LEFT);
+            moveIt->setText("Move to right");
         }
-        else
+        else if(playlistPos==LEFT)
         {
-            movePlaylist(RIGHT);
-            movePanel->setText("Move to left");
+            movePanel(RIGHT);
+            moveIt->setText("Move to left");
 
         }
 
     });
-    ui->controls->addAction(movePanel);
+    ui->controls->addAction(moveIt);
 
+    auto popPanel = new QAction("Pop panel out");
+    popPanel->setShortcut(QKeySequence("Ctrl+p"));
+    connect (popPanel, &QAction::triggered,[popPanel,this]()
+    {
+        if(playlistSta==OUT)
+        {
+            movePanel(IN);
+            popPanel->setText("Pop panel out");
+        }
+        else if (playlistSta==IN)
+        {
+            movePanel(OUT);
+            popPanel->setText("Pop panel in");
+
+        }
+
+    });
+    ui->controls->addAction(popPanel);
 
     auto hideTimeLabels = new QAction("Hide time labels");
     connect (hideTimeLabels, &QAction::triggered,[hideTimeLabels,this]()
@@ -625,8 +645,12 @@ void MainWindow::setUpPlaylist()
 }
 
 
-void MainWindow::movePlaylist(const int &pos)
+void MainWindow::movePanel(const int &pos)
 {
+
+    auto position = QWidget::mapToGlobal(leftFrame->pos());
+
+
     switch(pos)
     {
     case RIGHT:
@@ -638,9 +662,30 @@ void MainWindow::movePlaylist(const int &pos)
         this->mainLayout->removeWidget(rightFrame);
         this->mainLayout->insertWidget(0,rightFrame);
         playlistPos=LEFT;
+        break;
+    case OUT:
 
+        if(viewMode != FULLMODE) expand();
+
+        this->mainLayout->removeWidget(rightFrame);
+        rightFrame->setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::CustomizeWindowHint);
+        rightFrame->setWindowTitle("Playlist");
+        //        rightFrame->setFrameShape(QFrame::NoFrame);
+        rightFrame->show();
+        //        rightFrame->window()->setContentsMargins(6,6,6,6);
+        rightFrame->window()->setFixedWidth(rightFrame->minimumSizeHint().width());
+        rightFrame->window()->move(position.x()+this->size().width(),this->pos().y());
+        playlistSta=OUT;
         break;
 
+    case IN:
+        rightFrame->setWindowFlags(Qt::Widget);
+        this->mainLayout->insertWidget(playlistPos==RIGHT?1:0,rightFrame);
+        rightFrame->setFixedWidth(rightFrame->minimumSizeHint().width());
+
+        rightFrame->show();
+        playlistSta=IN;
+        break;
 
     }
 }
@@ -661,7 +706,7 @@ void MainWindow::setUpRightFrame()
     rightFrame->setFrameShadow(QFrame::Raised);
     rightFrame->setFrameShape(QFrame::StyledPanel);
     rightFrame->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Expanding);
-
+    //    rightFrame->setFixedWidth(playlistWidget->minimumSizeHint().width()+2);
     rightFrame_layout->addWidget(playlistWidget,0,0);
 }
 
@@ -1247,8 +1292,6 @@ void MainWindow::go_mini()
     ui->playlistUtils->setVisible(false);
 
     //album_art->borderColor=true;
-
-    rightFrame->setFrameShadow(QFrame::Plain);
     rightFrame->setFrameShape(QFrame::NoFrame);
 
     mainLayout->setContentsMargins(0,0,0,0);
@@ -1275,42 +1318,46 @@ void MainWindow::go_mini()
 
 void MainWindow::go_playlistMode()
 {
-    this->saveSettings("GEOMETRY",this->geometry(),"MAINWINDOW");
-    this->viewMode=PLAYLISTMODE;
-    QString icon;
-    switch(prevIndex)
+
+    if(playlistSta!=OUT)
     {
-    case COLLECTION: icon = ui->tracks_view->icon().name(); break;
-    case ALBUMS:  icon = ui->albums_view->icon().name(); break;
-    case ARTISTS:  icon = ui->artists_view->icon().name(); break;
-    case PLAYLISTS:  icon = ui->playlists_view->icon().name(); break;
-    case RABBIT:  icon = ui->rabbit_view->icon().name(); break;
-    case INFO: icon = ui->info_view->icon().name(); break;
+        this->saveSettings("GEOMETRY",this->geometry(),"MAINWINDOW");
+        this->viewMode=PLAYLISTMODE;
+        QString icon;
+        switch(prevIndex)
+        {
+        case COLLECTION: icon = ui->tracks_view->icon().name(); break;
+        case ALBUMS:  icon = ui->albums_view->icon().name(); break;
+        case ARTISTS:  icon = ui->artists_view->icon().name(); break;
+        case PLAYLISTS:  icon = ui->playlists_view->icon().name(); break;
+        case RABBIT:  icon = ui->rabbit_view->icon().name(); break;
+        case INFO: icon = ui->info_view->icon().name(); break;
 
-    case SETTINGS:  icon= ui->settings_view->icon().name(); break;
-    default:  icon="go-back";
+        case SETTINGS:  icon= ui->settings_view->icon().name(); break;
+        default:  icon="go-back";
+        }
+        ui->tracks_view_2->setIcon(QIcon::fromTheme(icon));
+
+
+        if(!ui->frame_4->isVisible()) ui->frame_4->setVisible(true);
+        if(!mainList->isVisible()) mainListView->setVisible(true);
+        if(!ui->frame_5->isVisible()) ui->frame_5->setVisible(true);
+        if(!ui->playlistUtils->isVisible()) ui->playlistUtils->setVisible(true);
+        ui->tracks_view_2->setVisible(true);
+
+        album_art->borderColor=false;
+        this->setMinimumWidth(rightFrame->minimumSizeHint().width()+12);
+        QPropertyAnimation *animation = new QPropertyAnimation(this, "maximumWidth");
+        animation->setDuration(200);
+        animation->setStartValue(this->size().width());
+        animation->setEndValue(rightFrame->minimumSizeHint().width()+12);
+
+        animation->start();
+
+        leftFrame->setVisible(false);
+
+        ui->hide_sidebar_btn->setToolTip("Go Mini");
     }
-    ui->tracks_view_2->setIcon(QIcon::fromTheme(icon));
-
-
-    if(!ui->frame_4->isVisible()) ui->frame_4->setVisible(true);
-    if(!mainList->isVisible()) mainListView->setVisible(true);
-    if(!ui->frame_5->isVisible()) ui->frame_5->setVisible(true);
-    if(!ui->playlistUtils->isVisible()) ui->playlistUtils->setVisible(true);
-    ui->tracks_view_2->setVisible(true);
-
-    album_art->borderColor=false;
-    this->setMinimumWidth(rightFrame->minimumSizeHint().width()+12);
-    QPropertyAnimation *animation = new QPropertyAnimation(this, "maximumWidth");
-    animation->setDuration(200);
-    animation->setStartValue(this->size().width());
-    animation->setEndValue(rightFrame->minimumSizeHint().width()+12);
-
-    animation->start();
-
-    leftFrame->setVisible(false);
-
-    ui->hide_sidebar_btn->setToolTip("Go Mini");
 
 
 }
@@ -1329,6 +1376,8 @@ void MainWindow::keepOnTop(bool state)
 
 void MainWindow::on_hide_sidebar_btn_clicked()
 {
+    if(playlistSta==OUT) emit ui->controls->actions().at(1)->triggered();
+
     switch(this->viewMode)
     {
     case FULLMODE:
