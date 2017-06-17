@@ -235,7 +235,7 @@ private:
     BabeTable *filterList;
     BabeTable *collectionTable;
     BabeTable *resultsTable;
-    QThread* albumsThread;
+    QThread *albumsThread;
     AlbumsView* albumsTable;
     QThread* artistsThread;
 

@@ -141,6 +141,7 @@ MainWindow::MainWindow(const QStringList &files, QWidget *parent) :
 
     movePanel(this->loadSettings("PANEL_POS","MAINWINDOW",RIGHT).toInt());
 
+
 }
 
 
@@ -550,6 +551,8 @@ void MainWindow::setUpPlaylist()
         {
             ui->time->setVisible(true);
             ui->duration->setVisible(true);
+            hideTimeLabels->setText("Hide time labels");
+
         }
     });
     ui->controls->addAction(hideTimeLabels);
@@ -664,20 +667,17 @@ void MainWindow::movePanel(const int &pos)
         playlistPos=LEFT;
         break;
     case OUT:
-
         if(viewMode != FULLMODE) expand();
-
         this->mainLayout->removeWidget(rightFrame);
         rightFrame->setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::CustomizeWindowHint);
         rightFrame->setWindowTitle("Playlist");
         //        rightFrame->setFrameShape(QFrame::NoFrame);
         rightFrame->show();
-        //        rightFrame->window()->setContentsMargins(6,6,6,6);
+        //                rightFrame->window()->setContentsMargins(6,6,6,6);
         rightFrame->window()->setFixedWidth(rightFrame->minimumSizeHint().width());
         rightFrame->window()->move(position.x()+this->size().width(),this->pos().y());
         playlistSta=OUT;
         break;
-
     case IN:
         rightFrame->setWindowFlags(Qt::Widget);
         this->mainLayout->insertWidget(playlistPos==RIGHT?1:0,rightFrame);
@@ -706,8 +706,10 @@ void MainWindow::setUpRightFrame()
     rightFrame->setFrameShadow(QFrame::Raised);
     rightFrame->setFrameShape(QFrame::StyledPanel);
     rightFrame->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Expanding);
-    //    rightFrame->setFixedWidth(playlistWidget->minimumSizeHint().width()+2);
+    rightFrame->setMinimumHeight(ALBUM_SIZE*2);
     rightFrame_layout->addWidget(playlistWidget,0,0);
+    rightFrame->setFixedWidth(rightFrame->minimumSizeHint().width());
+
 }
 
 
@@ -739,9 +741,22 @@ void MainWindow::albumDoubleClicked(const QMap<int, QString> &info)
 
 void MainWindow::playItNow(const QList<QMap<int,QString>> &list)
 {
-    addToPlaylist(list,false,APPENDBOTTOM);
-    mainList->setCurrentCell(mainList->rowCount()-list.size(),BabeTable::TITLE);
+
+    auto it = currentList.indexOf(list.first());
+
+    if(list.size()==1 && it!=-1)
+    {
+        mainList->setCurrentCell(it,BabeTable::TITLE);
+
+
+    }else
+    {
+        addToPlaylist(list,false,APPENDBOTTOM);
+        mainList->setCurrentCell(mainList->rowCount()-list.size(),BabeTable::TITLE);
+    }
+
     this->loadTrack();
+
 }
 
 void MainWindow::putAlbumOnPlay(const QMap<int,QString> &info)
@@ -954,6 +969,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
     this->saveSettings("TOOLBAR", this->iconSize,"MAINWINDOW");
     this->saveSettings("MINIPLAYBACK",miniPlayback,"MAINWINDOW");
     this->saveSettings("PANEL_POS",playlistPos,"MAINWINDOW");
+    this->saveSettings("TIME_LABEL",ui->time->isVisible()&&ui->duration->isVisible(),"MAINWINDOW");
 
     QMainWindow::closeEvent(event);
 }
