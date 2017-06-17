@@ -742,12 +742,18 @@ void MainWindow::albumDoubleClicked(const QMap<int, QString> &info)
 void MainWindow::playItNow(const QList<QMap<int,QString>> &list)
 {
 
-    auto it = currentList.indexOf(list.first());
 
-    if(list.size()==1 && it!=-1)
+    if(list.size()==1)
     {
-        mainList->setCurrentCell(it,BabeTable::TITLE);
+        auto it = this->mainList->getAllTableContent().indexOf(list.first());
 
+        if( it!=-1)
+            mainList->setCurrentCell(it,BabeTable::TITLE);
+        else
+        {
+            addToPlaylist(list,false,APPENDBOTTOM);
+            mainList->setCurrentCell(mainList->rowCount()-list.size(),BabeTable::TITLE);
+        }
 
     }else
     {
