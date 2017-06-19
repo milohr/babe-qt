@@ -675,7 +675,7 @@ void MainWindow::movePanel(const int &pos)
         rightFrame->show();
         //                rightFrame->window()->setContentsMargins(6,6,6,6);
         rightFrame->window()->setFixedWidth(rightFrame->minimumSizeHint().width());
-        rightFrame->window()->move(position.x()+this->size().width(),this->pos().y());
+        rightFrame->window()->move(position.x()+this->size().width()-rightFrame->size().width(),this->pos().y());
         playlistSta=OUT;
         break;
     case IN:
@@ -1373,6 +1373,7 @@ void MainWindow::go_playlistMode()
         if(!ui->playlistUtils->isVisible()) ui->playlistUtils->setVisible(true);
         ui->tracks_view_2->setVisible(true);
         //        album_art->borderColor=false;
+        this->setMaximumWidth(rightFrame->minimumSizeHint().width());
         this->setMinimumWidth(rightFrame->minimumSizeHint().width());
         QPropertyAnimation *animation = new QPropertyAnimation(this, "maximumWidth");
         animation->setDuration(200);
