@@ -25,7 +25,7 @@ public:
 
     enum metadata
     {
-        TITLE,ARTIST,ALBUM,COMMENT
+        TITLE,ARTIST,ALBUM,COMMENT,ID
     };
 
     explicit YouTube(QObject *parent = 0);
@@ -39,18 +39,18 @@ public:
 private slots:
 
     void processFinished();
-    void processFinished_totally(const int &state,const QString &id,const QMap<int,QString> &info,const QProcess::ExitStatus &exitStatus);
+    void processFinished_totally(const int &state,const QMap<int,QString> &info,const QProcess::ExitStatus &exitStatus);
 
 private:
 
     Notify nof;
     QMap<QString,QString> tracks;
-    QString ydl="youtube-dl -f m4a --youtube-skip-dash-manifest -o \"$$$.%(ext)s\"";
+    const  QString ydl="youtube-dl -f m4a --youtube-skip-dash-manifest -o \"$$$.%(ext)s\"";
     const QString cachePath=BaeUtils::YoutubeCachePath;
     const QString extensionFetchingPath = BaeUtils::ExtensionFetchingPath;
 
 signals:
-   void  youtubeTrackReady(bool state);
+    void  youtubeTrackReady(bool state);
 };
 
 #endif // YOUTUBE_H

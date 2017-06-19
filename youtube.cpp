@@ -62,6 +62,8 @@ void YouTube::fetch(QStringList files)
 
     for(auto file: files)
     {
+        qDebug()<<file;
+
         QString title,artist,album,id,page;
 
 
@@ -91,36 +93,43 @@ void YouTube::fetch(QStringList files)
 
         }
 
+        if(QFile(file).remove()) qDebug()<<"removing file"<<file;
+
+
         infoMap.insert(TITLE,title);
         infoMap.insert(ARTIST,artist);
         infoMap.insert(ALBUM,album);
         infoMap.insert(COMMENT,page);
+        infoMap.insert(ID,id);
 
-        if(!this->ids.contains(id))
+        qDebug()<<infoMap;
+
+        if(!this->ids.contains(infoMap[ID]))
         {
 
-            this->ids<<id;
+            this->ids<<infoMap[ID];
 
             auto process = new QProcess(this);
             process->setWorkingDirectory(cachePath);
             //connect(process, SIGNAL(readyReadStandardOutput()), this, SLOT(processFinished()));
             //connect(process, SIGNAL(finished(int)), this, SLOT(processFinished_totally(int)));
             connect(process, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
-                    [infoMap,process,this](int exitCode, QProcess::ExitStatus exitStatus)
+                    [infoMap,this](int exitCode, QProcess::ExitStatus exitStatus)
             {
 
-                qDebug()<<"processFinished_totally"<<exitCode<<exitStatus;
-                processFinished_totally(exitCode,process->arguments().at(process->arguments().size()-1),infoMap,exitStatus);
+                //                qDebug()<<"processFinished_totally"<<exitCode<<exitStatus;
+                processFinished_totally(exitCode,infoMap,exitStatus);
 
             });
 
             nof.notify("Song received!", infoMap[TITLE]+ " - "+ infoMap[ARTIST]+".\nWait a sec while the track is added to your collection :)");
-
-            process->start(ydl.replace("$$$",page)+" "+id);
+            auto a = ydl;
+            a = a.replace("$$$",infoMap[COMMENT])+" "+infoMap[ID];
+            //            qDebug()<<a;
+            process->start(a);
 
         }
 
-        if(QFile(file).remove()) qDebug()<<"removing file"<<file;
 
     }
 
@@ -128,28 +137,33 @@ void YouTube::fetch(QStringList files)
 
 }
 
-void YouTube::processFinished_totally(const int &state,const QString &id,const QMap<int,QString> &info,const QProcess::ExitStatus &exitStatus)
+void YouTube::processFinished_totally(const int &state,const QMap<int,QString> &info,const QProcess::ExitStatus &exitStatus)
 {
 
-    qDebug()<<id<<info[TITLE]<<info[ARTIST];
     QString file =this->cachePath+info[COMMENT]+".m4a";
-    if(BaeUtils::fileExists(file))
+    qDebug()<<info[ID]<<info[TITLE]<<info[ARTIST]<<file;
+
+    if(exitStatus == QProcess::NormalExit)
     {
-        TagInfo tag(file);
 
-        tag.setArtist(info[ARTIST]);
-        tag.setTitle(info[TITLE]);
-        tag.setAlbum(info[ALBUM]);
-        tag.setComment(info[COMMENT]);
+        if(BaeUtils::fileExists(file))
+        {
+            TagInfo tag(file);
 
-        QString doneId=id;
-        qDebug()<<"process finished totally for"<<state<<doneId<<exitStatus;
+            tag.setArtist(info[ARTIST]);
+            tag.setTitle(info[TITLE]);
+            tag.setAlbum(info[ALBUM]);
+            tag.setComment(info[COMMENT]);
 
-        qDebug()<<"need to delete the id="<<doneId;
-        ids.removeAll(doneId);
-        qDebug()<<"ids left to process: "<<ids;
+            QString doneId=info[ID];
+            qDebug()<<"process finished totally for"<<state<<doneId<<exitStatus;
 
-        if(ids.isEmpty()) emit youtubeTrackReady(true);
+            qDebug()<<"need to delete the id="<<doneId;
+            ids.removeAll(doneId);
+            qDebug()<<"ids left to process: "<<ids;
+
+            if(ids.isEmpty()) emit youtubeTrackReady(true);
+        }
     }
 }
 
