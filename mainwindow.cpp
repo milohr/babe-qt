@@ -1291,8 +1291,8 @@ void MainWindow::expand()
 
     ui->hide_sidebar_btn->setToolTip("Go Mini");
 
-    this->setWindowFlags(this->windowFlags() & ~Qt::Tool & ~Qt::FramelessWindowHint & ~Qt::WindowStaysOnTopHint);
-    this->show();
+//    this->setWindowFlags(this->windowFlags() & ~Qt::Tool & ~Qt::FramelessWindowHint & ~Qt::WindowStaysOnTopHint);
+//    this->show();
 
 }
 
@@ -1333,8 +1333,8 @@ void MainWindow::go_mini()
     animation->start();
 
 
-    this->setWindowFlags(this->windowFlags() | Qt::Tool | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
-    this->show();
+//    this->setWindowFlags(this->windowFlags() | Qt::Tool | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+//    this->show();
     //this->updateGeometry();
     //this->setfix(minimumSizeHint());
     //this->adjustSize();
