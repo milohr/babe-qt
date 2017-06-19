@@ -478,7 +478,7 @@ void MainWindow::setUpCollectionViewer()
 
     mainLayout->addWidget(leftFrame);
     mainLayout->addWidget(rightFrame,Qt::AlignRight);
-
+    mainLayout->setContentsMargins(0,0,0,0);
     mainWidget= new QWidget(this);
     mainWidget->setLayout(mainLayout);
     this->setCentralWidget(mainWidget);
@@ -1320,7 +1320,6 @@ void MainWindow::go_mini()
     //        rightFrame->setFrameShape(QFrame::NoFrame);
 
     //    this->setStyleSheet("QMainWindow{border: 1px solid red; border-radius:2px;}");
-    mainLayout->setContentsMargins(0,0,0,0);
 
     //    rightFrame->layout()->margin(0);
     //    rightFrame->layout()->spacing(0);
@@ -1373,7 +1372,6 @@ void MainWindow::go_playlistMode()
         if(!ui->frame_6->isVisible()) ui->frame_6->setVisible(true);
         if(!ui->playlistUtils->isVisible()) ui->playlistUtils->setVisible(true);
         ui->tracks_view_2->setVisible(true);
-        mainLayout->setContentsMargins(0,0,0,0);
         //        album_art->borderColor=false;
         this->setMinimumWidth(rightFrame->minimumSizeHint().width());
         QPropertyAnimation *animation = new QPropertyAnimation(this, "maximumWidth");
