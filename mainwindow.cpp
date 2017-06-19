@@ -706,7 +706,7 @@ void MainWindow::setUpRightFrame()
     rightFrame->setFrameShadow(QFrame::Raised);
     rightFrame->setFrameShape(QFrame::StyledPanel);
     rightFrame->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Expanding);
-    rightFrame->setMinimumHeight(ALBUM_SIZE*2);
+    //    rightFrame->setMinimumHeight(ALBUM_SIZE*2);
     rightFrame_layout->addWidget(playlistWidget,0,0);
     rightFrame->setFixedWidth(rightFrame->minimumSizeHint().width());
 
@@ -741,27 +741,29 @@ void MainWindow::albumDoubleClicked(const QMap<int, QString> &info)
 
 void MainWindow::playItNow(const QList<QMap<int,QString>> &list)
 {
-
-
-    if(list.size()==1)
+    if(!list.isEmpty())
     {
-        auto it = this->mainList->getAllTableContent().indexOf(list.first());
 
-        if( it!=-1)
-            mainList->setCurrentCell(it,BabeTable::TITLE);
-        else
+        if(list.size()==1)
+        {
+            auto it = this->mainList->getAllTableContent().indexOf(list.first());
+
+            if( it!=-1)
+                mainList->setCurrentCell(it,BabeTable::TITLE);
+            else
+            {
+                addToPlaylist(list,false,APPENDBOTTOM);
+                mainList->setCurrentCell(mainList->rowCount()-list.size(),BabeTable::TITLE);
+            }
+
+        }else if(list.size()>1)
         {
             addToPlaylist(list,false,APPENDBOTTOM);
             mainList->setCurrentCell(mainList->rowCount()-list.size(),BabeTable::TITLE);
         }
 
-    }else
-    {
-        addToPlaylist(list,false,APPENDBOTTOM);
-        mainList->setCurrentCell(mainList->rowCount()-list.size(),BabeTable::TITLE);
+        this->loadTrack();
     }
-
-    this->loadTrack();
 
 }
 
@@ -834,10 +836,8 @@ bool MainWindow::eventFilter(QObject *object, QEvent *event)
     if(object == this->ui->controls)
     {
         if(event->type()==QEvent::Enter)
-        {
-            if(viewMode!=MINIMODE) ui->miniPlaybackBtn->setVisible(true);
+            ui->miniPlaybackBtn->setVisible(true);
 
-        }
         else if(event->type()==QEvent::Leave && !miniPlayback)
             if(ui->miniPlaybackBtn->isVisible()) ui->miniPlaybackBtn->setVisible(false);
     }
@@ -993,18 +993,18 @@ void MainWindow::resizeEvent(QResizeEvent* event)
     //        qDebug()<<"gridSize:"<<gridSize<<"amount:"<<amount<<"left space: "<<leftSpace<<"scroll width:"<<scrollSize;
     //    }
 
-    if(this->viewMode==MINIMODE)
-    {
+    //    if(this->viewMode==MINIMODE)
+    //    {
 
-        this->setMaximumHeight(event->size().width()+5);
-        this->setMinimumHeight(event->size().width()+5);
+    //        this->setMaximumHeight(event->size().width()+5);
+    //        this->setMinimumHeight(event->size().width()+5);
 
-        album_art->setSize(event->size().width());
-        int ALBUM_SIZE_ = album_art->getSize();
-        ui->controls->setMaximumSize(ALBUM_SIZE_,ALBUM_SIZE_);
-        ui->controls->setMinimumSize(ALBUM_SIZE_,ALBUM_SIZE_);
+    //        album_art->setSize(event->size().width());
+    //        int ALBUM_SIZE_ = album_art->getSize();
+    //        ui->controls->setMaximumSize(ALBUM_SIZE_,ALBUM_SIZE_);
+    //        ui->controls->setMinimumSize(ALBUM_SIZE_,ALBUM_SIZE_);
 
-    }
+    //    }
     QMainWindow::resizeEvent(event);
 }
 
@@ -1269,13 +1269,14 @@ void MainWindow::expand()
     if(!ui->frame_4->isVisible()) ui->frame_4->setVisible(true);
     if(!mainList->isVisible()) mainListView->setVisible(true);
     if(!ui->frame_5->isVisible()) ui->frame_5->setVisible(true);
+    if(!ui->frame_6->isVisible()) ui->frame_6->setVisible(true);
     if(!ui->playlistUtils->isVisible()) ui->playlistUtils->setVisible(true);
 
     album_art->borderColor=false;
 
-    rightFrame->setFrameShadow(QFrame::Raised);
-    rightFrame->setFrameShape(QFrame::StyledPanel);
-    mainLayout->setContentsMargins(6,6,6,6);
+    //    rightFrame->setFrameShadow(QFrame::Raised);
+    //    rightFrame->setFrameShape(QFrame::StyledPanel);
+    //    mainLayout->setContentsMargins(6,6,6,6);
 
     this->setMaximumSize(QWIDGETSIZE_MAX,QWIDGETSIZE_MAX);
     this->setMinimumHeight(0);
@@ -1290,7 +1291,8 @@ void MainWindow::expand()
 
     ui->hide_sidebar_btn->setToolTip("Go Mini");
 
-
+    this->setWindowFlags(this->windowFlags() & ~Qt::Tool & ~Qt::FramelessWindowHint & ~Qt::WindowStaysOnTopHint);
+    this->show();
 
 }
 
@@ -1299,37 +1301,41 @@ void MainWindow::go_mini()
 
     this->viewMode=MINIMODE;
 
-    this->miniPlayback =false;
+    //    this->miniPlayback =false;
 
-    this->blurWidget(*album_art,15);
-    album_art->restoreSaturation();
+    //    this->blurWidget(*album_art,15);
+    //    album_art->restoreSaturation();
 
-    ui->miniPlaybackBtn->setVisible(false);
-    ui->miniPlaybackBtn->setIcon(QIcon::fromTheme("go-top"));
+    //    ui->miniPlaybackBtn->setVisible(false);
+    //    ui->miniPlaybackBtn->setIcon(QIcon::fromTheme("go-top"));
 
     leftFrame->setVisible(false);
     ui->frame_4->setVisible(false);
     mainListView->setVisible(false);
     ui->frame_5->setVisible(false);
+    ui->frame_6->setVisible(false);
     ui->playlistUtils->setVisible(false);
 
     //album_art->borderColor=true;
-    rightFrame->setFrameShape(QFrame::NoFrame);
+    //        rightFrame->setFrameShape(QFrame::NoFrame);
 
+    //    this->setStyleSheet("QMainWindow{border: 1px solid red; border-radius:2px;}");
     mainLayout->setContentsMargins(0,0,0,0);
 
-    this->setMinimumSize(ALBUM_SIZE/2,ALBUM_SIZE/2);
+    //    rightFrame->layout()->margin(0);
+    //    rightFrame->layout()->spacing(0);
+    //    this->setMinimumSize(ALBUM_SIZE/2,ALBUM_SIZE/2);
     this->setMaximumWidth(rightFrame->minimumSizeHint().width());
-    //    QPropertyAnimation *animation = new QPropertyAnimation(this, "maximumHeight");
-    //    animation->setDuration(200);
-    //    animation->setStartValue(this->size().height());
-    //    animation->setEndValue(ALBUM_SIZE+5);
+    QPropertyAnimation *animation = new QPropertyAnimation(this, "maximumHeight");
+    animation->setDuration(200);
+    animation->setStartValue(this->size().height());
+    animation->setEndValue(ui->controls->height());
 
-    //    animation->start();
+    animation->start();
 
 
-    /*this->setWindowFlags(this->windowFlags() | Qt::Tool | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
-    this->show();*/
+    this->setWindowFlags(this->windowFlags() | Qt::Tool | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+    this->show();
     //this->updateGeometry();
     //this->setfix(minimumSizeHint());
     //this->adjustSize();
@@ -1364,15 +1370,16 @@ void MainWindow::go_playlistMode()
         if(!ui->frame_4->isVisible()) ui->frame_4->setVisible(true);
         if(!mainList->isVisible()) mainListView->setVisible(true);
         if(!ui->frame_5->isVisible()) ui->frame_5->setVisible(true);
+        if(!ui->frame_6->isVisible()) ui->frame_6->setVisible(true);
         if(!ui->playlistUtils->isVisible()) ui->playlistUtils->setVisible(true);
         ui->tracks_view_2->setVisible(true);
-
-        album_art->borderColor=false;
-        this->setMinimumWidth(rightFrame->minimumSizeHint().width()+12);
+        mainLayout->setContentsMargins(0,0,0,0);
+        //        album_art->borderColor=false;
+        this->setMinimumWidth(rightFrame->minimumSizeHint().width());
         QPropertyAnimation *animation = new QPropertyAnimation(this, "maximumWidth");
         animation->setDuration(200);
         animation->setStartValue(this->size().width());
-        animation->setEndValue(rightFrame->minimumSizeHint().width()+12);
+        animation->setEndValue(rightFrame->minimumSizeHint().width());
 
         animation->start();
 
@@ -1914,6 +1921,7 @@ void MainWindow::stop()
     ui->frame_4->setVisible(false);
     seekBar->setVisible(false);
     ui->frame_5->setVisible(false);
+    ui->frame_6->setVisible(false);
 
     current_song.clear();
     prev_song = current_song;
@@ -2187,6 +2195,7 @@ void MainWindow::addToPlaylist(const QList<QMap<int, QString> > &mapList, const 
             ui->frame_4->setVisible(true);
             seekBar->setVisible(true);
             ui->frame_5->setVisible(true);
+            ui->frame_6->setVisible(true);
             ui->controls->setVisible(true);
 
             loadTrack();
