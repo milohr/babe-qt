@@ -8,7 +8,12 @@
 #include <QDebug>
 #include <QDirIterator>
 
+#include <fstream>
+#include <iostream>
+
 #include "baeUtils.h"
+#include "notify.h"
+#include "taginfo.h"
 
 
 class YouTube : public QObject
@@ -17,8 +22,14 @@ class YouTube : public QObject
 
 
 public:
+
+    enum metadata
+    {
+        TITLE,ARTIST,ALBUM,COMMENT
+    };
+
     explicit YouTube(QObject *parent = 0);
-    void fetch(QStringList ids_, QStringList urls_={});
+    void fetch(QStringList files);
     ~YouTube();
     void searchPendingFiles();
     QStringList ids;
@@ -28,11 +39,13 @@ public:
 private slots:
 
     void processFinished();
-    void processFinished_totally(int state,QString id,QProcess::ExitStatus exitStatus);
+    void processFinished_totally(const int &state,const QString &id,const QMap<int,QString> &info,const QProcess::ExitStatus &exitStatus);
 
 private:
 
-    const QString ydl="youtube-dl --metadata-from-title \"%(artist)s - %(title)s\"  --format m4a --add-metadata --youtube-skip-dash-manifest --verbose";
+    Notify nof;
+    QMap<QString,QString> tracks;
+    QString ydl="youtube-dl -f m4a --youtube-skip-dash-manifest -o \"$$$.%(ext)s\"";
     const QString cachePath=BaeUtils::YoutubeCachePath;
     const QString extensionFetchingPath = BaeUtils::ExtensionFetchingPath;
 

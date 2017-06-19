@@ -1,16 +1,15 @@
- 
-{
-  "manifest_version": 2,
+ {
+     "manifest_version": 2,
 
-  "name": "Babe-Qt",
-  "description": "This extension connects YouTube to Babe Collection",
-  "version": "1.0",
+     "name": "Babe-Qt",
+     "description": "This extension connects YouTube to Babe Collection",
+     "version": "1.0",
 
-  "browser_action": {
-   "default_icon": "icon_1.png",
-   "default_popup": "popup.html"
-  },
-  "permissions": [
+     "browser_action": {
+         "default_icon": "icon_1.png",
+         "default_popup": "popup.html"
+     },
+     "permissions": [
    "activeTab"
    ]
-}
+ }

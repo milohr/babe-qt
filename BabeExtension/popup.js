@@ -1,57 +1,111 @@
+document.addEventListener('DOMContentLoaded', function () {
+    var babeBtn = document.getElementById('babe');
+    var addBtn = document.getElementById('add');
 
+    chrome.tabs.getSelected(null, function (tab) {
 
+        var babeTitle = document.getElementById('title');
+        var babeArtist = document.getElementById('artist');
+        var babeAlbum = document.getElementById('album');
 
-document.addEventListener('DOMContentLoaded', function() 
-{
-  var babeBtn = document.getElementById('babe');
-  
-  babeBtn.addEventListener('click', function() 
-  {
+        var pageUrl = tab.url;
+        var pageTitle = tab.title;
 
-    chrome.tabs.getSelected(null, function(tab) 
-    {
-      d = document;
-      var url =tab.url;
-      var ydoc= tab.title;
-      console.log(ydoc);
-      if(url.includes("youtube.com/watch?v"))
-      {
-          var newStr = url.substring(url.lastIndexOf("watch?v=")+8,url.length);
-          
-           if(newStr.includes("&"))
-           {
-               console.log("the string inclues ambersan");
-              newStr = newStr.substring(0,newStr.indexOf("&"));
-           }
-           
-          
- /*var title = document.getElementById('title').value;
-          var artist = document.getElementById('artist').value;
-          var album = document.getElementById('album').value;
-          var info = "[title] = "+title+"\n[artist] = "+artist+"\n[album] = "+album;
-          console.log(info);          */
-          download(newStr, newStr+'.babe', 'text/plain');
-          chrome.browserAction.setIcon({path: "icon_done.png"});
-          
-        }else
-        { 
-            console.log("url does not contains yuotube");
-            
-            document.getElementById("warning").innerHTML+= "This isn't a YouTube url";
+        if (pageUrl.includes("youtube.com/watch?v")) {
+            var regex = / *\([^)]*\) */g;
+            var title = pageTitle.split("-");
+            babeTitle.value = title[1].replace(regex, " ").trim();
+            babeArtist.value = title[0].replace(regex, " ").trim();
+            chrome.browserAction.setIcon({
+                path: "icon_done.png"
+            });
+        } else {
+
+            chrome.browserAction.setIcon({
+                path: "icon_1.png"
+            });
         }
-        
+
     });
-  }, false);
-  
-  
-  /*var optionsBtn = document.getElementById('optionsBtn');
-   optionsBtn.addEventListener('click', function() 
-  {
-console.log("options btn clicked");
-document.getElementById("optionsBtn").style.visibility="show";
-   
-  }, false);*/
-  
+
+    babeBtn.addEventListener('click', function () {
+
+        chrome.tabs.getSelected(null, function (tab) {
+            d = document;
+            var url = tab.url;
+            var ydoc = tab.title;
+            console.log(ydoc);
+            if (url.includes("youtube.com/watch?v")) {
+                var id = url.substring(url.lastIndexOf("watch?v=") + 8, url.length);
+
+                if (id.includes("&")) {
+                    console.log("the string inclues ambersan");
+                    id = newStr.substring(0, id.indexOf("&"));
+                } else if (id.includes("#")) {
+                    console.log("the string inclues #");
+                    id = newStr.substring(0, id.indexOf("#"));
+
+                }
+
+
+                var pageUrl = tab.url.replace("- YouTube", "");
+                var pageTitle = tab.title;
+                var title = document.getElementById('title').value;
+                var artist = document.getElementById('artist').value;
+                var album = document.getElementById('album').value;
+                var info = "[title] = " + title + "\n[artist] = " + artist + "\n[album] = " + album + "\n[babe] = 1" + "\n[id] = " + id + "\n[page] = " + pageTitle;
+
+                download(info, id + '.babe', 'text/plain');
+
+
+            } else {
+                console.log("url does not contains yuotube");
+
+                document.getElementById("warning").innerHTML += "This isn't a YouTube url";
+            }
+
+        });
+    }, false);
+
+    addBtn.addEventListener('click', function () {
+
+        chrome.tabs.getSelected(null, function (tab) {
+            d = document;
+            var url = tab.url;
+            var ydoc = tab.title;
+            console.log(ydoc);
+            if (url.includes("youtube.com/watch?v")) {
+                var id = url.substring(url.lastIndexOf("watch?v=") + 8, url.length);
+
+                if (id.includes("&")) {
+                    console.log("the string inclues ambersan");
+                    id = newStr.substring(0, id.indexOf("&"));
+                } else if (id.includes("#")) {
+                    console.log("the string inclues #");
+                    id = newStr.substring(0, id.indexOf("#"));
+
+                }
+
+                var pageUrl = tab.url;
+                var pageTitle = tab.title;
+                var title = document.getElementById('title').value;
+                var artist = document.getElementById('artist').value;
+                var album = document.getElementById('album').value;
+                var info = "[title] = " + title + "\n[artist] = " + artist + "\n[album] = " + album + "\n[babe] = 0" + "\n[id] = " + id + "\n[page] = " + pageTitle;
+
+                download(info, id + '.babe', 'text/plain');
+
+
+            } else {
+                console.log("url does not contains yuotube");
+
+                document.getElementById("warning").innerHTML += "This isn't a YouTube url";
+            }
+
+        });
+    }, false);
+
+
 }, false);
 
 
@@ -79,9 +133,9 @@ function download(strData, strFileName, strMimeType) {
 
     if ('download' in a) { //FF20, CH19
         a.setAttribute("download", n);
-      /* a.innerHTML = "downloading...";*/
+        /* a.innerHTML = "downloading...";*/
         D.body.appendChild(a);
-        setTimeout(function() {
+        setTimeout(function () {
             var e = D.createEvent("MouseEvents");
             e.initMouseEvent("click", true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
             a.dispatchEvent(e);
@@ -96,7 +150,7 @@ function download(strData, strFileName, strMimeType) {
     var f = D.createElement("iframe");
     D.body.appendChild(f);
     f.src = "data:" + (A[2] ? A[2] : "application/octet-stream") + (window.btoa ? ";base64" : "") + "," + (window.btoa ? window.btoa : escape)(strData);
-    setTimeout(function() {
+    setTimeout(function () {
         D.body.removeChild(f);
     }, 333);
     return true;

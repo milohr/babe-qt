@@ -117,31 +117,14 @@ void settings::handleDirectoryChanged_cache(QString dir)
 
 void settings::handleDirectoryChanged_extension()
 {
-    QStringList urls, ids;
+    QStringList urls;
 
     QDirIterator it(extensionFetchingPath, QStringList() << "*.babe", QDir::Files);
-    while (it.hasNext())
-    {
-        QString song = it.next();
-        urls<<song;
-    }
 
-    for(auto url:urls)
-    {
-        QFileInfo fileInfo(QFile(url).fileName());
-        QString id=fileInfo.fileName().section(".",0,-2);
-        ids<<id;
-    }
+    while (it.hasNext()) urls<< it.next();
 
-    if (!urls.isEmpty())
-    {
+    if (!urls.isEmpty()) ytFetch->fetch(urls);
 
-        nof.notify("Song received!","wait a sec while the track ["+ids.join("\n")+"] is added to your collection :)");
-
-        ytFetch->fetch(ids,urls);
-        // qDebug()<<ids;
-        //qDebug()<<urls;
-    }
 }
 
 void settings::on_collectionPath_clicked(const QModelIndex &index) {
@@ -368,24 +351,23 @@ void settings::handleDirectoryChanged(QString dir)
     emit dirChanged(dir);
 }
 
-void settings::readSettings() {
+void settings::readSettings()
+{
     std::ifstream settings(settingPath.toStdString() +
                            settingsName.toStdString());
     std::string line;
-    while (std::getline(settings, line)) {
+    while (std::getline(settings, line))
+    {
         auto get_setting = QString::fromStdString(line);
         // qDebug()<<get_setting;
-        if (get_setting.contains("collectionPath=")) {
+        if (get_setting.contains("collectionPath="))
+        {
             collectionPaths << get_setting.replace("collectionPath=", "");
             qDebug() << "Setting the cPath: "
                      << get_setting.replace("collectionPath=", "");
             ui->collectionPath->addItem(get_setting.replace("collectionPath=", ""));
 
-            // connect(&watcher, SIGNAL(fileChanged(QString)), this,
-            // SLOT(handleFileChanged(const QString&)));
         }
-
-
     }
 }
 
@@ -561,11 +543,11 @@ void settings::on_ytBtn_clicked()
 
 void settings::on_fetchBtn_clicked()
 {
-    if(!ui->fetch->text().isEmpty())
-    {
-        ytFetch->fetch({ui->fetch->text()});
-        ui->fetch->clear();
-    }
+    //    if(!ui->fetch->text().isEmpty())
+    //    {
+    //        ytFetch->fetch({ui->fetch->text()});
+    //        ui->fetch->clear();
+    //    }
 }
 
 void settings::on_checkBox_stateChanged(int arg1)
