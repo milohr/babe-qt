@@ -505,6 +505,9 @@ void MainWindow::setUpPlaylist()
     moveIt->setShortcut(QKeySequence("Ctrl+m"));
     connect (moveIt, &QAction::triggered,[moveIt,this]()
     {
+
+        if(playlistSta==OUT) emit ui->controls->actions().at(1)->triggered();
+
         if(playlistPos==RIGHT)
         {
             movePanel(LEFT);
