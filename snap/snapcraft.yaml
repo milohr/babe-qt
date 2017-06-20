@@ -9,14 +9,12 @@ grade: devel
 confinement: devmode
 
 apps:
-  Babe:
-    command: Babe
-
+  babe:
+    command: desktop-launch Babe
 
 parts:
-  Babe:
+  babe:
     plugin: qmake
-    build-packages:
-      - qtbase5-dev
-  
-    after: [qt5conf] # A wiki part
+    qt-version: qt5
+    source: https://github.com/milohr/babe-qt.git
+    after: [desktop-qt5]
