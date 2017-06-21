@@ -127,7 +127,7 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView)
 
     ui->similarArtistInfo->setOpenLinks(false);
 
-    ui->splitter->setSizes({120,1});
+//    ui->splitter->setSizes({120,1});
 
 }
 

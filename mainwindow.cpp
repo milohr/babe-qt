@@ -2504,6 +2504,9 @@ void MainWindow::on_miniPlaybackBtn_clicked()
         this->blurWidget(*album_art,28);
         album_art->saturatePixmap(100);
 
+        if(viewMode==MINIMODE)  this->setMaximumHeight(ui->controls->minimumSizeHint().height()-40);
+
+
     }else
     {
         ui->controls->setFixedHeight(ALBUM_SIZE);
@@ -2512,6 +2515,9 @@ void MainWindow::on_miniPlaybackBtn_clicked()
         miniPlayback=!miniPlayback;
         this->blurWidget(*album_art,15);
         album_art->restoreSaturation();
+
+        if(viewMode==MINIMODE) this->setMaximumHeight(ui->controls->height());
+
 
     }
 
