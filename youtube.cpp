@@ -124,8 +124,9 @@ void YouTube::fetch(QStringList files)
 
             nof.notify("Song received!", infoMap[TITLE]+ " - "+ infoMap[ARTIST]+".\nWait a sec while the track is added to your collection :)");
             auto a = ydl;
+
             a = a.replace("$$$",infoMap[COMMENT])+" "+infoMap[ID];
-            //            qDebug()<<a;
+            qDebug()<<a;
             process->start(a);
 
         }

@@ -428,8 +428,7 @@
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset theme="love">
-         <normaloff>.</normaloff>.</iconset>
+        <iconset theme="love"/>
        </property>
        <property name="iconSize">
         <size>
@@ -535,7 +534,8 @@
         <string>Playlists</string>
        </property>
        <property name="icon">
-        <iconset theme="view-media-playlist"/>
+        <iconset theme="view-media-playlist">
+         <normaloff>.</normaloff>.</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -710,7 +710,8 @@
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset theme="tools-wizard"/>
+        <iconset theme="tools-wizard">
+         <normaloff>.</normaloff>.</iconset>
        </property>
        <property name="iconSize">
         <size>

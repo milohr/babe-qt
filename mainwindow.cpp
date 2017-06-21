@@ -676,7 +676,7 @@ void MainWindow::movePanel(const int &pos)
         rightFrame->setWindowTitle("Playlist");
         //        rightFrame->setFrameShape(QFrame::NoFrame);
         rightFrame->show();
-        //                rightFrame->window()->setContentsMargins(6,6,6,6);
+        rightFrame->setMinimumHeight(ALBUM_SIZE*2);
         rightFrame->window()->setFixedWidth(rightFrame->minimumSizeHint().width());
         rightFrame->window()->move(position.x()+this->size().width()-rightFrame->size().width(),this->pos().y());
         playlistSta=OUT;
@@ -685,6 +685,7 @@ void MainWindow::movePanel(const int &pos)
         rightFrame->setWindowFlags(Qt::Widget);
         this->mainLayout->insertWidget(playlistPos==RIGHT?1:0,rightFrame);
         rightFrame->setFixedWidth(rightFrame->minimumSizeHint().width());
+        rightFrame->setMinimumHeight(0);
 
         rightFrame->show();
         playlistSta=IN;
@@ -952,13 +953,7 @@ bool MainWindow::eventFilter(QObject *object, QEvent *event)
 
                 appendFiles(list);
             }
-
-
-
         }
-
-
-
     }
     return QMainWindow::eventFilter(object, event);
 }
@@ -1294,8 +1289,8 @@ void MainWindow::expand()
 
     ui->hide_sidebar_btn->setToolTip("Go Mini");
 
-//    this->setWindowFlags(this->windowFlags() & ~Qt::Tool & ~Qt::FramelessWindowHint & ~Qt::WindowStaysOnTopHint);
-//    this->show();
+    //    this->setWindowFlags(this->windowFlags() & ~Qt::Tool & ~Qt::FramelessWindowHint & ~Qt::WindowStaysOnTopHint);
+    //    this->show();
 
 }
 
@@ -1336,8 +1331,8 @@ void MainWindow::go_mini()
     animation->start();
 
 
-//    this->setWindowFlags(this->windowFlags() | Qt::Tool | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
-//    this->show();
+    //    this->setWindowFlags(this->windowFlags() | Qt::Tool | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+    //    this->show();
     //this->updateGeometry();
     //this->setfix(minimumSizeHint());
     //this->adjustSize();

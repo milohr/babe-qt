@@ -26,7 +26,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     grid->setSizePolicy(QSizePolicy ::Expanding , QSizePolicy ::Expanding );
     grid->setSizeAdjustPolicy(QListWidget::AdjustToContentsOnFirstShow);
     //grid->setStyleSheet("QListWidget {background:#2E2F30; border:1px solid black; border-radius: 2px; }");
-    grid->setStyleSheet("QListWidget,QListWidget::item:selected,QListWidget::item:selected:active {background:transparent; color:transparent; }");
+    grid->setStyleSheet("QListWidget::item,QListWidget::item:selected,QListWidget::item:selected:active {background:transparent; color:transparent; }");
     grid->setGridSize(QSize(albumSize+25,albumSize+25));
 
 
@@ -241,16 +241,18 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
 
     }
 
-    auto spacer = new QWidget(this);
-    spacer->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
-    spacer->setFixedHeight(15);
+//    auto spacer = new QWidget(this);
+//    spacer->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
+//    spacer->setFixedHeight(15);
+//    spacer->setAutoFillBackground(true);
+//    spacer->setBackgroundRole(QPalette::Light);
 //    spacer->setStyleSheet("QWidget{background-color:transparent;");
 
     QSplitter *splitter = new QSplitter(parent);
     splitter->setChildrenCollapsible(false);
     splitter->setOrientation(Qt::Vertical);
 
-    splitter->addWidget(spacer);
+//    splitter->addWidget(spacer);
     splitter->addWidget(grid);
     splitter->addWidget(line_h);
     splitter->addWidget(albumBox_frame);
@@ -260,7 +262,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     albumBox_frame->hide(); line_h->hide();
 
     splitter->setSizes({0,0,0});
-    splitter->setStretchFactor(1, 1);
+    splitter->setStretchFactor(0, 1);
     splitter->setStretchFactor(2, 0);
 
     this->setLayout(layout);

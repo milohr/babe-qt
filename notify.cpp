@@ -48,7 +48,7 @@ void Notify::notifySong(const QMap<int, QString> &trackMap,  const QPixmap &pix)
 
     // notification->setComponentName(QStringLiteral("Babe"));
     notification->setTitle(QStringLiteral("%1").arg(track[BabeTable::TITLE]));
-    notification->setText(QStringLiteral("by %1 - %2").arg(track[BabeTable::ARTIST],track[BabeTable::ALBUM]));
+    notification->setText(QStringLiteral("%1\n%2").arg(track[BabeTable::ARTIST],track[BabeTable::ALBUM]));
     if(!pix.isNull()) notification->setPixmap(pix);
     QStringList actions;
 

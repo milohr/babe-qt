@@ -45,11 +45,11 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView)
 
     auto artistContainer = new QWidget();
     artistContainer->setObjectName("artistContainer");
-    artistContainer->setStyleSheet("QWidget#artistContainer{background-color: #575757; color:white;}");
+//    artistContainer->setStyleSheet("QWidget#artistContainer{background-color: #575757; color:white;}");
 
     auto artistCLayout = new QHBoxLayout();
 
-    ui->artistFrame->setMaximumWidth(ALBUM_SIZE_BIG);
+    //    ui->artistFrame->setMaximumWidth(ALBUM_SIZE_BIG);
 
     artistCLayout->addStretch();
     artistCLayout->addWidget(artist);
@@ -58,14 +58,16 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView)
     artistContainer->setFixedHeight(artist->getSize()+12);
 
 
-    infoUtils = new QWidget();  
-    infoUtils->setMaximumWidth(ALBUM_SIZE_BIG);
+
     auto infoUtils_layout = new QHBoxLayout();
     infoUtils_layout->setContentsMargins(0, 0, 0, 0);
     infoUtils_layout->setSpacing(0);
 
-    ui->artistLayout->insertWidget(0, artistContainer);
-    ui->artistLayout->insertWidget(1,infoUtils);
+    infoUtils = new QWidget();
+    infoUtils->setLayout(infoUtils_layout);
+    infoUtils->setMaximumHeight(22);
+
+
 
     auto similarBtn = new QToolButton();
     connect(similarBtn, &QToolButton::clicked, [this]()
@@ -102,27 +104,30 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView)
     hideBtn->setIcon(QIcon::fromTheme("hide_table_column"));
     hideBtn->setVisible(false);
 
-    ui->searchBtn->setIconSize(QSize(16,16));
+    auto searchBtn = new QToolButton();
+    connect(searchBtn,&QToolButton::clicked, this, &InfoView::on_searchBtn_clicked);
+    searchBtn->setIconSize(QSize(16,16));
+    searchBtn->setAutoRaise(true);
+    searchBtn->setIcon(QIcon::fromTheme("edit-find-replace"));
 
     infoUtils_layout->addWidget(similarBtn);
     infoUtils_layout->addWidget(moreBtn);
-    infoUtils_layout->addWidget(hideBtn);
-    infoUtils_layout->addWidget(ui->searchBtn);
-    infoUtils->setLayout(infoUtils_layout);
-//    ui->artistFrame->setVisible(false);
-//    ui->frame_4->setVisible(false);
-//    infoUtils->hide();
-    ui->customsearch->setVisible(false);
-    ui->frame_2->setVisible(false);
-    //ui->searchBtn->setParent(ui->lyricsText);
-    // ui->searchBtn->setGeometry(5,5,22,22);
+    infoUtils_layout->addWidget(searchBtn);
 
-    //ui->searchBtn->setVisible(false);
+
+
+
+    ui->artistLayout->insertWidget(0, artistContainer);
+    ui->artistLayout->insertWidget(1,infoUtils);
+
+    ui->customsearch->setVisible(false);
 
     ui->tagsInfo->setOpenLinks(false);
     ui->tagsInfo->setStyleSheet("QTextBrowser{background: transparent;}");
 
     ui->similarArtistInfo->setOpenLinks(false);
+
+    ui->splitter->setSizes({120,1});
 
 }
 
@@ -133,18 +138,18 @@ InfoView::~InfoView() { delete ui; }
 
 void InfoView::hideArtistInfo()
 {
-    qDebug() << "hide artist info";
-    if (hide) {
-        ui->artistFrame->setVisible(false);
-        ui->frame_4->setVisible(false);
-        hideBtn->setIcon(QIcon::fromTheme("show_table_column"));
-        hide = !hide;
-    } else {
-        ui->artistFrame->setVisible(true);
-        ui->frame_4->setVisible(true);
-        hideBtn->setIcon(QIcon::fromTheme("hide_table_column"));
-        hide = !hide;
-    }
+    //    qDebug() << "hide artist info";
+    //    if (hide) {
+    //        ui->artistFrame->setVisible(false);
+    //        ui->frame_4->setVisible(false);
+    //        hideBtn->setIcon(QIcon::fromTheme("show_table_column"));
+    //        hide = !hide;
+    //    } else {
+    //        ui->artistFrame->setVisible(true);
+    //        ui->frame_4->setVisible(true);
+    //        hideBtn->setIcon(QIcon::fromTheme("hide_table_column"));
+    //        hide = !hide;
+    //    }
 }
 
 void InfoView::setArtistTagInfo(const QStringList &tags)
@@ -177,7 +182,7 @@ void InfoView::setAlbumInfo(QString info)
     if (!info.isEmpty())
     {
         ui->albumText->setVisible(true);
-        ui->frame_5->show();
+        //        ui->frame_5->show();
         ui->albumText->setHtml(info);
     }
 }
@@ -209,8 +214,8 @@ void InfoView::setArtistArt(const QString &url)
 void InfoView::setLyrics(QString lyrics)
 {
     ui->lyricsText->setHtml(lyrics);
-    ui->lyricsLayout->setAlignment(Qt::AlignCenter);
-    ui->lyricsFrame->show();
+    //    ui->lyricsLayout->setAlignment(Qt::AlignCenter);
+    //    ui->lyricsFrame->show();
 }
 
 void InfoView::on_searchBtn_clicked()
@@ -218,13 +223,11 @@ void InfoView::on_searchBtn_clicked()
     if(!customsearch)
     {
         ui->customsearch->setVisible(true);
-        ui->frame_2->setVisible(true);
         customsearch=!customsearch;
     }
     else
     {
         ui->customsearch->setVisible(false);
-        ui->frame_2->setVisible(false);
         customsearch=!customsearch;
     }
 }
