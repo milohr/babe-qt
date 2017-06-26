@@ -150,13 +150,6 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::loadTrackAt(const int &pos)
-{
-    mainList->setCurrentCell(pos,BabeTable::TITLE);
-    loadTrack();
-    mainList->item(prev_song_pos+1,BabeTable::TITLE)->setIcon(QIcon());//this needs to get fixed
-
-}
 
 void MainWindow::saveSettings(const QString &key, const QVariant &value, const QString &group)
 {
@@ -198,7 +191,6 @@ void MainWindow::setUpViews()
     collectionTable = new BabeTable(this);
     collectionTable->showColumn(BabeTable::STARS);
     collectionTable->showColumn(BabeTable::GENRE);
-    //connect(collectionTable, &BabeTable::tableWidget_doubleClicked, this, &MainWindow::addToPlaylist);
     connect(collectionTable,&BabeTable::tableWidget_doubleClicked, [this] (QList<QMap<int, QString>> list) { addToPlaylist(list,false,APPENDBOTTOM);});
     connect(collectionTable,&BabeTable::finishedPopulating,[this]()
     {
@@ -223,8 +215,6 @@ void MainWindow::setUpViews()
     mainList->enableRowColoring(true);
     mainList->enableRowDragging(true);
     mainList->enablePreview(false);
-    //    mainList->setBackgroundRole(QPalette::Dark);
-    //mainList->setSelectionMode(QAbstractItemView::SingleSelection);
 
     mainList->setAddMusicMsg("\nDrag and drop music here!","face-ninja");
     connect(mainList,&BabeTable::indexesMoved,[this](int  row, int newRow)
@@ -270,8 +260,7 @@ void MainWindow::setUpViews()
     connect(filterList,&BabeTable::tableWidget_doubleClicked, [this] (QList<QMap<int, QString>> list)
     {
         playItNow(list);
-        mainListView->setCurrentIndex(MAINPLAYLIST);
-        ui->filter->setText("");
+        ui->filter->clear();
 
 
     });
@@ -299,7 +288,7 @@ void MainWindow::setUpViews()
     resultsTable=new BabeTable(this);
     //    resultsTable->passStyle("QHeaderView::section { background-color:#575757; color:white; }");
     resultsTable->horizontalHeader()->setHighlightSections(true);
-    resultsTable->setVisibleColumn(BabeTable::STARS);
+    resultsTable->showColumn(BabeTable::STARS);
     resultsTable->showColumn(BabeTable::GENRE);
     connect(resultsTable,&BabeTable::tableWidget_doubleClicked, [this] (QList<QMap<int, QString>> list) { addToPlaylist(list,false,APPENDBOTTOM);});
     connect(resultsTable,&BabeTable::removeIt_clicked,this,&MainWindow::removeSong);
@@ -444,7 +433,6 @@ void MainWindow::setUpCollectionViewer()
     ui->viewsUtils->addAction(showText);
     connect(showText,&QAction::triggered,[showText,this]()
     {
-
         for(auto btn : ui->viewsUtils->children())
         {
             if(qobject_cast<QToolButton *>(btn)!=NULL)
@@ -477,10 +465,12 @@ void MainWindow::setUpCollectionViewer()
     leftFrame_layout->addWidget(ui->viewsUtils,2,0);
 
     mainLayout->addWidget(leftFrame);
-    mainLayout->addWidget(rightFrame,Qt::AlignRight);
-    mainLayout->setContentsMargins(0,0,0,0);
+    mainLayout->addWidget(rightFrame);
+    mainLayout->setContentsMargins(6,6,6,6);
+
     mainWidget= new QWidget(this);
     mainWidget->setLayout(mainLayout);
+
     this->setCentralWidget(mainWidget);
 }
 
@@ -981,6 +971,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
 void MainWindow::resizeEvent(QResizeEvent* event)
 {
 
+
     //    if(views->currentIndex()==ALBUMS)
     //    {
     //        auto scrollSize = albumsTable->grid->verticalScrollBar()->size().width()+1;
@@ -1322,7 +1313,7 @@ void MainWindow::go_mini()
     //    rightFrame->layout()->margin(0);
     //    rightFrame->layout()->spacing(0);
     //    this->setMinimumSize(ALBUM_SIZE/2,ALBUM_SIZE/2);
-    this->setMaximumWidth(rightFrame->minimumSizeHint().width());
+    this->setMaximumWidth(rightFrame->minimumSizeHint().width()+12);
     QPropertyAnimation *animation = new QPropertyAnimation(this, "maximumHeight");
     animation->setDuration(200);
     animation->setStartValue(this->size().height());
@@ -1371,8 +1362,8 @@ void MainWindow::go_playlistMode()
         if(!ui->playlistUtils->isVisible()) ui->playlistUtils->setVisible(true);
         ui->tracks_view_2->setVisible(true);
         //        album_art->borderColor=false;
-        this->setMaximumWidth(rightFrame->minimumSizeHint().width());
-        this->setMinimumWidth(rightFrame->minimumSizeHint().width());
+        this->setMaximumWidth(rightFrame->minimumSizeHint().width()+12);
+        this->setMinimumWidth(rightFrame->minimumSizeHint().width()+12);
         QPropertyAnimation *animation = new QPropertyAnimation(this, "maximumWidth");
         animation->setDuration(200);
         animation->setStartValue(this->size().width());
@@ -2406,7 +2397,6 @@ void MainWindow::on_filterBtn_clicked()
         ui->filterBtn->setChecked(true);
         ui->filterBox->setVisible(true);
         ui->calibrateBtn->setVisible(false);
-        ui->playlists_view->setVisible(false);
         if(ui->tracks_view_2->isVisible()) ui->tracks_view_2->setVisible(false);
         mainListView->setCurrentIndex(FILTERLIST);
         ui->filter->setFocus();
@@ -2415,7 +2405,6 @@ void MainWindow::on_filterBtn_clicked()
         ui->filterBtn->setChecked(false);
         ui->filterBox->setVisible(false);
         ui->calibrateBtn->setVisible(true);
-        ui->playlists_view->setVisible(true);
         if(!ui->tracks_view_2->isVisible() && viewMode==PLAYLISTMODE)ui->tracks_view_2->setVisible(true);
         mainListView->setCurrentIndex(MAINPLAYLIST);
 

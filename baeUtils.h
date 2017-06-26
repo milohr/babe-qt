@@ -18,7 +18,7 @@ enum ALbumSizeHint {BIG_ALBUM=200,MEDIUM_ALBUM=120,SMALL_ALBUM=80};
 
 static const int MAX_BIG_ALBUM_SIZE=300;
 static const int MAX_MID_ALBUM_SIZE=200;
-static const int MAX_MIN_ALBUM_SIZE=80;
+static const int MAX_MIN_ALBUM_SIZE=100;
 
 static const double BIG_ALBUM_FACTOR = 0.039;
 static const double BIG_ALBUM_FACTOR_SUBWIDGET = 0.27;

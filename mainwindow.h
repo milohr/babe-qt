@@ -99,7 +99,6 @@ public:
 
     void appendFiles(const QStringList &paths, const appendPos &pos = APPENDBOTTOM);
     void loadTrack();
-    void loadTrackAt(const int &pos);
     bool babeTrack(const QMap<int, QString> &track);
     QList<QMap<int,QString>> searchFor(const QStringList &queries);
 
