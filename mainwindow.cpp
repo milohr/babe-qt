@@ -466,7 +466,7 @@ void MainWindow::setUpCollectionViewer()
 
     mainLayout->addWidget(leftFrame);
     mainLayout->addWidget(rightFrame);
-    mainLayout->setContentsMargins(6,6,6,6);
+    mainLayout->setContentsMargins(6,0,6,0);
 
     mainWidget= new QWidget(this);
     mainWidget->setLayout(mainLayout);

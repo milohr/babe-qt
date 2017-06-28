@@ -37,22 +37,11 @@ void YouTube::searchPendingFiles()
 {
     QDirIterator it(extensionFetchingPath, QStringList() << "*.babe", QDir::Files);
     while (it.hasNext())
-    {
-        QString song = it.next();
 
-        this->urls<<song;
-        QFileInfo fileInfo(QFile(song).fileName());
-        QString id=fileInfo.fileName().section(".",0,-2);
-        this->ids<<id;
+        this->urls<<it.next();
 
-    }
+    if (!urls.isEmpty()) fetch(urls);
 
-    if (!urls.isEmpty())
-    {
-
-        fetch(urls);
-        qDebug()<<ids;
-    }
 }
 
 
