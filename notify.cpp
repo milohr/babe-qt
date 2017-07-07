@@ -31,7 +31,7 @@ void Notify::notify(  const QString &title, const QString &body)
     notification->setTitle(QStringLiteral("%1").arg(title));
     notification->setText(QStringLiteral("%1").arg(body));
 //    QPixmap babeIcon;
-//    babeIcon.load(":Data/data/babe_128.svg");
+//    babeIcon.load(":Data/data/128-apps-babe.svg");
 //    notification->setPixmap(babeIcon);
     //connect(notification, SIGNAL(ac), this, SLOT(notify()));
 

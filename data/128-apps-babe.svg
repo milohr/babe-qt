@@ -10,13 +10,13 @@
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="64"
-   height="64"
-   viewBox="0 0 16.933333 16.933333"
+   width="128"
+   height="128"
+   viewBox="0 0 33.866666 33.866666"
    version="1.1"
    id="svg15433"
    inkscape:version="0.92.0 r"
-   sodipodi:docname="babe_64.svg">
+   sodipodi:docname="128-apps-babe.svg">
   <defs
      id="defs15427">
     <radialGradient
@@ -57,8 +57,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="3.959798"
-     inkscape:cx="48.259637"
-     inkscape:cy="16.911601"
+     inkscape:cx="33.918889"
+     inkscape:cy="48.9116"
      inkscape:document-units="mm"
      inkscape:current-layer="g12605"
      showgrid="false"
@@ -67,7 +67,11 @@
      inkscape:window-height="689"
      inkscape:window-x="0"
      inkscape:window-y="28"
-     inkscape:window-maximized="1" />
+     inkscape:window-maximized="1"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
   <metadata
      id="metadata15430">
     <rdf:RDF>
@@ -84,13 +88,13 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(0,-280.06665)">
+     transform="translate(8.4666667,-271.59998)">
     <g
        transform="matrix(0.26458333,0,0,0.26458333,-0.4233365,283.59443)"
        id="g12605">
       <g
          id="g16322"
-         transform="matrix(1.3460258,0,0,1.3460258,-0.85826465,-17.227354)">
+         transform="matrix(3.0769232,0,0,3.0769232,-45.16926,-63.384608)">
         <rect
            style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:url(#radialGradient5521-1);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.0666666;marker:none;enable-background:accumulate"
            id="rect5505-21"

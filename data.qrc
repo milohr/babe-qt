@@ -18,15 +18,14 @@
         <file>data/full_mode.svg</file>
         <file>data/media-playback-pause.svg</file>
         <file>data/banner.svg</file>
-        <file>data/babe_64.svg</file>
-        <file>data/babe_48.svg</file>
         <file>data/banner.png</file>
         <file>data/add.svg</file>
         <file>data/ajax-loader.gif</file>
         <file>data/playBtn.svg</file>
         <file>data/playBtn_hover.svg</file>
         <file>data/Babe.notifyrc</file>
-        <file>data/babe_128.svg</file>
+        <file>data/128-apps-babe.svg</file>
+        <file>data/48-apps-babe.svg</file>
         <file>data/icons/albums_selected.svg</file>
         <file>data/icons/albums.svg</file>
         <file>data/icons/artists_selected.svg</file>

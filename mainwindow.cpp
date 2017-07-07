@@ -28,7 +28,7 @@ MainWindow::MainWindow(const QStringList &files, QWidget *parent) :
     ui->setupUi(this);
 
     this->setWindowTitle(" Babe ... \xe2\x99\xa1  \xe2\x99\xa1 \xe2\x99\xa1 ");
-    this->setWindowIcon(QIcon(":Data/data/babe_48.svg"));
+    this->setWindowIcon(QIcon(":Data/data/48-apps-babe.svg"));
     this->setWindowIconText("Babe...");
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     this->defaultWindowFlags = this->windowFlags();

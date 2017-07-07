@@ -21,7 +21,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="data.qrc">
-    <normaloff>:/Data/data/babe_48.svg</normaloff>:/Data/data/babe_48.svg</iconset>
+    <normaloff>:/Data/data/48-apps-babe.svg</normaloff>:/Data/data/48-apps-babe.svg</iconset>
   </property>
   <property name="autoFillBackground">
    <bool>false</bool>

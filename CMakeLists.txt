@@ -7,7 +7,8 @@ set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake/modules)
 
 include(KDEInstallDirs)
 include(KDECMakeSettings)
-include (KDECompilerSettings NO_POLICY_SCOPE)
+include(KDECompilerSettings NO_POLICY_SCOPE)
+include(ECMInstallIcons)
 include(FeatureSummary)
 
 set (QT_MIN_VERSION "5.5.0")
@@ -34,6 +35,8 @@ find_package (
 
 find_package (Taglib REQUIRED)
 include_directories (${TAGLIB_INCLUDES})
+
+add_subdirectory(data)
 
 set(babe_SRCS
   main.cpp

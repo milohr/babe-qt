@@ -31,7 +31,7 @@ About::About(QWidget *parent) :
 
     ui->about->appendPlainText("Babe..\nTiny Qt Music Player\nVersion: 0.5 Beta\nBabe is developed and designed by Camilo Higuita \nThis is a free and open source app, so feel free to fork it, submit code or redistribute it");
     //connect(ui->about,SIGNAL(clicked()),this,SLOT(labelClicked()));
-    this->setWindowIcon(QIcon(":Data/data/babe_48.svg"));
+    this->setWindowIcon(QIcon(":Data/data/48-apps-babe.svg"));
     this->setWindowIconText("About Babe...");
 
 }
