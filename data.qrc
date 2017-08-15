@@ -24,8 +24,6 @@
         <file>data/playBtn.svg</file>
         <file>data/playBtn_hover.svg</file>
         <file>data/Babe.notifyrc</file>
-        <file>data/128-apps-babe.svg</file>
-        <file>data/48-apps-babe.svg</file>
         <file>data/icons/albums_selected.svg</file>
         <file>data/icons/albums.svg</file>
         <file>data/icons/artists_selected.svg</file>
@@ -48,5 +46,6 @@
         <file>data/go-top.svg</file>
         <file>data/go-bottom.svg</file>
         <file>data/appointment-new.svg</file>
+        <file>script.sql</file>
     </qresource>
 </RCC>
