@@ -91,6 +91,8 @@ MainWindow::MainWindow(const QStringList &files, QWidget *parent) :
 
     } else settings_widget->createCollectionDB();
 
+
+
     timer = new QTimer(this);
     connect(timer, &QTimer::timeout, [this]()
     {

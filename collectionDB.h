@@ -30,7 +30,7 @@ public:
     explicit CollectionDB();
     //CollectionDB(bool connect);
     ~CollectionDB(){}
-    void openCollection(QString path);
+    void openCollection(const QString &path);
     QSqlQuery getQuery(QString queryTxt);
     bool checkQuery(QString queryTxt);
     bool insertInto(const QString &tableName, const QString &column, const QString &location, const QVariant &value);

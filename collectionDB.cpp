@@ -49,7 +49,7 @@ void CollectionDB::closeConnection()
     m_db.close();
 }
 
-void CollectionDB::openCollection(QString path)
+void CollectionDB::openCollection(const QString &path)
 {
     m_db = QSqlDatabase::addDatabase("QSQLITE");
     m_db.setDatabaseName(path);
@@ -68,13 +68,56 @@ void CollectionDB::openCollection(QString path)
 void CollectionDB::prepareCollectionDB()
 {
     QSqlQuery query;
-    query.exec("CREATE TABLE tracks(track integer, title text, artist text, album text, genre text, location text unique, stars integer, babe integer, art text, played integer, playlist text, lyric text);");
-    query.exec("CREATE TABLE albums(title text, artist text, art text, wiki text);");
-    query.exec("CREATE TABLE playlists(title text, art text unique);");
-    query.exec("CREATE TABLE artists(title text, art text, wiki text);");
 
-    //query.exec("CREATE TABLE tracks(title text, album text, artist text, location text, stars integer, babe integer);");
+    QFile file(":/Data/script.sql");
+
+    if (!file.exists())
+    {
+        QString log = QStringLiteral("Fatal error on build database. The file '");
+        log.append(file.fileName() + QStringLiteral("' for database and tables creation query cannot be not found!"));
+        qDebug()<<log;
+        return;
+    }
+
+    if (!file.open(QIODevice::ReadOnly))
+    {
+        qDebug()<<QStringLiteral("Fatal error on try to create database! The file with sql queries for database creation cannot be opened!");
+        return;
+    }
+
+    bool hasText;
+    QString line;
+    QByteArray readLine;
+    QString cleanedLine;
+    QStringList strings;
+
+    while (!file.atEnd())
+    {
+        hasText     = false;
+        line        = "";
+        readLine    = "";
+        cleanedLine = "";
+        strings.clear();
+        while (!hasText)
+        {
+            readLine    = file.readLine();
+            cleanedLine = readLine.trimmed();
+            strings     = cleanedLine.split("--");
+            cleanedLine = strings.at(0);
+            if (!cleanedLine.startsWith("--") && !cleanedLine.startsWith("DROP") && !cleanedLine.isEmpty())
+                line += cleanedLine;
+            if (cleanedLine.endsWith(";"))
+                break;
+            if (cleanedLine.startsWith("COMMIT"))
+                hasText = true;
+        }
+        if (!line.isEmpty())
+            query.exec(line);
+    }
+
+    file.close();
 }
+
 
 bool CollectionDB::removePath(const QString &path)
 {
