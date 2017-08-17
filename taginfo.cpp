@@ -70,15 +70,16 @@ QString TagInfo::fileName()
     //return file.file()->name();
 }
 
-int TagInfo::getYear() {
+uint TagInfo::getYear()
+{
     //return BaeUtils::getNameFromLocation(path);
-    return static_cast<signed int>(file.tag()->year());
+    return file.tag()->year();
 }
 
 
 int TagInfo::getDuration()
 {
-    return file.audioProperties()->length();
+    return file.audioProperties()->lengthInSeconds();
 
 }
 
@@ -93,7 +94,7 @@ QString TagInfo::getComment()
 QByteArray TagInfo::getCover()
 {
     QByteArray array;
-    
+
     return array;
 }
 

@@ -169,12 +169,12 @@ void settings::refreshWatchFiles()
 
     while (query.next())
     {
-        if(!query.value(CollectionDB::LOCATION).toString().contains(youtubeCachePath))
+        if(!query.value(CollectionDB::columns::URL).toString().contains(youtubeCachePath))
         {
-            if (!dirs.contains(QFileInfo(query.value(CollectionDB::LOCATION).toString()).dir().path())&&QFileInfo(query.value(CollectionDB::LOCATION).toString()).exists())
+            if (!dirs.contains(QFileInfo(query.value(CollectionDB::columns::URL).toString()).dir().path())&&QFileInfo(query.value(CollectionDB::columns::URL).toString()).exists())
             {
 
-                QString dir =QFileInfo(query.value(CollectionDB::LOCATION).toString()).dir().path();
+                QString dir =QFileInfo(query.value(CollectionDB::columns::URL).toString()).dir().path();
 
                 dirs << dir;
                 QDirIterator it(dir,QDir::Dirs | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
@@ -315,7 +315,7 @@ void settings::collectionWatcher()
     QSqlQuery query = collection_db.getQuery("SELECT * FROM tracks");
     while (query.next())
     {
-        QString location = query.value(CollectionDB::LOCATION).toString();
+        QString location = query.value(CollectionDB::columns::URL).toString();
         if(!location.contains(youtubeCachePath)) //exclude the youtube cache folder
         {
             if (!dirs.contains(QFileInfo(location).dir().path()) && BaeUtils::fileExists(location)) //check if parent dir isn't already in list and it exists
@@ -392,7 +392,8 @@ void settings::setToolbarIconSize(const int &iconSize)
 
 }
 
-bool settings::checkCollection() {
+bool settings::checkCollection()
+{
 
 
     if (BaeUtils::fileExists(collectionDBPath + collectionDBName))
@@ -404,7 +405,7 @@ bool settings::checkCollection() {
 
         return true;
 
-    } else { return false; }
+    } else return false;
 
 }
 

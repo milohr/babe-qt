@@ -22,10 +22,19 @@ class CollectionDB : public QObject
 public:
 
 
-    enum columns
+    enum sourceTypes
     {
-        TRACK,TITLE,ARTIST,ALBUM,GENRE,LOCATION,STARS,BABE,ART,PLAYED,PLAYLIST,LYRIC,columnsCOUNT
+        LOCAL, ONLINE, DEVICE
     };
+
+//    enum columns
+//    {
+//        URL,SOURCES_URL,TRACK,TITLE,DURATION,PLAYED,FAVORITE,STARS,RELEASE_DATE,ADD_DATE,LYRICS,GENRE,MOOD,columnsCOUNT
+//    };
+    enum columns
+       {
+           TRACK,TITLE,ARTIST,ALBUM,GENRE,LOCATION,STARS,BABE,ART,PLAYED,PLAYLIST,LYRIC,URL,columnsCOUNT
+       };
 
     explicit CollectionDB();
     //CollectionDB(bool connect);
@@ -39,7 +48,6 @@ public:
     bool removeQuery(QString queryTxt);
     bool execQuery(QString queryTxt);
     bool check_existance(QString tableName, QString searchId, QString search);
-    void addTrack(const QStringList &paths, const int &babe=0);
 
     QList<QMap<int, QString>> getTrackData(const QStringList &urls);
     QList<QMap<int, QString>> getTrackData(const QString &queryText);
@@ -51,24 +59,36 @@ public:
     QStringList artists;
 
 
+    /* usefull actions */
+    void addTrack(const QStringList &paths, const int &babe=0);
+
+    /*useful tools*/
+    sourceTypes sourceType(const QString &url);
+
+
 private:
 
     QSqlDatabase m_db;
+    QSqlQuery sqlQuery;
     QList <Track> trackList;
+
+    /*basic actions*/
+    bool insert(const QString &tableName, const QVariantMap &insertData);
+    bool update();
+    bool remove();
+    QSqlQuery select();
+
 
 
 public slots:
-
     void closeConnection();
     void insertPlaylist(const QString &name);
-
     bool removePath(const QString &path);
     void setCollectionLists();
     void refreshArtistsTable();
     void cleanCollectionLists();
     void insertCoverArt(QString path, QStringList info);
     void insertHeadArt(QString path, QStringList info);
-
 
 signals:
     void progress(int);

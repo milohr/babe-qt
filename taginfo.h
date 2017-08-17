@@ -28,7 +28,7 @@ public:
     QString getComment();
     QByteArray getCover();
     int getDuration();
-    int getYear();
+    uint getYear();
 
     void setAlbum(QString album);
     void setTitle(QString title);
