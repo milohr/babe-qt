@@ -171,10 +171,10 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     albumTable = new BabeTable(this);
     albumTable->setFrameShape(QFrame::NoFrame);
     //    albumTable->horizontalHeader()->setVisible(false);
-    albumTable->showColumn(BabeTable::TRACK);
-    albumTable->showColumn(BabeTable::STARS);
-    albumTable->hideColumn(BabeTable::ARTIST);
-    albumTable->hideColumn(BabeTable::ALBUM);
+    albumTable->showColumn(BaeUtils::TracksCols::TRACK);
+    albumTable->showColumn(BaeUtils::TracksCols::STARS);
+    albumTable->hideColumn(BaeUtils::TracksCols::ARTIST);
+    albumTable->hideColumn(BaeUtils::TracksCols::ALBUM);
 
     auto albumBox = new QGridLayout();
     albumBox->setContentsMargins(0,0,0,0);
@@ -241,18 +241,18 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
 
     }
 
-//    auto spacer = new QWidget(this);
-//    spacer->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
-//    spacer->setFixedHeight(15);
-//    spacer->setAutoFillBackground(true);
-//    spacer->setBackgroundRole(QPalette::Light);
-//    spacer->setStyleSheet("QWidget{background-color:transparent;");
+    //    auto spacer = new QWidget(this);
+    //    spacer->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
+    //    spacer->setFixedHeight(15);
+    //    spacer->setAutoFillBackground(true);
+    //    spacer->setBackgroundRole(QPalette::Light);
+    //    spacer->setStyleSheet("QWidget{background-color:transparent;");
 
     QSplitter *splitter = new QSplitter(parent);
     splitter->setChildrenCollapsible(false);
     splitter->setOrientation(Qt::Vertical);
 
-//    splitter->addWidget(spacer);
+    //    splitter->addWidget(spacer);
     splitter->addWidget(grid);
     splitter->addWidget(line_h);
     splitter->addWidget(albumBox_frame);
@@ -348,31 +348,30 @@ void AlbumsView::orderChanged()
 
 void AlbumsView::populateTableView()
 {
-    QSqlQuery query = connection.getQuery("SELECT * FROM albums");
+    QSqlQuery query = connection.getQuery("SELECT title, artist, artwork FROM albums");
 
     qDebug()<<"ON POPULATE ALBUM VIEW:";
-//    int i =0;
+    //    int i =0;
     while (query.next())
     {
         QString artist = query.value(ARTIST).toString();
         QString album = query.value(TITLE).toString();
-        QString art=":Data/data/cover.svg";
+        QString art = query.value(ARTWORK).toString();
 
-        if(!albums.contains(album+" "+artist))
-        {
-            albums<<album+" "+artist;
-            //qDebug()<<"creating a new album[cover] for<<"<<album+" "+artist;
-            if(!query.value(ART).toString().isEmpty()&&query.value(ART).toString()!="NULL")
-                art = query.value(ART).toString();
-            else art = connection.getArtistArt(artist);
+        albums<<album+" "+artist;
 
-            auto artwork= new Album(this);
-            connect(artwork,&Album::albumCreated,[this](Album *album){emit createdAlbum(album);});
-            artwork->createAlbum(artist,album,art,BaeUtils::MEDIUM_ALBUM,4,true);
+        if(art.isEmpty() || art=="NULL")
+            art = connection.getArtistArt(artist);
+        if(art.isEmpty() || art=="NULL")
+            art=":Data/data/cover.svg";
 
-        }
+        auto artwork= new Album(this);
+        connect(artwork,&Album::albumCreated,[this](Album *album){emit createdAlbum(album);});
+        artwork->createAlbum(artist,album,art,BaeUtils::MEDIUM_ALBUM,4,true);
 
-//        qDebug()<<"oi"<<i++;
+
+
+        //        qDebug()<<"oi"<<i++;
     }
 
     //grid->adjustSize();
@@ -381,7 +380,7 @@ void AlbumsView::populateTableView()
 }
 
 
-void AlbumsView::filter(const QList<QMap<int,QString>> &filter, const BabeTable::columns &type)
+void AlbumsView::filter(const QList<QMap<int,QString>> &filter, const BaeUtils::TracksCols &type)
 {
 
     hide_all(true);
@@ -395,11 +394,11 @@ void AlbumsView::filter(const QList<QMap<int,QString>> &filter, const BabeTable:
         switch(type)
 
         {
-        case BabeTable::ALBUM:
-            matches<<grid->findItems(result[BabeTable::ALBUM]+" "+result[BabeTable::ARTIST], Qt::MatchFlag::MatchContains);
+        case BaeUtils::TracksCols::ALBUM:
+            matches<<grid->findItems(result[BaeUtils::TracksCols::ALBUM]+" "+result[BaeUtils::TracksCols::ARTIST], Qt::MatchFlag::MatchContains);
             break;
-        case BabeTable::ARTIST:
-            matches<<grid->findItems(result[BabeTable::ARTIST], Qt::MatchFlag::MatchContains);
+        case BaeUtils::TracksCols::ARTIST:
+            matches<<grid->findItems(result[BaeUtils::TracksCols::ARTIST], Qt::MatchFlag::MatchContains);
             break;
         }
 
@@ -423,28 +422,25 @@ void AlbumsView::babeAlbum(QMap<int,QString> info)
 
 void AlbumsView::populateTableViewHeads()
 {
-    QSqlQuery query = connection.getQuery("SELECT * FROM artists");
+    QSqlQuery query = connection.getQuery("SELECT title, artwork FROM artists");
 
     qDebug()<<"ON POPULATE HEADS VIEW:";
     while (query.next())
     {
         QString artist =query.value(TITLE).toString();
-        QString art=":Data/data/cover.svg";
+        QString art=query.value("artwork").toString();
+
+        artists<<artist;
+
+        if(art.isEmpty() || art=="NULL")
+            art=":Data/data/cover.svg";
+
+        auto artwork= new Album(this);
+
+        connect(artwork,&Album::albumCreated,[this](Album *album){emit createdAlbum(album);});
+        artwork->createAlbum(artist,"",art,BaeUtils::MEDIUM_ALBUM,4,true);
 
 
-        if(!artists.contains(artist))
-        {
-            artists<<artist;
-
-            if(!query.value(1).toString().isEmpty()&&query.value(1).toString()!="NULL")
-                art=(query.value(1).toString());
-
-            auto artwork= new Album(this);
-
-            connect(artwork,&Album::albumCreated,[this](Album *album){emit createdAlbum(album);});
-            artwork->createAlbum(artist,"",art,BaeUtils::MEDIUM_ALBUM,4,true);
-
-        }
     }
 
     grid->sortItems(Qt::AscendingOrder);

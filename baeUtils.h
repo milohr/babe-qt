@@ -14,6 +14,16 @@ using namespace std;
 namespace BaeUtils
 {
 
+
+enum TracksCols
+{
+    URL=0,SOURCES_URL=1,TRACK=2,TITLE=3,
+    ARTIST=4, ALBUM=5, DURATION=6,
+    PLAYED=7,BABE=8,STARS=9,RELEASE_DATE=10,
+    ADD_DATE=11,LYRICS=12,GENRE=13,ART=14, columnsCOUNT=15
+};
+
+
 enum ALbumSizeHint {BIG_ALBUM=200,MEDIUM_ALBUM=120,SMALL_ALBUM=80};
 
 static const int MAX_BIG_ALBUM_SIZE=300;

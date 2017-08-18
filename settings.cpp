@@ -169,12 +169,12 @@ void settings::refreshWatchFiles()
 
     while (query.next())
     {
-        if(!query.value(CollectionDB::columns::URL).toString().contains(youtubeCachePath))
+        if(!query.value(BaeUtils::TracksCols::URL).toString().contains(youtubeCachePath))
         {
-            if (!dirs.contains(QFileInfo(query.value(CollectionDB::columns::URL).toString()).dir().path())&&QFileInfo(query.value(CollectionDB::columns::URL).toString()).exists())
+            if (!dirs.contains(QFileInfo(query.value(BaeUtils::TracksCols::URL).toString()).dir().path())&&QFileInfo(query.value(BaeUtils::TracksCols::URL).toString()).exists())
             {
 
-                QString dir =QFileInfo(query.value(CollectionDB::columns::URL).toString()).dir().path();
+                QString dir =QFileInfo(query.value(BaeUtils::TracksCols::URL).toString()).dir().path();
 
                 dirs << dir;
                 QDirIterator it(dir,QDir::Dirs | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
@@ -289,14 +289,16 @@ void settings::removeSettings(QStringList setting) {
         }
     }
 
-    if (replace) {
+    if (replace)
+    {
         std::ofstream write(settingPath.toStdString() + settingsName.toStdString());
 
-        for (auto ln : newline) {
+        for (auto ln : newline)
             write << ln.toStdString() << std::endl;
-        }
 
-    } else {
+
+    } else
+    {
         std::ofstream write(settingPath.toStdString() + settingsName.toStdString(),
                             std::ios::app);
         write << strNew << std::endl;
@@ -312,36 +314,31 @@ void settings::addToWatcher(QStringList paths)
 
 void settings::collectionWatcher()
 {
-    QSqlQuery query = collection_db.getQuery("SELECT * FROM tracks");
+    QSqlQuery query = collection_db.getQuery("SELECT url FROM tracks");
     while (query.next())
     {
-        QString location = query.value(CollectionDB::columns::URL).toString();
-        if(!location.contains(youtubeCachePath)) //exclude the youtube cache folder
+        QString location = query.value(1).toString();
+        if(!location.startsWith(youtubeCachePath,Qt::CaseInsensitive)) //exclude the youtube cache folder
         {
             if (!dirs.contains(QFileInfo(location).dir().path()) && BaeUtils::fileExists(location)) //check if parent dir isn't already in list and it exists
             {
-                QString dir =QFileInfo(location).dir().path();
+                QString dir = QFileInfo(location).dir().path();
                 dirs << dir;
 
                 QDirIterator it(dir, QDir::Dirs | QDir::NoDotAndDotDot, QDirIterator::Subdirectories); // get all the subdirectories to watch
                 while (it.hasNext())
                 {
-                    QString subDir = it.next();
-                    subDir = QFileInfo(subDir).path();
+                    QString subDir = QFileInfo(it.next()).path();
 
-                    if(QFileInfo(subDir).isDir())
-                        if(!dirs.contains(subDir))
-                            dirs <<subDir;
-
+                    if(QFileInfo(subDir).isDir() && !dirs.contains(subDir))
+                        dirs <<subDir;
                 }
 
             }
         }
-
     }
 
     addToWatcher(dirs);
-    // for(auto m: dirs) qDebug()<<m;
 }
 
 void settings::handleDirectoryChanged(QString dir)
@@ -468,19 +465,18 @@ void settings::fetchArt()
     ui->label->show();
     movie->start();
     QSqlQuery query_Covers =
-            collection_db.getQuery("SELECT * FROM albums WHERE art = ''");
+            collection_db.getQuery("SELECT title, artist FROM albums WHERE artwork = ''");
     QSqlQuery query_Heads =
-            collection_db.getQuery("SELECT * FROM artists WHERE art = ''");
+            collection_db.getQuery("SELECT title FROM artists WHERE artwork = ''");
 
     while (query_Covers.next())
     {
-
-        QString artist = query_Covers.value(1).toString();
-        QString album = query_Covers.value(0).toString();
+        QString album = query_Covers.value("title").toString();
+        QString artist = query_Covers.value("artist").toString();
         QString title;
         QSqlQuery query_Title =
-                collection_db.getQuery("SELECT * FROM tracks WHERE artist = \""+artist+"\" AND album = \""+album+"\"");
-        if(query_Title.next()) title=query_Title.value(CollectionDB::TITLE).toString();
+                collection_db.getQuery("SELECT title FROM tracks WHERE artist = \""+artist+"\" AND album = \""+album+"\"");
+        if(query_Title.next()) title=query_Title.value("title").toString();
 
         collection_db.insertCoverArt("",{album,artist});
 
@@ -498,7 +494,7 @@ void settings::fetchArt()
 
     while (query_Heads.next())
     {
-        QString artist = query_Heads.value(0).toString();
+        QString artist = query_Heads.value("title").toString();
 
         collection_db.insertHeadArt("",{artist});
 

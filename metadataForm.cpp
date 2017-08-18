@@ -28,11 +28,11 @@ metadataForm::metadataForm(QMap<int,QString> info, QWidget *parent) :
      setWindowFlags(flags);
      //mapFromParent(QPoint(100, 100));
 
-     track=info[BabeTable::TRACK];
-     title=info[BabeTable::TITLE];
-     artist=info[BabeTable::ARTIST];
-     album=info[BabeTable::ALBUM];
-     genre=info[BabeTable::GENRE];
+     track=info[BaeUtils::TracksCols::TRACK];
+     title=info[BaeUtils::TracksCols::TITLE];
+     artist=info[BaeUtils::TracksCols::ARTIST];
+     album=info[BaeUtils::TracksCols::ALBUM];
+     genre=info[BaeUtils::TracksCols::GENRE];
 
      ui->trackLine->setText(track);
      ui->titleLine->setText(title);
@@ -65,7 +65,7 @@ void metadataForm::on_changebtn_clicked()
     if(_track!=this->track || _title!=this->title || _artist!=this->artist || _album!=this->album || _genre!=this->genre)
     {
         qDebug()<< "the info did changed";
-        const QMap<int, QString> map{{BabeTable::TRACK, _track}, {BabeTable::TITLE, _title}, {BabeTable::ARTIST, _artist},{BabeTable::ALBUM,_album},{BabeTable::GENRE,_genre}};
+        const QMap<int, QString> map{{BaeUtils::TracksCols::TRACK, _track}, {BaeUtils::TracksCols::TITLE, _title}, {BaeUtils::TracksCols::ARTIST, _artist},{BaeUtils::TracksCols::ALBUM,_album},{BaeUtils::TracksCols::GENRE,_genre}};
 
         emit infoModified(map);
     }else

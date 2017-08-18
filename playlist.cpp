@@ -71,9 +71,11 @@ QList<QMap<int,QString>> Playlist::getTracksData()
         QString stars = "";
         QString babe = "";
         QString played = "";
-        QString playlist = "";
+        QString addDate = "";
+        QString releaseDate = "";
+        QString duration = "";
 
-        const QMap<int, QString> map{{BabeTable::TRACK,track},{BabeTable::TITLE,title},{BabeTable::ARTIST,artist},{BabeTable::ALBUM,album},{BabeTable::GENRE,genre},{BabeTable::LOCATION,location},{BabeTable::STARS,stars},{BabeTable::BABE,babe},{BabeTable::ART,art},{BabeTable::PLAYED,played},{BabeTable::PLAYLIST,playlist}};
+        const QMap<int, QString> map{{BaeUtils::TracksCols::TRACK,track},{BaeUtils::TracksCols::TITLE,title},{BaeUtils::TracksCols::ARTIST,artist},{BaeUtils::TracksCols::ALBUM,album},{BaeUtils::TracksCols::DURATION,duration},{BaeUtils::TracksCols::GENRE,genre},{BaeUtils::TracksCols::URL,location},{BaeUtils::TracksCols::STARS,stars},{BaeUtils::TracksCols::BABE,babe},{BaeUtils::TracksCols::ART,art},{BaeUtils::TracksCols::PLAYED,played},{BaeUtils::TracksCols::RELEASE_DATE,releaseDate},{BaeUtils::TracksCols::ADD_DATE,addDate}};
 
         mapList<<map;
 

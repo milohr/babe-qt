@@ -41,7 +41,7 @@ public:
     void flushGrid();
     int getAlbumSize() { return this->albumSize; }
     void hide_all(bool state);
-    void filter(const QList<QMap<int, QString> > &filter, const BabeTable::columns &type);
+    void filter(const QList<QMap<int, QString> > &filter, const BaeUtils::TracksCols &type);
     QSlider *slider;
     QAction *order;
     QFrame *utilsFrame;
@@ -50,7 +50,7 @@ public:
     QToolButton *expandBtn;
 
 
-    enum ALBUMSVIEW_H{ TITLE, ARTIST, ART };
+    enum ALBUMSVIEW_H{ TITLE, ARTIST, ARTWORK };
 
 private:
 

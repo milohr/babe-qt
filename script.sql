@@ -1,115 +1,92 @@
 
 CREATE TABLE ALBUMS
-  (
-    id      INTEGER PRIMARY KEY,
-    title   TEXT NOT NULL ,
-    artwork TEXT NOT NULL ,
-    wiki    TEXT
-  ) ;
+(
+title   TEXT,
+artist  TEXT,
+artwork TEXT,
+wiki    TEXT,
+PRIMARY KEY(title, artist),
+FOREIGN KEY(artist) REFERENCES artists(title)
+) ;
 
 
 CREATE TABLE ARTISTS
-  (
-    id      INTEGER PRIMARY KEY ,
-    title   TEXT NOT NULL ,
-    artwork TEXT NOT NULL ,
-    wiki    TEXT
-  ) ;
-
-
-CREATE TABLE GENRES
-  (
-    id      INTEGER PRIMARY KEY ,
-    title   TEXT NOT NULL ,
-    artwork TEXT
-  ) ;
+(
+title   TEXT PRIMARY KEY ,
+artwork TEXT ,
+wiki    TEXT
+) ;
 
 
 CREATE TABLE MOODS
-  (
-    tag TEXT PRIMARY KEY
-  ) ;
+(
+tag TEXT PRIMARY KEY
+) ;
 
 
 CREATE TABLE PLAYLISTS
-  (
-    title       TEXT PRIMARY KEY ,
-    MOODS_tag TEXT NOT NULL,
-    FOREIGN KEY(MOODS_tag) REFERENCES MOODS(tag)
-  ) ;
+(
+title       TEXT PRIMARY KEY ,
+MOODS_tag TEXT NOT NULL,
+FOREIGN KEY(MOODS_tag) REFERENCES MOODS(tag)
+) ;
 
 
 CREATE TABLE SOURCES
-  (
-    url              TEXT PRIMARY KEY ,
-    SOURCE_TYPES_id INTEGER NOT NULL,
-    FOREIGN KEY(SOURCE_TYPES_id) REFERENCES SOURCES_TYPES(id)
-  ) ;
+(
+url              TEXT PRIMARY KEY ,
+SOURCE_TYPES_id INTEGER NOT NULL,
+FOREIGN KEY(SOURCE_TYPES_id) REFERENCES SOURCES_TYPES(id)
+) ;
 
 
 CREATE TABLE SOURCES_TYPES
-  (
-    id   INTEGER PRIMARY KEY ,
-    name TEXT NOT NULL
-  ) ;
+(
+id   INTEGER PRIMARY KEY ,
+name TEXT NOT NULL
+) ;
 
 
 CREATE TABLE TRACKS
-  (
-    url         TEXT PRIMARY KEY ,
-    sources_url TEXT NOT NULL ,
-    track       INTEGER NOT NULL,
-    title       TEXT NOT NULL ,
-    duration    INTEGER NOT NULL ,
-    played      INTEGER NOT NULL ,
-    favorite    INTEGER NOT NULL ,
-    stars       INTEGER NOT NULL ,
-    releaseDate DATE ,
-    addDate     DATE NOT NULL ,
-    lyrics     TEXT ,
-    GENRES_id  INTEGER  NOT NULL ,
-    FOREIGN KEY(sources_url) REFERENCES SOURCES(url),
-    FOREIGN KEY(GENRES_id) REFERENCES GENRES(id)
-  ) ;
+(
+url         TEXT PRIMARY KEY ,
+sources_url TEXT  ,
+track       INTEGER ,
+title       TEXT  ,
+artist   TEXT,
+album    TEXT,
+duration    INTEGER  ,
+played      INTEGER  ,
+babe    INTEGER  ,
+stars       INTEGER ,
+releaseDate DATE ,
+addDate     DATE ,
+lyrics     TEXT ,
+genre      TEXT,
+art        TEXT,
+FOREIGN KEY(sources_url) REFERENCES SOURCES(url),
+FOREIGN KEY(artist) REFERENCES artists(title),
+FOREIGN KEY(album) REFERENCES albums(title)
+) ;
 
 
 CREATE TABLE TRACKS_MOODS
 (
-  MOODS_tag  TEXT NOT NULL ,
-  tracks_url TEXT NOT NULL ,
-  FOREIGN KEY(MOODS_tag) REFERENCES MOODS(tag),
-  FOREIGN KEY(tracks_url) REFERENCES TRACKS(url)
+MOODS_tag  TEXT NOT NULL ,
+tracks_url TEXT NOT NULL ,
+FOREIGN KEY(MOODS_tag) REFERENCES MOODS(tag),
+FOREIGN KEY(tracks_url) REFERENCES TRACKS(url)
 
 ) ;
 
-
-CREATE TABLE TRACKS_ALBUMS
-  (
-    ALBUMS_id  INTEGER NOT NULL ,
-    tracks_url TEXT NOT NULL ,
-    FOREIGN KEY(ALBUMS_id) REFERENCES ALBUMS(id),
-    FOREIGN KEY(tracks_url) REFERENCES TRACKS(url)
-
-  ) ;
-
-
-CREATE TABLE TRACKS_ARTISTS
-  (
-    ARTISTS_id INTEGER NOT NULL ,
-    tracks_url TEXT NOT NULL ,
-    FOREIGN KEY(ARTISTS_id) REFERENCES ARTISTS(id),
-    FOREIGN KEY(tracks_url) REFERENCES TRACKS(url)
-  ) ;
-
-
 CREATE TABLE TRACKS_PLAYLISTS
-  (
-    PLAYLISTS_title TEXT NOT NULL ,
-    TRACKS_url      TEXT NOT NULL ,
-    PRIMARY KEY (PLAYLISTS_title, TRACKS_url),
-    FOREIGN KEY(PLAYLISTS_title) REFERENCES PLAYLISTS(title),
-    FOREIGN KEY(TRACKS_url) REFERENCES TRACKS(url)
-  ) ;
+(
+PLAYLISTS_title TEXT NOT NULL ,
+TRACKS_url      TEXT NOT NULL ,
+PRIMARY KEY (PLAYLISTS_title, TRACKS_url),
+FOREIGN KEY(PLAYLISTS_title) REFERENCES PLAYLISTS(title),
+FOREIGN KEY(TRACKS_url) REFERENCES TRACKS(url)
+) ;
 
 --First insertions
 

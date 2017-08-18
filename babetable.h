@@ -45,11 +45,6 @@ public:
     explicit BabeTable(QWidget *parent = 0);
     ~BabeTable();
 
-    enum columns
-    {
-        TRACK,TITLE,ARTIST,ALBUM,GENRE,LOCATION,STARS,BABE,ART,PLAYED,PLAYLIST,LYRIC,columnsCOUNT
-    };
-
     enum order
     {
         DESCENDING, ASCENDING
@@ -86,7 +81,7 @@ public:
 
     QMap<int,QString> getRowData(int row);
     QMap<QString, QString> getKdeConnectDevices();
-    QStringList getTableColumnContent(const columns &column);
+    QStringList getTableColumnContent(const BaeUtils::TracksCols &column);
     QList<QMap<int, QString>> getAllTableContent();
 
 

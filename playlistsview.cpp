@@ -180,11 +180,11 @@ void PlaylistsView::populatePlaylist(const QModelIndex &index)
     table->flushTable();
     if (currentPlaylist == "Most Played") {
         removeBtn->setEnabled(false);
-        table->showColumn(BabeTable::PLAYED);
+        table->showColumn(BaeUtils::TracksCols::PLAYED);
         query = "SELECT * FROM tracks WHERE played > \"1\" ORDER  by played desc";
     } else if (currentPlaylist == "Favorites") {
         removeBtn->setEnabled(true);
-        table->showColumn(BabeTable::STARS);
+        table->showColumn(BaeUtils::TracksCols::STARS);
         query ="SELECT * FROM tracks WHERE stars > \"0\" ORDER  by stars desc";
 
     } else if (currentPlaylist == "Babes") {
@@ -197,7 +197,7 @@ void PlaylistsView::populatePlaylist(const QModelIndex &index)
         query = "SELECT * FROM tracks WHERE location LIKE \"%" + youtubeCachePath + "%\"";
     } else if(!currentPlaylist.isEmpty()) {
         removeBtn->setEnabled(true);
-        table->hideColumn(BabeTable::PLAYED);
+        table->hideColumn(BaeUtils::TracksCols::PLAYED);
         query = "SELECT * FROM tracks WHERE playlist LIKE \"%" + currentPlaylist + "%\"";
     }
 
@@ -315,7 +315,7 @@ void PlaylistsView::addToPlaylist(const QString &playlist,const QList<QMap<int,Q
 {
 
     QStringList locations;
-    for(auto track : tracks) locations<<track[BabeTable::LOCATION];
+    for(auto track : tracks) locations<<track[BaeUtils::TracksCols::URL];
 
     populatePlaylist(locations, playlist);
 
@@ -327,18 +327,18 @@ void PlaylistsView::addToPlaylist(const QString &playlist,const QList<QMap<int,Q
 
 void PlaylistsView::populatePlaylist(const QStringList &urls, const QString &playlist)  //this needs to get fixed
 {
-    for (auto location : urls)
-    {
-        QSqlQuery query = connection.getQuery("SELECT * FROM tracks WHERE location = \"" + location + "\"");
+//    for (auto location : urls)
+//    {
+//        QSqlQuery query = connection.getQuery("SELECT * FROM tracks WHERE location = \"" + location + "\"");
 
-        QString list;
-        while (query.next())
-            list = query.value(BabeTable::PLAYLIST).toString();
-        list += " " + playlist;
+//        QString list;
+//        while (query.next())
+//            list = query.value(BabeTable::PLAYLIST).toString();
+//        list += " " + playlist;
 
-        if (connection.insertInto("tracks", "playlist", location, list))
-            qDebug() << list;
-    }
+//        if (connection.insertInto("tracks", "playlist", location, list))
+//            qDebug() << list;
+//    }
 
     emit finishedPopulatingPlaylist(playlist);
 }
@@ -355,7 +355,7 @@ void PlaylistsView::setPlaylistsMoods()
         currentPlaylist = this->moods.at(mood);
         table->flushTable();
         removeBtn->setEnabled(true);
-        table->hideColumn(BabeTable::PLAYED);
+        table->hideColumn(BaeUtils::TracksCols::PLAYED);
         QString query = "SELECT * FROM tracks WHERE art = \"" + currentPlaylist + "\"";
 
 

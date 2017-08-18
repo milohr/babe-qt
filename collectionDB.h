@@ -27,14 +27,6 @@ public:
         LOCAL, ONLINE, DEVICE
     };
 
-//    enum columns
-//    {
-//        URL,SOURCES_URL,TRACK,TITLE,DURATION,PLAYED,FAVORITE,STARS,RELEASE_DATE,ADD_DATE,LYRICS,GENRE,MOOD,columnsCOUNT
-//    };
-    enum columns
-       {
-           TRACK,TITLE,ARTIST,ALBUM,GENRE,LOCATION,STARS,BABE,ART,PLAYED,PLAYLIST,LYRIC,URL,columnsCOUNT
-       };
 
     explicit CollectionDB();
     //CollectionDB(bool connect);
@@ -87,6 +79,8 @@ public slots:
     void setCollectionLists();
     void refreshArtistsTable();
     void cleanCollectionLists();
+
+    /*useful*/
     void insertCoverArt(QString path, QStringList info);
     void insertHeadArt(QString path, QStringList info);
 
