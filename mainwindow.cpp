@@ -2218,24 +2218,17 @@ void MainWindow::on_search_textChanged(const QString &arg1)
 
     }else
     {
-
-
         albumsTable->hide_all(false);
 
         artistsTable->hide_all(false);
         resultsTable->flushTable();
 
-
         if(views->currentIndex()!=ALBUMS||views->currentIndex()!=ARTISTS)
         {
             if(prevIndex==RESULTS) views->setCurrentIndex(COLLECTION);
             else  views->setCurrentIndex(prevIndex);
-
-
         }
     }
-
-
 }
 
 void MainWindow::populateResultsTable(const QList<QMap<int, QString> > &mapList)
@@ -2265,7 +2258,7 @@ QList<QMap<int, QString> > MainWindow::searchFor(const QStringList &queries)
         {
 
             if(key == "location:")
-                mapList += settings_widget->getCollectionDB().getTrackData(QString("SELECT * FROM tracks WHERE location LIKE \"%"+searchQuery+"%\""));
+                mapList += this->connection.getTrackData(QString("SELECT * FROM tracks WHERE url LIKE \"%"+searchQuery+"%\""));
 
             else if(key == "artist:")
                 mapList += settings_widget->getCollectionDB().getTrackData(QString("SELECT * FROM tracks WHERE artist LIKE \"%"+searchQuery+"%\""));
@@ -2289,7 +2282,7 @@ QList<QMap<int, QString> > MainWindow::searchFor(const QStringList &queries)
                 mapList += settings_widget->getCollectionDB().getTrackData(QString("SELECT * FROM tracks WHERE stars = "+searchQuery));
 
             else
-                mapList += settings_widget->getCollectionDB().getTrackData(QString("SELECT * FROM tracks WHERE title LIKE \"%"+searchQuery+"%\" OR artist LIKE \"%"+searchQuery+"%\" OR album LIKE \"%"+searchQuery+"%\"OR genre LIKE \"%"+searchQuery+"%\"OR location LIKE \"%"+searchQuery+"%\""));
+                mapList += settings_widget->getCollectionDB().getTrackData(QString("SELECT * FROM tracks WHERE title LIKE \"%"+searchQuery+"%\" OR artist LIKE \"%"+searchQuery+"%\" OR album LIKE \"%"+searchQuery+"%\"OR genre LIKE \"%"+searchQuery+"%\"OR url LIKE \"%"+searchQuery+"%\""));
 
         }
     }

@@ -351,7 +351,9 @@ QList<QMap<int, QString>> CollectionDB::getTrackData(const QString &queryText)
                 {BaeUtils::TracksCols::ART,query.value(BaeUtils::TracksCols::ART).toString()},
                 {BaeUtils::TracksCols::PLAYED,query.value(BaeUtils::TracksCols::PLAYED).toString()},
                 {BaeUtils::TracksCols::ADD_DATE,query.value(BaeUtils::TracksCols::ADD_DATE).toString()},
-                {BaeUtils::TracksCols::RELEASE_DATE,query.value(BaeUtils::TracksCols::RELEASE_DATE).toString()}
+                {BaeUtils::TracksCols::RELEASE_DATE,query.value(BaeUtils::TracksCols::RELEASE_DATE).toString()},
+                {BaeUtils::TracksCols::LYRICS,query.value(BaeUtils::TracksCols::LYRICS).toString()},
+                {BaeUtils::TracksCols::SOURCES_URL,query.value(BaeUtils::TracksCols::SOURCES_URL).toString()}
             };
 
     return mapList;
