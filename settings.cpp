@@ -397,7 +397,7 @@ bool settings::checkCollection()
     {
         qDebug() << "The CollectionDB does exists.";
 
-        collection_db.openCollection(collectionDBPath + collectionDBName);
+        collection_db.setUpCollection(collectionDBPath + collectionDBName);
         collectionWatcher();
 
         return true;
@@ -412,7 +412,7 @@ void settings::createCollectionDB()
     qDebug() << "The CollectionDB doesn't exists. Going to create the database "
                 "and tables";
 
-    collection_db.openCollection(collectionDBPath + collectionDBName);
+    collection_db.setUpCollection(collectionDBPath + collectionDBName);
     collection_db.prepareCollectionDB();
 
 }

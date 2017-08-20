@@ -8,11 +8,28 @@
 #include <QFileInfo>
 #include <QApplication>
 #include <QDesktopWidget>
+#include <QTime>
 #include <cmath>
 using namespace std;
 
 namespace BaeUtils
 {
+
+
+
+enum DBTables
+{
+    ALBUMS=0,ARTISTS=1,MOODS=2,PLAYLISTS=3,SOURCES=4,SOURCES_TYPES=5,
+    TRACKS=6,TRACKS_MOODS=7,TRACKS_PLAYLISTS=8
+};
+
+static const QMap<DBTables,QString> DBTablesMap =
+{
+    {DBTables::ALBUMS,"albums"},{DBTables::ARTISTS,"artists"},{DBTables::MOODS,"moods"},
+    {DBTables::PLAYLISTS,"playlists"},{DBTables::SOURCES,"sources"},{DBTables::SOURCES_TYPES,"sources_types"},
+    {DBTables::TRACKS,"tracks"},{DBTables::TRACKS_MOODS,"tracks_moods"},{DBTables::TRACKS_PLAYLISTS,"tracks_playlists"}
+};
+
 
 
 enum TracksCols
@@ -21,6 +38,16 @@ enum TracksCols
     ARTIST=4, ALBUM=5, DURATION=6,
     PLAYED=7,BABE=8,STARS=9,RELEASE_DATE=10,
     ADD_DATE=11,LYRICS=12,GENRE=13,ART=14, columnsCOUNT=15
+};
+
+static const QMap<TracksCols,QString> TracksColsMap =
+{
+    {TracksCols::URL,"url"},{TracksCols::SOURCES_URL,"sources_url"},
+    {TracksCols::TRACK,"track"},{TracksCols::TITLE,"title"},
+    {TracksCols::ARTIST,"artist"},{TracksCols::ALBUM,"album"},
+    {TracksCols::DURATION,"duration"},{TracksCols::PLAYED,"played"},{TracksCols::BABE,"babe"},
+    {TracksCols::STARS,"stars"},{TracksCols::RELEASE_DATE,"releaseDate"},{TracksCols::ADD_DATE,"addDate"},
+    {TracksCols::LYRICS,"lyrics"},{TracksCols::GENRE,"genre"},{TracksCols::ART,"art"}
 };
 
 
@@ -58,6 +85,22 @@ inline int getWidgetSizeHint(const double &factor, const ALbumSizeHint &deafultV
 
     return MAX_MID_ALBUM_SIZE;
 }
+
+inline QString transformTime(const qint64 &value)
+{
+    QString tStr;
+    if (value)
+    {
+        QTime time((value/3600)%60, (value/60)%60, value%60, (value*1000)%1000);
+        QString format = "mm:ss";
+        if (value > 3600)
+            format = "hh:mm:ss";
+        tStr = time.toString(format);
+    }
+    return tStr.isEmpty()?"00:00":tStr;
+}
+
+
 
 inline QString getNameFromLocation(const QString &str)
 {

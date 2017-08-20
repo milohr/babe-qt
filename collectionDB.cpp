@@ -49,13 +49,11 @@ void CollectionDB::closeConnection()
     m_db.close();
 }
 
-void CollectionDB::openCollection(const QString &path)
+void CollectionDB::setUpCollection(const QString &path)
 {
     this->m_db = QSqlDatabase::addDatabase("QSQLITE");
     this->m_db.setDatabaseName(path);
-    this->sqlQuery = QSqlQuery(m_db);
-    if (!m_db.open()) qDebug() << "Error: connection with database fail" <<m_db.lastError().text();
-    else qDebug() << "Database: connection ok";
+    this->openDB();
 }
 
 
@@ -118,8 +116,23 @@ void CollectionDB::prepareCollectionDB()
     file.close();
 }
 
+bool CollectionDB::check_existance(const QString &tableName, const QString &searchId,const QString &search)
+{
+    auto queryStr = QString("SELECT %1 FROM %2 WHERE %3 = \"%4\"").arg(searchId, tableName, searchId, search);
+      QSqlQuery query;
+    query.prepare(queryStr);
+    qDebug()<<queryStr;
+    if (query.exec())
+    {
+        if (query.next()) return true;
+    }else qDebug()<<query.lastError().text();
+
+    return false;
+
+}
+
 bool CollectionDB::insert(const QString &tableName, const QVariantMap &insertData)
-{   
+{
     if (tableName.isEmpty())
     {
         qDebug()<<QStringLiteral("Fatal error on insert! The table name is empty!");
@@ -143,15 +156,42 @@ bool CollectionDB::insert(const QString &tableName, const QVariantMap &insertDat
         return false;
     }
 
-    QString sqlQueryString;
-    sqlQueryString = "INSERT INTO " + tableName + "(" + QString(fields.join(",")) + ") VALUES(" + QString(strValues.join(",")) + ")";
-    sqlQuery.prepare(sqlQueryString);
+    QString sqlQueryString = "INSERT INTO " + tableName + "(" + QString(fields.join(",")) + ") VALUES(" + QString(strValues.join(",")) + ")";
+    QSqlQuery query;
+    query.prepare(sqlQueryString);
 
     int k = 0;
     foreach (const QVariant &value, values)
-        sqlQuery.bindValue(k++, value);
+        query.bindValue(k++, value);
 
-    return sqlQuery.exec();
+    return query.exec();
+
+}
+
+bool CollectionDB::update(const QString &table,const QString &column,const QVariant &newValue,const QVariant &op, const QString &id)
+{
+    auto queryStr = QString("update %1 set %2 = %3 where %4 = \"%5\"").arg(table, column, newValue.toString(), op.toString(), id);
+    QSqlQuery query;
+    query.prepare(queryStr);
+
+    qDebug()<<"QUERY:"<<queryStr;
+
+    if(query.exec())
+        return true;
+
+    query.lastError().text();
+    return false;
+
+}
+
+bool CollectionDB::openDB()
+{
+    if (m_db.open())
+        return true;
+
+
+    qDebug() << "Error: connection with database fail" <<m_db.lastError().text();
+    return false;
 }
 
 
@@ -159,9 +199,8 @@ void CollectionDB::addTrack(const QStringList &paths,const int &babe)
 {
     if(!paths.isEmpty())
     {
-
-
-        if(sqlQuery.exec("PRAGMA synchronous=OFF"))
+        QSqlQuery query;
+        if(query.exec("PRAGMA synchronous=OFF"))
         {
             int i=0;
 
@@ -170,7 +209,6 @@ void CollectionDB::addTrack(const QStringList &paths,const int &babe)
             {
 
                 TagInfo info(file);
-
                 QString  album;
                 int track;
                 QString title = BaeUtils::fixString(info.getTitle()); /* to fix*/
@@ -197,16 +235,16 @@ void CollectionDB::addTrack(const QStringList &paths,const int &babe)
 
                 /* first needs to insert album and artist*/
                 QVariantMap sourceMap {{"url",sourceUrl},{"source_types_id", sourceType(file)}};
-                this->insert("sources",sourceMap);
+                this->insert(BaeUtils::DBTablesMap[BaeUtils::DBTables::SOURCES],sourceMap);
 
                 QVariantMap artistMap {{"title", artist},{"artwork",""},{"wiki",""}};
-                this->insert("artists",artistMap);
+                this->insert(BaeUtils::DBTablesMap[BaeUtils::DBTables::ARTISTS],artistMap);
 
                 QVariantMap albumMap {{"title",album},{"artist",artist},{"artwork",""},{"wiki",""}};
-                this->insert("albums",albumMap);
+                this->insert(BaeUtils::DBTablesMap[BaeUtils::DBTables::ALBUMS],albumMap);
 
-                QVariantMap trackMap {{"url",file},{"sources_url",sourceUrl},{"track",track},{"title",title},{"artist",artist},{"album",album},{"duration",duration},{"played",0},{"babe",0},{"stars",0},{"releaseDate",year},{"addDate",QDate::currentDate()},{"lyrics",""},{"genre",genre},{"art",""}};
-                this->insert("tracks",trackMap);
+                QVariantMap trackMap {{"url",file},{"sources_url",sourceUrl},{"track",track},{"title",title},{"artist",artist},{"album",album},{"duration",duration},{"played",0},{"babe",babe},{"stars",0},{"releaseDate",year},{"addDate",QDate::currentDate()},{"lyrics",""},{"genre",genre},{"art",""}};
+                this->insert(BaeUtils::DBTablesMap[BaeUtils::DBTables::TRACKS],trackMap);
 
                 emit progress((i++)+1);
             }
@@ -216,6 +254,26 @@ void CollectionDB::addTrack(const QStringList &paths,const int &babe)
         }
 
     }
+}
+
+bool CollectionDB::rateTrack(const QString &path, const int &value)
+{
+    if(this->update(BaeUtils::DBTablesMap[BaeUtils::DBTables::TRACKS],
+                     BaeUtils::TracksColsMap[BaeUtils::TracksCols::STARS],
+                     value,
+                     BaeUtils::TracksColsMap[BaeUtils::TracksCols::URL],
+                     path)) return true;
+    return false;
+}
+
+bool CollectionDB::babeTrack(const QString &path, const bool &value)
+{
+    if(this->update(BaeUtils::DBTablesMap[BaeUtils::DBTables::TRACKS],
+                     BaeUtils::TracksColsMap[BaeUtils::TracksCols::BABE],
+                     value?1:0,
+                     BaeUtils::TracksColsMap[BaeUtils::TracksCols::URL],
+                     path)) return true;
+    return false;
 }
 
 void CollectionDB::insertCoverArt(QString path,QStringList info)
@@ -296,23 +354,24 @@ QList<QMap<int, QString>> CollectionDB::getTrackData(const QStringList &urls)
     QList<QMap<int, QString>> mapList;
 
     for(auto url:urls)
-    {
-        QString query("SELECT * FROM tracks WHERE location =\""+url+"\"");
-        mapList+= this->getTrackData(query);
-    }
+        mapList+=this->getTrackData
+                (
+                    QString("SELECT * FROM %1 WHERE %2 = \"%3\"").arg(BaeUtils::DBTablesMap[BaeUtils::DBTables::TRACKS],
+                    BaeUtils::TracksColsMap[BaeUtils::TracksCols::URL],url)
+                );
+
 
     return mapList;
 }
 
 QList<QMap<int, QString>> CollectionDB::getTrackData(const QString &queryText)
 {
+    qDebug()<<"on getTrackData "<<queryText;
     QList<QMap<int, QString>> mapList;
     QSqlQuery query;
     query.prepare(queryText);
-    // qDebug()<<queryText;
     if(query.exec())
     {
-        //qDebug()<<"getTrackData query passed";
         while(query.next())
         {
             QString track = query.value(BaeUtils::TracksCols::TRACK).toString();
@@ -329,12 +388,22 @@ QList<QMap<int, QString>> CollectionDB::getTrackData(const QString &queryText)
             QString releaseDate = query.value(BaeUtils::TracksCols::RELEASE_DATE).toString();
             QString duration = query.value(BaeUtils::TracksCols::DURATION).toString();
 
-            const QMap<int, QString> map{{BaeUtils::TracksCols::TRACK,track}, {BaeUtils::TracksCols::TITLE,title}, {BaeUtils::TracksCols::ARTIST,artist},{BaeUtils::TracksCols::ALBUM,album},{BaeUtils::TracksCols::DURATION,duration},{BaeUtils::TracksCols::GENRE,genre},{BaeUtils::TracksCols::URL,location},{BaeUtils::TracksCols::STARS,stars},{BaeUtils::TracksCols::BABE,babe},{BaeUtils::TracksCols::ART,art},{BaeUtils::TracksCols::PLAYED,played},{BaeUtils::TracksCols::ADD_DATE,addDate},{BaeUtils::TracksCols::RELEASE_DATE,releaseDate}};
+            QMap<int, QString> map
+            {
+                {BaeUtils::TracksCols::TRACK,track}, {BaeUtils::TracksCols::TITLE,title},
+                {BaeUtils::TracksCols::ARTIST,artist},{BaeUtils::TracksCols::ALBUM,album},
+                {BaeUtils::TracksCols::DURATION,duration},{BaeUtils::TracksCols::GENRE,genre},
+                {BaeUtils::TracksCols::URL,location},{BaeUtils::TracksCols::STARS,stars},
+                {BaeUtils::TracksCols::BABE,babe},{BaeUtils::TracksCols::ART,art},
+                {BaeUtils::TracksCols::PLAYED,played},{BaeUtils::TracksCols::ADD_DATE,addDate},
+                {BaeUtils::TracksCols::RELEASE_DATE,releaseDate}
+            };
 
             mapList<<map;
         }
     }
 
+    qDebug()<<mapList;
     return mapList;
 }
 
@@ -482,30 +551,7 @@ void CollectionDB::setTrackList(QList<Track> trackList)
         }*/
 }
 
-bool CollectionDB::check_existance(QString tableName, QString searchId, QString search)
-{
-    QSqlQuery query;
-    query.prepare("SELECT "+ searchId +" FROM "+tableName+" WHERE "+searchId+" = (:search)");
-    query.bindValue(":search", search);
 
-    if (query.exec())
-    {
-        if (query.next())
-        {
-            qDebug()<< "song does exists in db";
-            return true;
-        }else
-        {
-            qDebug()<<"song does not exists in db";
-            return false;
-        }
-
-
-    }else return false;
-
-
-
-}
 
 bool CollectionDB::execQuery(QString queryTxt)
 {
@@ -530,11 +576,11 @@ bool CollectionDB::insertInto(const QString &tableName, const QString &column, c
 
     if(query.exec("PRAGMA synchronous=OFF"))
     {
-        query.prepare("UPDATE "+tableName+" SET "+column+" = (:value) WHERE location = (:location)" );
+        query.prepare("UPDATE "+tableName+" SET "+column+" = (:value) WHERE url = (:url)" );
         //query.prepare("SELECT * FROM "+tableName+" WHERE "+searchId+" = (:search)");
 
         query.bindValue(":value", value);
-        query.bindValue(":location", location);
+        query.bindValue(":url", location);
         if(query.exec())
         {
             return true;

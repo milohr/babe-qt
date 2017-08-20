@@ -31,15 +31,13 @@ public:
     explicit CollectionDB();
     //CollectionDB(bool connect);
     ~CollectionDB(){}
-    void openCollection(const QString &path);
     QSqlQuery getQuery(QString queryTxt);
     bool checkQuery(QString queryTxt);
     bool insertInto(const QString &tableName, const QString &column, const QString &location, const QVariant &value);
     void setTrackList(QList <Track>);
-    void prepareCollectionDB();
     bool removeQuery(QString queryTxt);
     bool execQuery(QString queryTxt);
-    bool check_existance(QString tableName, QString searchId, QString search);
+
 
     QList<QMap<int, QString>> getTrackData(const QStringList &urls);
     QList<QMap<int, QString>> getTrackData(const QString &queryText);
@@ -50,9 +48,15 @@ public:
     QStringList albums;
     QStringList artists;
 
+    /*basic public actions*/
+    void prepareCollectionDB();
+    void setUpCollection(const QString &path);
+    bool check_existance(const QString &tableName, const QString &searchId, const QString &search);
 
     /* usefull actions */
     void addTrack(const QStringList &paths, const int &babe=0);
+    bool rateTrack(const QString& path, const int &value);
+    bool babeTrack(const QString& path, const bool &value);
 
     /*useful tools*/
     sourceTypes sourceType(const QString &url);
@@ -61,13 +65,13 @@ public:
 private:
 
     QSqlDatabase m_db;
-    QSqlQuery sqlQuery;
     QList <Track> trackList;
 
     /*basic actions*/
     bool insert(const QString &tableName, const QVariantMap &insertData);
-    bool update();
+    bool update(const QString &table, const QString &column, const QVariant &newValue, const QVariant &op, const QString &id);
     bool remove();
+    bool openDB();
     QSqlQuery select();
 
 

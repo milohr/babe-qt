@@ -280,7 +280,6 @@ private:
     QSlider *seekBar;
     QMenu *calibrateBtn_menu;
 
-    QString transformTime(const qint64 &value);
 
     QMap<QString, QMap<int, QString>> queued_songs;
     int prev_queued_song_pos = -1;

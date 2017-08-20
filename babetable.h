@@ -79,7 +79,7 @@ public:
     void enableRowDragging(const bool &state=false);
     //void removeRow(int row);
 
-    QMap<int,QString> getRowData(int row);
+    QMap<int,QString> getRowData(const int &row);
     QMap<QString, QString> getKdeConnectDevices();
     QStringList getTableColumnContent(const BaeUtils::TracksCols &column);
     QList<QMap<int, QString>> getAllTableContent();

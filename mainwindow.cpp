@@ -1739,19 +1739,6 @@ void MainWindow::on_seekBar_sliderMoved(const int &position)
     player->setPosition(player->duration() / 1000 * position);
 }
 
-QString MainWindow::transformTime(const qint64 &value)
-{
-    QString tStr;
-    if (value)
-    {
-        QTime time((value/3600)%60, (value/60)%60, value%60, (value*1000)%1000);
-        QString format = "mm:ss";
-        if (value > 3600)
-            format = "hh:mm:ss";
-        tStr = time.toString(format);
-    }
-    return tStr.isEmpty()?"00:00":tStr;
-}
 
 void MainWindow::update()
 {
@@ -1764,8 +1751,8 @@ void MainWindow::update()
 
         if(!seekBar->isSliderDown())
             seekBar->setValue(static_cast<int>(static_cast<double>(player->position())/player->duration()*1000));
-        ui->time->setText(this->transformTime(player->position()/1000));
-        ui->duration->setText(this->transformTime(player->duration()/1000));
+        ui->time->setText(BaeUtils::transformTime(player->position()/1000));
+        ui->duration->setText(BaeUtils::transformTime(player->duration()/1000));
 
         //        QToolTip::showText( seekBar->mapToGlobal( QPoint( 0, 0 ) ),this->transformTime(player->position()/1000) );
         if(player->state() == QMediaPlayer::StoppedState)
@@ -2018,9 +2005,9 @@ bool MainWindow::babeTrack(const QMap<int, QString> &track)
     }else
     {
 
-        if(settings_widget->getCollectionDB().check_existance("tracks","location",url))
+        if(this->connection.check_existance(BaeUtils::DBTablesMap[BaeUtils::DBTables::TRACKS],BaeUtils::TracksColsMap[BaeUtils::TracksCols::URL],url))
         {
-            if(settings_widget->getCollectionDB().insertInto("tracks","babe",url,1))
+            if(this->connection.babeTrack(url,true))
             {
                 nof.notify("Song Babe'd it",track[BaeUtils::TracksCols::TITLE]+" by "+track[BaeUtils::TracksCols::ARTIST]);
                 addToPlaylist({track},true,APPENDBOTTOM);
@@ -2035,7 +2022,6 @@ bool MainWindow::babeTrack(const QMap<int, QString> &track)
 
             ui->fav_btn->setEnabled(true);
             return true;
-
         }
 
     }
