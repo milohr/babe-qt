@@ -79,7 +79,7 @@ uint TagInfo::getYear()
 
 int TagInfo::getDuration()
 {
-    return file.audioProperties()->lengthInMilliseconds();
+    return file.audioProperties()->lengthInSeconds();
 
 }
 

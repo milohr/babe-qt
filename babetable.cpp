@@ -958,7 +958,6 @@ void BabeTable::rateGroup(const int &id, const bool &rightClick)
 
     for(auto row : this->getSelectedRows(rightClick))
     {
-
         QString location = this->getRowData(row)[BaeUtils::TracksCols::URL];
 
         if (connection.rateTrack(location,id))
@@ -972,7 +971,6 @@ void BabeTable::rateGroup(const int &id, const bool &rightClick)
             this->item(row, BaeUtils::TracksCols::STARS)->setText(stars);
 
         } else qDebug() << "rating failed for"<< location;
-
     }
 }
 
@@ -1103,20 +1101,12 @@ void BabeTable::moodIt_action(const QString &color)
     {
         for(auto row : this->getSelectedRows())
         {
-            auto track =this->getRowData(row);
-            QSqlQuery query;
-            query.prepare("UPDATE tracks SET art = (:art) WHERE location = (:location)" );
-            //query.prepare("SELECT * FROM "+tableName+" WHERE "+searchId+" = (:search)");
-            query.bindValue(":art",  color);
-            query.bindValue(":location",track[BaeUtils::TracksCols::URL]);
-
-            if(query.exec()) qDebug()<< "moodIt was sucessful";
-            else qDebug()<<"could not mood track: "<< track[BaeUtils::TracksCols::URL];
+            auto url =this->getRowData(row)[BaeUtils::TracksCols::URL];
+            if(connection.artTrack(url,color)) qDebug()<< "moodIt was sucessful";
+            else qDebug()<<"could not mood track: "<< url;
         }
-
         contextMenu->close();
-        emit moodIt_clicked(this->getSelectedRows(),color,false);
-    }
+        emit moodIt_clicked(this->getSelectedRows(),color,false);    }
 }
 
 void BabeTable::colorizeRow(const QList<int> &rows, const QString &color, const bool &dark)

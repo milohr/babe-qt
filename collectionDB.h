@@ -38,13 +38,6 @@ public:
     bool removeQuery(QString queryTxt);
     bool execQuery(QString queryTxt);
 
-
-    QList<QMap<int, QString>> getTrackData(const QStringList &urls);
-    QList<QMap<int, QString>> getTrackData(const QString &queryText);
-    QString getArtistArt(QString artist);
-    QString getAlbumArt(QString album, QString artist);
-    QStringList getPlaylists();
-    QStringList getPlaylistsMoods();
     QStringList albums;
     QStringList artists;
 
@@ -55,9 +48,18 @@ public:
 
     /* usefull actions */
     void addTrack(const QStringList &paths, const int &babe=0);
-    bool rateTrack(const QString& path, const int &value);
-    bool babeTrack(const QString& path, const bool &value);
+    bool rateTrack(const QString &path, const int &value);
+    bool babeTrack(const QString &path, const bool &value);
+    bool moodTrack(const QString &path, const QString &value);
+    bool artTrack(const QString &path, const QString &value);
 
+    QList<QMap<int, QString>> getTrackData(const QStringList &urls);
+    QList<QMap<int, QString>> getTrackData(const QString &queryText);
+    QString getTrackArt(const QString &path);
+    QString getArtistArt(const QString &artist);
+    QString getAlbumArt(const QString &album, const QString &artist);
+    QStringList getPlaylists();
+    QStringList getPlaylistsMoods();
     /*useful tools*/
     sourceTypes sourceType(const QString &url);
 

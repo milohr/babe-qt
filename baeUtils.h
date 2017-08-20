@@ -30,7 +30,30 @@ static const QMap<DBTables,QString> DBTablesMap =
     {DBTables::TRACKS,"tracks"},{DBTables::TRACKS_MOODS,"tracks_moods"},{DBTables::TRACKS_PLAYLISTS,"tracks_playlists"}
 };
 
+enum ArtistsCols
+{
+    ARTIST_TITLE=0, ARTIST_ARTWORK=1, ARTIST_WIKI=2
+};
 
+static const QMap<ArtistsCols,QString> ArtistsColsMap =
+{
+    {ArtistsCols::ARTIST_TITLE,"title"},
+    {ArtistsCols::ARTIST_ARTWORK,"artwork"},
+    {ArtistsCols::ARTIST_WIKI,"wiki"}
+};
+
+enum AlbumsCols
+{
+    ALBUM_TITLE=0, ALBUM_ARTIST=1, ALBUM_ARTWORK=2, ALBUM_WIKI=3
+};
+
+static const QMap<AlbumsCols,QString> AlbumsColsMap =
+{
+    {AlbumsCols::ALBUM_TITLE,"title"},
+    {AlbumsCols::ALBUM_ARTIST,"artist"},
+    {AlbumsCols::ALBUM_ARTWORK,"artwork"},
+    {AlbumsCols::ALBUM_WIKI,"wiki"},
+};
 
 enum TracksCols
 {

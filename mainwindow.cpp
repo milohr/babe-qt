@@ -810,7 +810,7 @@ void MainWindow::putOnPlay(const QList<QMap<int,QString>> &mapList)
 
 void MainWindow::addToPlayed(const QString &url)
 {
-    if(settings_widget->getCollectionDB().checkQuery("SELECT * FROM tracks WHERE location = \""+url+"\""))
+    if(connection.check_existance(BaeUtils::DBTablesMap[BaeUtils::DBTables::TRACKS],BaeUtils::TracksColsMap[BaeUtils::TracksCols::URL],url))
     {
         qDebug()<<"Song totally played"<<url;
 
@@ -1572,8 +1572,6 @@ void MainWindow::loadTrack()
 
         album_art->setTitle(current_song[BaeUtils::TracksCols::ARTIST],current_song[BaeUtils::TracksCols::ALBUM]);
 
-
-
         //CHECK IF THE SONG IS BABED IT OR IT ISN'T
         if(isBabed(current_song)) babedIcon(true);
         else babedIcon(false);
@@ -1597,8 +1595,6 @@ void MainWindow::loadTrack()
 
 }
 
-
-
 bool MainWindow::isBabed(const QMap<int, QString> &track)
 {
     if(settings_widget->getCollectionDB().checkQuery("SELECT * FROM tracks WHERE location = \""+track[BaeUtils::TracksCols::URL]+"\" AND babe = \"1\""))
@@ -1609,11 +1605,7 @@ bool MainWindow::isBabed(const QMap<int, QString> &track)
 
 void MainWindow::loadMood()
 {
-    QString color;
-    QSqlQuery query = settings_widget->getCollectionDB().getQuery("SELECT * FROM tracks WHERE location = \""+ current_song[BaeUtils::TracksCols::URL]+"\"");
-    if(query.exec())
-        while (query.next())
-            color=query.value(BaeUtils::TracksCols::ART).toString();
+    auto color = this->connection.getTrackArt(current_song[BaeUtils::TracksCols::URL]);
 
     auto seekbarEffect = new QGraphicsColorizeEffect(this);
     //    auto controlsEffect = new QGraphicsColorizeEffect(this);
@@ -1653,9 +1645,11 @@ bool MainWindow::loadCover(const QString &artist, const QString &album, const QS
     QString artistHead;
 
     //IF CURRENT SONG EXISTS IN THE COLLECTION THEN GET THE COVER FROM DB
-    if(settings_widget->getCollectionDB().checkQuery("SELECT * FROM tracks WHERE location = \""+current_song[BaeUtils::TracksCols::URL]+"\""))
+    if(this->connection.check_existance(BaeUtils::DBTablesMap[BaeUtils::DBTables::TRACKS],
+                                        BaeUtils::TracksColsMap[BaeUtils::TracksCols::URL],
+                                        current_song[BaeUtils::TracksCols::URL]))
     {
-        artistHead = settings_widget->getCollectionDB().getArtistArt(artist);
+        artistHead = this->connection.getArtistArt(artist);
 
         if(!artistHead.isEmpty())
         {
@@ -1665,11 +1659,11 @@ bool MainWindow::loadCover(const QString &artist, const QString &album, const QS
         }else infoTable->setArtistArt(QString(":Data/data/cover.svg"));
 
 
-        current_artwork = settings_widget->getCollectionDB().getAlbumArt(album, artist);
+        current_artwork = this->connection.getAlbumArt(album, artist);
 
         if(!current_artwork.isEmpty())
             album_art->putPixmap(current_artwork);
-        else  if (!artistHead.isEmpty())
+        else if (!artistHead.isEmpty())
         {
             current_artwork = artistHead;
             album_art->putPixmap(current_artwork);
@@ -2050,7 +2044,7 @@ void MainWindow::scanNewDir(const QString &url, const QString &babe)
     while (it.hasNext())
     {
         QString song = it.next();
-        if(!settings_widget->getCollectionDB().check_existance("tracks","location",song))
+        if(!settings_widget->getCollectionDB().check_existance(BaeUtils::DBTablesMap[BaeUtils::DBTables::TRACKS],BaeUtils::TracksColsMap[BaeUtils::TracksCols::URL],song))
             list<<song;
     }
 
