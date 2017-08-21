@@ -51,7 +51,7 @@ public slots:
     QStringList getTags();
     QStringList getSimilarArtistTags();
     void hideArtistInfo();
-    void getTrackInfo(const  QMap<int, QString> &song, const bool &album, const bool &artist, const bool &lyrics);
+    void getTrackInfo(const  QMap<int, QString> &song, const bool &album, const bool &artist, const bool &lyrics, const bool &tags);
     void on_searchBtn_clicked();
 
 signals:
@@ -65,6 +65,8 @@ signals:
     void artistSimilarReady(const QMap<QString,QByteArray> &info);
     void albumTagsReady(const QStringList &tags);
     void lyricsReady(const QString &lyrics);
+    void albumWikiReady(const QString &wiki);
+    void artistWikiReady(const QString &wiki);
 
 private slots:
 

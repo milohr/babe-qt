@@ -370,9 +370,19 @@ void MainWindow::setUpViews()
 
     connect(infoTable,&InfoView::lyricsReady, [this] (const  QString &lyrics)
     {
-            this->connection.lyricsTrack(this->infoTable->track[BaeUtils::TracksCols::URL],lyrics);
+        this->connection.lyricsTrack(this->infoTable->track[BaeUtils::TracksCols::URL],lyrics);
     });
 
+    connect(infoTable,&InfoView::albumWikiReady, [this] (const  QString &wiki)
+    {
+        this->connection.wikiAlbum(this->infoTable->track[BaeUtils::TracksCols::ALBUM],
+                this->infoTable->track[BaeUtils::TracksCols::ARTIST],wiki);
+    });
+
+    connect(infoTable,&InfoView::artistWikiReady, [this] (const  QString &wiki)
+    {
+        this->connection.wikiArtist(this->infoTable->track[BaeUtils::TracksCols::ARTIST],wiki);
+    });
 
     settings_widget->readSettings();
     connect(settings_widget,&settings::toolbarIconSizeChanged, this, &MainWindow::setToolbarIconSize);
@@ -2020,14 +2030,31 @@ bool MainWindow::babeTrack(const QMap<int, QString> &track)
 void MainWindow::loadInfo(const QMap<int, QString> &track)
 {
     auto lyrics = this->connection.getTrackLyrics(track[BaeUtils::TracksCols::URL]);
+    auto albumWiki = this->connection.getAlbumWiki(track[BaeUtils::TracksCols::ALBUM],track[BaeUtils::TracksCols::ARTIST]);
+    auto artistWiki = this->connection.getArtistWiki(track[BaeUtils::TracksCols::ARTIST]);
 
     if(lyrics.isEmpty())
-    infoTable->getTrackInfo(track,true,true,true);
+        infoTable->getTrackInfo(track,false,false,true,false);
+    else
+        this->infoTable->setLyrics(lyrics);
+
+
+    if(albumWiki.isEmpty())
+        infoTable->getTrackInfo(track,true,false,false,false);
     else
     {
-        infoTable->getTrackInfo(track,true,true,false);
-        this->infoTable->setLyrics(lyrics);
+        this->infoTable->setAlbumInfo(albumWiki);
+        infoTable->getTrackInfo(track,false,false,false,true);
     }
+
+    if(artistWiki.isEmpty())
+        infoTable->getTrackInfo(track,false,true,false,false);
+    else
+    {
+        this->infoTable->setArtistInfo(artistWiki);
+        infoTable->getTrackInfo(track,false,false,false,true);
+    }
+
 }
 
 void MainWindow::babeIt(const QList<QMap<int, QString>> &tracks)
@@ -2041,7 +2068,7 @@ void  MainWindow::infoIt(const  QMap<int, QString> &track)
 {
     //views->setCurrentIndex(INFO);
     infoView();
-this->loadInfo(track);
+    this->loadInfo(track);
 }
 
 void MainWindow::scanNewDir(const QString &url, const QString &babe)

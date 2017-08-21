@@ -170,12 +170,9 @@ bool CollectionDB::insert(const QString &tableName, const QVariantMap &insertDat
 
 bool CollectionDB::update(const QString &table,const QString &column,const QVariant &newValue,const QVariant &op, const QString &id)
 {
-    auto queryStr = QString("UPDATE %1 SET %2 = \"%3\" WHERE %4 = \"%5\"").arg(table, column, newValue.toString(), op.toString(), id);
-    QSqlQuery query;
-    query.prepare(queryStr);
-
-    qDebug()<<"QUERY:"<<queryStr;
-
+    auto queryStr = QString("UPDATE %1 SET %2 = \"%3\" WHERE %4 = \"%5\"").arg(table, column, newValue.toString().replace("\"","\"\""), op.toString(), id);
+    QSqlQuery query(queryStr);
+    qDebug()<<queryStr;
     if(query.exec())
         return true;
 
@@ -326,11 +323,28 @@ bool CollectionDB::lyricsTrack(const QString &path, const QString &value)
 
 bool CollectionDB::wikiArtist(const QString &artist, const QString &value)
 {
-    return false;
-}
+    if(this->update(BaeUtils::DBTablesMap[BaeUtils::DBTables::ARTISTS],
+                    BaeUtils::ArtistsColsMap[BaeUtils::ArtistsCols::ARTIST_WIKI],
+                    value,
+                    BaeUtils::ArtistsColsMap[BaeUtils::ArtistsCols::ARTIST_TITLE],
+                    artist)) return true;
+    return false;}
 
-bool CollectionDB::wikiAlbum(const QString &album, const QString &artist, const QString &value)
+bool CollectionDB::wikiAlbum(const QString &album, const QString &artist,  QString value)
 {
+    auto queryStr = QString("UPDATE %1 SET %2 = \"%3\" WHERE %4 = \"%5\" AND %6 = \"%7\"").arg(
+                BaeUtils::DBTablesMap[BaeUtils::DBTables::ALBUMS],
+            BaeUtils::AlbumsColsMap[BaeUtils::AlbumsCols::ALBUM_WIKI], value.replace("\"","\"\""),
+            BaeUtils::AlbumsColsMap[BaeUtils::AlbumsCols::ALBUM_TITLE],
+            album,BaeUtils::AlbumsColsMap[BaeUtils::AlbumsCols::ALBUM_ARTIST], artist);
+
+    qDebug()<<queryStr;
+    QSqlQuery query(queryStr);
+
+    if(query.exec())
+        return true;
+
+    query.lastError().text();
     return false;
 }
 
@@ -340,9 +354,9 @@ QList<QMap<int, QString>> CollectionDB::getTrackData(const QStringList &urls)
 
     for(auto url:urls)
         mapList<<this->getTrackData
-                (
-                    QString("SELECT * FROM %1 WHERE %2 = \"%3\"").arg(BaeUtils::DBTablesMap[BaeUtils::DBTables::TRACKS],
-                    BaeUtils::TracksColsMap[BaeUtils::TracksCols::URL],url)
+                 (
+                     QString("SELECT * FROM %1 WHERE %2 = \"%3\"").arg(BaeUtils::DBTablesMap[BaeUtils::DBTables::TRACKS],
+                     BaeUtils::TracksColsMap[BaeUtils::TracksCols::URL],url)
                 );
 
     return mapList;
@@ -423,6 +437,21 @@ QString CollectionDB::getArtistArt(const QString &artist)
     return artistHead;
 }
 
+QString CollectionDB::getArtistWiki(const QString &artist)
+{
+    QString wiki;
+
+    QSqlQuery query(QString("SELECT %1 FROM %2 WHERE %3 = \"%4\"").arg(BaeUtils::ArtistsColsMap[BaeUtils::ArtistsCols::ARTIST_WIKI],
+                    BaeUtils::DBTablesMap[BaeUtils::DBTables::ARTISTS],
+            BaeUtils::ArtistsColsMap[BaeUtils::ArtistsCols::ARTIST_TITLE],artist));
+
+    if(query.exec())
+        while (query.next())
+            wiki = query.value(0).toString();
+
+    return wiki;
+}
+
 QString CollectionDB::getAlbumArt(const QString &album, const QString &artist)
 {
     QString albumCover;
@@ -437,6 +466,22 @@ QString CollectionDB::getAlbumArt(const QString &album, const QString &artist)
             albumCover = queryCover.value(0).toString();
 
     return albumCover;
+}
+
+QString CollectionDB::getAlbumWiki(const QString &album, const QString &artist)
+{
+    QString wiki;
+    auto queryStr = QString("SELECT %1 FROM %2 WHERE %3 = \"%4\" AND %5 = \"%6\"").arg(BaeUtils::AlbumsColsMap[BaeUtils::AlbumsCols::ALBUM_WIKI],
+            BaeUtils::DBTablesMap[BaeUtils::DBTables::ALBUMS],
+            BaeUtils::AlbumsColsMap[BaeUtils::AlbumsCols::ALBUM_TITLE],album,
+            BaeUtils::AlbumsColsMap[BaeUtils::AlbumsCols::ALBUM_ARTIST],artist);
+    QSqlQuery query(queryStr);
+
+    if(query.exec())
+        while (query.next())
+            wiki = query.value(0).toString();
+
+    return wiki;
 }
 
 void CollectionDB::insertCoverArt(QString path,QStringList info)

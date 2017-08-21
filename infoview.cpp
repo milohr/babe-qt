@@ -232,7 +232,7 @@ void InfoView::on_searchBtn_clicked()
 }
 
 
-void InfoView::getTrackInfo(const  QMap<int, QString> &song, const bool &album, const bool &artist, const bool &lyrics)
+void InfoView::getTrackInfo(const  QMap<int, QString> &song, const bool &album, const bool &artist, const bool &lyrics, const bool &tags)
 {
 
     bool repeatedTrack = this->track == song;
@@ -251,24 +251,34 @@ void InfoView::getTrackInfo(const  QMap<int, QString> &song, const bool &album, 
             this->setLyrics(lyrics);
         });
 
-        connect(&info, &Pulpo::albumWikiReady, this, &InfoView::setAlbumInfo, Qt::UniqueConnection);
-        connect(&info, &Pulpo::artistWikiReady, this, &InfoView::setArtistInfo);
+        connect(&info, &Pulpo::albumWikiReady,[this] (const QString &wiki)
+        {
+            emit albumWikiReady(wiki);
+            this->setAlbumInfo(wiki);
+        });
+
+        connect(&info, &Pulpo::artistWikiReady,[this] (const QString &wiki)
+        {
+            emit artistWikiReady(wiki);
+            this->setArtistInfo(wiki);
+        });
+
         connect(&info, &Pulpo::artistSimilarReady, [this] (QMap<QString,QByteArray> info)
         {
-            this->setArtistTagInfo(info.keys());
             emit artistSimilarReady(info);
+            this->setArtistTagInfo(info.keys());
         });
 
         connect(&info, &Pulpo::albumTagsReady, [this] (QStringList tags)
         {
-            this->setTagsInfo(tags);
             emit albumTagsReady(tags);
+            this->setTagsInfo(tags);
         });
 
         connect(&info, &Pulpo::artistArtReady,[this](QByteArray array){this->setArtistArt(array);});
 
 
-        if( album)
+        if(album)
         {
             qDebug()<<"GETTING ALBUM WIKI";
 
@@ -278,7 +288,8 @@ void InfoView::getTrackInfo(const  QMap<int, QString> &song, const bool &album, 
             ui->tagsInfo->clear();
             ui->albumText->clear();
             info.fetchAlbumInfo(Pulpo::AllAlbumInfo,Pulpo::LastFm);
-        }
+        }else if(tags) info.fetchAlbumInfo(Pulpo::AlbumTags,Pulpo::LastFm);
+
 
         if(artist)
         {
@@ -288,7 +299,7 @@ void InfoView::getTrackInfo(const  QMap<int, QString> &song, const bool &album, 
 
             ui->artistText->clear();
             info.fetchArtistInfo(Pulpo::AllArtistInfo,Pulpo::LastFm);
-        }
+        }else if(tags)  info.fetchArtistInfo(Pulpo::ArtistSimilar,Pulpo::LastFm);
 
 
         if(!this->track.isEmpty() && !repeatedTrack && lyrics)
