@@ -157,7 +157,7 @@ signals:
     void removeIt_clicked(int index);
     void moodIt_clicked(QList<int> rows, QString color, bool dark);
     void queueIt_clicked(QList<QMap<int,QString>> track);
-    void infoIt_clicked(QString title, QString artist, QString album);
+    void infoIt_clicked(const  QMap<int, QString> &track);
     void indexesMoved(int track,int newRow);
     void previewStarted();
     void previewFinished();

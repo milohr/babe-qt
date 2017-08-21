@@ -100,6 +100,7 @@ public:
     void appendFiles(const QStringList &paths, const appendPos &pos = APPENDBOTTOM);
     void loadTrack();
     bool babeTrack(const QMap<int, QString> &track);
+    void loadInfo(const QMap<int, QString> &track);
     QList<QMap<int,QString>> searchFor(const QStringList &queries);
 
     QStringList searchKeys = {"location:","artist:","album:","title:","genre:","online:","playlist:", "stars:"};
@@ -186,7 +187,7 @@ private slots:
     void removequeuedTracks();
     void on_filterBtn_clicked();
     void on_filter_textChanged(const QString &arg1);
-    void infoIt(const QString &title, const QString &artist, const QString &album);
+    void infoIt(const  QMap<int, QString> &track);
     void albumDoubleClicked(const QMap<int, QString> &info);
     void on_playAll_clicked();
 

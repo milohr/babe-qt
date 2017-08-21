@@ -863,10 +863,8 @@ void BabeTable::keyPressEvent(QKeyEvent *event)
     case Qt::Key_I:
 
     {
-        QString artist = this->model()->data(this->model()->index(this->getIndex(), BaeUtils::TracksCols::ARTIST)).toString();
-        QString album = this->model()->data(this->model()->index(this->getIndex(), BaeUtils::TracksCols::ALBUM)).toString();
-        QString title = this->model()->data(this->model()->index(this->getIndex(), BaeUtils::TracksCols::TITLE)).toString();
-        emit infoIt_clicked(title, artist, album);
+        auto url = this->model()->data(this->model()->index(this->getIndex(), BaeUtils::TracksCols::URL)).toString();
+               emit infoIt_clicked(this->connection.getTrackData(QStringList(url)).first());
         break;
     }
 
@@ -1079,10 +1077,8 @@ void BabeTable::itemEdited(QMap<int, QString> map)
 
 void BabeTable::infoIt_action()
 {
-    QString artist = this->model()->data(this->model()->index(rRow, BaeUtils::TracksCols::ARTIST)).toString();
-    QString album = this->model()->data(this->model()->index(rRow, BaeUtils::TracksCols::ALBUM)).toString();
-    QString title = this->model()->data(this->model()->index(rRow, BaeUtils::TracksCols::TITLE)).toString();
-    emit infoIt_clicked(title, artist, album);
+    QString url = this->model()->data(this->model()->index(rRow, BaeUtils::TracksCols::URL)).toString();
+    emit infoIt_clicked(this->connection.getTrackData(QStringList(url)).first());
 }
 
 void BabeTable::removeIt_action()

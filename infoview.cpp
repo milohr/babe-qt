@@ -45,7 +45,7 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView)
 
     auto artistContainer = new QWidget();
     artistContainer->setObjectName("artistContainer");
-//    artistContainer->setStyleSheet("QWidget#artistContainer{background-color: #575757; color:white;}");
+    //    artistContainer->setStyleSheet("QWidget#artistContainer{background-color: #575757; color:white;}");
 
     auto artistCLayout = new QHBoxLayout();
 
@@ -127,7 +127,7 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView)
 
     ui->similarArtistInfo->setOpenLinks(false);
 
-//    ui->splitter->setSizes({120,1});
+    //    ui->splitter->setSizes({120,1});
 
 }
 
@@ -211,11 +211,10 @@ void InfoView::setArtistArt(const QString &url)
     artist->putPixmap(url);
 }
 
-void InfoView::setLyrics(QString lyrics)
+void InfoView::setLyrics(const QString &lyrics)
 {
     ui->lyricsText->setHtml(lyrics);
-    //    ui->lyricsLayout->setAlignment(Qt::AlignCenter);
-    //    ui->lyricsFrame->show();
+
 }
 
 void InfoView::on_searchBtn_clicked()
@@ -233,23 +232,25 @@ void InfoView::on_searchBtn_clicked()
 }
 
 
-void InfoView::getTrackInfo(const QString &title, const QString &artist, const QString &album)
+void InfoView::getTrackInfo(const  QMap<int, QString> &song, const bool &album, const bool &artist, const bool &lyrics)
 {
-    bool repeatedLyrics = title==trackTitle && artist== artistTitle;
-    bool repeatedAlbum = album==albumTitle && artist==artistTitle;
-    bool repeatedArtist = artist==artistTitle;
-    this->trackTitle= title;
-    this->albumTitle = album;
-    this->artistTitle = artist;
 
-    if(!albumTitle.isEmpty()&&!artistTitle.isEmpty())
+    bool repeatedTrack = this->track == song;
+    this->track = song;
+
+    if(!this->track.isEmpty())
     {
-        this->artist->setArtist(artistTitle);
+        this->artist->setArtist(this->track[BaeUtils::TracksCols::ARTIST]);
         //this->album->setAlbum(album);
         //        QCoreApplication::removePostedEvents(QObject *receiver, int eventType = 0)
 
-        Pulpo info(trackTitle,artistTitle,albumTitle);
-        connect(&info, &Pulpo::trackLyricsReady, this, &InfoView::setLyrics, Qt::UniqueConnection);
+        Pulpo info(this->track[BaeUtils::TracksCols::TITLE],this->track[BaeUtils::TracksCols::ARTIST],this->track[BaeUtils::TracksCols::ALBUM]);
+        connect(&info, &Pulpo::trackLyricsReady, [this] (const QString &lyrics)
+        {
+            emit lyricsReady(lyrics);
+            this->setLyrics(lyrics);
+        });
+
         connect(&info, &Pulpo::albumWikiReady, this, &InfoView::setAlbumInfo, Qt::UniqueConnection);
         connect(&info, &Pulpo::artistWikiReady, this, &InfoView::setArtistInfo);
         connect(&info, &Pulpo::artistSimilarReady, [this] (QMap<QString,QByteArray> info)
@@ -267,8 +268,10 @@ void InfoView::getTrackInfo(const QString &title, const QString &artist, const Q
         connect(&info, &Pulpo::artistArtReady,[this](QByteArray array){this->setArtistArt(array);});
 
 
-        if(!repeatedAlbum)
+        if( album)
         {
+            qDebug()<<"GETTING ALBUM WIKI";
+
             ui->albumText->setVisible(false);
 
             ui->tagsInfo->setVisible(false);
@@ -277,8 +280,9 @@ void InfoView::getTrackInfo(const QString &title, const QString &artist, const Q
             info.fetchAlbumInfo(Pulpo::AllAlbumInfo,Pulpo::LastFm);
         }
 
-        if(!repeatedArtist)
+        if(artist)
         {
+            qDebug()<<"GETTING ARTIST WIKI";
             ui->artistText->setVisible(false);
             ui->similarArtistInfo->setVisible(false);
 
@@ -287,12 +291,12 @@ void InfoView::getTrackInfo(const QString &title, const QString &artist, const Q
         }
 
 
-        if(!trackTitle.isEmpty() && !repeatedLyrics)
+        if(!this->track.isEmpty() && !repeatedTrack && lyrics)
         {
             ui->lyricsText->clear();
             info.fetchTrackInfo(Pulpo::NoneTrackInfo,Pulpo::LyricWikia,Pulpo::NoneInfoService);
-            ui->titleLine->setText(this->trackTitle);
-            ui->artistLine->setText(this->artistTitle);
+            ui->titleLine->setText(this->track[BaeUtils::TracksCols::TITLE]);
+            ui->artistLine->setText(this->track[BaeUtils::TracksCols::ARTIST]);
         }
     }
 }

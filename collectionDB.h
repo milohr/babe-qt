@@ -52,12 +52,17 @@ public:
     bool babeTrack(const QString &path, const bool &value);
     bool moodTrack(const QString &path, const QString &value);
     bool artTrack(const QString &path, const QString &value);
+    bool lyricsTrack(const QString &path, const QString &value);
+    bool wikiArtist(const QString &artist, const QString &value);
+    bool wikiAlbum(const QString &album, const QString &artist, const QString &value);
 
     QList<QMap<int, QString>> getTrackData(const QStringList &urls);
     QList<QMap<int, QString>> getTrackData(const QString &queryText);
+    QString getTrackLyrics(const QString &url);
     QString getTrackArt(const QString &path);
     QString getArtistArt(const QString &artist);
     QString getAlbumArt(const QString &album, const QString &artist);
+
     QStringList getPlaylists();
     QStringList getPlaylistsMoods();
     /*useful tools*/

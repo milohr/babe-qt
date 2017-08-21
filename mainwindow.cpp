@@ -92,16 +92,6 @@ MainWindow::MainWindow(const QStringList &files, QWidget *parent) :
     } else settings_widget->createCollectionDB();
 
 
-
-    timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, [this]()
-    {
-        timer->stop();
-        if(!current_song.isEmpty())
-            infoTable->getTrackInfo(current_song[BaeUtils::TracksCols::TITLE],current_song[BaeUtils::TracksCols::ARTIST],current_song[BaeUtils::TracksCols::ALBUM]);
-        qDebug()<<"GETTING SONG INFO";
-    });
-
     connect(&nof,&Notify::babeSong,this,&MainWindow::babeIt);
     connect(&nof,&Notify::skipSong,this,&MainWindow::next);
     connect(updater, &QTimer::timeout, this, &MainWindow::update);
@@ -376,6 +366,11 @@ void MainWindow::setUpViews()
     {
         auto searchResults = this->searchFor(tags);
         if(!searchResults.isEmpty()) rabbitTable->populateGeneralSuggestion(searchResults);
+    });
+
+    connect(infoTable,&InfoView::lyricsReady, [this] (const  QString &lyrics)
+    {
+            this->connection.lyricsTrack(this->infoTable->track[BaeUtils::TracksCols::URL],lyrics);
     });
 
 
@@ -1012,9 +1007,9 @@ void MainWindow::refreshTables() //tofix
     artistsTable->populateTableViewHeads();
     artistsTable->hideAlbumFrame();
 
-//    playlistTable->list->clear();
-//    playlistTable->setDefaultPlaylists();
-//    playlistTable->setPlaylists(connection.getPlaylists());
+    //    playlistTable->list->clear();
+    //    playlistTable->setDefaultPlaylists();
+    //    playlistTable->setPlaylists(connection.getPlaylists());
 
     emit finishRefresh();
 
@@ -1568,8 +1563,6 @@ void MainWindow::loadTrack()
         wasPlaying = true;
         this->play();
 
-        timer->start(3000);
-
         album_art->setTitle(current_song[BaeUtils::TracksCols::ARTIST],current_song[BaeUtils::TracksCols::ALBUM]);
 
         //CHECK IF THE SONG IS BABED IT OR IT ISN'T
@@ -1579,6 +1572,8 @@ void MainWindow::loadTrack()
         loadMood();
 
         loadCover(current_song[BaeUtils::TracksCols::ARTIST],current_song[BaeUtils::TracksCols::ALBUM],current_song[BaeUtils::TracksCols::TITLE]);
+
+        loadInfo(current_song);
 
         if(miniPlayback)
         {
@@ -2021,6 +2016,20 @@ bool MainWindow::babeTrack(const QMap<int, QString> &track)
     }
 
 }
+
+void MainWindow::loadInfo(const QMap<int, QString> &track)
+{
+    auto lyrics = this->connection.getTrackLyrics(track[BaeUtils::TracksCols::URL]);
+
+    if(lyrics.isEmpty())
+    infoTable->getTrackInfo(track,true,true,true);
+    else
+    {
+        infoTable->getTrackInfo(track,true,true,false);
+        this->infoTable->setLyrics(lyrics);
+    }
+}
+
 void MainWindow::babeIt(const QList<QMap<int, QString>> &tracks)
 {
     for(auto track : tracks)
@@ -2028,12 +2037,11 @@ void MainWindow::babeIt(const QList<QMap<int, QString>> &tracks)
 
 }
 
-void  MainWindow::infoIt(const QString &title, const QString &artist, const QString &album)
+void  MainWindow::infoIt(const  QMap<int, QString> &track)
 {
     //views->setCurrentIndex(INFO);
     infoView();
-    infoTable->getTrackInfo(title, artist,album);
-
+this->loadInfo(track);
 }
 
 void MainWindow::scanNewDir(const QString &url, const QString &babe)

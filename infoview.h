@@ -25,6 +25,7 @@ public:
     Album *artist;
     QWidget *infoUtils;
 
+    QMap<int, QString> track;
 
 private:
 
@@ -35,9 +36,6 @@ private:
     QToolButton *hideBtn;
     bool hide= false;
     bool customsearch = false;
-    QString trackTitle;
-    QString albumTitle;
-    QString artistTitle;
 
 public slots:
 
@@ -46,14 +44,14 @@ public slots:
     void setAlbumInfo(QString info);
     void setArtistArt(const QByteArray &array);
     void setArtistArt(const QString &url);
-    void setLyrics(QString lyrics);
+    void setLyrics(const QString &lyrics);
     void setArtistInfo(const QString &info);
     void setArtistTagInfo(const QStringList &tags);
     void setTagsInfo(QStringList);
     QStringList getTags();
     QStringList getSimilarArtistTags();
     void hideArtistInfo();
-    void getTrackInfo(const QString &title, const QString &artist, const QString &album);
+    void getTrackInfo(const  QMap<int, QString> &song, const bool &album, const bool &artist, const bool &lyrics);
     void on_searchBtn_clicked();
 
 signals:
@@ -66,7 +64,7 @@ signals:
 
     void artistSimilarReady(const QMap<QString,QByteArray> &info);
     void albumTagsReady(const QStringList &tags);
-
+    void lyricsReady(const QString &lyrics);
 
 private slots:
 

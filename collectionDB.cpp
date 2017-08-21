@@ -314,6 +314,26 @@ bool CollectionDB::artTrack(const QString &path, const QString &value)
     return false;
 }
 
+bool CollectionDB::lyricsTrack(const QString &path, const QString &value)
+{
+    if(this->update(BaeUtils::DBTablesMap[BaeUtils::DBTables::TRACKS],
+                    BaeUtils::TracksColsMap[BaeUtils::TracksCols::LYRICS],
+                    value,
+                    BaeUtils::TracksColsMap[BaeUtils::TracksCols::URL],
+                    path)) return true;
+    return false;
+}
+
+bool CollectionDB::wikiArtist(const QString &artist, const QString &value)
+{
+    return false;
+}
+
+bool CollectionDB::wikiAlbum(const QString &album, const QString &artist, const QString &value)
+{
+    return false;
+}
+
 QList<QMap<int, QString>> CollectionDB::getTrackData(const QStringList &urls)
 {
     QList<QMap<int, QString>> mapList;
@@ -357,6 +377,20 @@ QList<QMap<int, QString>> CollectionDB::getTrackData(const QString &queryText)
             };
 
     return mapList;
+}
+
+QString CollectionDB::getTrackLyrics(const QString &url)
+{
+    QString lyrics;
+    QSqlQuery query(QString("SELECT %1 FROM %2 WHERE %3 = \"%4\"").arg(BaeUtils::TracksColsMap[BaeUtils::TracksCols::LYRICS],
+                    BaeUtils::DBTablesMap[BaeUtils::DBTables::TRACKS],
+            BaeUtils::TracksColsMap[BaeUtils::TracksCols::URL],url));
+
+    if(query.exec())
+        while (query.next())
+            lyrics=query.value(0).toString();
+
+    return lyrics;
 }
 
 
