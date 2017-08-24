@@ -28,7 +28,7 @@ public:
     bool isMusic(QString file);
     QStringList getTracksNameList();
     QStringList getTracksNameListSimple();
-    QList<QMap<int,QString>> getTracksData();
+    BaeUtils::TRACKMAP_LIST getTracksData();
 
     std::vector<Track> tracks;
 

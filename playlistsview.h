@@ -31,8 +31,8 @@ public:
     void setPlaylistsMoods();
     void setDefaultPlaylists();
     void showPlaylistDialog();
-    void saveToPlaylist(const QList<QMap<int,QString>> &tracks);
-    void addToPlaylist(const QString &playlist, const QList<QMap<int, QString> > &tracks);
+    void saveToPlaylist(const BaeUtils::TRACKMAP_LIST &tracks);
+    void addToPlaylist(const QString &playlist, const BaeUtils::TRACKMAP_LIST &tracks);
     void populatePlaylist(const QStringList &urls, const QString &playlist);
     void insertPlaylist(const QString &playlist);
     QFrame *line_v;

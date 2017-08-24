@@ -17,7 +17,6 @@ QT       += multimedia
 QT       += sql
 QT       += network
 QT       += xml
-QT       += xmlpatterns
 QT       += dbus
 QT       += KConfigCore
 QT       += KNotifications

@@ -13,9 +13,7 @@ private:
 
     QString API = "https://api.spotify.com/v1/search?q=";
 
-    QString artist;
-    QString album;
-    QString title;
+    BaeUtils::TRACKMAP track;
 
 public:
 
@@ -24,7 +22,7 @@ public:
         ARTIST,ALBUM,TRACK
     };
 
-    explicit spotify(const QString &title_, const QString &artist_, const QString &album_);
+    explicit spotify(const BaeUtils::TRACKMAP &song);
 
     QString setUpService(const spotify::Ontology &type);
 

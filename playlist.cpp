@@ -55,9 +55,9 @@ bool Playlist::isMusic(QString file)
 }
 
 
-QList<QMap<int,QString>> Playlist::getTracksData()
+BaeUtils::TRACKMAP_LIST Playlist::getTracksData()
 {
-    QList<QMap<int,QString>> mapList;
+    BaeUtils::TRACKMAP_LIST mapList;
 
     for(auto file : getTracks())
     {       
@@ -75,10 +75,7 @@ QList<QMap<int,QString>> Playlist::getTracksData()
         QString releaseDate = "";
         QString duration = "";
 
-        const QMap<int, QString> map{{BaeUtils::TracksCols::TRACK,track},{BaeUtils::TracksCols::TITLE,title},{BaeUtils::TracksCols::ARTIST,artist},{BaeUtils::TracksCols::ALBUM,album},{BaeUtils::TracksCols::DURATION,duration},{BaeUtils::TracksCols::GENRE,genre},{BaeUtils::TracksCols::URL,location},{BaeUtils::TracksCols::STARS,stars},{BaeUtils::TracksCols::BABE,babe},{BaeUtils::TracksCols::ART,art},{BaeUtils::TracksCols::PLAYED,played},{BaeUtils::TracksCols::RELEASE_DATE,releaseDate},{BaeUtils::TracksCols::ADD_DATE,addDate}};
-
-        mapList<<map;
-
+       mapList<< BaeUtils::TRACKMAP {{BaeUtils::TracksCols::TRACK,track},{BaeUtils::TracksCols::TITLE,title},{BaeUtils::TracksCols::ARTIST,artist},{BaeUtils::TracksCols::ALBUM,album},{BaeUtils::TracksCols::DURATION,duration},{BaeUtils::TracksCols::GENRE,genre},{BaeUtils::TracksCols::URL,location},{BaeUtils::TracksCols::STARS,stars},{BaeUtils::TracksCols::BABE,babe},{BaeUtils::TracksCols::ART,art},{BaeUtils::TracksCols::PLAYED,played},{BaeUtils::TracksCols::RELEASE_DATE,releaseDate},{BaeUtils::TracksCols::ADD_DATE,addDate}};
     }
 
     return mapList;

@@ -15,7 +15,7 @@ class metadataForm : public QWidget
     Q_OBJECT
 
 public:
-    explicit metadataForm(QMap<int, QString> info, QWidget *parent = 0);
+    explicit metadataForm(const BaeUtils::TRACKMAP &info, QWidget *parent = 0);
     ~metadataForm();
 
 private slots:
@@ -31,7 +31,7 @@ private:
     QString genre;
 
 signals:
-    void infoModified(QMap<int, QString> map);
+    void infoModified(const BaeUtils::TRACKMAP &map);
 
 };
 

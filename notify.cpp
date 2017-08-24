@@ -39,7 +39,7 @@ void Notify::notify(  const QString &title, const QString &body)
 
 }
 
-void Notify::notifySong(const QMap<int, QString> &trackMap,  const QPixmap &pix)
+void Notify::notifySong(const BaeUtils::TRACKMAP &trackMap,  const QPixmap &pix)
 {
     this->track = trackMap;
 

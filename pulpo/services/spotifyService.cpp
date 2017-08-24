@@ -1,8 +1,8 @@
 #include "spotifyService.h"
 
 
-spotify::spotify(const QString &title_, const QString &artist_, const QString &album_)
-    : artist(artist_),  album(album_), title(title_) {}
+spotify::spotify(const BaeUtils::TRACKMAP &song)
+    : track(song) {}
 
 
 
@@ -10,13 +10,13 @@ QString spotify::setUpService(const spotify::Ontology &type)
 {
     QString url = this->API;
 
-    QUrl encodedArtist(this->artist);
+    QUrl encodedArtist(this->track[BaeUtils::TracksCols::ARTIST]);
     encodedArtist.toEncoded(QUrl::FullyEncoded);
 
-    QUrl encodedAlbum(this->album);
+    QUrl encodedAlbum(this->track[BaeUtils::TracksCols::ALBUM]);
     encodedAlbum.toEncoded(QUrl::FullyEncoded);
 
-    QUrl encodedTrack(this->title);
+    QUrl encodedTrack(this->track[BaeUtils::TracksCols::TITLE]);
     encodedTrack.toEncoded(QUrl::FullyEncoded);
 
     switch(type)
@@ -141,7 +141,7 @@ bool spotify::parseSpotifyTrack(const QByteArray &array, const TrackInfo &infoTy
                     {
                         auto trackAlbum =items.first().toMap().value("album").toMap().value("name").toString();
 
-                        emit trackAlbumReady(trackAlbum);
+                        emit trackAlbumReady(trackAlbum,this->track);
                         if(infoType == TrackAlbum ) return true;
 
                     }
@@ -150,7 +150,7 @@ bool spotify::parseSpotifyTrack(const QByteArray &array, const TrackInfo &infoTy
                     {
                         auto trackPosition = items.first().toMap().value("track_number").toInt();
 
-                        emit trackPositionReady(trackPosition);
+                        emit trackPositionReady(trackPosition,this->track);
                         if(infoType == TrackPosition ) return true;
                     }
 

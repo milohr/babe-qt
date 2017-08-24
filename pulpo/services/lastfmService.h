@@ -13,9 +13,7 @@ private:
     QString API = "http://ws.audioscrobbler.com/2.0/";
     QString KEY = "&api_key=ba6f0bd3c887da9101c10a50cf2af133";
 
-    QString artist;
-    QString album;
-    QString title;
+    BaeUtils::TRACKMAP track;
 
 
 public:
@@ -25,7 +23,7 @@ public:
         ARTIST,ALBUM,TRACK
     };
 
-    explicit lastfm(const QString &title_, const QString &artist_, const QString &album_);
+    explicit lastfm(const BaeUtils::TRACKMAP &song);
 
     QString setUpService(const lastfm::Ontology &type);
 

@@ -25,14 +25,14 @@ public:
     Album *artist;
     QWidget *infoUtils;
 
-    QMap<int, QString> track;
+   BaeUtils::TRACKMAP track;
 
+    void setTrack(const BaeUtils::TRACKMAP &track);
 private:
 
     Ui::InfoView *ui;
     int ALBUM_SIZE_BIG = BaeUtils::getWidgetSizeHint(BaeUtils::BIG_ALBUM_FACTOR,BaeUtils::BIG_ALBUM);
     int ALBUM_SIZE_MEDIUM = BaeUtils::getWidgetSizeHint(BaeUtils::MEDIUM_ALBUM_FACTOR,BaeUtils::MEDIUM_ALBUM);
-    Pulpo info;
     QToolButton *hideBtn;
     bool hide= false;
     bool customsearch = false;
@@ -51,7 +51,7 @@ public slots:
     QStringList getTags();
     QStringList getSimilarArtistTags();
     void hideArtistInfo();
-    void getTrackInfo(const  QMap<int, QString> &song, const bool &album, const bool &artist, const bool &lyrics, const bool &tags);
+    void getTrackInfo(const bool &album, const bool &artist, const bool &lyrics, const bool &tags);
     void on_searchBtn_clicked();
 
 signals:
@@ -62,11 +62,11 @@ signals:
     void similarBtnClicked(QStringList similar);
     void tagsBtnClicked(QStringList similar);
 
-    void artistSimilarReady(const QMap<QString,QByteArray> &info);
-    void albumTagsReady(const QStringList &tags);
-    void lyricsReady(const QString &lyrics);
-    void albumWikiReady(const QString &wiki);
-    void artistWikiReady(const QString &wiki);
+    void artistSimilarReady(const QMap<QString,QByteArray> &info,const BaeUtils::TRACKMAP &track);
+    void albumTagsReady(const QStringList &tags,const BaeUtils::TRACKMAP &track);
+    void lyricsReady(const QString &lyrics,const BaeUtils::TRACKMAP &track);
+    void albumWikiReady(const QString &wiki,const BaeUtils::TRACKMAP &track);
+    void artistWikiReady(const QString &wiki,const BaeUtils::TRACKMAP &track);
 
 private slots:
 

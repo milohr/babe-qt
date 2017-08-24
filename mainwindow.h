@@ -99,9 +99,9 @@ public:
 
     void appendFiles(const QStringList &paths, const appendPos &pos = APPENDBOTTOM);
     void loadTrack();
-    bool babeTrack(const QMap<int, QString> &track);
-    void loadInfo(const QMap<int, QString> &track);
-    QList<QMap<int,QString>> searchFor(const QStringList &queries);
+    bool babeTrack(const BaeUtils::TRACKMAP &track);
+    void loadInfo(const BaeUtils::TRACKMAP &track);
+    BaeUtils::TRACKMAP_LIST searchFor(const QStringList &queries);
 
     QStringList searchKeys = {"location:","artist:","album:","title:","genre:","online:","playlist:", "stars:"};
 
@@ -116,10 +116,10 @@ protected:
 
 public slots:
 
-    void addToPlaylist(const QList<QMap<int,QString>> &mapList, const bool &notRepeated=false, const appendPos &pos = APPENDBOTTOM);
+    void addToPlaylist(const BaeUtils::TRACKMAP_LIST &mapList, const bool &notRepeated=false, const appendPos &pos = APPENDBOTTOM);
     void putPixmap(const QByteArray &array);
-    void populateResultsTable(const QList<QMap<int,QString>> &mapList);
-    void addToQueue(const QList<QMap<int, QString> > &tracks);
+    void populateResultsTable(const BaeUtils::TRACKMAP_LIST &mapList);
+    void addToQueue(const BaeUtils::TRACKMAP_LIST &tracks);
 
     void pause();
     void play();
@@ -137,7 +137,7 @@ private slots:
     void on_hide_sidebar_btn_clicked();
     void on_shuffle_btn_clicked();
     void on_open_btn_clicked();
-    void on_mainList_clicked(const QList<QMap<int, QString>> &list);
+    void on_mainList_clicked(const BaeUtils::TRACKMAP_LIST &list);
     void update();
     void on_seekBar_sliderMoved(const int &position);
     void on_play_btn_clicked();
@@ -164,7 +164,7 @@ private slots:
     void on_search_textChanged(const QString &arg1);
 
     //void on_resultsPLaylist_clicked();
-    void setCoverArt(const QString &artist, const QString &album, const QString &title);
+    void setCoverArt(const BaeUtils::TRACKMAP &song);
     void on_rowInserted(QModelIndex model ,int x,int y);
 
     void refreshTables();
@@ -175,19 +175,19 @@ private slots:
 
     void removeSong(const int &index);
     void putAlbumOnPlay(const QMap<int,QString> &info);
-    void putOnPlay(const QList<QMap<int,QString>> &mapList);
-    void playItNow(const QList<QMap<int,QString>> &list);
+    void putOnPlay(const BaeUtils::TRACKMAP_LIST &mapList);
+    void playItNow(const BaeUtils::TRACKMAP_LIST &list);
     void changedArt(const QMap<int, QString> &info);
     void babeAlbum(const QMap<int, QString> &info);
     bool loadCover(const QString &artist, const QString &album, const QString &title);
-    void babeIt(const QList<QMap<int, QString>> &tracks);
-    bool unbabeIt(const QMap<int, QString> &track);
+    void babeIt(const BaeUtils::TRACKMAP_LIST &tracks);
+    bool unbabeIt(const BaeUtils::TRACKMAP &track);
     void loadMood();
-    bool removeQueuedTrack(const QMap<int, QString> &track, const int &pos);
+    bool removeQueuedTrack(const BaeUtils::TRACKMAP &track, const int &pos);
     void removequeuedTracks();
     void on_filterBtn_clicked();
     void on_filter_textChanged(const QString &arg1);
-    void infoIt(const  QMap<int, QString> &track);
+    void infoIt(const  BaeUtils::TRACKMAP &track);
     void albumDoubleClicked(const QMap<int, QString> &info);
     void on_playAll_clicked();
 
@@ -263,7 +263,7 @@ private:
 
     void updateList();
     void populateMainList();
-    bool isBabed(const QMap<int, QString> &track);
+    bool isBabed(const BaeUtils::TRACKMAP &track);
     void feedRabbit();
     void expandAlbumList(const QString &artist, const QString &album);
     void blurWidget(Album &widget, const int &radius );
@@ -282,15 +282,16 @@ private:
     QMenu *calibrateBtn_menu;
 
 
-    QMap<QString, QMap<int, QString>> queued_songs;
+    QMap<QString,BaeUtils::TRACKMAP> queued_songs;
     int prev_queued_song_pos = -1;
 
-    QList<QMap<int,QString>> currentList;
-    QMap<int, QString> current_song;
+    BaeUtils::TRACKMAP_LIST currentList;
+
+    BaeUtils::TRACKMAP current_song;
     int current_song_pos=0;
     QString current_artwork;
 
-    QMap<int, QString> prev_song;
+    BaeUtils::TRACKMAP prev_song;
     int prev_song_pos=0;
 
     int  shuffle_state = REGULAR;
@@ -305,7 +306,7 @@ private:
 signals:
     void finishedPlayingSong(QString url);
     void collectionChecked();
-    void fetchCover(QString artist, QString album,QString title);
+    void fetchCover(const BaeUtils::TRACKMAP &song);
     void finishRefresh();
 
 };

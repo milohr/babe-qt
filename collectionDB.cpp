@@ -348,9 +348,9 @@ bool CollectionDB::wikiAlbum(const QString &album, const QString &artist,  QStri
     return false;
 }
 
-QList<QMap<int, QString>> CollectionDB::getTrackData(const QStringList &urls)
+BaeUtils::TRACKMAP_LIST CollectionDB::getTrackData(const QStringList &urls)
 {
-    QList<QMap<int, QString>> mapList;
+    BaeUtils::TRACKMAP_LIST mapList;
 
     for(auto url:urls)
         mapList<<this->getTrackData
@@ -362,16 +362,16 @@ QList<QMap<int, QString>> CollectionDB::getTrackData(const QStringList &urls)
     return mapList;
 }
 
-QList<QMap<int, QString>> CollectionDB::getTrackData(const QString &queryText)
+BaeUtils::TRACKMAP_LIST CollectionDB::getTrackData(const QString &queryText)
 {
     //    qDebug()<<"on getTrackData "<<queryText;
-    QList<QMap<int, QString>> mapList;
+    BaeUtils::TRACKMAP_LIST mapList;
 
     QSqlQuery query(queryText);
 
     if(query.exec())
         while(query.next())
-            mapList << QMap<int, QString>
+            mapList << BaeUtils::TRACKMAP
             {
                 {BaeUtils::TracksCols::TRACK,query.value(BaeUtils::TracksCols::TRACK).toString()},
                 {BaeUtils::TracksCols::TITLE,query.value(BaeUtils::TracksCols::TITLE).toString()},
@@ -484,26 +484,25 @@ QString CollectionDB::getAlbumWiki(const QString &album, const QString &artist)
     return wiki;
 }
 
-void CollectionDB::insertCoverArt(QString path,QStringList info)
+void CollectionDB::insertCoverArt(const QString &path, const BaeUtils::TRACKMAP &track)
 {
-    qDebug()<<"the path:"<<path<<"the list:"<<info.at(0)<<info.at(1);
-    if(info.size()==2)
+    qDebug()<<"the path:"<<path<<"the list:"<<track[BaeUtils::TracksCols::ARTIST]<<track[BaeUtils::TracksCols::ALBUM];
+    if(!track[BaeUtils::TracksCols::ARTIST].isEmpty()&&!track[BaeUtils::TracksCols::ALBUM].isEmpty())
     {
         auto queryStr = QString("UPDATE %1 SET %2 = \"%3\" WHERE %4 = \"%5\" AND %6 = \"%7\"").arg(BaeUtils::DBTablesMap[BaeUtils::DBTables::ALBUMS],
                 BaeUtils::AlbumsColsMap[BaeUtils::AlbumsCols::ALBUM_ARTWORK],
                 path.isEmpty()?"NULL": path,
                 BaeUtils::AlbumsColsMap[BaeUtils::AlbumsCols::ALBUM_TITLE],
-                info.at(0),
+                track[BaeUtils::TracksCols::ALBUM],
                 BaeUtils::AlbumsColsMap[BaeUtils::AlbumsCols::ALBUM_ARTIST],
-                info.at(1));
+                track[BaeUtils::TracksCols::ARTIST]);
 
         QSqlQuery query(queryStr);
         qDebug()<<queryStr;
-        if(query.exec()) qDebug()<<"Artwork[cover] inserted into DB"<<info.at(0)<<info.at(1);
-        else qDebug()<<"COULDNT Artwork[cover] inerted into DB"<<info.at(0)<<info.at(1);
+        if(query.exec()) qDebug()<<"Artwork[cover] inserted into DB"<<track[BaeUtils::TracksCols::ARTIST]<<track[BaeUtils::TracksCols::ALBUM];
+        else qDebug()<<"COULDNT Artwork[cover] inerted into DB"<<track[BaeUtils::TracksCols::ARTIST]<<track[BaeUtils::TracksCols::ALBUM];
 
     }
-
 }
 
 
@@ -654,19 +653,19 @@ void CollectionDB::refreshArtistsTable()
 
 
 
-void CollectionDB::insertHeadArt(QString path, QStringList info)
+void CollectionDB::insertHeadArt(const QString &path, const BaeUtils::TRACKMAP &track)
 {
-    if(info.size()==1)
+    if(!track[BaeUtils::TracksCols::ARTIST].isEmpty())
     {
         QSqlQuery query;
         query.prepare("UPDATE artists SET artwork = (:artwork) WHERE title = (:title)" );
         //query.prepare("SELECT * FROM "+tableName+" WHERE "+searchId+" = (:search)");
         query.bindValue(":artwork", path.isEmpty()?"NULL": path );
-        query.bindValue(":title", info.at(0));
+        query.bindValue(":title", track[BaeUtils::TracksCols::ARTIST]);
         if(query.exec())
         {
-            qDebug()<<"Artwork[head] inerted into DB"<<info.at(0);
-            if(!artists.contains(info.at(0)))artists<<info.at(0);
+            qDebug()<<"Artwork[head] inerted into DB"<<track[BaeUtils::TracksCols::ARTIST];
+            if(!artists.contains(track[BaeUtils::TracksCols::ARTIST]))artists<<track[BaeUtils::TracksCols::ARTIST];
             //qDebug()<<"insertInto<<"<<"UPDATE "+tableName+" SET "+column+" = "+ value + " WHERE location = "+location;
         }
     }

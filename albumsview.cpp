@@ -380,7 +380,7 @@ void AlbumsView::populateTableView()
 }
 
 
-void AlbumsView::filter(const QList<QMap<int,QString>> &filter, const BaeUtils::TracksCols &type)
+void AlbumsView::filter(const BaeUtils::TRACKMAP_LIST &filter, const BaeUtils::TracksCols &type)
 {
 
     hide_all(true);

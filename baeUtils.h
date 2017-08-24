@@ -46,6 +46,7 @@ enum AlbumsCols
 {
     ALBUM_TITLE=0, ALBUM_ARTIST=1, ALBUM_ARTWORK=2, ALBUM_WIKI=3
 };
+typedef QMap<BaeUtils::AlbumsCols, QString> ALBUMMAP;
 
 static const QMap<AlbumsCols,QString> AlbumsColsMap =
 {
@@ -63,7 +64,10 @@ enum TracksCols
     ADD_DATE=11,LYRICS=12,GENRE=13,ART=14, columnsCOUNT=15
 };
 
-static const QMap<TracksCols,QString> TracksColsMap =
+typedef QMap<BaeUtils::TracksCols, QString> TRACKMAP;
+typedef QList<TRACKMAP> TRACKMAP_LIST;
+
+static const TRACKMAP TracksColsMap =
 {
     {TracksCols::URL,"url"},{TracksCols::SOURCES_URL,"sources_url"},
     {TracksCols::TRACK,"track"},{TracksCols::TITLE,"title"},

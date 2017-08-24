@@ -19,7 +19,7 @@
 #include "metadataForm.h"
 #include "ui_metadataForm.h"
 
-metadataForm::metadataForm(QMap<int,QString> info, QWidget *parent) :
+metadataForm::metadataForm(const BaeUtils::TRACKMAP &info, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::metadataForm)
 {
@@ -65,7 +65,7 @@ void metadataForm::on_changebtn_clicked()
     if(_track!=this->track || _title!=this->title || _artist!=this->artist || _album!=this->album || _genre!=this->genre)
     {
         qDebug()<< "the info did changed";
-        const QMap<int, QString> map{{BaeUtils::TracksCols::TRACK, _track}, {BaeUtils::TracksCols::TITLE, _title}, {BaeUtils::TracksCols::ARTIST, _artist},{BaeUtils::TracksCols::ALBUM,_album},{BaeUtils::TracksCols::GENRE,_genre}};
+        const BaeUtils::TRACKMAP map{{BaeUtils::TracksCols::TRACK, _track}, {BaeUtils::TracksCols::TITLE, _title}, {BaeUtils::TracksCols::ARTIST, _artist},{BaeUtils::TracksCols::ALBUM,_album},{BaeUtils::TracksCols::GENRE,_genre}};
 
         emit infoModified(map);
     }else

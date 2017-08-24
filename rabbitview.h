@@ -42,7 +42,7 @@ private:
 public slots:
 
     void populateArtistSuggestion(QMap<QString, QByteArray> info);
-    void populateGeneralSuggestion(QList<QMap<int,QString>> mapList);
+    void populateGeneralSuggestion(const BaeUtils::TRACKMAP_LIST &mapList);
 
     void filterByArtist(QMap<int, QString> albumMap);
 

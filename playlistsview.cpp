@@ -296,7 +296,7 @@ void PlaylistsView::setPlaylists(const QStringList &playlists)
 
 }
 
-void PlaylistsView::saveToPlaylist(const QList<QMap<int,QString>> &tracks)
+void PlaylistsView::saveToPlaylist(const BaeUtils::TRACKMAP_LIST &tracks)
 {
     auto form = new PlaylistForm (connection.getPlaylists(),tracks,this);
     connect(form,&PlaylistForm::saved,this,&PlaylistsView::addToPlaylist);
@@ -311,7 +311,7 @@ void PlaylistsView::saveToPlaylist(const QList<QMap<int,QString>> &tracks)
 }
 
 
-void PlaylistsView::addToPlaylist(const QString &playlist,const QList<QMap<int,QString>> &tracks)
+void PlaylistsView::addToPlaylist(const QString &playlist,const BaeUtils::TRACKMAP_LIST &tracks)
 {
 
     QStringList locations;

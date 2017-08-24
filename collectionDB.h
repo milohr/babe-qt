@@ -56,8 +56,8 @@ public:
     bool wikiArtist(const QString &artist, const QString &value);
     bool wikiAlbum(const QString &album, const QString &artist, QString value);
 
-    QList<QMap<int, QString>> getTrackData(const QStringList &urls);
-    QList<QMap<int, QString>> getTrackData(const QString &queryText);
+    BaeUtils::TRACKMAP_LIST getTrackData(const QStringList &urls);
+    BaeUtils::TRACKMAP_LIST getTrackData(const QString &queryText);
     QString getTrackLyrics(const QString &url);
     QString getTrackArt(const QString &path);
     QString getArtistArt(const QString &artist);
@@ -94,8 +94,8 @@ public slots:
     void cleanCollectionLists();
 
     /*useful*/
-    void insertCoverArt(QString path, QStringList info);
-    void insertHeadArt(QString path, QStringList info);
+    void insertCoverArt(const QString &path, const BaeUtils::TRACKMAP &track);
+    void insertHeadArt(const QString &path, const BaeUtils::TRACKMAP &track);
 
 signals:
     void progress(int);

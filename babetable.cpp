@@ -240,7 +240,7 @@ void BabeTable::dropEvent(QDropEvent *event)
             qDebug()<<"new row position"<< newRow;
             auto list = this->getSelectedRows(false);
 
-            QList<QMap<int,QString>> tracks;
+            BaeUtils::TRACKMAP_LIST tracks;
             QList<int> newList;
 
             for(auto track : list)
@@ -324,8 +324,8 @@ void BabeTable::update()
 void BabeTable::moodTrack(int color) { moodIt_action(colors.at(color)); }
 
 void BabeTable::addToPlaylist()
-{
-    QList<QMap<int,QString>> mapList;
+{    
+    BaeUtils::TRACKMAP_LIST mapList;
     for(auto row : this->getSelectedRows())
         mapList<< this->getRowData(row);
 
@@ -377,7 +377,7 @@ void BabeTable::enableRowDragging(const bool &state)
 }
 
 
-void BabeTable::addRow(const QMap<int, QString> &map, const  bool &descriptiveTooltip)
+void BabeTable::addRow(const BaeUtils::TRACKMAP &map, const  bool &descriptiveTooltip)
 {
     this->insertRow(this->rowCount());
 
@@ -389,8 +389,8 @@ void BabeTable::addRow(const QMap<int, QString> &map, const  bool &descriptiveTo
     this->setItem(this->rowCount() - 1, BaeUtils::TracksCols::GENRE, new QTableWidgetItem(map[BaeUtils::TracksCols::GENRE]));
     this->setItem(this->rowCount() - 1, BaeUtils::TracksCols::URL, new QTableWidgetItem(map[BaeUtils::TracksCols::URL]));
     this->setItem(this->rowCount() - 1, BaeUtils::TracksCols::STARS, new QTableWidgetItem(this->getStars(map[BaeUtils::TracksCols::STARS].toInt())));
-    this->setItem(this->rowCount() - 1, BaeUtils::TracksCols::BABE, new QTableWidgetItem(map[BaeUtils::TracksCols::BABE]));
-//    this->setItem(this->rowCount() - 1, BaeUtils::TracksCols::ART, new QTableWidgetItem(map[BaeUtils::TracksCols::ART]));
+    this->setItem(this->rowCount() - 1, BaeUtils::TracksCols::BABE, new QTableWidgetItem(this->getHearts(map[BaeUtils::TracksCols::BABE].toInt())));
+    //    this->setItem(this->rowCount() - 1, BaeUtils::TracksCols::ART, new QTableWidgetItem(map[BaeUtils::TracksCols::ART]));
     this->setItem(this->rowCount() - 1, BaeUtils::TracksCols::PLAYED, new QTableWidgetItem(map[BaeUtils::TracksCols::PLAYED]));
     this->setItem(this->rowCount() - 1, BaeUtils::TracksCols::RELEASE_DATE, new QTableWidgetItem(map[BaeUtils::TracksCols::RELEASE_DATE]));
     this->setItem(this->rowCount() - 1, BaeUtils::TracksCols::ADD_DATE, new QTableWidgetItem(map[BaeUtils::TracksCols::ADD_DATE]));
@@ -402,7 +402,7 @@ void BabeTable::addRow(const QMap<int, QString> &map, const  bool &descriptiveTo
         this->item(this->rowCount()-1,BaeUtils::TracksCols::TITLE)->setToolTip( "by "+map[BaeUtils::TracksCols::ARTIST]);
 }
 
-void BabeTable::addRowAt(const int &row,const QMap<int, QString> &map,const  bool &descriptiveTooltip)
+void BabeTable::addRowAt(const int &row,const BaeUtils::TRACKMAP &map,const  bool &descriptiveTooltip)
 {
     this->insertRow(row);
     this->setItem(row , BaeUtils::TracksCols::URL, new QTableWidgetItem(map[BaeUtils::TracksCols::URL]));
@@ -416,8 +416,8 @@ void BabeTable::addRowAt(const int &row,const QMap<int, QString> &map,const  boo
     this->setItem(row , BaeUtils::TracksCols::GENRE, new QTableWidgetItem(map[BaeUtils::TracksCols::GENRE]));
     this->setItem(row , BaeUtils::TracksCols::STARS, new QTableWidgetItem(this->getStars(map[BaeUtils::TracksCols::STARS].toInt())));
 
-    this->setItem(row , BaeUtils::TracksCols::BABE, new QTableWidgetItem(map[BaeUtils::TracksCols::BABE]));
-//    this->setItem(row , BaeUtils::TracksCols::ART, new QTableWidgetItem(map[BaeUtils::TracksCols::ART]));
+    this->setItem(row , BaeUtils::TracksCols::BABE, new QTableWidgetItem(this->getHearts(map[BaeUtils::TracksCols::BABE].toInt())));
+    //    this->setItem(row , BaeUtils::TracksCols::ART, new QTableWidgetItem(map[BaeUtils::TracksCols::ART]));
     this->setItem(row , BaeUtils::TracksCols::PLAYED, new QTableWidgetItem(map[BaeUtils::TracksCols::PLAYED]));
     this->setItem(row , BaeUtils::TracksCols::RELEASE_DATE, new QTableWidgetItem(map[BaeUtils::TracksCols::RELEASE_DATE]));
     this->setItem(row , BaeUtils::TracksCols::ADD_DATE, new QTableWidgetItem(map[BaeUtils::TracksCols::ADD_DATE]));
@@ -432,7 +432,7 @@ void BabeTable::addRowAt(const int &row,const QMap<int, QString> &map,const  boo
         this->item(row,BaeUtils::TracksCols::TITLE)->setToolTip( "by "+map[BaeUtils::TracksCols::ARTIST]);
 }
 
-void BabeTable::populateTableView(const QList<QMap<int,QString>>& mapList, const bool &descriptiveTitle)
+void BabeTable::populateTableView(const BaeUtils::TRACKMAP_LIST &mapList, const bool &descriptiveTitle)
 {
     qDebug() << "ON POPULATE by mapList";
 
@@ -489,64 +489,33 @@ void BabeTable::populateTableView(const QString &indication, const bool &descrip
     this->setSortingEnabled(false);
     bool missingDialog = false;
     QStringList missingFiles;
-    QSqlQuery query = connection.getQuery(indication);
 
-    if(query.exec())
+    auto tracks = this->connection.getTrackData(indication);
+
+    for(auto track:tracks)
     {
-        while (query.next())
+        auto location =track[BaeUtils::TracksCols::URL];
+
+        if (!BaeUtils::fileExists(location))
         {
+            qDebug() << "That file doesn't exists anymore: "
+                     << location;
+            missingFiles << location;
+            missingDialog = true;
 
-            QString location =query.value(BaeUtils::TracksCols::URL).toString();
+        } else addRow(track,descriptiveTitle);
 
-            if (!BaeUtils::fileExists(location))
-            {
-                qDebug() << "That file doesn't exists anymore: "
-                         << location;
-                missingFiles << location;
-                missingDialog = true;
+    }
 
-            } else
-            {
+    if (missingDialog) removeMissing(missingFiles);
 
-                QString track = query.value(BaeUtils::TracksCols::TRACK).toString();
-                QString title = query.value(BaeUtils::TracksCols::TITLE).toString();
-                QString artist = query.value(BaeUtils::TracksCols::ARTIST).toString();
-                QString album = query.value(BaeUtils::TracksCols::ALBUM).toString();
-                QString genre = query.value(BaeUtils::TracksCols::GENRE).toString();
-                QString stars = query.value(BaeUtils::TracksCols::STARS).toString();
-
-
-                QString babe;
-                switch (query.value(BaeUtils::TracksCols::BABE).toInt()) {
-                case 0:
-                    babe = " ";
-                    break;
-                case 1:
-                    babe = "\xe2\x99\xa1 ";
-                    break;
-                }
-
-                QString art = query.value(BaeUtils::TracksCols::ART).toString();
-                QString played =query.value(BaeUtils::TracksCols::PLAYED).toString();
-                QString duration =query.value(BaeUtils::TracksCols::DURATION).toString();
-                QString releaseDate = query.value(BaeUtils::TracksCols::RELEASE_DATE).toString();
-                QString addDate = query.value(BaeUtils::TracksCols::ADD_DATE).toString();
-
-                const QMap<int, QString> map{{BaeUtils::TracksCols::TRACK,track}, {BaeUtils::TracksCols::TITLE,title},{BaeUtils::TracksCols::ARTIST,artist},{BaeUtils::TracksCols::ALBUM,album},{BaeUtils::TracksCols::DURATION,duration},{BaeUtils::TracksCols::GENRE,genre},{BaeUtils::TracksCols::URL,location},{BaeUtils::TracksCols::STARS,stars},{BaeUtils::TracksCols::BABE,babe},{BaeUtils::TracksCols::ART,art},{BaeUtils::TracksCols::PLAYED,played},{BaeUtils::TracksCols::RELEASE_DATE,releaseDate},{BaeUtils::TracksCols::ADD_DATE,addDate}};
-
-                addRow(map,descriptiveTitle);
-            }
-        }
-
-
-        if (missingDialog) removeMissing(missingFiles);
-
-        this->setSortingEnabled(true);
-        emit finishedPopulating();
-    }else qDebug()<<"Error: the query didn't pass"<<indication;
-
-
+    this->setSortingEnabled(true);
+    emit finishedPopulating();
 }
+
+
+
+
 
 QString BabeTable::getStars(const int &value)
 {
@@ -736,7 +705,7 @@ void BabeTable::keyPressEvent(QKeyEvent *event)
     case Qt::Key_Return: {
 
 
-        QList<QMap<int, QString>> list;
+        BaeUtils::TRACKMAP_LIST list;
         for(auto row : this->getSelectedRows(false))
         {
             list<<getRowData(row);
@@ -816,7 +785,7 @@ void BabeTable::keyPressEvent(QKeyEvent *event)
 
     case Qt::Key_Q :
     {
-        QList<QMap<int,QString>> mapList;
+        BaeUtils::TRACKMAP_LIST mapList;
         for(auto row : this->getSelectedRows(false))
             mapList<< this->getRowData(row);
         stopPreview();
@@ -827,7 +796,7 @@ void BabeTable::keyPressEvent(QKeyEvent *event)
 
     case Qt::Key_P :
     {
-        QList<QMap<int,QString>> mapList;
+        BaeUtils::TRACKMAP_LIST mapList;
         for(auto row : this->getSelectedRows(false))
             mapList<< this->getRowData(row);
 
@@ -839,7 +808,7 @@ void BabeTable::keyPressEvent(QKeyEvent *event)
 
     case Qt::Key_L :
     {
-        QList<QMap<int,QString>> mapList;
+        BaeUtils::TRACKMAP_LIST mapList;
         for(auto row : this->getSelectedRows(false))
             mapList<< this->getRowData(row);
 
@@ -851,7 +820,7 @@ void BabeTable::keyPressEvent(QKeyEvent *event)
 
     case Qt::Key_S :
     {
-        QList<QMap<int,QString>> mapList;
+        BaeUtils::TRACKMAP_LIST mapList;
         for(auto row : this->getSelectedRows(false))
             mapList<< this->getRowData(row);
 
@@ -864,7 +833,7 @@ void BabeTable::keyPressEvent(QKeyEvent *event)
 
     {
         auto url = this->model()->data(this->model()->index(this->getIndex(), BaeUtils::TracksCols::URL)).toString();
-               emit infoIt_clicked(this->connection.getTrackData(QStringList(url)).first());
+        emit infoIt_clicked(this->connection.getTrackData(QStringList(url)).first());
         break;
     }
 
@@ -949,6 +918,21 @@ void BabeTable::stopPreview()
     }
 }
 
+QString BabeTable::getHearts(const int &value)
+{
+    QString babe;
+    switch (value) {
+    case 0:
+        babe = " ";
+        break;
+    case 1:
+        babe = "\xe2\x99\xa1 ";
+        break;
+    }
+
+    return babe;
+}
+
 
 void BabeTable::rateGroup(const int &id, const bool &rightClick)
 {
@@ -972,7 +956,7 @@ void BabeTable::rateGroup(const int &id, const bool &rightClick)
     }
 }
 
-QMap<int, QString> BabeTable::getRowData(const int &row)
+BaeUtils::TRACKMAP BabeTable::getRowData(const int &row)
 {
     QString url = this->model()->data(this->model()->index(row, BaeUtils::TracksCols::URL)).toString();
 
@@ -994,8 +978,8 @@ QMap<int, QString> BabeTable::getRowData(const int &row)
         QString played = this->model()->data(this->model()->index(row, BaeUtils::TracksCols::PLAYED)).toString();
         QString art = this->model()->data(this->model()->index(row, BaeUtils::TracksCols::ART)).toString();
 
-        QMap<int, QString> map{{BaeUtils::TracksCols::TRACK,track}, {BaeUtils::TracksCols::TITLE,title}, {BaeUtils::TracksCols::ARTIST,artist},{BaeUtils::TracksCols::ALBUM,album},{BaeUtils::TracksCols::DURATION,duration},{BaeUtils::TracksCols::GENRE,genre},{BaeUtils::TracksCols::URL,location},{BaeUtils::TracksCols::STARS,stars},{BaeUtils::TracksCols::BABE,babe},{BaeUtils::TracksCols::ART,art},{BaeUtils::TracksCols::PLAYED,played},{BaeUtils::TracksCols::RELEASE_DATE,releaseDate},{BaeUtils::TracksCols::ADD_DATE,addDate}};
-        return map;
+       return BaeUtils::TRACKMAP {{BaeUtils::TracksCols::TRACK,track}, {BaeUtils::TracksCols::TITLE,title}, {BaeUtils::TracksCols::ARTIST,artist},{BaeUtils::TracksCols::ALBUM,album},{BaeUtils::TracksCols::DURATION,duration},{BaeUtils::TracksCols::GENRE,genre},{BaeUtils::TracksCols::URL,location},{BaeUtils::TracksCols::STARS,stars},{BaeUtils::TracksCols::BABE,babe},{BaeUtils::TracksCols::ART,art},{BaeUtils::TracksCols::PLAYED,played},{BaeUtils::TracksCols::RELEASE_DATE,releaseDate},{BaeUtils::TracksCols::ADD_DATE,addDate}};
+
     }
 }
 
@@ -1004,7 +988,7 @@ void BabeTable::on_tableWidget_doubleClicked(const QModelIndex &index)
 {
     Q_UNUSED(index);
 
-    QList<QMap<int, QString>> list;
+    BaeUtils::TRACKMAP_LIST list;
     auto track = getRowData(this->getIndex());
     list<<track;
     qDebug()
@@ -1015,7 +999,8 @@ void BabeTable::on_tableWidget_doubleClicked(const QModelIndex &index)
 }
 
 void BabeTable::babeIt_action()
-{    QList<QMap<int,QString>> mapList;
+{
+    BaeUtils::TRACKMAP_LIST mapList;
      for(auto row: this->getSelectedRows())
          mapList<< this->getRowData(row);
 
@@ -1062,7 +1047,7 @@ void BabeTable::editIt_action()
 
 }
 
-void BabeTable::itemEdited(QMap<int, QString> map)
+void BabeTable::itemEdited(BaeUtils::TRACKMAP map)
 {
     qDebug()<<"item changed: " << map[BaeUtils::TracksCols::TITLE];
     this->item(rRow,BaeUtils::TracksCols::TRACK)->setText(map[BaeUtils::TracksCols::TRACK]);
@@ -1125,7 +1110,8 @@ void BabeTable::colorizeRow(const QList<int> &rows, const QString &color, const 
 
 void BabeTable::queueIt_action()
 {
-    QList<QMap<int,QString>> mapList;
+
+    BaeUtils::TRACKMAP_LIST mapList;
     for(auto row : this->getSelectedRows())
         mapList<< this->getRowData(row);
 
@@ -1161,9 +1147,9 @@ QStringList BabeTable::getTableColumnContent(const BaeUtils::TracksCols &column)
 }
 
 
-QList<QMap<int, QString>> BabeTable::getAllTableContent()
+BaeUtils::TRACKMAP_LIST BabeTable::getAllTableContent()
 {
-    QList<QMap<int,QString>> mapList;
+    BaeUtils::TRACKMAP_LIST mapList;
 
     for (int i = 0; i<this->rowCount(); i++)
         mapList<<getRowData(i);

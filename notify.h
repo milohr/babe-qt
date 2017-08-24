@@ -10,7 +10,7 @@
 #include <QPixmap>
 #include <QDebug>
 #include <QMap>
-
+#include "baeUtils.h"
 
 class Notify : public QObject
 {
@@ -18,17 +18,17 @@ class Notify : public QObject
 
 public:
     explicit Notify(QObject *parent = 0);
-    void notifySong(const QMap<int, QString> &, const QPixmap &pix);
+    void notifySong(const BaeUtils::TRACKMAP &, const QPixmap &pix);
     void notify(const QString &title, const QString &body);
     void notifyUrgent(const QString &title, const QString &body);
 
 private:
-   QMap<int, QString> track;
+  BaeUtils::TRACKMAP track;
    // NotifyNotification *notify;
 
 
 signals:
-    void babeSong(QList<QMap<int, QString>> mapList);
+    void babeSong(BaeUtils::TRACKMAP_LIST mapList);
     void skipSong();
 
 public slots:

@@ -1,20 +1,19 @@
 #include "lastfmService.h"
 
-lastfm::lastfm(const QString &title_, const QString &artist_, const QString &album_) :
-    artist(artist_),  album(album_), title(title_)  {}
+lastfm::lastfm(const BaeUtils::TRACKMAP &song):track(song){}
 
 
 QString lastfm::setUpService(const Ontology &type)
 {
     QString url = this->API;
 
-    QUrl encodedArtist(this->artist);
+    QUrl encodedArtist(this->track[BaeUtils::TracksCols::ARTIST]);
     encodedArtist.toEncoded(QUrl::FullyEncoded);
 
-    QUrl encodedAlbum(this->album);
+    QUrl encodedAlbum(this->track[BaeUtils::TracksCols::ALBUM]);
     encodedAlbum.toEncoded(QUrl::FullyEncoded);
 
-    QUrl encodedTrack(this->title);
+    QUrl encodedTrack(this->track[BaeUtils::TracksCols::TITLE]);
     encodedTrack.toEncoded(QUrl::FullyEncoded);
 
     switch(type)
@@ -101,7 +100,7 @@ bool lastfm::parseLastFmArtist(const QByteArray &array, const ArtistInfo &infoTy
                     {
                         auto artistWiki = n.childNodes().item(2).toElement().text();
                         qDebug()<<"Fetching ArtistWiki LastFm[]";
-                        emit artistWikiReady(artistWiki);
+                        emit artistWikiReady(artistWiki,this->track);
                         if(infoType == ArtistWiki) return true;
                         else continue;
                     }else if(infoType == ArtistWiki) continue;
@@ -142,7 +141,7 @@ bool lastfm::parseLastFmArtist(const QByteArray &array, const ArtistInfo &infoTy
                             artistSimilar.insert(artistSimilarName,artistSimilarArt);
                         }
 
-                        emit artistSimilarReady(artistSimilar);
+                        emit artistSimilarReady(artistSimilar,this->track);
                         if(infoType == ArtistSimilar) return true;
                         else continue;
                     }else if(infoType == ArtistSimilar) continue;
@@ -161,7 +160,7 @@ bool lastfm::parseLastFmArtist(const QByteArray &array, const ArtistInfo &infoTy
                             artistTags<<m.childNodes().item(0).toElement().text();
                         }
 
-                        emit artistTagsReady(artistTags);
+                        emit artistTagsReady(artistTags,this->track);
                         if(infoType == ArtistTags) return true;
                     }else if(infoType == ArtistTags) continue;
 
@@ -230,7 +229,7 @@ bool lastfm::parseLastFmAlbum(const QByteArray &array, const AlbumInfo &infoType
                         auto albumWiki = n.childNodes().item(1).toElement().text();
                         qDebug()<<"Fetching AlbumWiki LastFm[]";
 
-                        emit albumWikiReady(albumWiki);
+                        emit albumWikiReady(albumWiki,this->track);
                         if(infoType == AlbumWiki) return true;
                         else continue;
 
@@ -252,7 +251,7 @@ bool lastfm::parseLastFmAlbum(const QByteArray &array, const AlbumInfo &infoType
                         }
                         qDebug()<<"Fetching AlbumTags LastFm["<<albumTags<<"]";
 
-                        emit albumTagsReady(albumTags);
+                        emit albumTagsReady(albumTags,this->track);
                         if(infoType == AlbumTags) return true;
                         else continue;
 
@@ -298,7 +297,7 @@ bool lastfm::parseLastFmTrack(const QByteArray &array, const TrackInfo &infoType
                         qDebug()<<"Fetching TrackPosition LastFm[]";
 
                         int position = n.attributes().namedItem("position").toElement().text().toInt();
-                        emit trackPositionReady(position);
+                        emit trackPositionReady(position,this->track);
                         if(infoType == TrackPosition) return true;
 
                     }else if(infoType == TrackPosition) continue;
@@ -313,7 +312,7 @@ bool lastfm::parseLastFmTrack(const QByteArray &array, const TrackInfo &infoType
                         qDebug()<<"Fetching TrackAlbum LastFm[]";
 
                         auto trackAlbum = n.namedItem("title").toElement().text();
-                        emit trackAlbumReady(trackAlbum);
+                        emit trackAlbumReady(trackAlbum,this->track);
                         if(infoType == TrackAlbum) return true;
                         else continue;
 
@@ -329,7 +328,7 @@ bool lastfm::parseLastFmTrack(const QByteArray &array, const TrackInfo &infoType
 
                         auto trackWiki = n.namedItem("summary").toElement().text();
                         qDebug()<<trackWiki;
-                        emit trackWikiReady(trackWiki);
+                        emit trackWikiReady(trackWiki,this->track);
                         if(infoType == TrackWiki) return true;
                         else continue;
 
@@ -349,7 +348,7 @@ bool lastfm::parseLastFmTrack(const QByteArray &array, const TrackInfo &infoType
                             trackTags<<tagsList.item(i).namedItem("name").toElement().text();
 
 
-                        emit trackTagsReady(trackTags);
+                        emit trackTagsReady(trackTags,this->track);
                         if(infoType == TrackTags) return true;
                         else continue;
                     }else if(infoType == TrackTags) continue;

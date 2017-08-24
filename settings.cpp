@@ -478,9 +478,9 @@ void settings::fetchArt()
                 collection_db.getQuery("SELECT title FROM tracks WHERE artist = \""+artist+"\" AND album = \""+album+"\"");
         if(query_Title.next()) title=query_Title.value("title").toString();
 
-        collection_db.insertCoverArt("",{album,artist});
+        collection_db.insertCoverArt("",{{BaeUtils::TracksCols::ALBUM,album},{BaeUtils::TracksCols::ARTIST,artist}});
 
-        Pulpo art(title,artist,album);
+        Pulpo art({{BaeUtils::TracksCols::TITLE,title},{BaeUtils::TracksCols::ARTIST,artist},{BaeUtils::TracksCols::ALBUM,album}});
 
         connect(&art, &Pulpo::albumArtReady,[this,&art] (QByteArray array){ art.saveArt(array,this->cachePath); });
         connect(&art, &Pulpo::artSaved, &collection_db, &CollectionDB::insertCoverArt);
@@ -496,9 +496,9 @@ void settings::fetchArt()
     {
         QString artist = query_Heads.value("title").toString();
 
-        collection_db.insertHeadArt("",{artist});
+        collection_db.insertHeadArt("",{{BaeUtils::TracksCols::ARTIST,artist}});
 
-        Pulpo art("",artist,"");
+        Pulpo art({{BaeUtils::TracksCols::ARTIST,artist}});
 
         connect(&art, &Pulpo::artistArtReady,[this,&art] (QByteArray array){ art.saveArt(array,this->cachePath); });
         connect(&art, &Pulpo::artSaved, &collection_db, &CollectionDB::insertHeadArt);
