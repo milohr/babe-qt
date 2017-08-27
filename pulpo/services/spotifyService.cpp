@@ -1,7 +1,7 @@
 #include "spotifyService.h"
 
 
-spotify::spotify(const BaeUtils::TRACKMAP &song)
+spotify::spotify(const Bae::TRACKMAP &song)
     : track(song) {}
 
 
@@ -10,13 +10,13 @@ QString spotify::setUpService(const spotify::Ontology &type)
 {
     QString url = this->API;
 
-    QUrl encodedArtist(this->track[BaeUtils::TracksCols::ARTIST]);
+    QUrl encodedArtist(this->track[Bae::TracksCols::ARTIST]);
     encodedArtist.toEncoded(QUrl::FullyEncoded);
 
-    QUrl encodedAlbum(this->track[BaeUtils::TracksCols::ALBUM]);
+    QUrl encodedAlbum(this->track[Bae::TracksCols::ALBUM]);
     encodedAlbum.toEncoded(QUrl::FullyEncoded);
 
-    QUrl encodedTrack(this->track[BaeUtils::TracksCols::TITLE]);
+    QUrl encodedTrack(this->track[Bae::TracksCols::TITLE]);
     encodedTrack.toEncoded(QUrl::FullyEncoded);
 
     switch(type)

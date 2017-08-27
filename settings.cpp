@@ -34,7 +34,7 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
     ui->frame_4->setEnabled(false);
 
 
-    if(!BaeUtils::fileExists(notifyDir+"/Babe.notifyrc"))
+    if(!Bae::fileExists(notifyDir+"/Babe.notifyrc"))
     {
         qDebug()<<"The Knotify file does not exists, going to create it";
         QFile knotify(":Data/data/Babe.notifyrc");
@@ -169,12 +169,12 @@ void settings::refreshWatchFiles()
 
     while (query.next())
     {
-        if(!query.value(BaeUtils::TracksCols::URL).toString().contains(youtubeCachePath))
+        if(!query.value(Bae::TracksCols::URL).toString().contains(youtubeCachePath))
         {
-            if (!dirs.contains(QFileInfo(query.value(BaeUtils::TracksCols::URL).toString()).dir().path())&&QFileInfo(query.value(BaeUtils::TracksCols::URL).toString()).exists())
+            if (!dirs.contains(QFileInfo(query.value(Bae::TracksCols::URL).toString()).dir().path())&&QFileInfo(query.value(Bae::TracksCols::URL).toString()).exists())
             {
 
-                QString dir =QFileInfo(query.value(BaeUtils::TracksCols::URL).toString()).dir().path();
+                QString dir =QFileInfo(query.value(Bae::TracksCols::URL).toString()).dir().path();
 
                 dirs << dir;
                 QDirIterator it(dir,QDir::Dirs | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
@@ -320,7 +320,7 @@ void settings::collectionWatcher()
         QString location = query.value(1).toString();
         if(!location.startsWith(youtubeCachePath,Qt::CaseInsensitive)) //exclude the youtube cache folder
         {
-            if (!dirs.contains(QFileInfo(location).dir().path()) && BaeUtils::fileExists(location)) //check if parent dir isn't already in list and it exists
+            if (!dirs.contains(QFileInfo(location).dir().path()) && Bae::fileExists(location)) //check if parent dir isn't already in list and it exists
             {
                 QString dir = QFileInfo(location).dir().path();
                 dirs << dir;
@@ -393,7 +393,7 @@ bool settings::checkCollection()
 {
 
 
-    if (BaeUtils::fileExists(collectionDBPath + collectionDBName))
+    if (Bae::fileExists(collectionDBPath + collectionDBName))
     {
         qDebug() << "The CollectionDB does exists.";
 
@@ -478,9 +478,9 @@ void settings::fetchArt()
                 collection_db.getQuery("SELECT title FROM tracks WHERE artist = \""+artist+"\" AND album = \""+album+"\"");
         if(query_Title.next()) title=query_Title.value("title").toString();
 
-        collection_db.insertCoverArt("",{{BaeUtils::TracksCols::ALBUM,album},{BaeUtils::TracksCols::ARTIST,artist}});
+        collection_db.insertCoverArt("",{{Bae::TracksCols::ALBUM,album},{Bae::TracksCols::ARTIST,artist}});
 
-        Pulpo art({{BaeUtils::TracksCols::TITLE,title},{BaeUtils::TracksCols::ARTIST,artist},{BaeUtils::TracksCols::ALBUM,album}});
+        Pulpo art({{Bae::TracksCols::TITLE,title},{Bae::TracksCols::ARTIST,artist},{Bae::TracksCols::ALBUM,album}});
 
         connect(&art, &Pulpo::albumArtReady,[this,&art] (QByteArray array){ art.saveArt(array,this->cachePath); });
         connect(&art, &Pulpo::artSaved, &collection_db, &CollectionDB::insertCoverArt);
@@ -496,9 +496,9 @@ void settings::fetchArt()
     {
         QString artist = query_Heads.value("title").toString();
 
-        collection_db.insertHeadArt("",{{BaeUtils::TracksCols::ARTIST,artist}});
+        collection_db.insertHeadArt("",{{Bae::TracksCols::ARTIST,artist}});
 
-        Pulpo art({{BaeUtils::TracksCols::ARTIST,artist}});
+        Pulpo art({{Bae::TracksCols::ARTIST,artist}});
 
         connect(&art, &Pulpo::artistArtReady,[this,&art] (QByteArray array){ art.saveArt(array,this->cachePath); });
         connect(&art, &Pulpo::artSaved, &collection_db, &CollectionDB::insertHeadArt);

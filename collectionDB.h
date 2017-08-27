@@ -56,8 +56,11 @@ public:
     bool wikiArtist(const QString &artist, const QString &value);
     bool wikiAlbum(const QString &album, const QString &artist, QString value);
 
-    BaeUtils::TRACKMAP_LIST getTrackData(const QStringList &urls);
-    BaeUtils::TRACKMAP_LIST getTrackData(const QString &queryText);
+    bool addPlaylist(const QString &title);
+    bool trackPlaylist(const QString &url, const QString &playlist);
+
+    Bae::TRACKMAP_LIST getTrackData(const QStringList &urls);
+    Bae::TRACKMAP_LIST getTrackData(const QString &queryText);
     QString getTrackLyrics(const QString &url);
     QString getTrackArt(const QString &path);
     QString getArtistArt(const QString &artist);
@@ -66,6 +69,9 @@ public:
     QString getAlbumWiki(const QString &album, const QString &artist);
 
     QStringList getPlaylists();
+
+
+
     QStringList getPlaylistsMoods();
     /*useful tools*/
     sourceTypes sourceType(const QString &url);
@@ -87,15 +93,14 @@ private:
 
 public slots:
     void closeConnection();
-    void insertPlaylist(const QString &name);
     bool removePath(const QString &path);
     void setCollectionLists();
     void refreshArtistsTable();
     void cleanCollectionLists();
 
     /*useful*/
-    void insertCoverArt(const QString &path, const BaeUtils::TRACKMAP &track);
-    void insertHeadArt(const QString &path, const BaeUtils::TRACKMAP &track);
+    void insertCoverArt(const QString &path, const Bae::TRACKMAP &track);
+    void insertHeadArt(const QString &path, const Bae::TRACKMAP &track);
 
 signals:
     void progress(int);

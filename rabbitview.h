@@ -33,8 +33,8 @@ public:
 
 private:
 
-    int ALBUM_SIZE_MEDIUM = BaeUtils::getWidgetSizeHint(BaeUtils::MEDIUM_ALBUM_FACTOR,BaeUtils::MEDIUM_ALBUM);
-    int ALBUM_SIZE_SMALL = BaeUtils::getWidgetSizeHint(BaeUtils::SMALL_ALBUM_FACTOR,BaeUtils::SMALL_ALBUM);
+    int ALBUM_SIZE_MEDIUM = Bae::getWidgetSizeHint(Bae::MEDIUM_ALBUM_FACTOR,Bae::MEDIUM_ALBUM);
+    int ALBUM_SIZE_SMALL = Bae::getWidgetSizeHint(Bae::SMALL_ALBUM_FACTOR,Bae::SMALL_ALBUM);
 
     QListWidget *artistSuggestion;
     BabeTable *generalSuggestion;
@@ -42,7 +42,7 @@ private:
 public slots:
 
     void populateArtistSuggestion(QMap<QString, QByteArray> info);
-    void populateGeneralSuggestion(const BaeUtils::TRACKMAP_LIST &mapList);
+    void populateGeneralSuggestion(const Bae::TRACKMAP_LIST &mapList);
 
     void filterByArtist(QMap<int, QString> albumMap);
 

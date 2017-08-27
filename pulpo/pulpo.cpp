@@ -23,53 +23,53 @@
 #include "pulpo/services/geniusService.h"
 
 
-Pulpo::Pulpo(const BaeUtils::TRACKMAP &song,QObject *parent)
+Pulpo::Pulpo(const Bae::TRACKMAP &song,QObject *parent)
     : QObject(parent), track(song) {}
 
 Pulpo::Pulpo(QObject *parent){}
 
 Pulpo::~Pulpo() {}
 
-void Pulpo::feed(const BaeUtils::TRACKMAP &song)
+void Pulpo::feed(const Bae::TRACKMAP &song)
 {
     this->track=song;
 }
 
 bool Pulpo::fetchArtistInfo(const ArtistInfo &infoType, const InfoServices &service)
 {
-    if(!this->track[BaeUtils::TracksCols::ARTIST].isEmpty())
+    if(!this->track[Bae::TracksCols::ARTIST].isEmpty())
     {
         QByteArray array;
 
         lastfm lastfm(this->track);
         connect(&lastfm,&lastfm::artistArtReady,[this] (const QByteArray &array) { emit Pulpo::artistArtReady(array);});
-        connect(&lastfm,&lastfm::artistWikiReady,[this] (const QString &wiki,const BaeUtils::TRACKMAP track)
+        connect(&lastfm,&lastfm::artistWikiReady,[this] (const QString &wiki,const Bae::TRACKMAP track)
         {
             qDebug() <<"got the artist wiki";
             emit Pulpo::artistWikiReady(wiki,track);
         });
 
-        connect(&lastfm,&lastfm::artistSimilarReady,[this] (const QMap<QString,QByteArray> &similar,const BaeUtils::TRACKMAP track)
+        connect(&lastfm,&lastfm::artistSimilarReady,[this] (const QMap<QString,QByteArray> &similar,const Bae::TRACKMAP track)
         {
             emit Pulpo::artistSimilarReady(similar,track);
         });
 
-        connect(&lastfm,&lastfm::artistTagsReady,[this] (const QStringList &tags,const BaeUtils::TRACKMAP track)
+        connect(&lastfm,&lastfm::artistTagsReady,[this] (const QStringList &tags,const Bae::TRACKMAP track)
         {
             emit Pulpo::artistTagsReady(tags,track);
         });
 
         spotify spotify(this->track);
         connect(&spotify,&spotify::artistArtReady,[this] (QByteArray array) { emit Pulpo::artistArtReady(array);});
-        connect(&spotify,&spotify::artistWikiReady,[this] (const QString &wiki,const BaeUtils::TRACKMAP &track)
+        connect(&spotify,&spotify::artistWikiReady,[this] (const QString &wiki,const Bae::TRACKMAP &track)
         {
             emit Pulpo::artistWikiReady(wiki,track);
         });
-        connect(&spotify,&spotify::artistSimilarReady,[this] (const QMap<QString,QByteArray> &similar,const BaeUtils::TRACKMAP &track)
+        connect(&spotify,&spotify::artistSimilarReady,[this] (const QMap<QString,QByteArray> &similar,const Bae::TRACKMAP &track)
         {
             emit Pulpo::artistSimilarReady(similar,track);
         });
-        connect(&spotify,&spotify::artistTagsReady,[this] (const QStringList &tags,const BaeUtils::TRACKMAP &track)
+        connect(&spotify,&spotify::artistTagsReady,[this] (const QStringList &tags,const Bae::TRACKMAP &track)
         {
             emit Pulpo::artistTagsReady(tags,track);
         });
@@ -133,8 +133,8 @@ bool Pulpo::fetchAlbumInfo(const AlbumInfo &infoType, const InfoServices &servic
 
     });
 
-    connect(&lastfm,&lastfm::albumWikiReady,[this] (const QString &wiki, const BaeUtils::TRACKMAP track) { emit Pulpo::albumWikiReady(wiki,track);});
-    connect(&lastfm,&lastfm::albumTagsReady,[this] (const QStringList &tags,const BaeUtils::TRACKMAP track) { emit Pulpo::albumTagsReady(tags,track);});
+    connect(&lastfm,&lastfm::albumWikiReady,[this] (const QString &wiki, const Bae::TRACKMAP track) { emit Pulpo::albumWikiReady(wiki,track);});
+    connect(&lastfm,&lastfm::albumTagsReady,[this] (const QStringList &tags,const Bae::TRACKMAP track) { emit Pulpo::albumTagsReady(tags,track);});
 
     spotify spotify(this->track);
     connect(&spotify,&spotify::albumArtReady,[this,infoType] (QByteArray array)
@@ -147,13 +147,13 @@ bool Pulpo::fetchAlbumInfo(const AlbumInfo &infoType, const InfoServices &servic
             emit Pulpo::albumArtReady(array);
         }
     });
-    connect(&spotify,&spotify::albumWikiReady,[this] (const QString &wiki,const BaeUtils::TRACKMAP track) { emit Pulpo::albumWikiReady(wiki,track);});
-    connect(&spotify,&spotify::albumTagsReady,[this] (const QStringList &tags,const BaeUtils::TRACKMAP track) { emit Pulpo::albumTagsReady(tags,track);});
+    connect(&spotify,&spotify::albumWikiReady,[this] (const QString &wiki,const Bae::TRACKMAP track) { emit Pulpo::albumWikiReady(wiki,track);});
+    connect(&spotify,&spotify::albumTagsReady,[this] (const QStringList &tags,const Bae::TRACKMAP track) { emit Pulpo::albumTagsReady(tags,track);});
 
     genius genius(this->track);
     connect(&genius,&genius::albumArtReady,[this] (QByteArray array) { emit Pulpo::albumArtReady(array); });
 
-    if(!this->track[BaeUtils::TracksCols::ARTIST].isEmpty() && !this->track[BaeUtils::TracksCols::ALBUM].isEmpty())
+    if(!this->track[Bae::TracksCols::ARTIST].isEmpty() && !this->track[Bae::TracksCols::ALBUM].isEmpty())
     {
 
         switch(service)
@@ -209,29 +209,29 @@ bool Pulpo::fetchTrackInfo(const Pulpo::TrackInfo &infoType, const Pulpo::LyricS
 {
     QByteArray array;
     lastfm lastfm(this->track);
-    connect(&lastfm,&lastfm::trackWikiReady,[this] (const QString &wiki,const BaeUtils::TRACKMAP track) { emit Pulpo::trackWikiReady(wiki,track);});
-    connect(&lastfm,&lastfm::trackTagsReady,[this] (const QStringList &tags,const BaeUtils::TRACKMAP track) { emit Pulpo::trackTagsReady(tags,track);});
-    connect(&lastfm,&lastfm::trackAlbumReady,[this] (const QString &album,const BaeUtils::TRACKMAP track) { emit Pulpo::trackAlbumReady(album,track);});
-    connect(&lastfm,&lastfm::trackPositionReady,[this] (const int &position,const BaeUtils::TRACKMAP track) { emit Pulpo::trackPositionReady(position,track);});
+    connect(&lastfm,&lastfm::trackWikiReady,[this] (const QString &wiki,const Bae::TRACKMAP track) { emit Pulpo::trackWikiReady(wiki,track);});
+    connect(&lastfm,&lastfm::trackTagsReady,[this] (const QStringList &tags,const Bae::TRACKMAP track) { emit Pulpo::trackTagsReady(tags,track);});
+    connect(&lastfm,&lastfm::trackAlbumReady,[this] (const QString &album,const Bae::TRACKMAP track) { emit Pulpo::trackAlbumReady(album,track);});
+    connect(&lastfm,&lastfm::trackPositionReady,[this] (const int &position,const Bae::TRACKMAP track) { emit Pulpo::trackPositionReady(position,track);});
 
     spotify spotify(this->track);
-    connect(&spotify,&spotify::trackWikiReady,[this] (const QString &wiki,const BaeUtils::TRACKMAP track) { emit Pulpo::albumWikiReady(wiki,track);});
-    connect(&spotify,&spotify::trackTagsReady,[this] (const QStringList &tags,const BaeUtils::TRACKMAP track) { emit Pulpo::albumTagsReady(tags,track);});
+    connect(&spotify,&spotify::trackWikiReady,[this] (const QString &wiki,const Bae::TRACKMAP track) { emit Pulpo::albumWikiReady(wiki,track);});
+    connect(&spotify,&spotify::trackTagsReady,[this] (const QStringList &tags,const Bae::TRACKMAP track) { emit Pulpo::albumTagsReady(tags,track);});
 
     lyricWikia lyricWikia(this->track);
-    connect(&lyricWikia,&lyricWikia::trackLyricsReady,[this] (const QString &lyric,const BaeUtils::TRACKMAP track)
+    connect(&lyricWikia,&lyricWikia::trackLyricsReady,[this] (const QString &lyric,const Bae::TRACKMAP track)
     {
         if(!lyric.isEmpty()) emit Pulpo::trackLyricsReady(lyric,track);
         else fetchTrackInfo(Pulpo::NoneTrackInfo,Pulpo::Genius,Pulpo::NoneInfoService);
     });
 
     genius genius(this->track);
-    connect(&genius,&genius::trackLyricsReady,[this] (const QString &lyric,const BaeUtils::TRACKMAP track)
+    connect(&genius,&genius::trackLyricsReady,[this] (const QString &lyric,const Bae::TRACKMAP track)
     {
         emit Pulpo::trackLyricsReady(lyric,track);
     });
 
-    if(!this->track[BaeUtils::TracksCols::ARTIST].isEmpty() && !this->track[BaeUtils::TracksCols::ALBUM].isEmpty() && service!= Pulpo::NoneInfoService)
+    if(!this->track[Bae::TracksCols::ARTIST].isEmpty() && !this->track[Bae::TracksCols::ALBUM].isEmpty() && service!= Pulpo::NoneInfoService)
     {
         switch(service)
         {
@@ -268,7 +268,7 @@ bool Pulpo::fetchTrackInfo(const Pulpo::TrackInfo &infoType, const Pulpo::LyricS
 
     }
 
-    if(!this->track[BaeUtils::TracksCols::TITLE].isEmpty() && !this->track[BaeUtils::TracksCols::ARTIST].isEmpty() && lyricService!=Pulpo::NoneLyricService)
+    if(!this->track[Bae::TracksCols::TITLE].isEmpty() && !this->track[Bae::TracksCols::ARTIST].isEmpty() && lyricService!=Pulpo::NoneLyricService)
     {
         switch(lyricService)
         {
@@ -287,6 +287,8 @@ bool Pulpo::fetchTrackInfo(const Pulpo::TrackInfo &infoType, const Pulpo::LyricS
             array = startConnection(genius.setUpService());
             if(!array.isEmpty())
             {
+                qDebug()<<"GENIUS///"<<array;
+
                 genius.parseLyrics(array);
                 return true;
 
@@ -389,13 +391,13 @@ void Pulpo::saveArt(const QByteArray &array, const QString &path)
     {
         QImage img;
         img.loadFromData(array);
-        QString name = this->track[BaeUtils::TracksCols::ALBUM].size() > 0 ? this->track[BaeUtils::TracksCols::ARTIST] + "_" + this->track[BaeUtils::TracksCols::ALBUM] : this->track[BaeUtils::TracksCols::ARTIST];
+        QString name = this->track[Bae::TracksCols::ALBUM].size() > 0 ? this->track[Bae::TracksCols::ARTIST] + "_" + this->track[Bae::TracksCols::ALBUM] : this->track[Bae::TracksCols::ARTIST];
         name.replace("/", "-");
         name.replace("&", "-");
         QString format = "JPEG";
         if (img.save(path + name + ".jpg", format.toLatin1(), 100))
         {
-            if (this->track[BaeUtils::TracksCols::ALBUM].isEmpty())
+            if (this->track[Bae::TracksCols::ALBUM].isEmpty())
                 emit artSaved(path + name + ".jpg", this->track);
             else
                 emit artSaved(path + name + ".jpg", this->track);
@@ -404,14 +406,14 @@ void Pulpo::saveArt(const QByteArray &array, const QString &path)
         } else {
             qDebug() << "couldn't save artwork";
 
-            if (this->track[BaeUtils::TracksCols::ALBUM].isEmpty())
+            if (this->track[Bae::TracksCols::ALBUM].isEmpty())
                 emit artSaved("", this->track);
             else
                 emit artSaved("", this->track);
         }
     }else
     {
-        if (this->track[BaeUtils::TracksCols::ALBUM].isEmpty())
+        if (this->track[Bae::TracksCols::ALBUM].isEmpty())
             emit artSaved("", this->track);
         else
             emit artSaved("", this->track);

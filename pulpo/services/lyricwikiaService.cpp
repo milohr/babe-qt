@@ -1,16 +1,16 @@
 #include "lyricwikiaService.h"
 
-lyricWikia::lyricWikia(const BaeUtils::TRACKMAP &song) :
+lyricWikia::lyricWikia(const Bae::TRACKMAP &song) :
     track(song)  {}
 
 QString lyricWikia::setUpService()
 {
     QString url = this->API;
 
-    QUrl encodedArtist(this->track[BaeUtils::TracksCols::ARTIST]);
+    QUrl encodedArtist(this->track[Bae::TracksCols::ARTIST]);
     encodedArtist.toEncoded(QUrl::FullyEncoded);
 
-    QUrl encodedTrack(this->track[BaeUtils::TracksCols::TITLE]);
+    QUrl encodedTrack(this->track[Bae::TracksCols::TITLE]);
     encodedTrack.toEncoded(QUrl::FullyEncoded);
 
     url.append("&artist=" + encodedArtist.toString());
@@ -91,7 +91,7 @@ void lyricWikia::extractLyrics(const QByteArray &array)
     if(!lyrics.contains("PUT LYRICS HERE")&&!lyrics.isEmpty())
     {
 //        qDebug()<<lyrics;
-        text = "<h2 align='center' >" + this->track[BaeUtils::TracksCols::TITLE] + "</h2>";
+        text = "<h2 align='center' >" + this->track[Bae::TracksCols::TITLE] + "</h2>";
         text += lyrics;
 
         text= "<div align='center'>"+text+"</div>";

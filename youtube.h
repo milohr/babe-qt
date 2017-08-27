@@ -46,8 +46,8 @@ private:
     Notify nof;
     QMap<QString,QString> tracks;
     const  QString ydl="youtube-dl -f m4a --youtube-skip-dash-manifest -o \"$$$.%(ext)s\"";
-    const QString cachePath=BaeUtils::YoutubeCachePath;
-    const QString extensionFetchingPath = BaeUtils::ExtensionFetchingPath;
+    const QString cachePath=Bae::YoutubeCachePath;
+    const QString extensionFetchingPath = Bae::ExtensionFetchingPath;
 
 signals:
     void  youtubeTrackReady(bool state);

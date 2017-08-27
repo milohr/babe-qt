@@ -2,17 +2,17 @@
 #include <QObject>
 
 
-genius::genius(const BaeUtils::TRACKMAP &song) :
+genius::genius(const Bae::TRACKMAP &song) :
     track(song) {}
 
 QString genius::setUpService()
 {
     QString url = this->API;
 
-    QUrl encodedArtist(this->track[BaeUtils::TracksCols::ARTIST]);
+    QUrl encodedArtist(this->track[Bae::TracksCols::ARTIST]);
     encodedArtist.toEncoded(QUrl::FullyEncoded);
 
-    QUrl encodedTrack(this->track[BaeUtils::TracksCols::TITLE]);
+    QUrl encodedTrack(this->track[Bae::TracksCols::TITLE]);
     encodedTrack.toEncoded(QUrl::FullyEncoded);
 
     url.append(encodedArtist.toString()+" "+encodedTrack.toString());
@@ -116,7 +116,7 @@ void genius::extractLyrics(const QString &url)
         qDebug()<<"got lyrics"<<list;
         if(!list.isEmpty())
         {
-            QString text = "<h2 align='center' >" + this->track[BaeUtils::TracksCols::TITLE] + "</h2>";
+            QString text = "<h2 align='center' >" + this->track[Bae::TracksCols::TITLE] + "</h2>";
             auto lyrics = list.first();
 
             lyrics=lyrics.trimmed();

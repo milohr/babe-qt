@@ -31,7 +31,7 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView)
         emit this->playAlbum(info);
 
     });
-    artist->createAlbum("","",":Data/data/cover.png", BaeUtils::MEDIUM_ALBUM, 100,false);
+    artist->createAlbum("","",":Data/data/cover.png", Bae::MEDIUM_ALBUM, 100,false);
 
     /* ui->lyricsText->setLineWrapMode(QTextEdit::NoWrap);
     ui->lyricsText->setStyleSheet("QTextBrowser{background-color: #575757; color:white;}");
@@ -133,12 +133,12 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView)
 
 InfoView::~InfoView() { delete ui; }
 
-void InfoView::setTrack(const BaeUtils::TRACKMAP &track)
+void InfoView::setTrack(const Bae::TRACKMAP &track)
 {
     this->track=track;
     this->clearInfoViews();
-    ui->titleLine->setText(this->track[BaeUtils::TracksCols::TITLE]);
-    ui->artistLine->setText(this->track[BaeUtils::TracksCols::ARTIST]);
+    ui->titleLine->setText(this->track[Bae::TracksCols::TITLE]);
+    ui->artistLine->setText(this->track[Bae::TracksCols::ARTIST]);
 }
 
 
@@ -246,36 +246,36 @@ void InfoView::getTrackInfo(const bool &album, const bool &artist, const bool &l
 
     if(!this->track.isEmpty())
     {
-        this->artist->setArtist(this->track[BaeUtils::TracksCols::ARTIST]);
+        this->artist->setArtist(this->track[Bae::TracksCols::ARTIST]);
         //this->album->setAlbum(album);
         //        QCoreApplication::removePostedEvents(QObject *receiver, int eventType = 0)
 
         Pulpo info(this->track);
-        connect(&info, &Pulpo::trackLyricsReady, [this] (const QString &lyrics,const BaeUtils::TRACKMAP &track)
+        connect(&info, &Pulpo::trackLyricsReady, [this] (const QString &lyrics,const Bae::TRACKMAP &track)
         {
             emit lyricsReady(lyrics,track);
             if(this->track==track) this->setLyrics(lyrics);
         });
 
-        connect(&info, &Pulpo::albumWikiReady,[this] (const QString &wiki,const BaeUtils::TRACKMAP &track)
+        connect(&info, &Pulpo::albumWikiReady,[this] (const QString &wiki,const Bae::TRACKMAP &track)
         {
             emit albumWikiReady(wiki,track);
             if(this->track==track) this->setAlbumInfo(wiki);
         });
 
-        connect(&info, &Pulpo::artistWikiReady,[this] (const QString &wiki,const BaeUtils::TRACKMAP &track)
+        connect(&info, &Pulpo::artistWikiReady,[this] (const QString &wiki,const Bae::TRACKMAP &track)
         {
             emit artistWikiReady(wiki,track);
            if(this->track==track) this->setArtistInfo(wiki);
         });
 
-        connect(&info, &Pulpo::artistSimilarReady, [this] (const QMap<QString,QByteArray> &info,const BaeUtils::TRACKMAP &track)
+        connect(&info, &Pulpo::artistSimilarReady, [this] (const QMap<QString,QByteArray> &info,const Bae::TRACKMAP &track)
         {
             emit artistSimilarReady(info,track);
            if(this->track==track) this->setArtistTagInfo(info.keys());
         });
 
-        connect(&info, &Pulpo::albumTagsReady, [this] (const QStringList &tags,const BaeUtils::TRACKMAP &track)
+        connect(&info, &Pulpo::albumTagsReady, [this] (const QStringList &tags,const Bae::TRACKMAP &track)
         {
             emit albumTagsReady(tags,track);
             if(this->track==track) this->setTagsInfo(tags);
@@ -324,7 +324,7 @@ void InfoView::on_toolButton_clicked()
 {
     QString artist=ui->artistLine->text();
     QString title=ui->titleLine->text();
-    Pulpo info({{BaeUtils::TracksCols::TITLE,title},{BaeUtils::TracksCols::ARTIST,artist}});
+    Pulpo info({{Bae::TracksCols::TITLE,title},{Bae::TracksCols::ARTIST,artist}});
     connect(&info, &Pulpo::trackLyricsReady, this, &InfoView::setLyrics, Qt::UniqueConnection);
 
     info.fetchTrackInfo(Pulpo::NoneTrackInfo,Pulpo::LyricWikia,Pulpo::NoneInfoService);

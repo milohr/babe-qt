@@ -12,10 +12,8 @@
 #include <cmath>
 using namespace std;
 
-namespace BaeUtils
+namespace Bae
 {
-
-
 
 enum DBTables
 {
@@ -46,7 +44,7 @@ enum AlbumsCols
 {
     ALBUM_TITLE=0, ALBUM_ARTIST=1, ALBUM_ARTWORK=2, ALBUM_WIKI=3
 };
-typedef QMap<BaeUtils::AlbumsCols, QString> ALBUMMAP;
+typedef QMap<Bae::AlbumsCols, QString> ALBUMMAP;
 
 static const QMap<AlbumsCols,QString> AlbumsColsMap =
 {
@@ -64,7 +62,7 @@ enum TracksCols
     ADD_DATE=11,LYRICS=12,GENRE=13,ART=14, columnsCOUNT=15
 };
 
-typedef QMap<BaeUtils::TracksCols, QString> TRACKMAP;
+typedef QMap<Bae::TracksCols, QString> TRACKMAP;
 typedef QList<TRACKMAP> TRACKMAP_LIST;
 
 static const TRACKMAP TracksColsMap =
@@ -144,9 +142,8 @@ inline QString getNameFromLocation(const QString &str)
     }
 
     for(; index < str.size(); index++)
-    {
         ret.push_back(str[index]);
-    }
+
 
     return ret;
 }

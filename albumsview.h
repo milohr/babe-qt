@@ -41,7 +41,7 @@ public:
     void flushGrid();
     int getAlbumSize() { return this->albumSize; }
     void hide_all(bool state);
-    void filter(const BaeUtils::TRACKMAP_LIST &filter, const BaeUtils::TracksCols &type);
+    void filter(const Bae::TRACKMAP_LIST &filter, const Bae::TracksCols &type);
     QSlider *slider;
     QAction *order;
     QFrame *utilsFrame;

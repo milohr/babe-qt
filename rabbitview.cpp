@@ -48,13 +48,13 @@ void RabbitView::populateArtistSuggestion(QMap<QString,QByteArray> info)
         auto art = new Album(this);
         connect(art, &Album::albumCoverClicked,this,&RabbitView:: filterByArtist);
         connect(art,&Album::playAlbum, [this] (QMap<int,QString> info) { emit playAlbum(info); });
-        art->createAlbum("","","",BaeUtils::SMALL_ALBUM,2,true);
+        art->createAlbum("","","",Bae::SMALL_ALBUM,2,true);
         // connect(art,&Album::changedArt,this,&RabbitView::changedArt_cover);
         //connect(art,&Album::babeAlbum_clicked,this,&RabbitView::babeAlbum);
-        art->setToolTip(BaeUtils::fixString(tag));
+        art->setToolTip(Bae::fixString(tag));
         art->putPixmap(info[tag]);
         art->borderColor=true;
-        art->setTitle(BaeUtils::fixString(tag));
+        art->setTitle(Bae::fixString(tag));
         art->showTitle(false);
         auto item = new QListWidgetItem();
         item->setSizeHint(QSize(ALBUM_SIZE_SMALL,ALBUM_SIZE_SMALL));
@@ -64,7 +64,7 @@ void RabbitView::populateArtistSuggestion(QMap<QString,QByteArray> info)
 
 }
 
-void RabbitView::populateGeneralSuggestion(const BaeUtils::TRACKMAP_LIST &mapList)
+void RabbitView::populateGeneralSuggestion(const Bae::TRACKMAP_LIST &mapList)
 {
     generalSuggestion->populateTableView(mapList,false);
 //    generalSuggestion->removeRepeated();

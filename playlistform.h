@@ -16,7 +16,7 @@ class PlaylistForm : public QWidget
     Q_OBJECT
 
 public:
-    explicit PlaylistForm(const QStringList &playlists,const BaeUtils::TRACKMAP_LIST &tracks, QWidget *parent = 0);
+    explicit PlaylistForm(const QStringList &playlists,const Bae::TRACKMAP_LIST &tracks, QWidget *parent = 0);
     ~PlaylistForm();
 
 private slots:
@@ -31,12 +31,12 @@ private slots:
 
 private:
     Ui::PlaylistForm *ui;
-    BaeUtils::TRACKMAP_LIST tracks;
+    Bae::TRACKMAP_LIST tracks;
     QStringList playlists;
     void addPlaylist();
 
 signals:
-    void saved(QString playlist,BaeUtils::TRACKMAP_LIST tracks);
+    void saved(QString playlist,Bae::TRACKMAP_LIST tracks);
     void canceled();
     void created(QString newPlaylist);
 

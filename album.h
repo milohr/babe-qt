@@ -29,8 +29,8 @@ public:
 
     explicit Album(QWidget *parent = 0);
     ~Album(){}
-    void createAlbumx(QString imagePath,BaeUtils::ALbumSizeHint widgetSize,int widgetRadius, bool isDraggable);
-    void createAlbum(const QString &artist, const QString &album, const QString &imagePath, const BaeUtils::ALbumSizeHint &widgetSize, const int &widgetRadius=0, const bool &isDraggable=false);
+    void createAlbumx(QString imagePath,Bae::ALbumSizeHint widgetSize,int widgetRadius, bool isDraggable);
+    void createAlbum(const QString &artist, const QString &album, const QString &imagePath, const Bae::ALbumSizeHint &widgetSize, const int &widgetRadius=0, const bool &isDraggable=false);
     void setArtist(const QString &artistTitle);
     void setAlbum(const QString &albumTitle);
     void setTitle(const QString &artistTitle, const QString &albumTitle="");

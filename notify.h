@@ -18,17 +18,17 @@ class Notify : public QObject
 
 public:
     explicit Notify(QObject *parent = 0);
-    void notifySong(const BaeUtils::TRACKMAP &, const QPixmap &pix);
+    void notifySong(const Bae::TRACKMAP &, const QPixmap &pix);
     void notify(const QString &title, const QString &body);
     void notifyUrgent(const QString &title, const QString &body);
 
 private:
-  BaeUtils::TRACKMAP track;
+  Bae::TRACKMAP track;
    // NotifyNotification *notify;
 
 
 signals:
-    void babeSong(BaeUtils::TRACKMAP_LIST mapList);
+    void babeSong(const Bae::TRACKMAP &track);
     void skipSong();
 
 public slots:

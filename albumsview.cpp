@@ -10,7 +10,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     layout->setMargin(0);
     layout->setSpacing(0);
 
-    albumSize = BaeUtils::getWidgetSizeHint(BaeUtils::MEDIUM_ALBUM_FACTOR,BaeUtils::MEDIUM_ALBUM);
+    albumSize = Bae::getWidgetSizeHint(Bae::MEDIUM_ALBUM_FACTOR,Bae::MEDIUM_ALBUM);
     this->setAcceptDrops(false);
     grid = new QListWidget(this);
     grid->installEventFilter(this);
@@ -120,7 +120,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     grid->addAction(zoomIn);
     connect(zoomIn, &QAction::triggered,[this]()
     {
-        if(albumSize+5<=BaeUtils::MAX_MID_ALBUM_SIZE)
+        if(albumSize+5<=Bae::MAX_MID_ALBUM_SIZE)
         {
             this->setAlbumsSize(albumSize+5);
             this->adjustGrid();
@@ -135,7 +135,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     grid->addAction(zoomOut);
     connect(zoomOut, &QAction::triggered,[this]()
     {
-        if(albumSize-5>=BaeUtils::MAX_MIN_ALBUM_SIZE)
+        if(albumSize-5>=Bae::MAX_MIN_ALBUM_SIZE)
         {
             this->setAlbumsSize(albumSize-5);
             this->adjustGrid();
@@ -171,10 +171,10 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     albumTable = new BabeTable(this);
     albumTable->setFrameShape(QFrame::NoFrame);
     //    albumTable->horizontalHeader()->setVisible(false);
-    albumTable->showColumn(BaeUtils::TracksCols::TRACK);
-    albumTable->showColumn(BaeUtils::TracksCols::STARS);
-    albumTable->hideColumn(BaeUtils::TracksCols::ARTIST);
-    albumTable->hideColumn(BaeUtils::TracksCols::ALBUM);
+    albumTable->showColumn(Bae::TracksCols::TRACK);
+    albumTable->showColumn(Bae::TracksCols::STARS);
+    albumTable->hideColumn(Bae::TracksCols::ARTIST);
+    albumTable->hideColumn(Bae::TracksCols::ALBUM);
 
     auto albumBox = new QGridLayout();
     albumBox->setContentsMargins(0,0,0,0);
@@ -193,7 +193,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     connect(cover,&Album::playAlbum,[this] (QMap<int,QString> info) { emit this->playAlbum(info); });
     connect(cover,&Album::changedArt,this,&AlbumsView::changedArt_cover);
     connect(cover,&Album::babeAlbum_clicked,this,&AlbumsView::babeAlbum);
-    cover->createAlbum("","",":Data/data/cover.svg",BaeUtils::MEDIUM_ALBUM,0,true);
+    cover->createAlbum("","",":Data/data/cover.svg",Bae::MEDIUM_ALBUM,0,true);
     cover->showTitle(false);
 
     closeBtn = new QToolButton(cover);
@@ -367,7 +367,7 @@ void AlbumsView::populateTableView()
 
         auto artwork= new Album(this);
         connect(artwork,&Album::albumCreated,[this](Album *album){emit createdAlbum(album);});
-        artwork->createAlbum(artist,album,art,BaeUtils::MEDIUM_ALBUM,4,true);
+        artwork->createAlbum(artist,album,art,Bae::MEDIUM_ALBUM,4,true);
 
 
 
@@ -380,7 +380,7 @@ void AlbumsView::populateTableView()
 }
 
 
-void AlbumsView::filter(const BaeUtils::TRACKMAP_LIST &filter, const BaeUtils::TracksCols &type)
+void AlbumsView::filter(const Bae::TRACKMAP_LIST &filter, const Bae::TracksCols &type)
 {
 
     hide_all(true);
@@ -394,12 +394,13 @@ void AlbumsView::filter(const BaeUtils::TRACKMAP_LIST &filter, const BaeUtils::T
         switch(type)
 
         {
-        case BaeUtils::TracksCols::ALBUM:
-            matches<<grid->findItems(result[BaeUtils::TracksCols::ALBUM]+" "+result[BaeUtils::TracksCols::ARTIST], Qt::MatchFlag::MatchContains);
+        case Bae::TracksCols::ALBUM:
+            matches<<grid->findItems(result[Bae::TracksCols::ALBUM]+" "+result[Bae::TracksCols::ARTIST], Qt::MatchFlag::MatchContains);
             break;
-        case BaeUtils::TracksCols::ARTIST:
-            matches<<grid->findItems(result[BaeUtils::TracksCols::ARTIST], Qt::MatchFlag::MatchContains);
+        case Bae::TracksCols::ARTIST:
+            matches<<grid->findItems(result[Bae::TracksCols::ARTIST], Qt::MatchFlag::MatchContains);
             break;
+        default: break;
         }
 
 
@@ -438,7 +439,7 @@ void AlbumsView::populateTableViewHeads()
         auto artwork= new Album(this);
 
         connect(artwork,&Album::albumCreated,[this](Album *album){emit createdAlbum(album);});
-        artwork->createAlbum(artist,"",art,BaeUtils::MEDIUM_ALBUM,4,true);
+        artwork->createAlbum(artist,"",art,Bae::MEDIUM_ALBUM,4,true);
 
 
     }

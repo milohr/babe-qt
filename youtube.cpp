@@ -136,7 +136,7 @@ void YouTube::processFinished_totally(const int &state,const QMap<int,QString> &
     if(exitStatus == QProcess::NormalExit)
     {
 
-        if(BaeUtils::fileExists(file))
+        if(Bae::fileExists(file))
         {
             TagInfo tag(file);
 

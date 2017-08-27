@@ -28,7 +28,7 @@ TagInfo::TagInfo(QString file)
 
 void TagInfo::writeData()
 {
-    Pulpo info({{BaeUtils::TracksCols::TITLE,this->getTitle()},{BaeUtils::TracksCols::ARTIST,this->getArtist()},{BaeUtils::TracksCols::ALBUM,this->getAlbum()}});
+    Pulpo info({{Bae::TracksCols::TITLE,this->getTitle()},{Bae::TracksCols::ARTIST,this->getArtist()},{Bae::TracksCols::ALBUM,this->getAlbum()}});
     QString newTitle = info.getStaticTrackInfo(Pulpo::TrackAlbum).toString();
     int trackPosition = info.getStaticTrackInfo(Pulpo::TrackPosition).toInt();
 
@@ -66,13 +66,13 @@ QString TagInfo::getGenre()
 
 QString TagInfo::fileName()
 {
-    return BaeUtils::getNameFromLocation(path);
+    return Bae::getNameFromLocation(path);
     //return file.file()->name();
 }
 
 uint TagInfo::getYear()
 {
-    //return BaeUtils::getNameFromLocation(path);
+    //return Bae::getNameFromLocation(path);
     return file.tag()->year();
 }
 

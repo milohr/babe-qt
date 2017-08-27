@@ -6,21 +6,21 @@ Album::Album(QWidget *parent) : QLabel(parent)
 
 }
 
-void Album::createAlbum(const QString &artist, const QString &album, const QString &imagePath,const BaeUtils::ALbumSizeHint &widgetSize, const int &widgetRadius, const bool &isDraggable)
+void Album::createAlbum(const QString &artist, const QString &album, const QString &imagePath,const Bae::ALbumSizeHint &widgetSize, const int &widgetRadius, const bool &isDraggable)
 {
     switch (widgetSize)
     {
-    case BaeUtils::BIG_ALBUM:
-        this->size=BaeUtils::getWidgetSizeHint(BaeUtils::BIG_ALBUM_FACTOR,BaeUtils::BIG_ALBUM);
-        this->subSize=BaeUtils::BIG_ALBUM_FACTOR_SUBWIDGET;
+    case Bae::BIG_ALBUM:
+        this->size=Bae::getWidgetSizeHint(Bae::BIG_ALBUM_FACTOR,Bae::BIG_ALBUM);
+        this->subSize=Bae::BIG_ALBUM_FACTOR_SUBWIDGET;
         break;
-    case BaeUtils::MEDIUM_ALBUM:
-        this->size=BaeUtils::getWidgetSizeHint(BaeUtils::MEDIUM_ALBUM_FACTOR,BaeUtils::MEDIUM_ALBUM);
-        this->subSize=BaeUtils::MEDIUM_ALBUM_FACTOR_SUBWIDGET;
+    case Bae::MEDIUM_ALBUM:
+        this->size=Bae::getWidgetSizeHint(Bae::MEDIUM_ALBUM_FACTOR,Bae::MEDIUM_ALBUM);
+        this->subSize=Bae::MEDIUM_ALBUM_FACTOR_SUBWIDGET;
         break;
-    case BaeUtils::SMALL_ALBUM:
-        this->size=BaeUtils::getWidgetSizeHint(BaeUtils::SMALL_ALBUM_FACTOR,BaeUtils::SMALL_ALBUM);
-        this->subSize=BaeUtils::SMALL_ALBUM_FACTOR_SUBWIDGET;
+    case Bae::SMALL_ALBUM:
+        this->size=Bae::getWidgetSizeHint(Bae::SMALL_ALBUM_FACTOR,Bae::SMALL_ALBUM);
+        this->subSize=Bae::SMALL_ALBUM_FACTOR_SUBWIDGET;
         break;
     }
 
@@ -107,7 +107,7 @@ void Album::babeIt_action() { emit babeAlbum_clicked(this->albumMap); }
 void Album::artIt_action()
 {
     qDebug()<<"Change art of album"<<this->artist<<this->album;
-    QString path = QFileDialog::getOpenFileName(this, tr("Select Music Files"),BaeUtils::CachePath, tr("Image Files (*.png *.jpg *.bmp)"));
+    QString path = QFileDialog::getOpenFileName(this, tr("Select Music Files"),Bae::CachePath, tr("Image Files (*.png *.jpg *.bmp)"));
     if(!path.isEmpty())
     {
         putPixmap(path);

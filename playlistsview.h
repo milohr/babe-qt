@@ -31,22 +31,22 @@ public:
     void setPlaylistsMoods();
     void setDefaultPlaylists();
     void showPlaylistDialog();
-    void saveToPlaylist(const BaeUtils::TRACKMAP_LIST &tracks);
-    void addToPlaylist(const QString &playlist, const BaeUtils::TRACKMAP_LIST &tracks);
-    void populatePlaylist(const QStringList &urls, const QString &playlist);
-    void insertPlaylist(const QString &playlist);
+    void saveToPlaylist(const Bae::TRACKMAP_LIST &tracks);
+    void addToPlaylist(const QString &playlist, const Bae::TRACKMAP_LIST &tracks);
+    void populatePlaylist(const Bae::TRACKMAP_LIST &tracks, const QString &playlist);
+    bool insertPlaylist(const QString &playlist);
     QFrame *line_v;
     QWidget *btnContainer;
     QString currentPlaylist;
     QStringList playlists;
-    QStringList moods = BaeUtils::MoodColors;
-    QString youtubeCachePath=BaeUtils::YoutubeCachePath;
+    QStringList moods = Bae::MoodColors;
+    QString youtubeCachePath=Bae::YoutubeCachePath;
 
     // QToolButton *removeBtn;
 
 private:
 
-    int ALBUM_SIZE_MEDIUM = BaeUtils::getWidgetSizeHint(BaeUtils::MEDIUM_ALBUM_FACTOR,BaeUtils::MEDIUM_ALBUM);
+    int ALBUM_SIZE_MEDIUM = Bae::getWidgetSizeHint(Bae::MEDIUM_ALBUM_FACTOR,Bae::MEDIUM_ALBUM);
 
     QToolButton *addBtn;
     QToolButton *removeBtn;
@@ -55,6 +55,7 @@ private:
     QWidget *moodWidget;
     CollectionDB connection;
     Notify nof;
+    QAction *removeFromPlaylist;
 
 
 public slots:
@@ -67,10 +68,10 @@ public slots:
     void dummy();
 
 signals:
-    void songClicked(QStringList list);
-    void playlistClicked(QString playlist);
-    void modifyPlaylistName(QString newName);
-    void finishedPopulatingPlaylist(QString playlist);
+    void songClicked(const QStringList &list);
+    void playlistClicked(const QString &playlist);
+    void modifyPlaylistName(const QString &newName);
+    void finishedPopulatingPlaylist(const Bae::TRACKMAP_LIST, const QString &playlist);
 
 };
 
