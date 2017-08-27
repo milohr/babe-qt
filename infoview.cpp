@@ -221,7 +221,11 @@ void InfoView::setArtistArt(const QString &url)
 
 void InfoView::setLyrics(const QString &lyrics)
 {
+    if(!lyrics.isEmpty())
+    {
+        ui->splitter->setSizes({Bae::BIG_ALBUM, Bae::BIG_ALBUM});
         ui->lyricsText->setHtml(lyrics);
+    }
 }
 
 
@@ -266,13 +270,13 @@ void InfoView::getTrackInfo(const bool &album, const bool &artist, const bool &l
         connect(&info, &Pulpo::artistWikiReady,[this] (const QString &wiki,const Bae::TRACKMAP &track)
         {
             emit artistWikiReady(wiki,track);
-           if(this->track==track) this->setArtistInfo(wiki);
+            if(this->track==track) this->setArtistInfo(wiki);
         });
 
         connect(&info, &Pulpo::artistSimilarReady, [this] (const QMap<QString,QByteArray> &info,const Bae::TRACKMAP &track)
         {
             emit artistSimilarReady(info,track);
-           if(this->track==track) this->setArtistTagInfo(info.keys());
+            if(this->track==track) this->setArtistTagInfo(info.keys());
         });
 
         connect(&info, &Pulpo::albumTagsReady, [this] (const QStringList &tags,const Bae::TRACKMAP &track)
@@ -283,7 +287,7 @@ void InfoView::getTrackInfo(const bool &album, const bool &artist, const bool &l
 
         connect(&info, &Pulpo::artistArtReady,[this](const QByteArray &array)
         {
-             this->setArtistArt(array);
+            this->setArtistArt(array);
         });
 
 
@@ -305,17 +309,20 @@ void InfoView::getTrackInfo(const bool &album, const bool &artist, const bool &l
 
 void InfoView::clearInfoViews()
 {
-    ui->artistText->setVisible(false);
     ui->similarArtistInfo->setVisible(false);
+    ui->similarArtistInfo->clear();
 
+    ui->artistText->setVisible(false);
     ui->artistText->clear();
 
-    ui->albumText->setVisible(false);
 
     ui->tagsInfo->setVisible(false);
     ui->tagsInfo->clear();
+
+    ui->albumText->setVisible(false);
     ui->albumText->clear();
 
+    ui->splitter->setSizes({ui->splitter->sizes().first(), 0});
     ui->lyricsText->clear();
 
 }
