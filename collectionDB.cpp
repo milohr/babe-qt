@@ -561,7 +561,7 @@ bool CollectionDB::removePath(const QString &path)
 {
     qDebug()<<"trying to delete all from :"<< path;
     QSqlQuery queryTracks;
-    queryTracks.prepare("DELETE FROM tracks WHERE location LIKE \"%"+path+"%\"");
+    queryTracks.prepare("DELETE FROM tracks WHERE url LIKE \""+path+"%\"");
     if(queryTracks.exec()) return true;
     else return false;
 }

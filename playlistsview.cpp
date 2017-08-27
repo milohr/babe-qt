@@ -139,7 +139,21 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
 
 
     this->removeFromPlaylist = new QAction("Remove from Playlist");
+    connect (this->removeFromPlaylist,&QAction::triggered, [this]()
+    {
+        for(auto row : this->table->getSelectedRows(true))
+        {
+            auto url = this->table->getRowData(row)[Bae::TracksCols::URL];
+            if(!connection.execQuery(QString("DELETE FROM tracks_playlists WHERE playlists_title = \"%1\" AND tracks_url = \"%2\"").arg(currentPlaylist,url)))
+                qDebug()<<"couldn't remove "<<url<< "from:"<<currentPlaylist;
+        }
 
+        QString query = QString("SELECT * FROM tracks t INNER JOIN tracks_playlists tpl on tpl.tracks_url = t.url INNER JOIN playlists pl on pl.title = tpl.playlists_title WHERE pl.title = \"%1\" ORDER by addDate desc").arg(currentPlaylist);
+
+        this->table->flushTable();
+        this->table->populateTableView(query,false);
+
+    });
     this->table->addMenuItem(removeFromPlaylist);
     this->removeFromPlaylist->setVisible(false);
 
@@ -209,7 +223,7 @@ void PlaylistsView::populatePlaylist(const QModelIndex &index)
         removeBtn->setEnabled(false);
         this->removeFromPlaylist->setVisible(false);
         table->showColumn(Bae::TracksCols::STARS);
-        query ="SELECT * FROM tracks ORDER by addDate desc LIMIT 15";
+        query ="SELECT * FROM tracks ORDER by addDate LIMIT 15";
 
     }    else if (currentPlaylist == "Babes") {
         // table->showColumn(BabeTable::PLAYED);
@@ -356,14 +370,13 @@ void PlaylistsView::setPlaylistsMoods()
 
     auto moodsLayout = new QHBoxLayout();
     QButtonGroup *moodGroup = new QButtonGroup(list);
-    connect(moodGroup, static_cast<void(QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked), [this](int mood)
+    connect(moodGroup, static_cast<void(QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked), [this](const int &mood)
     {
         currentPlaylist = this->moods.at(mood);
         table->flushTable();
         removeBtn->setEnabled(true);
         table->hideColumn(Bae::TracksCols::PLAYED);
         QString query = "SELECT * FROM tracks WHERE art = \"" + currentPlaylist + "\"";
-
 
         table->populateTableView(query,false);
     });
