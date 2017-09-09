@@ -223,7 +223,7 @@ void PlaylistsView::populatePlaylist(const QModelIndex &index)
         removeBtn->setEnabled(false);
         this->removeFromPlaylist->setVisible(false);
         table->showColumn(Bae::TracksCols::STARS);
-        query ="SELECT * FROM tracks ORDER by addDate LIMIT 15";
+        query ="SELECT * FROM tracks ORDER by date(addDate) LIMIT 15";
 
     }    else if (currentPlaylist == "Babes") {
         // table->showColumn(BabeTable::PLAYED);
@@ -234,7 +234,7 @@ void PlaylistsView::populatePlaylist(const QModelIndex &index)
         // table->showColumn(BabeTable::PLAYED);
         this->removeFromPlaylist->setVisible(false);
         removeBtn->setEnabled(false);
-        query = "SELECT * FROM tracks WHERE location LIKE \"" + youtubeCachePath + "%\"";
+        query = "SELECT * FROM tracks WHERE url LIKE \"" + youtubeCachePath + "%\"";
     } else if(!currentPlaylist.isEmpty()) {
         removeBtn->setEnabled(true);
         this->removeFromPlaylist->setVisible(true);

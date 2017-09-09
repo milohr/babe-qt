@@ -2,17 +2,20 @@
 #include <QObject>
 
 
+
+QString genius::API =  "https://genius.com/search?q=";
+
 genius::genius(const Bae::TRACKMAP &song) :
     track(song) {}
 
-QString genius::setUpService()
+ QString genius::setUpService(const Bae::TRACKMAP &song)
 {
-    QString url = this->API;
+    QString url = genius::API;
 
-    QUrl encodedArtist(this->track[Bae::TracksCols::ARTIST]);
+    QUrl encodedArtist(song[Bae::TracksCols::ARTIST]);
     encodedArtist.toEncoded(QUrl::FullyEncoded);
 
-    QUrl encodedTrack(this->track[Bae::TracksCols::TITLE]);
+    QUrl encodedTrack(song[Bae::TracksCols::TITLE]);
     encodedTrack.toEncoded(QUrl::FullyEncoded);
 
     url.append(encodedArtist.toString()+" "+encodedTrack.toString());
@@ -28,13 +31,13 @@ void genius::parseLyrics(const QByteArray &array)
 
     connect(&parser, &htmlParser::finishedParsingTags,[this] (const QStringList &tags)
     {
+        qDebug()<<"GENIUS RESULT TAGS:"<<tags;
         htmlParser parser;
         if(!tags.isEmpty())
             extractLyrics(parser.extractProp(tags.first(),"href="));
     });
 
-    parser.parseTag("li", "class=\"search_result\"");
-
+    parser.parseTag("a", "class=\"mini_card\"");
 }
 
 void genius::parseAlbumArt(const QByteArray &array)
@@ -46,7 +49,7 @@ void genius::parseAlbumArt(const QByteArray &array)
     {
         if(!tags.isEmpty())
         {
-            extractAlbumArt(parser.extractProp(tags.first(),"href="));
+            extractAlbumArt(parser.extractProp(tags.first(),"ng-href="));
         }
     });
 
@@ -91,48 +94,50 @@ void genius::extractLyrics(const QString &url)
 {
 
     qDebug()<<"extractLyrics"<<url;
-    QNetworkAccessManager manager;
-    QNetworkRequest request ((QUrl(url)));
-    QNetworkReply *reply =  manager.get(request);
-    QEventLoop loop;
-    connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
-    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), &loop,
-            SLOT(quit()));
+    emit trackLyricsReady(url,this->track);
 
-    loop.exec();
+//    QNetworkAccessManager manager;
+//    QNetworkRequest request ((QUrl(url)));
+//    QNetworkReply *reply =  manager.get(request);
+//    QEventLoop loop;
+//    connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+//    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), &loop,
+//            SLOT(quit()));
 
-    QByteArray array(reply->readAll());
-    delete reply;
+//    loop.exec();
 
-    htmlParser parser;
+//    QByteArray array(reply->readAll());
+//    delete reply;
 
-//    qDebug()<<"LYRICS ARRAY"<<array;
+//    htmlParser parser;
 
-    parser.setHtml(array);
-    qDebug()<<"Lyricsssss now";
+////    qDebug()<<"LYRICS ARRAY"<<array;
 
-    connect(&parser, &htmlParser::finishedParsingTags,[this] (const QStringList &list)
-    {
-        qDebug()<<"got lyrics"<<list;
-        if(!list.isEmpty())
-        {
-            QString text = "<h2 align='center' >" + this->track[Bae::TracksCols::TITLE] + "</h2>";
-            auto lyrics = list.first();
+//    parser.setHtml(array);
+//    qDebug()<<"Lyricsssss now";
 
-            lyrics=lyrics.trimmed();
-            lyrics.replace("\n", "<br>");
-            if(lyrics.isEmpty())
-            {
-                qDebug("Not found");
-                text+="\n<h3 align='center'>:( Nothing Here</h3>";
-            }
-            else text += lyrics;
+//    connect(&parser, &htmlParser::finishedParsingTags,[this] (const QStringList &list)
+//    {
+//        qDebug()<<"got lyrics"<<list;
+//        if(!list.isEmpty())
+//        {
+//            QString text = "<h2 align='center' >" + this->track[Bae::TracksCols::TITLE] + "</h2>";
+//            auto lyrics = list.first();
 
-            text= "<div id='geniusLyrics' align='center'>"+text+"</div>";
-            emit trackLyricsReady(text,this->track);
+//            lyrics=lyrics.trimmed();
+//            lyrics.replace("\n", "<br>");
+//            if(lyrics.isEmpty())
+//            {
+//                qDebug("Not found");
+//                text+="\n<h3 align='center'>:( Nothing Here</h3>";
+//            }
+//            else text += lyrics;
 
-        }
-    });
- parser.parseTag("div", "class=\"lyrics\"");
+//            text= "<div id='geniusLyrics' align='center'>"+text+"</div>";
+//            emit trackLyricsReady(text,this->track);
+
+//        }
+//    });
+// parser.parseTag("div", "class=\"lyrics\"");
 
 }

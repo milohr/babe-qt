@@ -23,6 +23,7 @@ find_package (
    Sql
    Widgets
    Xml
+   webenginewidgets
    )
 
 # Find the required KDE Frameworks
@@ -60,6 +61,7 @@ set(babe_SRCS
   web_jgm90.cpp
   rabbitview.cpp
   pulpo/pulpo.cpp
+  pulpo/webengine.cpp
   pulpo/htmlparser.cpp
   pulpo/services/lastfmService.cpp
   pulpo/services/spotifyService.cpp

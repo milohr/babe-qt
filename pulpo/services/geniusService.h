@@ -7,11 +7,12 @@
 
 class genius : public Pulpo
 {
-    Q_OBJECT
+    Q_OBJECT    
+
 public:
     explicit genius(const Bae::TRACKMAP &song);
 
-    QString setUpService();
+    static QString setUpService(const Bae::TRACKMAP &song);
 
     void parseLyrics(const QByteArray &array);
     void parseAlbumArt(const QByteArray &array);
@@ -24,8 +25,8 @@ public:
 
 private:
     QString KEY = "UARllo5N6CLQYVlqFwolyauSlYiyU_07YTg7HGHkWRbimN4GWPJehPP5fzu9lXeO";
-    QString API = "https://genius.com/search?q=";
     Bae::TRACKMAP track;
+    static QString API;
 };
 
 #endif // GENIUSSERVICE_H

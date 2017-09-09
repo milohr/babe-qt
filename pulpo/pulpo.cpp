@@ -22,9 +22,12 @@
 #include "pulpo/services/lyricwikiaService.h"
 #include "pulpo/services/geniusService.h"
 
-
 Pulpo::Pulpo(const Bae::TRACKMAP &song,QObject *parent)
-    : QObject(parent), track(song) {}
+    : QObject(parent), track(song) {
+
+    page = new webEngine();
+}
+
 
 Pulpo::Pulpo(QObject *parent){}
 
@@ -179,16 +182,16 @@ bool Pulpo::fetchAlbumInfo(const AlbumInfo &infoType, const InfoServices &servic
 
             }else return false; break;
 
-        case GeniusInfo:
-            array = startConnection(genius.setUpService());
-            if(!array.isEmpty())
-            {
-                genius.parseAlbumArt(array);
-                return true;
+//        case GeniusInfo:
+//            array = startConnection(genius.setUpService());
+//            if(!array.isEmpty())
+//            {
+//                genius.parseAlbumArt(array);
+//                return true;
 
 
-            }else return false; break;
-            break;
+//            }else return false;
+//            break;
 
 
 
@@ -208,6 +211,7 @@ bool Pulpo::fetchAlbumInfo(const AlbumInfo &infoType, const InfoServices &servic
 bool Pulpo::fetchTrackInfo(const Pulpo::TrackInfo &infoType, const Pulpo::LyricServices &lyricService, const Pulpo::InfoServices &service)
 {
     QByteArray array;
+
     lastfm lastfm(this->track);
     connect(&lastfm,&lastfm::trackWikiReady,[this] (const QString &wiki,const Bae::TRACKMAP track) { emit Pulpo::trackWikiReady(wiki,track);});
     connect(&lastfm,&lastfm::trackTagsReady,[this] (const QStringList &tags,const Bae::TRACKMAP track) { emit Pulpo::trackTagsReady(tags,track);});
@@ -225,11 +229,7 @@ bool Pulpo::fetchTrackInfo(const Pulpo::TrackInfo &infoType, const Pulpo::LyricS
         else fetchTrackInfo(Pulpo::NoneTrackInfo,Pulpo::Genius,Pulpo::NoneInfoService);
     });
 
-    genius genius(this->track);
-    connect(&genius,&genius::trackLyricsReady,[this] (const QString &lyric,const Bae::TRACKMAP track)
-    {
-        emit Pulpo::trackLyricsReady(lyric,track);
-    });
+
 
     if(!this->track[Bae::TracksCols::ARTIST].isEmpty() && !this->track[Bae::TracksCols::ALBUM].isEmpty() && service!= Pulpo::NoneInfoService)
     {
@@ -284,18 +284,24 @@ bool Pulpo::fetchTrackInfo(const Pulpo::TrackInfo &infoType, const Pulpo::LyricS
             break;
         case Lyrics: break;
         case Genius:
-            array = startConnection(genius.setUpService());
-            if(!array.isEmpty())
+        {
+
+            auto geniusURL = QUrl(genius::setUpService(this->track));
+
+            if(geniusURL.isValid())
             {
-                qDebug()<<"GENIUS///"<<array;
+                connect(page,&webEngine::htmlReady,[this]( QString const &html)
+                {
+                   genius genius(this->track);
 
-                genius.parseLyrics(array);
-                return true;
+                   genius.parseLyrics(html.toLocal8Bit());
+                });
 
-            }else return false;
+                page->load(geniusURL);
+
+            }
             break;
-
-            break;
+        }
         case lyricCRAWL: break;
         case AllLyricServices: break;
         case NoneLyricService: break;
@@ -381,6 +387,8 @@ QByteArray Pulpo::startConnection(const QString &url)
         return reply->readAll();
     }else return QByteArray();
 }
+
+
 
 
 void Pulpo::dummy() { qDebug() << "QQQQQQQQQQQQQQQQQQQQ on DUMMYT"; }

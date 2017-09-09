@@ -6,6 +6,7 @@
 #include <QDebug>
 #include <QHBoxLayout>
 #include <QToolButton>
+#include <QWebEngineView>
 #include "album.h"
 #include "pulpo/pulpo.h"
 
@@ -36,6 +37,7 @@ private:
     QToolButton *hideBtn;
     bool hide= false;
     bool customsearch = false;
+    QWebEngineView *page;
 
 public slots:
 

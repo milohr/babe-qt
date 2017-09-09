@@ -16,8 +16,11 @@
 #include <QNetworkRequest>
 #include <QJsonDocument>
 #include <QVariantMap>
-
+#include <QWebEngineView>
+#include <QWebEnginePage>
+#include <QWebEngineSettings>
 #include "../baeUtils.h"
+#include "pulpo/webengine.h"
 
 class Pulpo : public QObject
 {
@@ -85,7 +88,7 @@ private:
 
     QPixmap art;
     Bae::TRACKMAP track;
-
+    webEngine *page;
 public slots:
 
     void saveArt(const QByteArray &array, const QString &path);
@@ -110,7 +113,6 @@ signals:
     void trackTagsReady(const QStringList &tags,const Bae::TRACKMAP &track);
 
     void artSaved(const QString &path,const Bae::TRACKMAP &track);
-
 };
 
 #endif // ARTWORK_H

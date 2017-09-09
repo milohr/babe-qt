@@ -21,7 +21,7 @@ QT       += dbus
 QT       += KConfigCore
 QT       += KNotifications
 QT       += KI18n
-
+QT       += webenginewidgets
 
 
 
@@ -74,7 +74,8 @@ SOURCES += main.cpp\
     pulpo/services/lyricwikiaService.cpp \
     pulpo/services/geniusService.cpp \
     pulpo/htmlparser.cpp \
-    playlistform.cpp
+    playlistform.cpp \
+    pulpo/webengine.cpp
 
 HEADERS  += mainwindow.h \
             playlist.h \
@@ -103,7 +104,8 @@ HEADERS  += mainwindow.h \
     pulpo/services/lyricwikiaService.h \
     pulpo/services/geniusService.h \
     pulpo/htmlparser.h \
-    playlistform.h
+    playlistform.h \
+    pulpo/webengine.h
 
 FORMS    += mainwindow.ui \
     settings.ui \

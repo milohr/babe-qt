@@ -24,6 +24,7 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView)
 {
     ui->setupUi(this);
 
+    page = new QWebEngineView(this);
     artist = new Album(this);
     connect(artist,&Album::playAlbum,[this](QMap<int,QString> info)
     {
@@ -115,7 +116,7 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView)
     infoUtils_layout->addWidget(searchBtn);
 
 
-
+    ui->lyricsLayout->insertWidget(2,page);
 
     ui->artistLayout->insertWidget(0, artistContainer);
     ui->artistLayout->insertWidget(1,infoUtils);
@@ -224,7 +225,7 @@ void InfoView::setLyrics(const QString &lyrics)
     if(!lyrics.isEmpty())
     {
         ui->splitter->setSizes({Bae::BIG_ALBUM, Bae::BIG_ALBUM});
-        ui->lyricsText->setHtml(lyrics);
+        this->page->load(QUrl(lyrics));
     }
 }
 
@@ -323,18 +324,18 @@ void InfoView::clearInfoViews()
     ui->albumText->clear();
 
     ui->splitter->setSizes({ui->splitter->sizes().first(), 0});
-    ui->lyricsText->clear();
+//    ui->lyricsText->clear();
 
 }
 
 void InfoView::on_toolButton_clicked()
 {
-    QString artist=ui->artistLine->text();
-    QString title=ui->titleLine->text();
-    Pulpo info({{Bae::TracksCols::TITLE,title},{Bae::TracksCols::ARTIST,artist}});
-    connect(&info, &Pulpo::trackLyricsReady, this, &InfoView::setLyrics, Qt::UniqueConnection);
+//    QString artist=ui->artistLine->text();
+//    QString title=ui->titleLine->text();
+//    Pulpo info({{Bae::TracksCols::TITLE,title},{Bae::TracksCols::ARTIST,artist}});
+//    connect(&info, &Pulpo::trackLyricsReady, this, &InfoView::setLyrics, Qt::UniqueConnection);
 
-    info.fetchTrackInfo(Pulpo::NoneTrackInfo,Pulpo::LyricWikia,Pulpo::NoneInfoService);
+//    info.fetchTrackInfo(Pulpo::NoneTrackInfo,Pulpo::LyricWikia,Pulpo::NoneInfoService);
 
 }
 

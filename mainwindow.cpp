@@ -18,8 +18,7 @@
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-
-
+#include "pulpo/services/geniusService.h"
 
 MainWindow::MainWindow(const QStringList &files, QWidget *parent) :
     QMainWindow(parent),
@@ -482,7 +481,7 @@ void MainWindow::setUpCollectionViewer()
 
     mainLayout->addWidget(leftFrame);
     mainLayout->addWidget(rightFrame);
-    mainLayout->setContentsMargins(6,0,6,0);
+    mainLayout->setContentsMargins(0,0,0,0);
 
     mainWidget= new QWidget(this);
     mainWidget->setLayout(mainLayout);
@@ -1329,7 +1328,7 @@ void MainWindow::go_mini()
     //    rightFrame->layout()->margin(0);
     //    rightFrame->layout()->spacing(0);
     //    this->setMinimumSize(ALBUM_SIZE/2,ALBUM_SIZE/2);
-    this->setMaximumWidth(rightFrame->minimumSizeHint().width()+12);
+    this->setMaximumWidth(rightFrame->minimumSizeHint().width());
     QPropertyAnimation *animation = new QPropertyAnimation(this, "maximumHeight");
     animation->setDuration(200);
     animation->setStartValue(this->size().height());
@@ -1378,8 +1377,8 @@ void MainWindow::go_playlistMode()
         if(!ui->playlistUtils->isVisible()) ui->playlistUtils->setVisible(true);
         ui->tracks_view_2->setVisible(true);
         //        album_art->borderColor=false;
-        this->setMaximumWidth(rightFrame->minimumSizeHint().width()+12);
-        this->setMinimumWidth(rightFrame->minimumSizeHint().width()+12);
+        this->setMaximumWidth(rightFrame->minimumSizeHint().width());
+        this->setMinimumWidth(rightFrame->minimumSizeHint().width());
         QPropertyAnimation *animation = new QPropertyAnimation(this, "maximumWidth");
         animation->setDuration(200);
         animation->setStartValue(this->size().width());
@@ -1591,8 +1590,11 @@ void MainWindow::loadTrack()
 
         loadCover(current_song[Bae::TracksCols::ARTIST],current_song[Bae::TracksCols::ALBUM],current_song[Bae::TracksCols::TITLE]);
 
+        if(!this->isActiveWindow())
+            nof.notifySong(current_song,QPixmap(current_artwork));
+        
         loadInfo(current_song);
-
+        
         if(miniPlayback)
         {
             this->blurWidget(*album_art,28);
@@ -1600,8 +1602,7 @@ void MainWindow::loadTrack()
         }
 
 
-        if(!this->isActiveWindow())
-            nof.notifySong(current_song,QPixmap(current_artwork));
+        
 
 
     }else removeSong(current_song_pos);
@@ -2005,15 +2006,15 @@ bool MainWindow::babeTrack(const Bae::TRACKMAP &track)
 
 void MainWindow::loadInfo(const Bae::TRACKMAP &track)
 {
-    auto lyrics = this->connection.getTrackLyrics(track[Bae::TracksCols::URL]);
+//    auto lyrics = this->connection.getTrackLyrics(track[Bae::TracksCols::URL]);
     auto albumWiki = this->connection.getAlbumWiki(track[Bae::TracksCols::ALBUM],track[Bae::TracksCols::ARTIST]);
     auto artistWiki = this->connection.getArtistWiki(track[Bae::TracksCols::ARTIST]);
     this->infoTable->setTrack(track);
 
-    if(lyrics.isEmpty())
-        infoTable->getTrackInfo(false,false,true,false);
-    else
-        this->infoTable->setLyrics(lyrics);
+//    if(lyrics.isEmpty())
+//        infoTable->getTrackInfo(false,false,true,false);
+//    else
+        this->infoTable->setLyrics(genius::setUpService(track));
 
 
     if(albumWiki.isEmpty())
