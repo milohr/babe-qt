@@ -252,7 +252,7 @@ void CollectionDB::addTrack(const QStringList &paths,const int &babe)
                                       {Bae::TracksColsMap[Bae::TracksCols::BABE],babe},
                                       {Bae::TracksColsMap[Bae::TracksCols::STARS],0},
                                       {Bae::TracksColsMap[Bae::TracksCols::RELEASE_DATE],year},
-                                      {Bae::TracksColsMap[Bae::TracksCols::ADD_DATE],QDate::currentDate()},
+                                      {Bae::TracksColsMap[Bae::TracksCols::ADD_DATE],QDateTime::currentDateTime()},
                                       {Bae::TracksColsMap[Bae::TracksCols::LYRICS],""},
                                       {Bae::TracksColsMap[Bae::TracksCols::GENRE],genre},
                                       {Bae::TracksColsMap[Bae::TracksCols::ART],""}};

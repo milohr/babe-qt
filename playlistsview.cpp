@@ -223,7 +223,7 @@ void PlaylistsView::populatePlaylist(const QModelIndex &index)
         removeBtn->setEnabled(false);
         this->removeFromPlaylist->setVisible(false);
         table->showColumn(Bae::TracksCols::STARS);
-        query ="SELECT * FROM tracks ORDER by date(addDate) LIMIT 15";
+        query ="SELECT * FROM tracks ORDER by strftime(\"%s\",addDate) DESC LIMIT 15";
 
     }    else if (currentPlaylist == "Babes") {
         // table->showColumn(BabeTable::PLAYED);

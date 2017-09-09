@@ -40,10 +40,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 if (id.includes("&")) {
                     console.log("the string inclues ambersan");
-                    id = newStr.substring(0, id.indexOf("&"));
+                    id = id.substring(0, id.indexOf("&"));
                 } else if (id.includes("#")) {
                     console.log("the string inclues #");
-                    id = newStr.substring(0, id.indexOf("#"));
+                    id = id.substring(0, id.indexOf("#"));
 
                 }
 
