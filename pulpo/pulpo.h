@@ -107,6 +107,7 @@ signals:
     void artistTagsReady(const QStringList &tags,const Bae::TRACKMAP &track);
 
     void trackLyricsReady(const QString &lyric,const Bae::TRACKMAP &track);
+    void trackLyricsUrlReady(const QUrl &url,const Bae::TRACKMAP &track);
     void trackWikiReady(const QString &wiki,const Bae::TRACKMAP &track);
     void trackAlbumReady(const QString &album,const Bae::TRACKMAP &track);
     void trackPositionReady(const int &position,const Bae::TRACKMAP &track);

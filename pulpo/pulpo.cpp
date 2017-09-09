@@ -287,20 +287,20 @@ bool Pulpo::fetchTrackInfo(const Pulpo::TrackInfo &infoType, const Pulpo::LyricS
         {
 
             auto geniusURL = QUrl(genius::setUpService(this->track));
+            emit Pulpo::trackLyricsUrlReady(geniusURL,track);
+//            if(geniusURL.isValid())
+//            {
+//                connect(page,&webEngine::htmlReady,[this]( QString const &html)
+//                {
+//                   genius genius(this->track);
 
-            if(geniusURL.isValid())
-            {
-                connect(page,&webEngine::htmlReady,[this]( QString const &html)
-                {
-                   genius genius(this->track);
+//                   genius.parseLyrics(html.toLocal8Bit());
+//                });
 
-                   genius.parseLyrics(html.toLocal8Bit());
-                });
+//                page->load(geniusURL);
 
-                page->load(geniusURL);
-
-            }
-            break;
+//            }
+//            break;
         }
         case lyricCRAWL: break;
         case AllLyricServices: break;

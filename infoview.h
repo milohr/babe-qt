@@ -47,6 +47,7 @@ public slots:
     void setArtistArt(const QByteArray &array);
     void setArtistArt(const QString &url);
     void setLyrics(const QString &lyrics);
+    void setLyrics(const QUrl &url);
     void setArtistInfo(const QString &info);
     void setArtistTagInfo(const QStringList &tags);
     void setTagsInfo(QStringList);

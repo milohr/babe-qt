@@ -2006,15 +2006,15 @@ bool MainWindow::babeTrack(const Bae::TRACKMAP &track)
 
 void MainWindow::loadInfo(const Bae::TRACKMAP &track)
 {
-//    auto lyrics = this->connection.getTrackLyrics(track[Bae::TracksCols::URL]);
+    auto lyrics = this->connection.getTrackLyrics(track[Bae::TracksCols::URL]);
     auto albumWiki = this->connection.getAlbumWiki(track[Bae::TracksCols::ALBUM],track[Bae::TracksCols::ARTIST]);
     auto artistWiki = this->connection.getArtistWiki(track[Bae::TracksCols::ARTIST]);
     this->infoTable->setTrack(track);
 
-//    if(lyrics.isEmpty())
-//        infoTable->getTrackInfo(false,false,true,false);
-//    else
-        this->infoTable->setLyrics(genius::setUpService(track));
+    if(lyrics.isEmpty())
+        infoTable->getTrackInfo(false,false,true,false);
+    else
+        this->infoTable->setLyrics(lyrics);
 
 
     if(albumWiki.isEmpty())

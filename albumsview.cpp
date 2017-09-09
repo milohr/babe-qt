@@ -241,18 +241,18 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
 
     }
 
-        auto spacer = new QWidget(this);
-        spacer->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
-        spacer->setFixedHeight(15);
-        spacer->setAutoFillBackground(true);
-        spacer->setBackgroundRole(this->grid->backgroundRole());
-        spacer->setStyleSheet("QWidget{background-color:transparent;");
+    auto spacer = new QWidget(this);
+    spacer->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
+    spacer->setFixedHeight(15);
+    spacer->setAutoFillBackground(true);
+    spacer->setBackgroundRole(this->grid->backgroundRole());
+    spacer->setStyleSheet("QWidget{background-color:transparent;");
 
     QSplitter *splitter = new QSplitter(parent);
     splitter->setChildrenCollapsible(false);
     splitter->setOrientation(Qt::Vertical);
 
-        splitter->addWidget(spacer);
+    splitter->addWidget(spacer);
     splitter->addWidget(grid);
     splitter->addWidget(line_h);
     splitter->addWidget(albumBox_frame);

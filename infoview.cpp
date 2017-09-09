@@ -128,6 +128,11 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView)
 
     ui->similarArtistInfo->setOpenLinks(false);
 
+    ui->splitter->setSizes({0,0});
+    ui->splitter->setStretchFactor(0, 0);
+
+    ui->splitter->setStretchFactor(1, 1);
+
     //    ui->splitter->setSizes({120,1});
 
 }
@@ -225,10 +230,17 @@ void InfoView::setLyrics(const QString &lyrics)
     if(!lyrics.isEmpty())
     {
         ui->splitter->setSizes({Bae::BIG_ALBUM, Bae::BIG_ALBUM});
-        this->page->load(QUrl(lyrics));
+        this->page->setHtml(lyrics);
     }
 }
 
+void InfoView::setLyrics(const QUrl &url)
+{
+
+        ui->splitter->setSizes({Bae::BIG_ALBUM, Bae::BIG_ALBUM});
+        this->page->load(url);
+
+}
 
 
 void InfoView::on_searchBtn_clicked()
@@ -260,6 +272,12 @@ void InfoView::getTrackInfo(const bool &album, const bool &artist, const bool &l
         {
             emit lyricsReady(lyrics,track);
             if(this->track==track) this->setLyrics(lyrics);
+        });
+
+        connect(&info, &Pulpo::trackLyricsUrlReady, [this] (const QUrl &url,const Bae::TRACKMAP &track)
+        {
+//            emit lyricsReady(lyrics,track);
+            if(this->track==track) this->setLyrics(url);
         });
 
         connect(&info, &Pulpo::albumWikiReady,[this] (const QString &wiki,const Bae::TRACKMAP &track)
