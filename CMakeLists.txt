@@ -23,7 +23,7 @@ find_package (
    Sql
    Widgets
    Xml
-   webenginewidgets
+   WebEngineWidgets
    )
 
 # Find the required KDE Frameworks
