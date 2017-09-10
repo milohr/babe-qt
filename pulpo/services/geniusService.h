@@ -10,9 +10,9 @@ class genius : public Pulpo
     Q_OBJECT    
 
 public:
-    explicit genius(const Bae::TRACKMAP &song);
+    explicit genius(const Bae::DB &song);
 
-    static QString setUpService(const Bae::TRACKMAP &song);
+    static QString setUpService(const Bae::DB &song);
 
     void parseLyrics(const QByteArray &array);
     void parseAlbumArt(const QByteArray &array);
@@ -25,7 +25,7 @@ public:
 
 private:
     QString KEY = "UARllo5N6CLQYVlqFwolyauSlYiyU_07YTg7HGHkWRbimN4GWPJehPP5fzu9lXeO";
-    Bae::TRACKMAP track;
+    Bae::DB track;
     static QString API;
 };
 

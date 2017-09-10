@@ -15,7 +15,7 @@
 #include <QDrag>
 #include <QMimeData>
 #include <QApplication>
-#include <QPair>
+#include "collectionDB.h"
 #include "baeUtils.h"
 #include "scrolltext.h"
 
@@ -29,8 +29,7 @@ public:
 
     explicit Album(QWidget *parent = 0);
     ~Album(){}
-    void createAlbumx(QString imagePath,Bae::ALbumSizeHint widgetSize,int widgetRadius, bool isDraggable);
-    void createAlbum(const QString &artist, const QString &album, const QString &imagePath, const Bae::ALbumSizeHint &widgetSize, const int &widgetRadius=0, const bool &isDraggable=false);
+    void createAlbum(const Bae::DB &info, const Bae::ALbumSizeHint &widgetSize, const uint &widgetRadius=0, const bool &isDraggable=false);
     void setArtist(const QString &artistTitle);
     void setAlbum(const QString &albumTitle);
     void setTitle(const QString &artistTitle, const QString &albumTitle="");
@@ -62,7 +61,7 @@ public:
 
 private:
 
-    QMap<int, QString> albumMap;
+    Bae::DB  albumMap;
     bool draggable;
     bool visibleTitle=true;
     QString imagePath;
@@ -77,15 +76,17 @@ private:
 
     int border_radius=0;
 
+    CollectionDB connection;
+
     void performDrag();
 
 signals:
 
-    void albumCoverClicked(QMap<int, QString> albumMap);
-    void albumCoverDoubleClicked(QMap<int, QString> albumMap);
-    void playAlbum( QMap<int, QString> albumMap);
-    void changedArt( QMap<int, QString> albumMap);
-    void babeAlbum_clicked( QMap<int, QString> albumMap);
+    void albumCoverClicked(const Bae::DB & albumMap);
+    void albumCoverDoubleClicked(const Bae::DB &albumMap);
+    void playAlbum(const Bae::DB &albumMap);
+    void changedArt(const Bae::DB &albumMap);
+    void babeAlbum_clicked(const Bae::DB &albumMap);
     void albumDragged();
     void albumDragStarted();
     void albumCoverEnter();

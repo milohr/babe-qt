@@ -10,11 +10,11 @@ class lyricWikia : public Pulpo
 private:
     QString API = "http://lyrics.wikia.com/api.php?action=lyrics";
 
-    Bae::TRACKMAP track;
+    Bae::DB track;
 
 public:
 
-    explicit lyricWikia(const Bae::TRACKMAP &song);
+    explicit lyricWikia(const Bae::DB &song);
 
 
     QString setUpService();

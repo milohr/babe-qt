@@ -42,12 +42,12 @@ private:
 public slots:
 
     void populateArtistSuggestion(QMap<QString, QByteArray> info);
-    void populateGeneralSuggestion(const Bae::TRACKMAP_LIST &mapList);
+    void populateGeneralSuggestion(const Bae::DB_LIST &mapList);
 
-    void filterByArtist(QMap<int, QString> albumMap);
+    void filterByArtist(const Bae::DB &albumMap);
 
 signals:
-    void playAlbum(QMap<int,QString> info);
+    void playAlbum(const Bae::DB &info);
 
 
 };

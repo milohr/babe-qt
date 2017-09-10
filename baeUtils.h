@@ -15,64 +15,138 @@ using namespace std;
 namespace Bae
 {
 
+enum SearchT
+{
+    LIKE, SIMILAR
+};
+
+typedef QMap<Bae::SearchT,QString> SEARCH;
+
+static const SEARCH SearchTMap {
+    {Bae::SearchT::LIKE,"like"},
+    {Bae::SearchT::SIMILAR,"similar"}
+};
+
+enum Order
+{
+    DESC, ASC
+};
+
+static const QMap<Order,QString> OrderMap =
+{
+    {Order::DESC, "DESC"},
+    {Order::ASC,"ASC"}
+};
+
 enum DBTables
 {
-    ALBUMS=0,ARTISTS=1,MOODS=2,PLAYLISTS=3,SOURCES=4,SOURCES_TYPES=5,
-    TRACKS=6,TRACKS_MOODS=7,TRACKS_PLAYLISTS=8
+    ALBUMS=0,
+    ARTISTS=1,
+    MOODS=2,
+    PLAYLISTS=3,
+    SOURCES=4,
+    SOURCES_TYPES=5,
+    TRACKS=6,
+    TRACKS_MOODS=7,
+    TRACKS_PLAYLISTS=8,
+    TAGS=9,
+    ALBUMS_TAGS=10,
+    ARTISTS_TAGS=11,
+    TRACKS_TAGS=12
 };
 
 static const QMap<DBTables,QString> DBTablesMap =
 {
-    {DBTables::ALBUMS,"albums"},{DBTables::ARTISTS,"artists"},{DBTables::MOODS,"moods"},
-    {DBTables::PLAYLISTS,"playlists"},{DBTables::SOURCES,"sources"},{DBTables::SOURCES_TYPES,"sources_types"},
-    {DBTables::TRACKS,"tracks"},{DBTables::TRACKS_MOODS,"tracks_moods"},{DBTables::TRACKS_PLAYLISTS,"tracks_playlists"}
+    {DBTables::ALBUMS,"albums"},
+    {DBTables::ARTISTS,"artists"},
+    {DBTables::MOODS,"moods"},
+    {DBTables::PLAYLISTS,"playlists"},
+    {DBTables::SOURCES,"sources"},
+    {DBTables::SOURCES_TYPES,"sources_types"},
+    {DBTables::TRACKS,"tracks"},
+    {DBTables::TRACKS_MOODS,"tracks_moods"},
+    {DBTables::TRACKS_PLAYLISTS,"tracks_playlists"},
+    {DBTables::TAGS,"tags"},
+    {DBTables::ALBUMS_TAGS,"albums_tags"},
+    {DBTables::ARTISTS_TAGS,"artists_tags"},
+    {DBTables::TRACKS_TAGS,"tracks_tags"}
+
 };
 
-enum ArtistsCols
+
+enum DBCols
 {
-    ARTIST_TITLE=0, ARTIST_ARTWORK=1, ARTIST_WIKI=2
+    NONE=-1,
+    URL=0,
+    SOURCES_URL=1,
+    TRACK=2,
+    TITLE=3,
+    ARTIST=4,
+    ALBUM=5,
+    DURATION=6,
+    PLAYED=7,
+    BABE=8,
+    STARS=9,
+    RELEASE_DATE=10,
+    ADD_DATE=11,
+    LYRICS=12,
+    GENRE=13,
+    ART=14,
+    TAG=15,
+    MOOD=16,
+    PLAYLIST=17,
+    ARTWORK=18,
+    WIKI=19,
+    SOURCE_TYPE=20
 };
 
-static const QMap<ArtistsCols,QString> ArtistsColsMap =
+typedef QMap<Bae::DBCols, QString> DB;
+typedef QList<DB> DB_LIST;
+
+static const DB DBColsMap =
 {
-    {ArtistsCols::ARTIST_TITLE,"title"},
-    {ArtistsCols::ARTIST_ARTWORK,"artwork"},
-    {ArtistsCols::ARTIST_WIKI,"wiki"}
+    {DBCols::URL,"url"},
+    {DBCols::SOURCES_URL,"sources_url"},
+    {DBCols::TRACK,"track"},
+    {DBCols::TITLE,"title"},
+    {DBCols::ARTIST,"artist"},
+    {DBCols::ALBUM,"album"},
+    {DBCols::DURATION,"duration"},
+    {DBCols::PLAYED,"played"},
+    {DBCols::BABE,"babe"},
+    {DBCols::STARS,"stars"},
+    {DBCols::RELEASE_DATE,"releaseDate"},
+    {DBCols::ADD_DATE,"addDate"},
+    {DBCols::LYRICS,"lyrics"},
+    {DBCols::GENRE,"genre"},
+    {DBCols::ART,"art"},
+    {DBCols::TAG,"tag"},
+    {DBCols::MOOD,"mood"},
+    {DBCols::PLAYLIST,"playlist"},
+    {DBCols::ARTWORK,"artwork"},
+    {DBCols::WIKI,"wiki"},
+    {DBCols::SOURCE_TYPE,"source_types_id"}
 };
 
-enum AlbumsCols
-{
-    ALBUM_TITLE=0, ALBUM_ARTIST=1, ALBUM_ARTWORK=2, ALBUM_WIKI=3
-};
-typedef QMap<Bae::AlbumsCols, QString> ALBUMMAP;
 
-static const QMap<AlbumsCols,QString> AlbumsColsMap =
-{
-    {AlbumsCols::ALBUM_TITLE,"title"},
-    {AlbumsCols::ALBUM_ARTIST,"artist"},
-    {AlbumsCols::ALBUM_ARTWORK,"artwork"},
-    {AlbumsCols::ALBUM_WIKI,"wiki"},
-};
 
-enum TracksCols
+static const DB TracksColsMap =
 {
-    URL=0,SOURCES_URL=1,TRACK=2,TITLE=3,
-    ARTIST=4, ALBUM=5, DURATION=6,
-    PLAYED=7,BABE=8,STARS=9,RELEASE_DATE=10,
-    ADD_DATE=11,LYRICS=12,GENRE=13,ART=14, columnsCOUNT=15
-};
-
-typedef QMap<Bae::TracksCols, QString> TRACKMAP;
-typedef QList<TRACKMAP> TRACKMAP_LIST;
-
-static const TRACKMAP TracksColsMap =
-{
-    {TracksCols::URL,"url"},{TracksCols::SOURCES_URL,"sources_url"},
-    {TracksCols::TRACK,"track"},{TracksCols::TITLE,"title"},
-    {TracksCols::ARTIST,"artist"},{TracksCols::ALBUM,"album"},
-    {TracksCols::DURATION,"duration"},{TracksCols::PLAYED,"played"},{TracksCols::BABE,"babe"},
-    {TracksCols::STARS,"stars"},{TracksCols::RELEASE_DATE,"releaseDate"},{TracksCols::ADD_DATE,"addDate"},
-    {TracksCols::LYRICS,"lyrics"},{TracksCols::GENRE,"genre"},{TracksCols::ART,"art"}
+    {DBCols::URL,DBColsMap[DBCols::URL]},
+    {DBCols::SOURCES_URL,DBColsMap[DBCols::SOURCES_URL]},
+    {DBCols::TRACK,DBColsMap[DBCols::TRACK]},
+    {DBCols::TITLE,DBColsMap[DBCols::TITLE]},
+    {DBCols::ARTIST,DBColsMap[DBCols::ARTIST]},
+    {DBCols::ALBUM,DBColsMap[DBCols::ALBUM]},
+    {DBCols::DURATION,DBColsMap[DBCols::DURATION]},
+    {DBCols::PLAYED,DBColsMap[DBCols::PLAYED]},
+    {DBCols::BABE,DBColsMap[DBCols::BABE]},
+    {DBCols::STARS,DBColsMap[DBCols::STARS]},
+    {DBCols::RELEASE_DATE,DBColsMap[DBCols::RELEASE_DATE]},
+    {DBCols::ADD_DATE,DBColsMap[DBCols::ADD_DATE]},
+    {DBCols::LYRICS,DBColsMap[DBCols::LYRICS]},
+    {DBCols::GENRE,DBColsMap[DBCols::GENRE]},
+    {DBCols::ART,DBColsMap[DBCols::ART]}
 };
 
 

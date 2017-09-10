@@ -31,7 +31,7 @@ public:
     explicit CollectionDB();
     //CollectionDB(bool connect);
     ~CollectionDB(){}
-    QSqlQuery getQuery(QString queryTxt);
+    QSqlQuery getQuery(const QString &queryTxt);
     bool checkQuery(QString queryTxt);
     bool insertInto(const QString &tableName, const QString &column, const QString &location, const QVariant &value);
     void setTrackList(QList <Track>);
@@ -53,20 +53,44 @@ public:
     bool moodTrack(const QString &path, const QString &value);
     bool artTrack(const QString &path, const QString &value);
     bool lyricsTrack(const QString &path, const QString &value);
+    bool tagsTrack(const QString &path, const QString &value);
+    bool playedTrack(const QString &url, const int &increment=1);
+
     bool wikiArtist(const QString &artist, const QString &value);
+    bool tagsArtist(const QString &artist, const QString &value);
+
     bool wikiAlbum(const QString &album, const QString &artist, QString value);
+    bool tagsAlbum(const QString &album, const QString &artist, const QString &value);
 
     bool addPlaylist(const QString &title);
     bool trackPlaylist(const QString &url, const QString &playlist);
 
-    Bae::TRACKMAP_LIST getTrackData(const QStringList &urls);
-    Bae::TRACKMAP_LIST getTrackData(const QString &queryText);
+    Bae::DB_LIST getTrackData(const QStringList &urls);
+    Bae::DB_LIST getTrackData(QSqlQuery &query);
+
+    Bae::DB_LIST getArtistData(QSqlQuery &query);
+    Bae::DB_LIST getAlbumData(QSqlQuery &query);
+    Bae::DB_LIST getAlbumTracks(const QString &album, const QString &artist, const Bae::DBCols &orderBy=Bae::DBCols::TRACK, const Bae::Order &order=Bae::Order::ASC);
+    Bae::DB_LIST getArtistTracks(const QString &artist, const Bae::DBCols &orderBy=Bae::DBCols::ALBUM, const Bae::Order &order=Bae::Order::ASC);
+    QStringList getArtistAlbums(const QString &artist);
+    Bae::DB_LIST getBabedTracks(const Bae::DBCols &orderBy=Bae::DBCols::PLAYED, const Bae::Order &order=Bae::Order::DESC);
+    Bae::DB_LIST getSearchedTracks(const Bae::DBCols &where, const QString &search);
+    Bae::DB_LIST getPlaylistTracks(const QString &playlist, const Bae::DBCols &orderBy=Bae::DBCols::ADD_DATE, const Bae::Order &order=Bae::Order::DESC);
+    Bae::DB_LIST getMostPlayedTracks(const int &greaterThan=1,const int &limit= 50, const Bae::DBCols &orderBy=Bae::DBCols::PLAYED, const Bae::Order &order=Bae::Order::DESC);
+    Bae::DB_LIST getFavTracks(const int &stars=1,const int &limit= 50, const Bae::DBCols &orderBy=Bae::DBCols::STARS, const Bae::Order &order=Bae::Order::DESC);
+    Bae::DB_LIST getRecentTracks(const int &limit= 50, const Bae::DBCols &orderBy=Bae::DBCols::ADD_DATE, const Bae::Order &order=Bae::Order::DESC);
+    Bae::DB_LIST getOnlineTracks(const Bae::DBCols &orderBy=Bae::DBCols::ADD_DATE, const Bae::Order &order=Bae::Order::DESC);
+
+
     QString getTrackLyrics(const QString &url);
     QString getTrackArt(const QString &path);
+    QStringList getTrackTags(const QString &path);
     QString getArtistArt(const QString &artist);
     QString getArtistWiki(const QString &artist);
+    QStringList getArtistTags(const QString &artist);
     QString getAlbumArt(const QString &album, const QString &artist);
     QString getAlbumWiki(const QString &album, const QString &artist);
+    QStringList getAlbumTags(const QString &album, const QString &artist);
 
     QStringList getPlaylists();
 
@@ -99,8 +123,8 @@ public slots:
     void cleanCollectionLists();
 
     /*useful*/
-    void insertCoverArt(const QString &path, const Bae::TRACKMAP &track);
-    void insertHeadArt(const QString &path, const Bae::TRACKMAP &track);
+    void insertCoverArt(const QString &path, const Bae::DB &track);
+    void insertHeadArt(const QString &path, const Bae::DB &track);
 
 signals:
     void progress(int);

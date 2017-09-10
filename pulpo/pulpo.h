@@ -28,7 +28,7 @@ class Pulpo : public QObject
 
 public:
 
-    explicit Pulpo(const Bae::TRACKMAP &song, QObject *parent = 0);
+    explicit Pulpo(const Bae::DB &song, QObject *parent = 0);
     explicit Pulpo(QObject *parent = 0);
     ~Pulpo();
 
@@ -69,7 +69,7 @@ public:
 
 
 
-    void feed(const Bae::TRACKMAP &song);
+    void feed(const Bae::DB &song);
     QVariant getStaticAlbumInfo(const AlbumInfo &infoType);
     QVariant getStaticArtistInfo(const ArtistInfo &infoType);
     QVariant getStaticTrackInfo(const TrackInfo &infoType);
@@ -87,7 +87,7 @@ public:
 private:
 
     QPixmap art;
-    Bae::TRACKMAP track;
+    Bae::DB track;
     webEngine *page;
 public slots:
 
@@ -97,23 +97,23 @@ public slots:
 signals:
 
     void albumArtReady(const QByteArray &art);
-    void albumWikiReady(const QString &wiki,const Bae::TRACKMAP &track);
-    void albumTracksReady(const QStringList &tracks,const Bae::TRACKMAP &track);
-    void albumTagsReady(const QStringList &tags,const Bae::TRACKMAP &track);
+    void albumWikiReady(const QString &wiki,const Bae::DB &track);
+    void albumTracksReady(const QStringList &tracks,const Bae::DB &track);
+    void albumTagsReady(const QStringList &tags,const Bae::DB &track);
 
     void artistArtReady(const QByteArray &art);
-    void artistWikiReady(const QString &wiki,const Bae::TRACKMAP &track);
-    void artistSimilarReady(const QMap<QString,QByteArray> &similar,const Bae::TRACKMAP &track);
-    void artistTagsReady(const QStringList &tags,const Bae::TRACKMAP &track);
+    void artistWikiReady(const QString &wiki,const Bae::DB &track);
+    void artistSimilarReady(const QMap<QString,QByteArray> &similar,const Bae::DB &track);
+    void artistTagsReady(const QStringList &tags,const Bae::DB &track);
 
-    void trackLyricsReady(const QString &lyric,const Bae::TRACKMAP &track);
-    void trackLyricsUrlReady(const QUrl &url,const Bae::TRACKMAP &track);
-    void trackWikiReady(const QString &wiki,const Bae::TRACKMAP &track);
-    void trackAlbumReady(const QString &album,const Bae::TRACKMAP &track);
-    void trackPositionReady(const int &position,const Bae::TRACKMAP &track);
-    void trackTagsReady(const QStringList &tags,const Bae::TRACKMAP &track);
+    void trackLyricsReady(const QString &lyric,const Bae::DB &track);
+    void trackLyricsUrlReady(const QUrl &url,const Bae::DB &track);
+    void trackWikiReady(const QString &wiki,const Bae::DB &track);
+    void trackAlbumReady(const QString &album,const Bae::DB &track);
+    void trackPositionReady(const int &position,const Bae::DB &track);
+    void trackTagsReady(const QStringList &tags,const Bae::DB &track);
 
-    void artSaved(const QString &path,const Bae::TRACKMAP &track);
+    void artSaved(const QString &path,const Bae::DB &track);
 };
 
 #endif // ARTWORK_H

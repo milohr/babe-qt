@@ -1,19 +1,19 @@
 #include "lastfmService.h"
 
-lastfm::lastfm(const Bae::TRACKMAP &song):track(song){}
+lastfm::lastfm(const Bae::DB &song):track(song){}
 
 
 QString lastfm::setUpService(const Ontology &type)
 {
     QString url = this->API;
 
-    QUrl encodedArtist(this->track[Bae::TracksCols::ARTIST]);
+    QUrl encodedArtist(this->track[Bae::DBCols::ARTIST]);
     encodedArtist.toEncoded(QUrl::FullyEncoded);
 
-    QUrl encodedAlbum(this->track[Bae::TracksCols::ALBUM]);
+    QUrl encodedAlbum(this->track[Bae::DBCols::ALBUM]);
     encodedAlbum.toEncoded(QUrl::FullyEncoded);
 
-    QUrl encodedTrack(this->track[Bae::TracksCols::TITLE]);
+    QUrl encodedTrack(this->track[Bae::DBCols::TITLE]);
     encodedTrack.toEncoded(QUrl::FullyEncoded);
 
     switch(type)

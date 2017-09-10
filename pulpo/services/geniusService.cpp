@@ -5,17 +5,17 @@
 
 QString genius::API =  "https://genius.com/search?q=";
 
-genius::genius(const Bae::TRACKMAP &song) :
+genius::genius(const Bae::DB &song) :
     track(song) {}
 
- QString genius::setUpService(const Bae::TRACKMAP &song)
+ QString genius::setUpService(const Bae::DB &song)
 {
     QString url = genius::API;
 
-    QUrl encodedArtist(song[Bae::TracksCols::ARTIST]);
+    QUrl encodedArtist(song[Bae::DBCols::ARTIST]);
     encodedArtist.toEncoded(QUrl::FullyEncoded);
 
-    QUrl encodedTrack(song[Bae::TracksCols::TITLE]);
+    QUrl encodedTrack(song[Bae::DBCols::TITLE]);
     encodedTrack.toEncoded(QUrl::FullyEncoded);
 
     url.append(encodedArtist.toString()+" "+encodedTrack.toString());
@@ -121,7 +121,7 @@ void genius::extractLyrics(const QString &url)
 //        qDebug()<<"got lyrics"<<list;
 //        if(!list.isEmpty())
 //        {
-//            QString text = "<h2 align='center' >" + this->track[Bae::TracksCols::TITLE] + "</h2>";
+//            QString text = "<h2 align='center' >" + this->track[Bae::DBCols::TITLE] + "</h2>";
 //            auto lyrics = list.first();
 
 //            lyrics=lyrics.trimmed();

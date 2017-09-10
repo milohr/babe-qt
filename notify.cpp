@@ -39,7 +39,7 @@ void Notify::notify(  const QString &title, const QString &body)
 
 }
 
-void Notify::notifySong(const Bae::TRACKMAP &trackMap,  const QPixmap &pix)
+void Notify::notifySong(const Bae::DB &trackMap,  const QPixmap &pix)
 {
     this->track = trackMap;
 
@@ -47,12 +47,12 @@ void Notify::notifySong(const Bae::TRACKMAP &trackMap,  const QPixmap &pix)
                                                     KNotification::CloseOnTimeout, this);
 
     // notification->setComponentName(QStringLiteral("Babe"));
-    notification->setTitle(QStringLiteral("%1").arg(track[Bae::TracksCols::TITLE]));
-    notification->setText(QStringLiteral("%1\n%2").arg(track[Bae::TracksCols::ARTIST],track[Bae::TracksCols::ALBUM]));
+    notification->setTitle(QStringLiteral("%1").arg(track[Bae::DBCols::TITLE]));
+    notification->setText(QStringLiteral("%1\n%2").arg(track[Bae::DBCols::ARTIST],track[Bae::DBCols::ALBUM]));
     if(!pix.isNull()) notification->setPixmap(pix);
     QStringList actions;
 
-    if(track[Bae::TracksCols::BABE].toInt()==1) actions<<i18n("Un-Babe it  \xe2\x99\xa1");
+    if(track[Bae::DBCols::BABE].toInt()==1) actions<<i18n("Un-Babe it  \xe2\x99\xa1");
     else actions<<i18n("Babe it  \xe2\x99\xa1");
 
     actions<<i18n("Skip");

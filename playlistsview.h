@@ -31,9 +31,8 @@ public:
     void setPlaylistsMoods();
     void setDefaultPlaylists();
     void showPlaylistDialog();
-    void saveToPlaylist(const Bae::TRACKMAP_LIST &tracks);
-    void addToPlaylist(const QString &playlist, const Bae::TRACKMAP_LIST &tracks);
-    void populatePlaylist(const Bae::TRACKMAP_LIST &tracks, const QString &playlist);
+    void saveToPlaylist(const Bae::DB_LIST &tracks);
+    void addToPlaylist(const QString &playlist, const Bae::DB_LIST &tracks);
     bool insertPlaylist(const QString &playlist);
     QFrame *line_v;
     QWidget *btnContainer;
@@ -71,7 +70,7 @@ signals:
     void songClicked(const QStringList &list);
     void playlistClicked(const QString &playlist);
     void modifyPlaylistName(const QString &newName);
-    void finishedPopulatingPlaylist(const Bae::TRACKMAP_LIST, const QString &playlist);
+    void addedToPlaylist(const Bae::DB_LIST, const QString &playlist);
 
 };
 

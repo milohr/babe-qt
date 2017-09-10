@@ -28,7 +28,7 @@ TagInfo::TagInfo(QString file)
 
 void TagInfo::writeData()
 {
-    Pulpo info({{Bae::TracksCols::TITLE,this->getTitle()},{Bae::TracksCols::ARTIST,this->getArtist()},{Bae::TracksCols::ALBUM,this->getAlbum()}});
+    Pulpo info({{Bae::DBCols::TITLE,this->getTitle()},{Bae::DBCols::ARTIST,this->getArtist()},{Bae::DBCols::ALBUM,this->getAlbum()}});
     QString newTitle = info.getStaticTrackInfo(Pulpo::TrackAlbum).toString();
     int trackPosition = info.getStaticTrackInfo(Pulpo::TrackPosition).toInt();
 

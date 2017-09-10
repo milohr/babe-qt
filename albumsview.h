@@ -35,23 +35,19 @@ public:
 
     explicit AlbumsView(bool extraList=false, QWidget *parent = 0);
     ~AlbumsView();
-    void populateTableView();
-    void populateTableViewHeads();
-    void populateExtraList(QSqlQuery query);
+    void populateAlbumsView(QSqlQuery &query);
+    void populateArtistsView(QSqlQuery &query);
+    void populateExtraList(const QStringList &albums);
     void flushGrid();
     int getAlbumSize() { return this->albumSize; }
     void hide_all(bool state);
-    void filter(const Bae::TRACKMAP_LIST &filter, const Bae::TracksCols &type);
+    void filter(const Bae::DB_LIST &filter, const Bae::DBCols &type);
     QSlider *slider;
     QAction *order;
     QFrame *utilsFrame;
     BabeTable *albumTable;
     QListWidget *grid;
     QToolButton *expandBtn;
-
-
-    enum ALBUMSVIEW_H{ TITLE, ARTIST, ARTWORK };
-
 private:
 
     int albumSize;
@@ -61,8 +57,8 @@ private:
     void adjustGrid();
     QList<Album*> albumsList;
     QList<QListWidgetItem*> itemsList;
-    QStringList albums;
-    QStringList artists;
+    Bae::DB albums;
+    Bae::DB artists;
     QWidget *albumBox_frame;
     QFrame *line_h;
     Album *cover;
@@ -75,12 +71,12 @@ public slots:
 
     void hideAlbumFrame();
     void expandList();
-    void changedArt_cover(QMap<int,QString> info);
-    void changedArt_head(QMap<int,QString> info);
-    void babeAlbum(QMap<int,QString> info);
+    void changedArt_cover(const Bae::DB &info);
+    void changedArt_head(const Bae::DB &info);
+    void babeAlbum(const Bae::DB &info);
     void setAlbumsSize(int value);
-    void getAlbumInfo(QMap<int,QString> info);
-    void getArtistInfo(QMap<int,QString> info);
+    void getAlbumInfo(const Bae::DB &info);
+    void getArtistInfo(const Bae::DB &info);
 
 protected:
 
@@ -94,10 +90,10 @@ private slots:
 
 signals:
 
-    void albumDoubleClicked(QMap<int,QString> info);
+    void albumDoubleClicked(const Bae::DB info);
     void albumOrderChanged(QString order);
-    void playAlbum(QMap<int,QString> info);
-    void babeAlbum_clicked( QMap<int,QString> info);
+    void playAlbum(const Bae::DB &info);
+    void babeAlbum_clicked(const Bae::DB info);
     void populateFinished();
     void expandTo(QString artist, QString album);
     void createdAlbum(Album *album);

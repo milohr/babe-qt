@@ -45,27 +45,22 @@ public:
     explicit BabeTable(QWidget *parent = 0);
     ~BabeTable();
 
-    enum order
-    {
-        DESCENDING, ASCENDING
-    };
+
 
     enum menuActions //this order must be followed
     {
         BABEIT, QUEUEIT, INFOIT, EDITIT, SAVETO, REMOVEIT, RATEIT, MOODIT, SENDIT, ADDTO
     };
 
-
-    //    const QMap<int, QString> columnsNames{{TRACK, "track"}, {TITLE, "title"}, {ARTIST, "artist"},{ALBUM,"album"},{GENRE,"genre"},{LOCATION,"location"},{STARS,"stars"},{BABE,"babe"},{ART,"art"},{PLAYED,"played"},{PLAYLIST,"playlist"}};
     QStringList colors = Bae::MoodColors;
-    void populateTableView(const Bae::TRACKMAP_LIST &mapList, const bool &descriptiveTitle);
-    void populateTableView(const QString &indication, const bool &descriptiveTitle);
+    void populateTableView(const Bae::DB_LIST &mapList, const bool &descriptiveTitle);
+    void populateTableView(QSqlQuery &indication, const bool &descriptiveTitle);
     void removeMissing(QStringList missingFiles);
     void setRating(int rate);
-    void setTableOrder(int column, int order);
+    void setTableOrder(int column, Bae::Order order);
     void setVisibleColumn(int column);
-    void addRow(const Bae::TRACKMAP &map, const bool &descriptiveTooltip);
-    void addRowAt(const int &row, const Bae::TRACKMAP &map, const bool &descriptiveTooltip);
+    void addRow(const Bae::DB &map, const bool &descriptiveTooltip);
+    void addRowAt(const int &row, const Bae::DB &map, const bool &descriptiveTooltip);
     void passStyle(QString style);
     void setAddMusicMsg(const QString &msg, const QString &icon);
     int getIndex();
@@ -82,10 +77,10 @@ public:
 
     void addMenuItem(QAction *item);
 
-    Bae::TRACKMAP getRowData(const int &row);
+    Bae::DB getRowData(const int &row);
     QMap<QString, QString> getKdeConnectDevices();
-    QStringList getTableColumnContent(const Bae::TracksCols &column);
-    Bae::TRACKMAP_LIST getAllTableContent();
+    QStringList getTableColumnContent(const Bae::DBCols &column);
+    Bae::DB_LIST getAllTableContent();
 
 
 protected:
@@ -114,7 +109,7 @@ private slots:
     void update();
 
 public slots:
-    void itemEdited(Bae::TRACKMAP map);
+    void itemEdited(Bae::DB map);
     void flushTable();
     void colorizeRow(const QList<int> &rows, const QString &color, const bool &dark=false);
 
@@ -150,24 +145,24 @@ private:
 
 signals:
 
-    void tableWidget_doubleClicked(Bae::TRACKMAP_LIST mapList);
+    void tableWidget_doubleClicked(Bae::DB_LIST mapList);
     void songRated(QStringList list);
     void enterTable();
     void leaveTable();
     void finishedPopulating();
     void rightClicked(const int row, const int column);
-    void babeIt_clicked(Bae::TRACKMAP_LIST tracks);
+    void babeIt_clicked(Bae::DB_LIST tracks);
     void removeIt_clicked(int index);
     void moodIt_clicked(QList<int> rows, QString color, bool dark);
-    void queueIt_clicked(Bae::TRACKMAP_LIST track);
-    void infoIt_clicked(const Bae::TRACKMAP &track);
+    void queueIt_clicked(Bae::DB_LIST track);
+    void infoIt_clicked(const Bae::DB &track);
     void indexesMoved(int track,int newRow);
     void previewStarted();
     void previewFinished();
     void indexRemoved(int row);
-    void playItNow(Bae::TRACKMAP_LIST tracks);
-    void appendIt(Bae::TRACKMAP_LIST tracks);
-    void saveToPlaylist(Bae::TRACKMAP_LIST tracks);
+    void playItNow(Bae::DB_LIST tracks);
+    void appendIt(Bae::DB_LIST tracks);
+    void saveToPlaylist(Bae::DB_LIST tracks);
 
 };
 

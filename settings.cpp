@@ -169,12 +169,12 @@ void settings::refreshWatchFiles()
 
     while (query.next())
     {
-        if(!query.value(Bae::TracksCols::URL).toString().contains(youtubeCachePath))
+        if(!query.value(Bae::DBCols::URL).toString().contains(youtubeCachePath))
         {
-            if (!dirs.contains(QFileInfo(query.value(Bae::TracksCols::URL).toString()).dir().path())&&QFileInfo(query.value(Bae::TracksCols::URL).toString()).exists())
+            if (!dirs.contains(QFileInfo(query.value(Bae::DBCols::URL).toString()).dir().path())&&QFileInfo(query.value(Bae::DBCols::URL).toString()).exists())
             {
 
-                QString dir =QFileInfo(query.value(Bae::TracksCols::URL).toString()).dir().path();
+                QString dir =QFileInfo(query.value(Bae::DBCols::URL).toString()).dir().path();
 
                 dirs << dir;
                 QDirIterator it(dir,QDir::Dirs | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
@@ -464,49 +464,66 @@ void settings::fetchArt()
 
     ui->label->show();
     movie->start();
-    QSqlQuery query_Covers =
-            collection_db.getQuery("SELECT title, artist FROM albums WHERE artwork = ''");
-    QSqlQuery query_Heads =
-            collection_db.getQuery("SELECT title FROM artists WHERE artwork = ''");
 
-    while (query_Covers.next())
-    {
-        QString album = query_Covers.value("title").toString();
-        QString artist = query_Covers.value("artist").toString();
-        QString title;
-        QSqlQuery query_Title =
-                collection_db.getQuery("SELECT title FROM tracks WHERE artist = \""+artist+"\" AND album = \""+album+"\"");
-        if(query_Title.next()) title=query_Title.value("title").toString();
+    QString queryTxt;
+    QSqlQuery query_Covers;
+    QSqlQuery query_Heads;
 
-        collection_db.insertCoverArt("",{{Bae::TracksCols::ALBUM,album},{Bae::TracksCols::ARTIST,artist}});
+    queryTxt = QString("SELECT %1, %2 FROM %3 WHERE %4 = ''").arg(Bae::DBColsMap[Bae::DBCols::ALBUM],
+            Bae::DBColsMap[Bae::DBCols::ARTIST],Bae::DBTablesMap[Bae::DBTables::ALBUMS],Bae::DBColsMap[Bae::DBCols::ARTWORK]);
+    query_Covers.prepare(queryTxt);
 
-        Pulpo art({{Bae::TracksCols::TITLE,title},{Bae::TracksCols::ARTIST,artist},{Bae::TracksCols::ALBUM,album}});
+    qDebug()<<"FETCHART"<<queryTxt;
 
-        connect(&art, &Pulpo::albumArtReady,[this,&art] (QByteArray array){ art.saveArt(array,this->cachePath); });
-        connect(&art, &Pulpo::artSaved, &collection_db, &CollectionDB::insertCoverArt);
+    queryTxt = QString("SELECT %1 FROM %2 WHERE %3 = ''").arg(Bae::DBColsMap[Bae::DBCols::ARTIST],
+            Bae::DBTablesMap[Bae::DBTables::ARTISTS],Bae::DBColsMap[Bae::DBCols::ARTWORK]);
+    query_Heads.prepare(queryTxt);
 
-        if (art.fetchAlbumInfo(Pulpo::AlbumArt,Pulpo::LastFm)) qDebug()<<"using lastfm";
-        else if(art.fetchAlbumInfo(Pulpo::AlbumArt,Pulpo::Spotify)) qDebug()<<"using spotify";
-        else if(art.fetchAlbumInfo(Pulpo::AlbumArt,Pulpo::GeniusInfo)) qDebug()<<"using genius";
-        else art.albumArtReady(QByteArray());
-        amountAlbums++;
-    }
+    qDebug()<<"FETCHART"<<queryTxt;
 
-    while (query_Heads.next())
-    {
-        QString artist = query_Heads.value("title").toString();
+    if(query_Covers.exec())
+        while (query_Covers.next())
+        {
+            QString album = query_Covers.value(Bae::DBColsMap[Bae::DBCols::ALBUM]).toString();
+            QString artist = query_Covers.value(Bae::DBColsMap[Bae::DBCols::ARTIST]).toString();
+            QString title;
+            QSqlQuery query_Title =
+                    collection_db.getQuery("SELECT title FROM tracks WHERE artist = \""+artist+"\" AND album = \""+album+"\"");
+            if(query_Title.next()) title=query_Title.value(Bae::DBColsMap[Bae::DBCols::TITLE]).toString();
 
-        collection_db.insertHeadArt("",{{Bae::TracksCols::ARTIST,artist}});
+            collection_db.insertCoverArt("",{{Bae::DBCols::ALBUM,album},{Bae::DBCols::ARTIST,artist}});
 
-        Pulpo art({{Bae::TracksCols::ARTIST,artist}});
+            Pulpo art({{Bae::DBCols::TITLE,title},{Bae::DBCols::ARTIST,artist},{Bae::DBCols::ALBUM,album}});
 
-        connect(&art, &Pulpo::artistArtReady,[this,&art] (QByteArray array){ art.saveArt(array,this->cachePath); });
-        connect(&art, &Pulpo::artSaved, &collection_db, &CollectionDB::insertHeadArt);
+            connect(&art, &Pulpo::albumArtReady,[this,&art] (QByteArray array){ art.saveArt(array,this->cachePath); });
+            connect(&art, &Pulpo::artSaved, &collection_db, &CollectionDB::insertCoverArt);
 
-        art.fetchArtistInfo(Pulpo::ArtistArt,Pulpo::LastFm);
+            if (art.fetchAlbumInfo(Pulpo::AlbumArt,Pulpo::LastFm)) qDebug()<<"using lastfm";
+            else if(art.fetchAlbumInfo(Pulpo::AlbumArt,Pulpo::Spotify)) qDebug()<<"using spotify";
+            else if(art.fetchAlbumInfo(Pulpo::AlbumArt,Pulpo::GeniusInfo)) qDebug()<<"using genius";
+            else art.albumArtReady(QByteArray());
+            amountAlbums++;
+        }
+    else qDebug()<<"fetchArt queryCover failed";
 
-        amountArtists++;
-    }
+
+    if(query_Heads.exec())
+        while (query_Heads.next())
+        {
+            QString artist = query_Heads.value(Bae::DBColsMap[Bae::DBCols::ARTIST]).toString();
+            qDebug()<< "QUERYHEAD ARTIOSTSSSSS:"<<artist;
+            collection_db.insertHeadArt("",{{Bae::DBCols::ARTIST,artist}});
+
+            Pulpo art({{Bae::DBCols::ARTIST,artist}});
+
+            connect(&art, &Pulpo::artistArtReady,[this,&art] (QByteArray array){ art.saveArt(array,this->cachePath); });
+            connect(&art, &Pulpo::artSaved, &collection_db, &CollectionDB::insertHeadArt);
+
+            art.fetchArtistInfo(Pulpo::ArtistArt,Pulpo::LastFm);
+
+            amountArtists++;
+        }
+    else qDebug()<<"fetchArt queryHeads failed";
 
 
     nof.notify("Finished fetching art","the artwork for your collection is now ready :)\n "+QString::number(amountArtists)+" artists and "+QString::number(amountAlbums)+" albums");

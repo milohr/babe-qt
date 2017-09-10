@@ -1,7 +1,7 @@
 #include "playlistform.h"
 #include "ui_playlistform.h"
 
-PlaylistForm::PlaylistForm(const QStringList &playlists, const Bae::TRACKMAP_LIST &tracks, QWidget *parent) :
+PlaylistForm::PlaylistForm(const QStringList &playlists, const Bae::DB_LIST &tracks, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::PlaylistForm)
 {

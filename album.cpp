@@ -4,9 +4,10 @@
 Album::Album(QWidget *parent) : QLabel(parent)
 {
 
+
 }
 
-void Album::createAlbum(const QString &artist, const QString &album, const QString &imagePath,const Bae::ALbumSizeHint &widgetSize, const int &widgetRadius, const bool &isDraggable)
+void Album::createAlbum(const Bae::DB &info, const Bae::ALbumSizeHint &widgetSize, const uint &widgetRadius, const bool &isDraggable)
 {
     switch (widgetSize)
     {
@@ -24,10 +25,27 @@ void Album::createAlbum(const QString &artist, const QString &album, const QStri
         break;
     }
 
+
+    auto artist = info[Bae::DBCols::ARTIST];
+    auto album = info[Bae::DBCols::ALBUM];
+    auto artwork = info[Bae::DBCols::ARTWORK];
+
+    if(!artist.isEmpty())
+    {
+        if(artwork.isEmpty() || artwork=="NULL")
+            artwork=":Data/data/cover.svg";
+    }else
+    {
+        if(artwork.isEmpty() || artwork=="NULL")
+            artwork = connection.getArtistArt(artist);
+        if(artwork.isEmpty() || artwork=="NULL")
+            artwork=":Data/data/cover.svg";
+    }
+
     this->setFixedSize(size,size);
     this->border_radius=widgetRadius;
     this->draggable=isDraggable;
-    this->imagePath=imagePath;
+    this->imagePath=artwork;
     this->borderQColor = this->palette().color(QPalette::BrightText).name();
 
     if (!imagePath.isEmpty()) this->putPixmap(imagePath);
@@ -111,7 +129,7 @@ void Album::artIt_action()
     if(!path.isEmpty())
     {
         putPixmap(path);
-        this->albumMap.insert(ART,path);
+        this->albumMap.insert(Bae::DBCols::ART,path);
         emit changedArt(this->albumMap);
     }
 }
@@ -248,8 +266,8 @@ void Album::setTitle(const QString &artistTitle, const QString &albumTitle)
     this->artist = artistTitle;
     this->album = albumTitle;
 
-    albumMap.insert(ARTIST,this->artist);
-    albumMap.insert(ALBUM, this->album);
+    albumMap.insert(Bae::DBCols::ARTIST,this->artist);
+    albumMap.insert(Bae::DBCols::ALBUM, this->album);
 
     QString str = album.isEmpty()? artist : album+" - "+artist;
     title->setText(str);

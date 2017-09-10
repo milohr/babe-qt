@@ -1,18 +1,18 @@
 
 CREATE TABLE ALBUMS
 (
-title   TEXT,
+album   TEXT,
 artist  TEXT,
 artwork TEXT,
 wiki    TEXT,
-PRIMARY KEY(title, artist),
-FOREIGN KEY(artist) REFERENCES artists(title)
+PRIMARY KEY(album, artist),
+FOREIGN KEY(artist) REFERENCES artists(artist)
 ) ;
 
 
 CREATE TABLE ARTISTS
 (
-title   TEXT PRIMARY KEY ,
+artist   TEXT PRIMARY KEY ,
 artwork TEXT ,
 wiki    TEXT
 ) ;
@@ -24,16 +24,14 @@ tag TEXT PRIMARY KEY
 
 CREATE TABLE MOODS
 (
-tag TEXT PRIMARY KEY
+mood TEXT PRIMARY KEY
 ) ;
 
 
 CREATE TABLE PLAYLISTS
 (
-title       TEXT PRIMARY KEY ,
-MOODS_tag TEXT ,
-addDate DATE NOT NULL,
-FOREIGN KEY(MOODS_tag) REFERENCES MOODS(tag)
+playlist       TEXT PRIMARY KEY ,
+addDate DATE NOT NULL
 ) ;
 
 
@@ -70,17 +68,27 @@ lyrics     TEXT ,
 genre      TEXT,
 art        TEXT,
 FOREIGN KEY(sources_url) REFERENCES SOURCES(url),
-FOREIGN KEY(artist) REFERENCES artists(title),
-FOREIGN KEY(album) REFERENCES albums(title)
+FOREIGN KEY(artist) REFERENCES artists(artist),
+FOREIGN KEY(album) REFERENCES albums(album)
 ) ;
 
 
 CREATE TABLE TRACKS_MOODS
 (
-MOODS_tag  TEXT NOT NULL ,
-tracks_url TEXT NOT NULL ,
-FOREIGN KEY(MOODS_tag) REFERENCES MOODS(tag),
-FOREIGN KEY(tracks_url) REFERENCES TRACKS(url)
+mood  TEXT NOT NULL ,
+url TEXT NOT NULL ,
+FOREIGN KEY(mood) REFERENCES MOODS(mood),
+FOREIGN KEY(url) REFERENCES TRACKS(url)
+
+) ;
+
+CREATE TABLE TRACKS_TAGS
+(
+tag  TEXT NOT NULL ,
+url TEXT NOT NULL ,
+PRIMARY KEY (tag, url),
+FOREIGN KEY(tag) REFERENCES TAGS(tag),
+FOREIGN KEY(url) REFERENCES TRACKS(url)
 
 ) ;
 
@@ -88,8 +96,9 @@ CREATE TABLE ARTISTS_TAGS
 (
 tag  TEXT NOT NULL ,
 artist TEXT NOT NULL ,
+PRIMARY KEY (tag, artist),
 FOREIGN KEY(tag) REFERENCES TAGS(tag),
-FOREIGN KEY(artist) REFERENCES ARTISTS(title)
+FOREIGN KEY(artist) REFERENCES ARTISTS(artist)
 
 ) ;
 
@@ -98,19 +107,30 @@ CREATE TABLE ALBUMS_TAGS
 tag  TEXT NOT NULL ,
 album TEXT NOT NULL ,
 artist TEXT NOT NULL,
+PRIMARY KEY (tag, album, artist),
 FOREIGN KEY(tag) REFERENCES TAGS(tag),
-FOREIGN KEY(album) REFERENCES ALBUMS(title)
+FOREIGN KEY(album) REFERENCES ALBUMS(album)
 FOREIGN KEY(artist) REFERENCES ALBUMS(artist)
+) ;
+
+CREATE TABLE PLAYLISTS_MOODS
+(
+playlist  TEXT NOT NULL ,
+mood TEXT NOT NULL ,
+PRIMARY KEY (playlist, mood),
+FOREIGN KEY(playlist) REFERENCES PLAYLISTS(playlist),
+FOREIGN KEY(mood) REFERENCES MOODS(mood)
+
 ) ;
 
 CREATE TABLE TRACKS_PLAYLISTS
 (
-PLAYLISTS_title TEXT NOT NULL ,
-TRACKS_url      TEXT NOT NULL ,
+playlist TEXT NOT NULL ,
+url      TEXT NOT NULL ,
 addDate DATE NOT NULL,
-PRIMARY KEY (PLAYLISTS_title, TRACKS_url),
-FOREIGN KEY(PLAYLISTS_title) REFERENCES PLAYLISTS(title),
-FOREIGN KEY(TRACKS_url) REFERENCES TRACKS(url)
+PRIMARY KEY (playlist, url),
+FOREIGN KEY(playlist) REFERENCES PLAYLISTS(playlist),
+FOREIGN KEY(url) REFERENCES TRACKS(url)
 ) ;
 
 --First insertions

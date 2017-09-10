@@ -26,9 +26,9 @@ public:
     Album *artist;
     QWidget *infoUtils;
 
-   Bae::TRACKMAP track;
+   Bae::DB track;
 
-    void setTrack(const Bae::TRACKMAP &track);
+    void setTrack(const Bae::DB &track);
 private:
 
     Ui::InfoView *ui;
@@ -50,7 +50,7 @@ public slots:
     void setLyrics(const QUrl &url);
     void setArtistInfo(const QString &info);
     void setArtistTagInfo(const QStringList &tags);
-    void setTagsInfo(QStringList);
+    void setTagsInfo(const QStringList &tags);
     QStringList getTags();
     QStringList getSimilarArtistTags();
     void hideArtistInfo();
@@ -59,17 +59,17 @@ public slots:
 
 signals:
 
-    void playAlbum(QMap<int,QString> info);
+    void playAlbum(const Bae::DB &info);
     void tagClicked(QString tag);
     void similarArtistTagClicked(QString tag);
     void similarBtnClicked(QStringList similar);
     void tagsBtnClicked(QStringList similar);
 
-    void artistSimilarReady(const QMap<QString,QByteArray> &info,const Bae::TRACKMAP &track);
-    void albumTagsReady(const QStringList &tags,const Bae::TRACKMAP &track);
-    void lyricsReady(const QString &lyrics,const Bae::TRACKMAP &track);
-    void albumWikiReady(const QString &wiki,const Bae::TRACKMAP &track);
-    void artistWikiReady(const QString &wiki,const Bae::TRACKMAP &track);
+    void artistSimilarReady(const QMap<QString,QByteArray> &info,const Bae::DB &track);
+    void albumTagsReady(const QStringList &tags,const Bae::DB &track);
+    void lyricsReady(const QString &lyrics,const Bae::DB &track);
+    void albumWikiReady(const QString &wiki,const Bae::DB &track);
+    void artistWikiReady(const QString &wiki,const Bae::DB &track);
 
 private slots:
 
