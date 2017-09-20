@@ -27,7 +27,7 @@ qmake-qt5 && make && ./Babe
 In Chrome/mium go to chrome://extensions/, then enable the Developer mode check box in the right upper corner, after that click on "Load unpacked extension..." and select the BabeExtension folder.
 
 * Planned Features :
-  * [5%] youtube-dl streamming
+  * [5%] youtube-dl streaming
   * [90%] babe chrome-chromium extension for youtube-dl supported sites
   * [0%] krunner integration
 
