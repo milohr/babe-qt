@@ -107,6 +107,7 @@ target_link_libraries(babe
    Qt5::Network
    Qt5::Xml
    Qt5::DBus
+   Qt5::WebEngineWidgets
 
    KF5::Notifications
    KF5::I18n

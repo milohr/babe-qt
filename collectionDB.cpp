@@ -662,7 +662,7 @@ QString CollectionDB::getTrackArt(const QString &path)
 
 QStringList CollectionDB::getTrackTags(const QString &path)
 {
-
+    return {};
 }
 
 QString CollectionDB::getArtistArt(const QString &artist)
