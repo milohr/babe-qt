@@ -34,15 +34,96 @@
 #include "metadataForm.h"
 
 
-namespace Ui { class BabeTable; }
-
-class BabeTable : public QTableWidget
+class TrackLoader : public QObject
 {
     Q_OBJECT
 
 public:
+    TrackLoader() : QObject()
+    {
+        qRegisterMetaType<Bae::DB>("Bae::DB");
+        qRegisterMetaType<Qt::SortOrder>("Qt::SortOrder");
+        qRegisterMetaType<QVector<int>>("<QVector<int>");
+        qRegisterMetaType<QList<QPersistentModelIndex>>("QList<QPersistentModelIndex>");
+        qRegisterMetaType<QAbstractItemModel::LayoutChangeHint>("QAbstractItemModel::LayoutChangeHint");
+        moveToThread(&t);
+        t.start();
+    }
 
-    explicit BabeTable(QWidget *parent = 0);
+    ~TrackLoader()
+    {
+        go=false;
+        t.quit();
+        t.wait();
+    }
+
+    void requestTracks(QString query)
+    {
+            QMetaObject::invokeMethod(this, "getTracks", Q_ARG(QString, query));
+    }
+
+public slots:
+    void getTracks(QString query)
+    {
+        qDebug()<<"GETTING TRACKS FROM BABETABLE";
+
+        QSqlQuery mquery(query);
+        for(auto trackMap : this->connection.getTrackData(mquery))
+        {   if(go)
+            {
+                emit trackReady(trackMap);
+            }else break;
+        }
+
+        emit finished();
+    }
+
+signals:
+    void trackReady(Bae::DB &trackMap);
+    void finished();
+
+private:
+    QThread t;
+    CollectionDB connection;
+    bool go=true;
+};
+
+
+class BabeTable : public QTableWidget
+{
+    Q_OBJECT
+private:
+    TrackLoader trackLoader;
+    CollectionDB connection;
+
+    QMediaPlayer *preview;
+    int previewRow=-1;
+    Notify nof;
+    QToolButton *fav1;
+    QToolButton *fav2;
+    QToolButton *fav3;
+    QToolButton *fav4;
+    QToolButton *fav5;
+
+    int rRow=0;
+    int rColumn=0;
+    bool rowColoring=false;
+    bool rowDragging=false;
+    bool rowPreview=true;
+    QMenu *contextMenu;
+    QMenu* sendToMenu;
+    QMenu* moodMenu;
+    QMap<QString,QString> devices;
+    QTimer *updater = new QTimer(this);
+
+    QWidget *addMusicMsgWidget;
+    QLabel *addMusicTxt;
+    QLabel *addMusicImg;
+    QString addMusicMsg = "oops...\n";
+    QString addMusicIcon= "face-sleeping";
+public:
+
+    explicit BabeTable(QWidget *parent = nullptr);
     ~BabeTable();
 
 
@@ -53,16 +134,17 @@ public:
     };
 
     QStringList colors = Bae::MoodColors;
+    void insertTrack(const Bae::DB &track, const bool &descriptiveTitle);
     void populateTableView(const Bae::DB_LIST &mapList, const bool &descriptiveTitle);
     void populateTableView(QSqlQuery &indication, const bool &descriptiveTitle);
-    void removeMissing(QStringList missingFiles);
+    void removeMissing(const QString &url);
     void setRating(int rate);
     void setTableOrder(int column, Bae::Order order);
     void setVisibleColumn(int column);
     void addRow(const Bae::DB &map, const bool &descriptiveTooltip);
     void addRowAt(const int &row, const Bae::DB &map, const bool &descriptiveTooltip);
     void passStyle(QString style);
-    void setAddMusicMsg(const QString &msg, const QString &icon);
+    void setAddMusicMsg(const QString &msg, const QString &icon= "face-sleeping");
     int getIndex();
     void enablePreview(const bool state);
     void startPreview(const QString &url);
@@ -81,6 +163,7 @@ public:
     QMap<QString, QString> getKdeConnectDevices();
     QStringList getTableColumnContent(const Bae::DBCols &column);
     Bae::DB_LIST getAllTableContent();
+
 
 
 protected:
@@ -113,35 +196,8 @@ public slots:
     void flushTable();
     void colorizeRow(const QList<int> &rows, const QString &color, const bool &dark=false);
 
-private:
 
-    CollectionDB connection;
 
-    QMediaPlayer *preview;
-    int previewRow=-1;
-    Notify nof;
-    QToolButton *fav1;
-    QToolButton *fav2;
-    QToolButton *fav3;
-    QToolButton *fav4;
-    QToolButton *fav5;
-
-    int rRow=0;
-    int rColumn=0;
-    bool rowColoring=false;
-    bool rowDragging=false;
-    bool rowPreview=true;
-    QMenu *contextMenu;
-    QMenu* sendToMenu;
-    QMenu* moodMenu;
-    QMap<QString,QString> devices;
-    QTimer *updater = new QTimer(this);
-
-    QWidget *addMusicMsgWidget;
-    QLabel *addMusicTxt;
-    QLabel *addMusicImg;
-    QString addMusicMsg = "oops...\n";
-    QString addMusicIcon= "face-sleeping";
 
 signals:
 

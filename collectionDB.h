@@ -13,8 +13,11 @@
 #include <QSqlDriver>
 #include <QFileInfo>
 #include <QDir>
+#include <QVariantMap>
 #include "track.h"
 #include "taginfo.h"
+
+
 
 class CollectionDB : public QObject
 {
@@ -34,7 +37,6 @@ public:
     QSqlQuery getQuery(const QString &queryTxt);
     bool checkQuery(QString queryTxt);
     bool insertInto(const QString &tableName, const QString &column, const QString &location, const QVariant &value);
-    void setTrackList(QList <Track>);
     bool removeQuery(QString queryTxt);
     bool execQuery(QString queryTxt);
 
@@ -47,7 +49,11 @@ public:
     bool check_existance(const QString &tableName, const QString &searchId, const QString &search);
 
     /* usefull actions */
-    void addTrack(const QStringList &paths, const int &babe=0);
+    bool removeSource(const QString &path);
+    void insertArtwork(const Bae::DB &track);
+
+    void addTrack(const Bae::DB &track);
+    bool removeTrack(const QString &path);
     bool rateTrack(const QString &path, const int &value);
     bool babeTrack(const QString &path, const bool &value);
     bool moodTrack(const QString &path, const QString &value);
@@ -72,7 +78,6 @@ public:
     Bae::DB_LIST getAlbumData(QSqlQuery &query);
     Bae::DB_LIST getAlbumTracks(const QString &album, const QString &artist, const Bae::DBCols &orderBy=Bae::DBCols::TRACK, const Bae::Order &order=Bae::Order::ASC);
     Bae::DB_LIST getArtistTracks(const QString &artist, const Bae::DBCols &orderBy=Bae::DBCols::ALBUM, const Bae::Order &order=Bae::Order::ASC);
-    QStringList getArtistAlbums(const QString &artist);
     Bae::DB_LIST getBabedTracks(const Bae::DBCols &orderBy=Bae::DBCols::PLAYED, const Bae::Order &order=Bae::Order::DESC);
     Bae::DB_LIST getSearchedTracks(const Bae::DBCols &where, const QString &search);
     Bae::DB_LIST getPlaylistTracks(const QString &playlist, const Bae::DBCols &orderBy=Bae::DBCols::ADD_DATE, const Bae::Order &order=Bae::Order::DESC);
@@ -91,12 +96,16 @@ public:
     QString getAlbumArt(const QString &album, const QString &artist);
     QString getAlbumWiki(const QString &album, const QString &artist);
     QStringList getAlbumTags(const QString &album, const QString &artist);
+    QStringList getArtistAlbums(const QString &artist);
 
     QStringList getPlaylists();
-
-
-
     QStringList getPlaylistsMoods();
+
+
+    bool removePlaylistTrack(const QString &url, const QString &playlist);
+    bool removePlaylist(const QString &playlist);
+
+
     /*useful tools*/
     sourceTypes sourceType(const QString &url);
 
@@ -117,17 +126,14 @@ private:
 
 public slots:
     void closeConnection();
-    bool removePath(const QString &path);
     void setCollectionLists();
     void refreshArtistsTable();
     void cleanCollectionLists();
 
     /*useful*/
-    void insertCoverArt(const QString &path, const Bae::DB &track);
-    void insertHeadArt(const QString &path, const Bae::DB &track);
 
 signals:
-    void progress(int);
+    void trackInserted();
     void DBactionFinished();
 
 };

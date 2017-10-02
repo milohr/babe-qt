@@ -60,8 +60,28 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
     if (!youtubeCache_dir.exists())
         youtubeCache_dir.mkpath(".");
 
-    connect(&collection_db, &CollectionDB::DBactionFinished, this,&settings::finishedAddingTracks);
-    connect(&collection_db,&CollectionDB::progress, ui->progressBar,&QProgressBar::setValue);
+    connect(this, &settings::DBactionFinished, this,&settings::finishedAddingTracks);
+    connect(&collection_db,&CollectionDB::trackInserted,[this]()
+    {
+        trackSaver.next();
+        this->ui->progressBar->setValue(this->ui->progressBar->value()+1);
+    });
+    connect(&trackSaver,&TrackSaver::collectionSize,[this](int size)
+    {
+        ui->progressBar->setValue(0);
+        ui->progressBar->setMaximum(size);
+        ui->progressBar->show();
+    });
+
+    connect(&trackSaver,&TrackSaver::finished,[this]()
+    {
+        ui->progressBar->hide();
+        ui->progressBar->setValue(0);
+        emit DBactionFinished();
+    });
+
+    connect(&trackSaver,&TrackSaver::trackReady,&collection_db, &CollectionDB::addTrack);
+
     connect(this, &settings::collectionPathChanged, this, &settings::populateDB);
 
     ui->ytLineEdit->setText(extensionFetchingPath);
@@ -95,7 +115,7 @@ settings::~settings() {
 }
 
 
-void settings::youtubeTrackReady(bool state)
+void settings::youtubeTrackReady(const bool &state)
 {
     if(state)
     {
@@ -137,8 +157,7 @@ void settings::on_remove_clicked()
     qDebug() << pathToRemove;
     if (!pathToRemove.isEmpty())
     {
-
-        if(collection_db.removePath(pathToRemove))
+        if(collection_db.removeSource(pathToRemove))
         {
             removeSettings({"collectionPath=", pathToRemove});
             collectionPaths.removeAll(pathToRemove);
@@ -205,7 +224,6 @@ void settings::refreshWatchFiles()
 
 }
 
-CollectionDB &settings::getCollectionDB() { return collection_db; }
 
 void settings::on_toolbarIconSize_activated(const QString &arg1) {
     // qDebug () <<arg1;
@@ -360,8 +378,8 @@ void settings::readSettings()
         if (get_setting.contains("collectionPath="))
         {
             collectionPaths << get_setting.replace("collectionPath=", "");
-            qDebug() << "Setting the cPath: "
-                     << get_setting.replace("collectionPath=", "");
+            //            qDebug() << "Setting the cPath: "
+            //                     << get_setting.replace("collectionPath=", "");
             ui->collectionPath->addItem(get_setting.replace("collectionPath=", ""));
 
         }
@@ -423,35 +441,17 @@ void settings::populateDB(const QString &path)
     qDebug() << "Function Name: " << Q_FUNC_INFO
              << "new path for database action: " << path;
 
-    QStringList urlCollection;
-
-    if (QFileInfo(path).isDir())
-    {
-        QDirIterator it(path, formats, QDir::Files, QDirIterator::Subdirectories);
-
-        while (it.hasNext()) urlCollection << it.next();
-
-    } else if (QFileInfo(path).isFile()) urlCollection << path;
-
-    ui->progressBar->setValue(0);
-    ui->progressBar->setMaximum(urlCollection.size());
-    ui->progressBar->show();
-    collection_db.addTrack(urlCollection);
-
+    trackSaver.requestPath(path);
 }
 
 void settings::finishedAddingTracks()
 {
-    ui->progressBar->hide();
-    ui->progressBar->setValue(0);
-
     nof.notify("Songs added to collection","finished writting new songs to the collection :)");
     qDebug() << "good to hear it finished yay! now going to fetch artwork";
 
     collectionWatcher();
     emit refreshTables();
     fetchArt();
-
 }
 
 void settings::fetchArt()
@@ -491,12 +491,12 @@ void settings::fetchArt()
                     collection_db.getQuery("SELECT title FROM tracks WHERE artist = \""+artist+"\" AND album = \""+album+"\"");
             if(query_Title.next()) title=query_Title.value(Bae::DBColsMap[Bae::DBCols::TITLE]).toString();
 
-            collection_db.insertCoverArt("",{{Bae::DBCols::ALBUM,album},{Bae::DBCols::ARTIST,artist}});
+            collection_db.insertArtwork({{Bae::DBCols::ARTWORK,""},{Bae::DBCols::ALBUM,album},{Bae::DBCols::ARTIST,artist}});
 
             Pulpo art({{Bae::DBCols::TITLE,title},{Bae::DBCols::ARTIST,artist},{Bae::DBCols::ALBUM,album}});
 
             connect(&art, &Pulpo::albumArtReady,[this,&art] (QByteArray array){ art.saveArt(array,this->cachePath); });
-            connect(&art, &Pulpo::artSaved, &collection_db, &CollectionDB::insertCoverArt);
+            connect(&art, &Pulpo::artSaved, &collection_db, &CollectionDB::insertArtwork);
 
             if (art.fetchAlbumInfo(Pulpo::AlbumArt,Pulpo::LastFm)) qDebug()<<"using lastfm";
             else if(art.fetchAlbumInfo(Pulpo::AlbumArt,Pulpo::Spotify)) qDebug()<<"using spotify";
@@ -512,12 +512,12 @@ void settings::fetchArt()
         {
             QString artist = query_Heads.value(Bae::DBColsMap[Bae::DBCols::ARTIST]).toString();
             qDebug()<< "QUERYHEAD ARTIOSTSSSSS:"<<artist;
-            collection_db.insertHeadArt("",{{Bae::DBCols::ARTIST,artist}});
+            collection_db.insertArtwork({{Bae::DBCols::ARTWORK,""},{Bae::DBCols::ARTIST,artist}});
 
             Pulpo art({{Bae::DBCols::ARTIST,artist}});
 
             connect(&art, &Pulpo::artistArtReady,[this,&art] (QByteArray array){ art.saveArt(array,this->cachePath); });
-            connect(&art, &Pulpo::artSaved, &collection_db, &CollectionDB::insertHeadArt);
+            connect(&art, &Pulpo::artSaved, &collection_db, &CollectionDB::insertArtwork);
 
             art.fetchArtistInfo(Pulpo::ArtistArt,Pulpo::LastFm);
 

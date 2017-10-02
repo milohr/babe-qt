@@ -27,8 +27,9 @@ class Album : public QLabel
 public:
 
 
-    explicit Album(QWidget *parent = 0);
+    explicit Album(QWidget *parent = nullptr);
     ~Album(){}
+    void changeArt();
     void createAlbum(const Bae::DB &info, const Bae::ALbumSizeHint &widgetSize, const uint &widgetRadius=0, const bool &isDraggable=false);
     void setArtist(const QString &artistTitle);
     void setAlbum(const QString &albumTitle);
@@ -43,11 +44,13 @@ public:
     int size;
     double subSize;
     bool borderColor=false;
+    bool visibleTitle=true;
     QWidget *widget;
     QString getTitle();
     QString getArtist();
     QString getAlbum();
     QString getBGcolor();
+    Bae::DB getAlbumMap();
     QPixmap image;
     QPixmap getPixmap();
     QPixmap unsaturated;
@@ -61,9 +64,9 @@ public:
 
 private:
 
-    Bae::DB  albumMap;
+    Bae::DB albumMap;
     bool draggable;
-    bool visibleTitle=true;
+
     QString imagePath;
     QString artist="";
     QString album="";
@@ -74,7 +77,7 @@ private:
     QPoint startPos;
     QToolButton *playBtn;
 
-    int border_radius=0;
+    uint border_radius=0;
 
     CollectionDB connection;
 
@@ -86,7 +89,7 @@ signals:
     void albumCoverDoubleClicked(const Bae::DB &albumMap);
     void playAlbum(const Bae::DB &albumMap);
     void changedArt(const Bae::DB &albumMap);
-    void babeAlbum_clicked(const Bae::DB &albumMap);
+    void babeAlbum(const Bae::DB &albumMap);
     void albumDragged();
     void albumDragStarted();
     void albumCoverEnter();

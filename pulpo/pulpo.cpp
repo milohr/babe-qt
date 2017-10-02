@@ -182,16 +182,16 @@ bool Pulpo::fetchAlbumInfo(const AlbumInfo &infoType, const InfoServices &servic
 
             }else return false; break;
 
-//        case GeniusInfo:
-//            array = startConnection(genius.setUpService());
-//            if(!array.isEmpty())
-//            {
-//                genius.parseAlbumArt(array);
-//                return true;
+            //        case GeniusInfo:
+            //            array = startConnection(genius.setUpService());
+            //            if(!array.isEmpty())
+            //            {
+            //                genius.parseAlbumArt(array);
+            //                return true;
 
 
-//            }else return false;
-//            break;
+            //            }else return false;
+            //            break;
 
 
 
@@ -288,19 +288,19 @@ bool Pulpo::fetchTrackInfo(const Pulpo::TrackInfo &infoType, const Pulpo::LyricS
 
             auto geniusURL = QUrl(genius::setUpService(this->track));
             emit Pulpo::trackLyricsUrlReady(geniusURL,track);
-//            if(geniusURL.isValid())
-//            {
-//                connect(page,&webEngine::htmlReady,[this]( QString const &html)
-//                {
-//                   genius genius(this->track);
+            //            if(geniusURL.isValid())
+            //            {
+            //                connect(page,&webEngine::htmlReady,[this]( QString const &html)
+            //                {
+            //                   genius genius(this->track);
 
-//                   genius.parseLyrics(html.toLocal8Bit());
-//                });
+            //                   genius.parseLyrics(html.toLocal8Bit());
+            //                });
 
-//                page->load(geniusURL);
+            //                page->load(geniusURL);
 
-//            }
-//            break;
+            //            }
+            //            break;
         }
         case lyricCRAWL: break;
         case AllLyricServices: break;
@@ -404,26 +404,10 @@ void Pulpo::saveArt(const QByteArray &array, const QString &path)
         name.replace("&", "-");
         QString format = "JPEG";
         if (img.save(path + name + ".jpg", format.toLatin1(), 100))
-        {
-            if (this->track[Bae::DBCols::ALBUM].isEmpty())
-                emit artSaved(path + name + ".jpg", this->track);
-            else
-                emit artSaved(path + name + ".jpg", this->track);
-
-            qDebug()<<path + name + ".jpg";
-        } else {
-            qDebug() << "couldn't save artwork";
-
-            if (this->track[Bae::DBCols::ALBUM].isEmpty())
-                emit artSaved("", this->track);
-            else
-                emit artSaved("", this->track);
-        }
-    }else
-    {
-        if (this->track[Bae::DBCols::ALBUM].isEmpty())
-            emit artSaved("", this->track);
-        else
-            emit artSaved("", this->track);
+            this->track.insert(Bae::DBCols::ARTWORK,path + name + ".jpg");
+        else  qDebug() << "couldn't save artwork";
     }
+
+    emit artSaved(this->track);
+
 }

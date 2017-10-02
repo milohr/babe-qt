@@ -75,7 +75,8 @@ SOURCES += main.cpp\
     pulpo/services/geniusService.cpp \
     pulpo/htmlparser.cpp \
     playlistform.cpp \
-    pulpo/webengine.cpp
+    pulpo/webengine.cpp \
+    gridview.cpp
 
 HEADERS  += mainwindow.h \
             playlist.h \
@@ -105,7 +106,8 @@ HEADERS  += mainwindow.h \
     pulpo/services/geniusService.h \
     pulpo/htmlparser.h \
     playlistform.h \
-    pulpo/webengine.h
+    pulpo/webengine.h \
+    gridview.h
 
 FORMS    += mainwindow.ui \
     settings.ui \

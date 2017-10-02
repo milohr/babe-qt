@@ -19,9 +19,8 @@
 #include "babetable.h"
 
 
-BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
-
-
+BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent)
+{
     preview = new QMediaPlayer(this);
     preview->setVolume(100);
     connect(this,&QTableWidget::doubleClicked, this, &BabeTable::on_tableWidget_doubleClicked);
@@ -228,6 +227,7 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent) {
 
 BabeTable::~BabeTable() {  }
 
+
 void BabeTable::dropEvent(QDropEvent *event)
 {
     if(event->source() == this && !event->isAccepted() && rowDragging)
@@ -295,7 +295,7 @@ void BabeTable::dropEvent(QDropEvent *event)
 
 void BabeTable::setAddMusicMsg(const QString &msg,const QString &icon)
 {
-    addMusicMsg=msg;
+    this->addMusicMsg=msg;
     addMusicTxt->setText(addMusicMsg);
     addMusicIcon=icon;
     addMusicImg->setPixmap(QIcon::fromTheme(addMusicIcon).pixmap(48));
@@ -439,48 +439,33 @@ void BabeTable::addRowAt(const int &row,const Bae::DB &map,const  bool &descript
         this->item(row,Bae::DBCols::TITLE)->setToolTip( "by "+map[Bae::DBCols::ARTIST]);
 }
 
-void BabeTable::removeMissing(QStringList missingFiles)
+void BabeTable::removeMissing(const QString &url)
 {
-    nof.notifyUrgent("Removing missing files...",missingFiles.join("\n"));
+    nof.notifyUrgent("Removing missing file...",url);
 
-    for (auto file_r : missingFiles)
-    {
-        QString parentDir = QFileInfo(QFileInfo(file_r)).dir().path();
+    auto parentDir = QFileInfo(QFileInfo(url)).dir().path();
 
-        if (!Bae::fileExists(parentDir)) connection.removePath(parentDir);
-        else connection.removePath(file_r);
-    }
+    if (!Bae::fileExists(parentDir)) connection.removeSource(parentDir);
+    else connection.removeTrack(url);
 
-    connection.setCollectionLists();
-    connection.cleanCollectionLists();
+}
+
+
+void BabeTable::insertTrack(const Bae::DB &track,const bool &descriptiveTitle)
+{
+    auto location =track[Bae::DBCols::URL];
+
+    if (!Bae::fileExists(location))  removeMissing(location);
+    else addRow(track,descriptiveTitle);
 }
 
 void BabeTable::populateTableView(const Bae::DB_LIST &mapList, const bool &descriptiveTitle)
 {
     qDebug() << "ON POPULATE by mapList";
-
     this->setSortingEnabled(false);
-    bool missing = false;
-    QStringList missingFiles;
-
-    if(!mapList.isEmpty())
+      if(!mapList.isEmpty())
     {
-        for(auto trackMap : mapList)
-        {
-            QString location = trackMap[Bae::DBCols::URL];
-
-            if (!Bae::fileExists(location))
-            {
-                qDebug() << "That file doesn't exists anymore: "
-                         << location;
-                missingFiles << location;
-                missing = true;
-
-            } else addRow(trackMap,descriptiveTitle);
-
-        }
-
-        if (missing) removeMissing(missingFiles);
+        for(auto trackMap : mapList) insertTrack(trackMap,descriptiveTitle);
 
         this->setSortingEnabled(true);
         emit finishedPopulating();
@@ -489,45 +474,25 @@ void BabeTable::populateTableView(const Bae::DB_LIST &mapList, const bool &descr
 
 }
 
-void BabeTable::populateTableView(QSqlQuery &indication, const bool &descriptiveTitle)
+void BabeTable::populateTableView(QSqlQuery &query, const bool &descriptiveTitle)
 {
     qDebug() << "ON POPULATE TABLEVIEW";
-
     this->setSortingEnabled(false);
-    bool missingDialog = false;
-    QStringList missingFiles;
-
-    auto tracks = this->connection.getTrackData(indication);
-
-    for(auto track:tracks)
+    connect(&trackLoader,&TrackLoader::finished,[this]()
     {
-        auto location =track[Bae::DBCols::URL];
-
-        if (!Bae::fileExists(location))
-        {
-            qDebug() << "That file doesn't exists anymore: "
-                     << location;
-            missingFiles << location;
-            missingDialog = true;
-
-        } else addRow(track,descriptiveTitle);
-
-    }
-
-    if (missingDialog) removeMissing(missingFiles);
-
-    this->setSortingEnabled(true);
-    emit finishedPopulating();
+        this->setSortingEnabled(true);
+        emit finishedPopulating();
+    });
+    connect(&trackLoader,&TrackLoader::trackReady,[=](Bae::DB &track)
+    {
+        this->insertTrack(track,descriptiveTitle);
+    });
+    trackLoader.requestTracks(query.lastQuery());
 }
-
-
-
 
 
 QString BabeTable::getStars(const int &value)
 {
-
-
     switch (value) {
     case 0:
         return  " ";
@@ -986,7 +951,22 @@ Bae::DB BabeTable::getRowData(const int &row)
         QString played = this->model()->data(this->model()->index(row, Bae::DBCols::PLAYED)).toString();
         QString art = this->model()->data(this->model()->index(row, Bae::DBCols::ART)).toString();
 
-        return Bae::DB {{Bae::DBCols::TRACK,track}, {Bae::DBCols::TITLE,title}, {Bae::DBCols::ARTIST,artist},{Bae::DBCols::ALBUM,album},{Bae::DBCols::DURATION,duration},{Bae::DBCols::GENRE,genre},{Bae::DBCols::URL,location},{Bae::DBCols::STARS,stars},{Bae::DBCols::BABE,babe},{Bae::DBCols::ART,art},{Bae::DBCols::PLAYED,played},{Bae::DBCols::RELEASE_DATE,releaseDate},{Bae::DBCols::ADD_DATE,addDate}};
+        return Bae::DB
+        {
+            {Bae::DBCols::TRACK,track},
+            {Bae::DBCols::TITLE,title},
+            {Bae::DBCols::ARTIST,artist},
+            {Bae::DBCols::ALBUM,album},
+            {Bae::DBCols::DURATION,duration},
+            {Bae::DBCols::GENRE,genre},
+            {Bae::DBCols::URL,location},
+            {Bae::DBCols::STARS,stars},
+            {Bae::DBCols::BABE,babe},
+            {Bae::DBCols::ART,art},
+            {Bae::DBCols::PLAYED,played},
+            {Bae::DBCols::RELEASE_DATE,releaseDate},
+            {Bae::DBCols::ADD_DATE,addDate}
+        };
 
     }
 }

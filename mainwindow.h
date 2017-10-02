@@ -96,7 +96,7 @@ public:
     };
 
 
-
+    void start();
     void appendFiles(const QStringList &paths, const appendPos &pos = APPENDBOTTOM);
     void loadTrack();
     bool babeTrack(const Bae::DB &track);
@@ -176,7 +176,6 @@ private slots:
     void putAlbumOnPlay(const Bae::DB &info);
     void putOnPlay(const Bae::DB_LIST &mapList);
     void playItNow(const Bae::DB_LIST &list);
-    void changedArt(const Bae::DB &info);
     void babeAlbum(const Bae::DB &info);
     bool loadCover(const QString &artist, const QString &album, const QString &title);
     void babeIt(const Bae::DB_LIST &tracks);
@@ -195,7 +194,6 @@ private slots:
 private:
 
     Ui::MainWindow *ui;
-
     int ALBUM_SIZE;
     int iconSize = 22;
 
@@ -269,7 +267,7 @@ private:
     void babedIcon(const bool &state);
     void saveSettings(const QString &key, const QVariant &value,const QString &group);
     void movePanel(const int &pos);
-
+    void loadStyle();
     QVariant loadSettings(const QString &key, const QString &group, const QVariant &defaultValue = QVariant());
 
     /*the streaming */
@@ -307,6 +305,7 @@ signals:
     void collectionChecked();
     void fetchCover(const Bae::DB &song);
     void finishRefresh();
+    void operate();
 
 };
 

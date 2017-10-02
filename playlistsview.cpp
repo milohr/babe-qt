@@ -144,14 +144,13 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
         for(auto row : this->table->getSelectedRows(true))
         {
             auto url = this->table->getRowData(row)[Bae::DBCols::URL];
-            if(!connection.execQuery(QString("DELETE FROM tracks_playlists WHERE playlists_title = \"%1\" AND tracks_url = \"%2\"").arg(currentPlaylist,url)))
+            if(!connection.removePlaylistTrack(url, currentPlaylist))
                 qDebug()<<"couldn't remove "<<url<< "from:"<<currentPlaylist;
+
         }
-        QSqlQuery query;
-        QString queryTxt = QString("SELECT * FROM tracks t INNER JOIN tracks_playlists tpl on tpl.tracks_url = t.url INNER JOIN playlists pl on pl.title = tpl.playlists_title WHERE pl.title = \"%1\" ORDER by addDate desc").arg(currentPlaylist);
-        query.prepare(queryTxt);
-        this->table->flushTable();
-        this->table->populateTableView(query,false);
+
+
+        refreshCurrentPlaylist();
 
     });
     this->table->addMenuItem(removeFromPlaylist);
@@ -201,7 +200,7 @@ void PlaylistsView::setDefaultPlaylists()
 
 void PlaylistsView::populatePlaylist(const QModelIndex &index)
 {
-   Bae::DB_LIST mapList;
+    Bae::DB_LIST mapList;
     QString queryTxt;
     this->currentPlaylist = index.data().toString();
     this->table->flushTable();
@@ -244,8 +243,8 @@ void PlaylistsView::populatePlaylist(const QModelIndex &index)
         removeBtn->setEnabled(true);
         this->removeFromPlaylist->setVisible(true);
         table->hideColumn(Bae::DBCols::PLAYED);
-         mapList = connection.getPlaylistTracks(currentPlaylist);
-//        queryTxt = QString("SELECT * FROM tracks t INNER JOIN tracks_playlists tpl on tpl.tracks_url = t.url INNER JOIN playlists pl on pl.title = tpl.playlists_title WHERE pl.title = \"%1\" ORDER by addDate desc").arg(currentPlaylist);
+        mapList = connection.getPlaylistTracks(currentPlaylist);
+        //        queryTxt = QString("SELECT * FROM tracks t INNER JOIN tracks_playlists tpl on tpl.tracks_url = t.url INNER JOIN playlists pl on pl.title = tpl.playlists_title WHERE pl.title = \"%1\" ORDER by addDate desc").arg(currentPlaylist);
     }
     table->populateTableView(mapList,false);
 }
@@ -264,30 +263,30 @@ void PlaylistsView::createPlaylist()
 
 void PlaylistsView::removePlaylist()
 {
-    QSqlQuery query;
-    QString queryTxt;
-    if (currentPlaylist == "Most Played")
-    {
+    Bae::DB_LIST mapList;
 
-    } else if (currentPlaylist == "Favorites") {
+    if (currentPlaylist == "Favorites")
+    {
         connection.execQuery("UPDATE tracks SET stars = \"0\" WHERE stars > \"0\"");
         table->flushTable();
-        queryTxt = "SELECT * FROM tracks WHERE stars > \"0\" ORDER  by stars desc";
+        mapList = connection.getFavTracks();
 
-    } else if (currentPlaylist == "Babes") {
+    } else if (currentPlaylist == "Babes")
+    {
         connection.execQuery("UPDATE tracks SET babe = \"0\" WHERE babe > \"0\"");
         table->flushTable();
-        queryTxt = "SELECT * FROM tracks WHERE babe = \"1\" ORDER  by played desc";
+        mapList = connection.getBabedTracks();
 
-    }else if(!currentPlaylist.isEmpty()) {
-        connection.execQuery(QString("DELETE FROM tracks_playlists WHERE playlists_title = \"%1\"").arg(currentPlaylist));
-        connection.execQuery(QString("DELETE FROM playlists WHERE title = \"%1\"").arg(currentPlaylist));
-        table->flushTable();
-        delete this->list->takeItem(this->list->currentRow());
+    }else if(!currentPlaylist.isEmpty())
+    {
+        if(connection.removePlaylist(currentPlaylist))
+        {
+            table->flushTable();
+            delete this->list->takeItem(this->list->currentRow());
+        }
         return;
     }
-    query.prepare(queryTxt);
-    table->populateTableView(query,false);
+    table->populateTableView(mapList,false);
 
 }
 
@@ -297,6 +296,12 @@ bool PlaylistsView::insertPlaylist(const QString &playlist)
     if(connection.addPlaylist(playlist)) return true;
     return false;
 
+}
+
+void PlaylistsView::refreshCurrentPlaylist()
+{
+    this->table->flushTable();
+    this->table->populateTableView(connection.getPlaylistTracks(currentPlaylist),false);
 }
 
 void PlaylistsView::playlistName(QListWidgetItem *item) {

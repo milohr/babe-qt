@@ -12,6 +12,8 @@
 #include <cmath>
 using namespace std;
 
+
+
 namespace Bae
 {
 
@@ -102,6 +104,13 @@ enum DBCols
 
 typedef QMap<Bae::DBCols, QString> DB;
 typedef QList<DB> DB_LIST;
+
+
+//inline bool operator==(const Bae::DB &e1, const Bae::DB &e2)
+//{
+//    return e1[Bae::DBCols::ALBUM] == e2[Bae::DBCols::ALBUM]
+//            && e1[Bae::DBCols::ALBUM] == e2[Bae::DBCols::ALBUM];
+//}
 
 static const DB DBColsMap =
 {
@@ -229,6 +238,7 @@ const QString YoutubeCachePath = QStandardPaths::writableLocation(QStandardPaths
 const QString ExtensionFetchingPath = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
 const QString NotifyDir = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
 const QStringList MoodColors = {"#F0FF01","#01FF5B","#3DAEFD","#B401FF","#E91E63"};
+const QStringList formats {"*.mp4","*.mp3","*.wav","*.flac","*.ogg","*.m4a"};
 
 
 inline QString fixTitle(const QString &title,const QString &s,const QString &e)

@@ -7,6 +7,7 @@ Album::Album(QWidget *parent) : QLabel(parent)
 
 }
 
+
 void Album::createAlbum(const Bae::DB &info, const Bae::ALbumSizeHint &widgetSize, const uint &widgetRadius, const bool &isDraggable)
 {
     switch (widgetSize)
@@ -30,7 +31,7 @@ void Album::createAlbum(const Bae::DB &info, const Bae::ALbumSizeHint &widgetSiz
     auto album = info[Bae::DBCols::ALBUM];
     auto artwork = info[Bae::DBCols::ARTWORK];
 
-    if(!artist.isEmpty())
+    if(album.isEmpty())
     {
         if(artwork.isEmpty() || artwork=="NULL")
             artwork=":Data/data/cover.svg";
@@ -80,7 +81,8 @@ void Album::createAlbum(const Bae::DB &info, const Bae::ALbumSizeHint &widgetSiz
 
     this->setTitle(artist,album);
 
-    emit albumCreated(this);
+    connect(this,&Album::changedArt,&connection,&CollectionDB::insertArtwork);
+
 }
 
 void Album::setUpMenu()
@@ -120,7 +122,7 @@ bool Album::eventFilter(QObject * watched, QEvent * event)
     return false;
 }
 
-void Album::babeIt_action() { emit babeAlbum_clicked(this->albumMap); }
+void Album::babeIt_action() { emit babeAlbum(this->albumMap); }
 
 void Album::artIt_action()
 {
@@ -129,7 +131,7 @@ void Album::artIt_action()
     if(!path.isEmpty())
     {
         putPixmap(path);
-        this->albumMap.insert(Bae::DBCols::ART,path);
+        this->albumMap.insert(Bae::DBCols::ARTWORK,path);
         emit changedArt(this->albumMap);
     }
 }
@@ -247,6 +249,8 @@ QString Album::getAlbum() { return this->album; }
 
 QString Album::getBGcolor() { return this->bgColor; }
 
+Bae::DB Album::getAlbumMap() { return this->albumMap; }
+
 void Album::setArtist(const QString &artistTitle) { this->artist=artistTitle; }
 
 void Album::setAlbum(const QString &albumTitle) { this->album=albumTitle; }
@@ -272,6 +276,7 @@ void Album::setTitle(const QString &artistTitle, const QString &albumTitle)
     QString str = album.isEmpty()? artist : album+" - "+artist;
     title->setText(str);
 }
+
 
 void Album::setTitleGeometry(const int &x, const int &y, const int &w, const int &h) { widget->setGeometry(x,y,w,h); }
 
@@ -306,6 +311,7 @@ void Album::mouseMoveEvent(QMouseEvent *event)
 {
     if(draggable)
     {
+
         if (event->buttons() & Qt::LeftButton)
         {
             int distance = (event->pos() - startPos).manhattanLength();
@@ -313,6 +319,8 @@ void Album::mouseMoveEvent(QMouseEvent *event)
                 performDrag();
         }
     }
+
+    qDebug()<<event->globalPos();
     QLabel::mouseMoveEvent(event);
 }
 
@@ -362,8 +370,5 @@ void Album::leaveEvent(QEvent *event)
 void Album::showTitle(const bool &state)
 {
     this->visibleTitle=state;
-
-    if(visibleTitle)
-        this->widget->setVisible(true);
-    else if(!visibleTitle) this->widget->setVisible(false);
+    this->widget->setVisible(this->visibleTitle);
 }

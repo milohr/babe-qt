@@ -47,5 +47,9 @@
         <file>data/go-bottom.svg</file>
         <file>data/appointment-new.svg</file>
         <file>script.sql</file>
+        <file>data/48-apps-babe.svg</file>
+        <file>data/64-apps-babe.svg</file>
+        <file>data/128-apps-babe.png</file>
+        <file>data/128-apps-babe.svg</file>
     </qresource>
 </RCC>

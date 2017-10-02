@@ -27,6 +27,7 @@ public:
     BabeTable *table;
     QListWidget *list;
     QListWidget *moodList;
+
     void setPlaylists(const QStringList &playlists);
     void setPlaylistsMoods();
     void setDefaultPlaylists();
@@ -34,6 +35,7 @@ public:
     void saveToPlaylist(const Bae::DB_LIST &tracks);
     void addToPlaylist(const QString &playlist, const Bae::DB_LIST &tracks);
     bool insertPlaylist(const QString &playlist);
+    void refreshCurrentPlaylist();
     QFrame *line_v;
     QWidget *btnContainer;
     QString currentPlaylist;

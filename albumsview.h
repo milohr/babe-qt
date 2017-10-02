@@ -14,6 +14,8 @@
 #include <QShortcut>
 #include <QSplitter>
 #include <QScrollBar>
+#include <QHash>
+#include <QMetaType>
 //#include <QGraphicsBlurEffect>
 //#include <QGraphicsScene>
 //#include <QGraphicsPixmapItem>
@@ -22,10 +24,90 @@
 #include "album.h"
 #include "babetable.h"
 #include "collectionDB.h"
+#include "gridview.h"
+#include "notify.h"
+
+
 
 namespace Ui {
 class AlbumsView;
 }
+
+class AlbumLoader : public QObject
+{
+    Q_OBJECT
+
+public:
+    AlbumLoader() : QObject()
+    {
+        qRegisterMetaType<Bae::DB>("Bae::DB");
+        qRegisterMetaType<QList<QPersistentModelIndex>>("QList<QPersistentModelIndex>");
+
+        moveToThread(&t);
+        t.start();
+    }
+
+    ~AlbumLoader()
+    {
+        go=false;
+        t.quit();
+        t.wait();
+    }
+
+    void requestAlbums(Bae::DBTables type, QString query)
+    {
+        if(type==Bae::DBTables::ALBUMS)
+            QMetaObject::invokeMethod(this, "getAlbums", Q_ARG(QString, query));
+        else if(type==Bae::DBTables::ARTISTS)
+            QMetaObject::invokeMethod(this, "getArtists", Q_ARG(QString, query));
+    }
+
+    void next()
+    {
+        this->nextAlbum = !this->nextAlbum;
+    }
+public slots:
+
+
+    void getAlbums(QString query)
+    {
+        qDebug()<<"GETTING TRACKS FROM ALBUMSVIEW";
+
+        QSqlQuery mquery(query);
+        for(auto albumMap : this->connection.getAlbumData(mquery))
+        {   if(go)
+            {
+                while(!this->nextAlbum){ }
+                this->nextAlbum=!this->nextAlbum;
+                emit albumReady(albumMap);
+            }else break;
+        }
+    }
+
+    void getArtists(QString query)
+    {
+        QSqlQuery mquery(query);
+        for(auto albumMap : this->connection.getArtistData(mquery))
+        {
+            if(go)
+            {
+                while(!this->nextAlbum){ }
+                this->nextAlbum=!this->nextAlbum;
+                emit albumReady(albumMap);
+            }else break;
+        }
+    }
+
+signals:
+    void albumReady(const Bae::DB &albumMap);
+    void finish(const int &amount);
+
+private:
+    QThread t;
+    CollectionDB connection;
+    bool go=true;
+    bool nextAlbum=true;
+};
 
 class AlbumsView : public QWidget
 {
@@ -33,59 +115,49 @@ class AlbumsView : public QWidget
 
 public:
 
-    explicit AlbumsView(bool extraList=false, QWidget *parent = 0);
-    ~AlbumsView();
+    explicit AlbumsView(bool extraList=false, QWidget *parent = nullptr);
+
     void populateAlbumsView(QSqlQuery &query);
     void populateArtistsView(QSqlQuery &query);
+
     void populateExtraList(const QStringList &albums);
-    void flushGrid();
+    void flushView();
     int getAlbumSize() { return this->albumSize; }
     void hide_all(bool state);
+
     void filter(const Bae::DB_LIST &filter, const Bae::DBCols &type);
     QSlider *slider;
-    QAction *order;
+
     QFrame *utilsFrame;
     BabeTable *albumTable;
-    QListWidget *grid;
+    GridView *grid;
     QToolButton *expandBtn;
+
+
 private:
 
+    AlbumLoader albumLoader;
+    Notify nof;
     int albumSize;
     bool extraList=false;
-    bool ascending=true;
-    bool hiddenLabels=false;
-    void adjustGrid();
-    QList<Album*> albumsList;
-    QList<QListWidgetItem*> itemsList;
-    Bae::DB albums;
-    Bae::DB artists;
+
     QWidget *albumBox_frame;
     QFrame *line_h;
     Album *cover;
     CollectionDB connection;
-    Playlist *playlist;
     QListWidget *artistList;
     QToolButton *closeBtn;
 
-public slots:
 
+public slots:
     void hideAlbumFrame();
     void expandList();
-    void changedArt_cover(const Bae::DB &info);
-    void changedArt_head(const Bae::DB &info);
-    void babeAlbum(const Bae::DB &info);
-    void setAlbumsSize(int value);
     void getAlbumInfo(const Bae::DB &info);
     void getArtistInfo(const Bae::DB &info);
-
-protected:
-
-    virtual bool eventFilter(QObject *obj, QEvent *event) Q_DECL_OVERRIDE;
 
 private slots:
 
     void albumHover();
-    void orderChanged();
     void filterAlbum(QModelIndex index);
 
 signals:
@@ -93,10 +165,14 @@ signals:
     void albumDoubleClicked(const Bae::DB info);
     void albumOrderChanged(QString order);
     void playAlbum(const Bae::DB &info);
-    void babeAlbum_clicked(const Bae::DB info);
+    void babeAlbum(const Bae::DB info);
     void populateFinished();
     void expandTo(QString artist, QString album);
     void createdAlbum(Album *album);
 };
+
+
+
+
 
 #endif // ALBUMSVIEW_H

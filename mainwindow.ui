@@ -20,7 +20,7 @@
    <string>MainWindow</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="data.qrc">
+   <iconset>
     <normaloff>:/Data/data/48-apps-babe.svg</normaloff>:/Data/data/48-apps-babe.svg</iconset>
   </property>
   <property name="autoFillBackground">
@@ -428,7 +428,8 @@
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset theme="love"/>
+        <iconset theme="love">
+         <normaloff>.</normaloff>.</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -545,6 +546,44 @@
        </property>
        <property name="autoExclusive">
         <bool>true</bool>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="rabbit_view">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="toolTip">
+        <string>Discover</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset theme="kstars_constellationart">
+         <normaloff>.</normaloff>.</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>22</width>
+         <height>22</height>
+        </size>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="autoExclusive">
+        <bool>true</bool>
+       </property>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonIconOnly</enum>
        </property>
        <property name="autoRaise">
         <bool>true</bool>
@@ -993,44 +1032,6 @@
       </widget>
      </item>
      <item>
-      <widget class="QToolButton" name="rabbit_view">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="toolTip">
-        <string>Discover</string>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="icon">
-        <iconset theme="kstars_constellationart">
-         <normaloff>.</normaloff>.</iconset>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>22</width>
-         <height>22</height>
-        </size>
-       </property>
-       <property name="checkable">
-        <bool>true</bool>
-       </property>
-       <property name="autoExclusive">
-        <bool>true</bool>
-       </property>
-       <property name="toolButtonStyle">
-        <enum>Qt::ToolButtonIconOnly</enum>
-       </property>
-       <property name="autoRaise">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
       <widget class="QToolButton" name="settings_view">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
@@ -1076,8 +1077,6 @@
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources>
-  <include location="data.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

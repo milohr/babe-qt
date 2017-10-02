@@ -187,86 +187,62 @@ bool CollectionDB::openDB()
 }
 
 
-void CollectionDB::addTrack(const QStringList &paths,const int &babe)
+void CollectionDB::addTrack(const Bae::DB &track)
 {
-    if(!paths.isEmpty())
+    QSqlQuery query;
+    if(query.exec("PRAGMA synchronous=OFF"))
     {
-        QSqlQuery query;
-        if(query.exec("PRAGMA synchronous=OFF"))
-        {
-            int i=0;
 
-            qDebug()<<"started writing to database...";
-            for(auto file:paths)
-            {
+        auto url = track[Bae::DBCols::URL];
+        auto title = track[Bae::DBCols::TITLE];
+        auto artist = track[Bae::DBCols::ARTIST];
+        auto album = track[Bae::DBCols::ALBUM];
+        auto genre = track[Bae::DBCols::GENRE];
+        auto year = track[Bae::DBCols::RELEASE_DATE];
+        auto sourceUrl = track[Bae::DBCols::SOURCES_URL];
+        auto duration = track[Bae::DBCols::DURATION];
+        auto babe = track[Bae::DBCols::BABE];
+        auto trackNumber = track[Bae::DBCols::TRACK];
 
-                TagInfo info(file);
-                QString  album;
-                int track;
-                QString title = Bae::fixString(info.getTitle()); /* to fix*/
-                QString artist = Bae::fixString(info.getArtist());
-                QString genre = info.getGenre();
-                QString sourceUrl = QFileInfo(file).dir().path();
-                int duration = info.getDuration();
-                auto year = info.getYear();
-                qDebug()<< "writting to db: "<<title<<artist;
+        qDebug()<<"started writing to database...";
 
-                if(info.getAlbum().isEmpty())
-                {
-                    qDebug()<<"the album has not title, so i'm going to try and get it.";
-                    info.writeData(); // actually means to search the name and load it into metadata
-                    album=info.getAlbum();
-                    track=info.getTrack();
-                }else
-                {
-                    album=info.getAlbum();
-                    track=info.getTrack();
-                }
+        qDebug()<< "writting to db: "<<title<<artist;
+        /* first needs to insert album and artist*/
+        QVariantMap sourceMap {{Bae::DBColsMap[Bae::DBCols::URL],sourceUrl},
+                               {Bae::DBColsMap[Bae::DBCols::SOURCE_TYPE], sourceType(url)}};
 
-                album=Bae::fixString(album);
+        this->insert(Bae::DBTablesMap[Bae::DBTables::SOURCES],sourceMap);
 
-                /* first needs to insert album and artist*/
-                QVariantMap sourceMap {{Bae::DBColsMap[Bae::DBCols::URL],sourceUrl},
-                                       {Bae::DBColsMap[Bae::DBCols::SOURCE_TYPE], sourceType(file)}};
+        QVariantMap artistMap {{Bae::DBColsMap[Bae::DBCols::ARTIST], artist},
+                               {Bae::DBColsMap[Bae::DBCols::ARTWORK],""},
+                               {Bae::DBColsMap[Bae::DBCols::WIKI],""}};
 
-                this->insert(Bae::DBTablesMap[Bae::DBTables::SOURCES],sourceMap);
+        this->insert(Bae::DBTablesMap[Bae::DBTables::ARTISTS],artistMap);
 
-                QVariantMap artistMap {{Bae::DBColsMap[Bae::DBCols::ARTIST], artist},
-                                       {Bae::DBColsMap[Bae::DBCols::ARTWORK],""},
-                                       {Bae::DBColsMap[Bae::DBCols::WIKI],""}};
+        QVariantMap albumMap {{Bae::DBColsMap[Bae::DBCols::ALBUM],album},
+                              {Bae::DBColsMap[Bae::DBCols::ARTIST],artist},
+                              {Bae::DBColsMap[Bae::DBCols::ARTWORK],""},
+                              {Bae::DBColsMap[Bae::DBCols::WIKI],""}};
+        this->insert(Bae::DBTablesMap[Bae::DBTables::ALBUMS],albumMap);
 
-                this->insert(Bae::DBTablesMap[Bae::DBTables::ARTISTS],artistMap);
+        QVariantMap trackMap {{Bae::DBColsMap[Bae::DBCols::URL],url},
+                              {Bae::DBColsMap[Bae::DBCols::SOURCES_URL],sourceUrl},
+                              {Bae::DBColsMap[Bae::DBCols::TRACK],trackNumber},
+                              {Bae::DBColsMap[Bae::DBCols::TITLE],title},
+                              {Bae::DBColsMap[Bae::DBCols::ARTIST],artist},
+                              {Bae::DBColsMap[Bae::DBCols::ALBUM],album},
+                              {Bae::DBColsMap[Bae::DBCols::DURATION],duration},
+                              {Bae::DBColsMap[Bae::DBCols::PLAYED],0},
+                              {Bae::DBColsMap[Bae::DBCols::BABE],babe},
+                              {Bae::DBColsMap[Bae::DBCols::STARS],0},
+                              {Bae::DBColsMap[Bae::DBCols::RELEASE_DATE],year},
+                              {Bae::DBColsMap[Bae::DBCols::ADD_DATE],QDateTime::currentDateTime()},
+                              {Bae::DBColsMap[Bae::DBCols::LYRICS],""},
+                              {Bae::DBColsMap[Bae::DBCols::GENRE],genre},
+                              {Bae::DBColsMap[Bae::DBCols::ART],""}};
 
-                QVariantMap albumMap {{Bae::DBColsMap[Bae::DBCols::ALBUM],album},
-                                      {Bae::DBColsMap[Bae::DBCols::ARTIST],artist},
-                                      {Bae::DBColsMap[Bae::DBCols::ARTWORK],""},
-                                      {Bae::DBColsMap[Bae::DBCols::WIKI],""}};
-                this->insert(Bae::DBTablesMap[Bae::DBTables::ALBUMS],albumMap);
-
-                QVariantMap trackMap {{Bae::DBColsMap[Bae::DBCols::URL],file},
-                                      {Bae::DBColsMap[Bae::DBCols::SOURCES_URL],sourceUrl},
-                                      {Bae::DBColsMap[Bae::DBCols::TRACK],track},
-                                      {Bae::DBColsMap[Bae::DBCols::TITLE],title},
-                                      {Bae::DBColsMap[Bae::DBCols::ARTIST],artist},
-                                      {Bae::DBColsMap[Bae::DBCols::ALBUM],album},
-                                      {Bae::DBColsMap[Bae::DBCols::DURATION],duration},
-                                      {Bae::DBColsMap[Bae::DBCols::PLAYED],0},
-                                      {Bae::DBColsMap[Bae::DBCols::BABE],babe},
-                                      {Bae::DBColsMap[Bae::DBCols::STARS],0},
-                                      {Bae::DBColsMap[Bae::DBCols::RELEASE_DATE],year},
-                                      {Bae::DBColsMap[Bae::DBCols::ADD_DATE],QDateTime::currentDateTime()},
-                                      {Bae::DBColsMap[Bae::DBCols::LYRICS],""},
-                                      {Bae::DBColsMap[Bae::DBCols::GENRE],genre},
-                                      {Bae::DBColsMap[Bae::DBCols::ART],""}};
-
-                this->insert(Bae::DBTablesMap[Bae::DBTables::TRACKS],trackMap);
-
-                emit progress((i++)+1);
-            }
-
-            qDebug()<<"finished wrrting to database";
-            emit DBactionFinished();
-        }
+        this->insert(Bae::DBTablesMap[Bae::DBTables::TRACKS],trackMap);
+        emit trackInserted();
 
     }
 }
@@ -442,7 +418,8 @@ Bae::DB_LIST CollectionDB::getTrackData(QSqlQuery &query)
     if(query.exec())
         while(query.next())
             mapList << Bae::DB
-            {{Bae::DBCols::TRACK, query.value(Bae::DBColsMap[Bae::DBCols::TRACK]).toString()},
+            {
+            {Bae::DBCols::TRACK, query.value(Bae::DBColsMap[Bae::DBCols::TRACK]).toString()},
 {Bae::DBCols::TITLE, query.value(Bae::DBColsMap[Bae::DBCols::TITLE]).toString()},
 {Bae::DBCols::ARTIST, query.value(Bae::DBColsMap[Bae::DBCols::ARTIST]).toString()},
 {Bae::DBCols::ALBUM, query.value(Bae::DBColsMap[Bae::DBCols::ALBUM]).toString()},
@@ -456,7 +433,8 @@ Bae::DB_LIST CollectionDB::getTrackData(QSqlQuery &query)
 {Bae::DBCols::ADD_DATE, query.value(Bae::DBColsMap[Bae::DBCols::ADD_DATE]).toString()},
 {Bae::DBCols::RELEASE_DATE, query.value(Bae::DBColsMap[Bae::DBCols::RELEASE_DATE]).toString()},
 {Bae::DBCols::LYRICS, query.value(Bae::DBColsMap[Bae::DBCols::LYRICS]).toString()},
-{Bae::DBCols::SOURCES_URL, query.value(Bae::DBColsMap[Bae::DBCols::SOURCES_URL]).toString()}};
+{Bae::DBCols::SOURCES_URL, query.value(Bae::DBColsMap[Bae::DBCols::SOURCES_URL]).toString()}
+};
 
 return mapList;
 }
@@ -542,34 +520,47 @@ Bae::DB_LIST CollectionDB::getSearchedTracks(const Bae::DBCols &where, const QSt
                 Bae::DBColsMap[where],
                 search);
     else if(where == Bae::DBCols::WIKI)
-        queryTxt= QString("SELECT t.* FROM %1 t INNER JOIN %2 al ON t.%3 = al.%3 INNER JOIN %4 ar ON t.%5 = ar.%5 WHERE al.%6 LIKE \"%%7%\" OR ar.%6 LIKE \"%%7%\" COLLATE NOCASE").arg(Bae::DBTablesMap[Bae::DBTables::TRACKS],
+
+        queryTxt= QString("SELECT DISTINCT t.* FROM %1 t INNER JOIN %2 al ON t.%3 = al.%3 INNER JOIN %4 ar ON t.%5 = ar.%5 WHERE al.%6 LIKE \"%%7%\" OR ar.%6 LIKE \"%%7%\" COLLATE NOCASE").arg(Bae::DBTablesMap[Bae::DBTables::TRACKS],
                 Bae::DBTablesMap[Bae::DBTables::ALBUMS],Bae::DBColsMap[Bae::DBCols::ALBUM],
                 Bae::DBTablesMap[Bae::DBTables::ARTISTS],Bae::DBColsMap[Bae::DBCols::ARTIST],
                 Bae::DBColsMap[where],
                 search);
+
+
     else if(where == Bae::DBCols::PLAYLIST)
+
         queryTxt= QString("SELECT t.* FROM %1 t INNER JOIN %2 tp ON t.%3 = tp.%3 WHERE tp.%4 = \"%5\"").arg(Bae::DBTablesMap[Bae::DBTables::TRACKS],
                 Bae::DBTablesMap[Bae::DBTables::TRACKS_PLAYLISTS],Bae::DBColsMap[Bae::DBCols::URL],
                 Bae::DBColsMap[where],
                 search);
+
+
     else if(where == Bae::DBCols::TAG)
-    {
+
         queryTxt= QString("SELECT t.* FROM %1 t INNER JOIN %2 tt ON t.%3 = tt.%3 WHERE tt.%4 = \"%5\" COLLATE NOCASE "
                           "UNION "
                           "SELECT t.* FROM %1 t INNER JOIN %6 at ON t.%7 = at.%7 AND t.%8 = at.%8 WHERE at.%4 = \"%5\" COLLATE NOCASE "
                           "UNION "
-                          "SELECT t.* FROM %1 t INNER JOIN %9 art ON t.%8 = art.%8 WHERE art.%4 LIKE \"%%5%\" COLLATE NOCASE ").arg(Bae::DBTablesMap[Bae::DBTables::TRACKS],
-                Bae::DBTablesMap[Bae::DBTables::TRACKS_TAGS],Bae::DBColsMap[Bae::DBCols::URL],
+                          "SELECT t.* FROM %1 t INNER JOIN %9 art ON t.%8 = art.%8 WHERE art.%4 LIKE \"%%5%\" COLLATE NOCASE "
+                          "UNION "
+                          "SELECT DISTINCT t.* FROM %1 t INNER JOIN %9 at ON t.%8 = at.%4 WHERE at.%8 LIKE \"%%5%\" COLLATE NOCASE").arg(
+                    Bae::DBTablesMap[Bae::DBTables::TRACKS],
+                Bae::DBTablesMap[Bae::DBTables::TRACKS_TAGS],
+                Bae::DBColsMap[Bae::DBCols::URL],
                 Bae::DBColsMap[where],
                 search,
-                Bae::DBTablesMap[Bae::DBTables::ALBUMS_TAGS],Bae::DBColsMap[Bae::DBCols::ALBUM],Bae::DBColsMap[Bae::DBCols::ARTIST],
+                Bae::DBTablesMap[Bae::DBTables::ALBUMS_TAGS],
+                Bae::DBColsMap[Bae::DBCols::ALBUM],
+                Bae::DBColsMap[Bae::DBCols::ARTIST],
                 Bae::DBTablesMap[Bae::DBTables::ARTISTS_TAGS]);
-        qDebug()<<"SERACH ATGS QUERY:"<<queryTxt;
-    }
+
     else
         queryTxt= QString("SELECT * FROM %1 WHERE %2 LIKE \"%%3%\"").arg(Bae::DBTablesMap[Bae::DBTables::TRACKS],
                 Bae::DBColsMap[where],
                 search);
+
+    qDebug()<<"SEARCH QUERY:"<<queryTxt;
 
     QSqlQuery query(queryTxt);
 
@@ -774,6 +765,33 @@ QStringList CollectionDB::getPlaylists()
 
 }
 
+bool CollectionDB::removeTrack(const QString &path)
+{
+    auto queryTxt = QString("DELETE FROM %1 WHERE %2 =  \"%3\"").arg(Bae::DBTablesMap[Bae::DBTables::TRACKS],
+            Bae::DBColsMap[Bae::DBCols::URL],path);
+    QSqlQuery query(queryTxt);
+    if(query.exec()) return true;
+
+    return false;
+}
+
+bool CollectionDB::removeSource(const QString &path)
+{
+    auto queryTxt = QString("DELETE FROM %1 WHERE %2 =  \"%3\"").arg(Bae::DBTablesMap[Bae::DBTables::TRACKS],
+            Bae::DBColsMap[Bae::DBCols::SOURCES_URL],path);
+    QSqlQuery query(queryTxt);
+    if(query.exec())
+    {
+        queryTxt = QString("DELETE FROM %1 WHERE %2 =  \"%3\"").arg(Bae::DBTablesMap[Bae::DBTables::SOURCES],
+                Bae::DBColsMap[Bae::DBCols::SOURCES_URL],path);
+        query.prepare(queryTxt);
+        if(query.exec()) return true;
+    }
+
+    return false;
+}
+
+
 
 
 
@@ -796,14 +814,6 @@ QSqlQuery CollectionDB::getQuery(const QString &queryTxt)
 /*******************OLD STUFF********************/
 
 
-bool CollectionDB::removePath(const QString &path)
-{
-    qDebug()<<"trying to delete all from :"<< path;
-    QSqlQuery queryTracks;
-    queryTracks.prepare("DELETE FROM tracks WHERE url LIKE \""+path+"%\"");
-    if(queryTracks.exec()) return true;
-    else return false;
-}
 
 
 
@@ -922,12 +932,13 @@ void CollectionDB::refreshArtistsTable()
     }
 }
 
-void CollectionDB::insertCoverArt(const QString &path, const Bae::DB &track)
+void CollectionDB::insertArtwork(const Bae::DB &track)
 {
-    qDebug()<<"the path:"<<path<<"the list:"<<track[Bae::DBCols::ARTIST]<<track[Bae::DBCols::ALBUM];
 
     auto artist = track[Bae::DBCols::ARTIST];
     auto album =track[Bae::DBCols::ALBUM];
+    auto path = track[Bae::DBCols::ARTWORK];
+    qDebug()<<"the path:"<<path<<"the list:"<<track[Bae::DBCols::ARTIST]<<track[Bae::DBCols::ALBUM];
 
     if(!artist.isEmpty() && !album.isEmpty())
     {
@@ -940,21 +951,10 @@ void CollectionDB::insertCoverArt(const QString &path, const Bae::DB &track)
                 artist);
 
         QSqlQuery query(queryStr);
-
-        //        qDebug()<<queryStr;
         if(query.exec()) qDebug()<<"Artwork[cover] inserted into DB"<<artist<<album;
         else qDebug()<<"COULDNT Artwork[cover] inerted into DB"<<artist<<album;
 
-    }
-}
-
-
-void CollectionDB::insertHeadArt(const QString &path, const Bae::DB &track)
-{
-
-    auto artist = track[Bae::DBCols::ARTIST];
-
-    if(!artist.isEmpty())
+    }else if(!artist.isEmpty()&&album.isEmpty())
     {
         auto queryStr = QString("UPDATE %1 SET %2 = \"%3\" WHERE %4 = \"%5\"").arg(Bae::DBTablesMap[Bae::DBTables::ARTISTS],
                 Bae::DBColsMap[Bae::DBCols::ARTWORK],
@@ -962,27 +962,10 @@ void CollectionDB::insertHeadArt(const QString &path, const Bae::DB &track)
                 Bae::DBColsMap[Bae::DBCols::ARTIST],
                 artist);
         QSqlQuery query(queryStr);
-
-        if(query.exec())
-        {
-            qDebug()<<"Artwork[head] inerted into DB"<<artist;
-            if(!artists.contains(artist)) artists<<artist;
-            //qDebug()<<"insertInto<<"<<"UPDATE "+tableName+" SET "+column+" = "+ value + " WHERE location = "+location;
-        }
+        if(query.exec()) qDebug()<<"Artwork[head] inserted into DB"<<artist;
+        else qDebug()<<"COULDNT Artwork[head] inerted into DB"<<artist;
     }
 }
-
-
-void CollectionDB::setTrackList(QList<Track> trackList)
-{
-    this->trackList=trackList;
-
-    /*for(auto tr:trackList)
-        {
-            qDebug()<<QString::fromStdString(tr.getTitle());
-        }*/
-}
-
 
 
 bool CollectionDB::execQuery(QString queryTxt)
@@ -1039,6 +1022,33 @@ QStringList CollectionDB::getPlaylistsMoods()
 
     return moods;
 
+}
+
+bool CollectionDB::removePlaylistTrack(const QString &url, const QString &playlist)
+{
+    auto queryTxt = QString("DELETE FROM %1 WHERE %2 = \"%3\" AND %4 = \"%5\"").arg(Bae::DBTablesMap[Bae::DBTables::TRACKS_PLAYLISTS],
+            Bae::DBColsMap[Bae::DBCols::PLAYLIST],playlist,Bae::DBColsMap[Bae::DBCols::URL],url);
+    QSqlQuery query(queryTxt);
+    if(!query.exec()) return false;
+    return true;
+}
+
+bool CollectionDB::removePlaylist(const QString &playlist)
+{
+    QSqlQuery query;
+    QString queryTxt;
+    queryTxt = QString("DELETE FROM %1 WHERE %2 = \"%3\"").arg(Bae::DBTablesMap[Bae::DBTables::TRACKS_PLAYLISTS],
+            Bae::DBColsMap[Bae::DBCols::PLAYLIST],playlist);
+
+    query.prepare(queryTxt);
+    if(!query.exec()) return false;
+
+    queryTxt = QString("DELETE FROM %1 WHERE %2 = \"%3\"").arg(Bae::DBTablesMap[Bae::DBTables::PLAYLISTS],
+            Bae::DBColsMap[Bae::DBCols::PLAYLIST],playlist);
+
+    query.prepare(queryTxt);
+    if(!query.exec()) return false;
+    return true;
 }
 
 

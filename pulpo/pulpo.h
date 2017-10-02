@@ -113,7 +113,7 @@ signals:
     void trackPositionReady(const int &position,const Bae::DB &track);
     void trackTagsReady(const QStringList &tags,const Bae::DB &track);
 
-    void artSaved(const QString &path,const Bae::DB &track);
+    void artSaved(const Bae::DB &track);
 };
 
 #endif // ARTWORK_H
