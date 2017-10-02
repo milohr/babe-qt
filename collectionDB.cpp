@@ -243,7 +243,6 @@ void CollectionDB::addTrack(const Bae::DB &track)
 
         this->insert(Bae::DBTablesMap[Bae::DBTables::TRACKS],trackMap);
         emit trackInserted();
-
     }
 }
 
