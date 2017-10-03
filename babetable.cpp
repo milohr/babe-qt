@@ -23,6 +23,17 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent)
 {
     preview = new QMediaPlayer(this);
     preview->setVolume(100);
+
+    connect(&trackLoader,&TrackLoader::finished,[this]()
+    {
+        this->setSortingEnabled(true);
+        emit finishedPopulating();
+    });
+    connect(&trackLoader,&TrackLoader::trackReady,[this](Bae::DB track)
+    {
+        this->insertTrack(track);
+    });
+
     connect(this,&QTableWidget::doubleClicked, this, &BabeTable::on_tableWidget_doubleClicked);
     connect(this,&QTableWidget::itemSelectionChanged,[this](){this->stopPreview();});
     //    connect(this->selectionModel(),&QItemSelectionModel::selectionChanged,[this](){    this->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -278,7 +289,7 @@ void BabeTable::dropEvent(QDropEvent *event)
 
                 for(auto track : tracks)
                 {
-                    this->addRowAt(newRow+i+1,track,true);
+                    this->addRowAt(newRow+i+1,track);
                     qDebug()<<"indexes moved "<< newList.at(i)<<insertionRow<<newRow;
 
                     emit indexesMoved(newList.at(i),insertionRow);
@@ -384,7 +395,7 @@ void BabeTable::addMenuItem(QAction *item)
 
 
 
-void BabeTable::addRow(const Bae::DB &map, const  bool &descriptiveTooltip)
+void BabeTable::addRow(const Bae::DB &map)
 {
     this->insertRow(this->rowCount());
 
@@ -405,11 +416,11 @@ void BabeTable::addRow(const Bae::DB &map, const  bool &descriptiveTooltip)
     if(this->rowColoring && !map[Bae::DBCols::ART].isEmpty())
         this->colorizeRow({this->rowCount()-1},map[Bae::DBCols::ART]);
 
-    if(descriptiveTooltip)
-        this->item(this->rowCount()-1,Bae::DBCols::TITLE)->setToolTip( "by "+map[Bae::DBCols::ARTIST]);
+//    if(descriptiveTooltip)
+//        this->item(this->rowCount()-1,Bae::DBCols::TITLE)->setToolTip( "by "+map[Bae::DBCols::ARTIST]);
 }
 
-void BabeTable::addRowAt(const int &row,const Bae::DB &map,const  bool &descriptiveTooltip)
+void BabeTable::addRowAt(const int &row, const Bae::DB &map)
 {
     this->insertRow(row);
     this->setItem(row , Bae::DBCols::URL, new QTableWidgetItem(map[Bae::DBCols::URL]));
@@ -435,8 +446,8 @@ void BabeTable::addRowAt(const int &row,const Bae::DB &map,const  bool &descript
         this->colorizeRow({row},map[Bae::DBCols::ART]);
 
 
-    if(descriptiveTooltip)
-        this->item(row,Bae::DBCols::TITLE)->setToolTip( "by "+map[Bae::DBCols::ARTIST]);
+//    if(descriptiveTooltip)
+//        this->item(row,Bae::DBCols::TITLE)->setToolTip( "by "+map[Bae::DBCols::ARTIST]);
 }
 
 void BabeTable::removeMissing(const QString &url)
@@ -451,41 +462,30 @@ void BabeTable::removeMissing(const QString &url)
 }
 
 
-void BabeTable::insertTrack(const Bae::DB &track,const bool &descriptiveTitle)
+void BabeTable::insertTrack(const Bae::DB &track)
 {
     auto location =track[Bae::DBCols::URL];
 
     if (!Bae::fileExists(location))  removeMissing(location);
-    else addRow(track,descriptiveTitle);
+    else addRow(track);
 }
 
-void BabeTable::populateTableView(const Bae::DB_LIST &mapList, const bool &descriptiveTitle)
+void BabeTable::populateTableView(const Bae::DB_LIST &mapList)
 {
     this->setSortingEnabled(false);
     if(!mapList.isEmpty())
     {
-        for(auto trackMap : mapList) insertTrack(trackMap,descriptiveTitle);
-
+        for(auto trackMap : mapList) insertTrack(trackMap);
         this->setSortingEnabled(true);
         emit finishedPopulating();
-
     }
 
 }
 
-void BabeTable::populateTableView(QSqlQuery &query, const bool &descriptiveTitle)
+void BabeTable::populateTableView(QSqlQuery &query)
 {
     qDebug() << "ON POPULATE TABLEVIEW";
     this->setSortingEnabled(false);
-    connect(&trackLoader,&TrackLoader::finished,[this]()
-    {
-        this->setSortingEnabled(true);
-        emit finishedPopulating();
-    });
-    connect(&trackLoader,&TrackLoader::trackReady,[=](Bae::DB &track)
-    {
-        this->insertTrack(track,descriptiveTitle);
-    });
     trackLoader.requestTracks(query.lastQuery());
 }
 

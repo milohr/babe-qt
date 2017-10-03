@@ -84,15 +84,13 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
     connect(&trackSaver,&TrackSaver::finished,[this]()
     {
         qDebug()<<"FINISHED TRACKSAVER";
-//        nof.notify("Songs added to collection","finished writting new songs to the collection :)");
+        //        nof.notify("Songs added to collection","finished writting new songs to the collection :)");
         ui->progressBar->hide();
         ui->progressBar->setValue(0);
 
         collectionWatcher();
         emit refreshTables(Bae::DBTables::TRACKS);
         emit getArtwork();
-        this->ui->sourcesFrame->setEnabled(true);
-
     });
 
     connect(&trackSaver,&TrackSaver::trackReady,&collection_db, &CollectionDB::addTrack);
@@ -102,9 +100,9 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
 
     ui->ytLineEdit->setText(extensionFetchingPath);
     ytFetch = new YouTube(this);
-     connect(ytFetch,&YouTube::youtubeTrackReady, this, &settings::populateDB);
+    connect(ytFetch,&YouTube::youtubeTrackReady, this, &settings::populateDB);
 
-//    connect(ytFetch,&YouTube::youtubeTrackReady,[this](){ emit collectionPathChanged(youtubeCachePath);});
+    //    connect(ytFetch,&YouTube::youtubeTrackReady,[this](){ emit collectionPathChanged(youtubeCachePath);});
     ytFetch->searchPendingFiles();
     extensionWatcher = new QFileSystemWatcher();
     extensionWatcher->addPath(extensionFetchingPath);
@@ -504,7 +502,7 @@ void settings::fetchArt()
     nof.notify("Finished fetching art","the artwork for your collection is now ready :)\n "+QString::number(amountArtists)+" artists and "+QString::number(amountAlbums)+" albums");
     movie->stop();
     ui->label->hide();
-
+    this->ui->sourcesFrame->setEnabled(true);
     emit refreshAlbumsView();
 }
 

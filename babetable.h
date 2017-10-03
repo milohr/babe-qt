@@ -137,15 +137,15 @@ public:
     };
 
     QStringList colors = Bae::MoodColors;
-    void insertTrack(const Bae::DB &track, const bool &descriptiveTitle);
-    void populateTableView(const Bae::DB_LIST &mapList, const bool &descriptiveTitle);
-    void populateTableView(QSqlQuery &indication, const bool &descriptiveTitle);
+    void insertTrack(const Bae::DB &track);
+    void populateTableView(const Bae::DB_LIST &mapList);
+    void populateTableView(QSqlQuery &indication);
     void removeMissing(const QString &url);
     void setRating(int rate);
     void setTableOrder(int column, Bae::Order order);
     void setVisibleColumn(int column);
-    void addRow(const Bae::DB &map, const bool &descriptiveTooltip);
-    void addRowAt(const int &row, const Bae::DB &map, const bool &descriptiveTooltip);
+    void addRow(const Bae::DB &map);
+    void addRowAt(const int &row, const Bae::DB &map);
     void passStyle(QString style);
     void setAddMusicMsg(const QString &msg, const QString &icon= "face-sleeping");
     int getIndex();

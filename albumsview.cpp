@@ -168,7 +168,7 @@ void AlbumsView::filterAlbum(QModelIndex index)
     qDebug()<<album;
 
     albumTable->flushTable();
-    albumTable->populateTableView(connection.getAlbumTracks(album,cover->getArtist()),false);
+    albumTable->populateTableView(connection.getAlbumTracks(album,cover->getArtist()));
     cover->setTitle(cover->getArtist(),album);
 
     cover->putPixmap(connection.getAlbumArt(album,cover->getArtist()));
@@ -262,7 +262,7 @@ void AlbumsView::getAlbumInfo(const Bae::DB &info)
 
     albumTable->flushTable();
 
-    albumTable->populateTableView(connection.getAlbumTracks(album, artist),false);
+    albumTable->populateTableView(connection.getAlbumTracks(album, artist));
 
     auto art = connection.getAlbumArt(album,artist);
     art = art.isEmpty()? connection.getArtistArt(artist) : art;
@@ -281,7 +281,7 @@ void AlbumsView::getArtistInfo(const Bae::DB &info)
     cover->setTitle(artist);
     albumTable->flushTable();
 
-    albumTable->populateTableView(connection.getArtistTracks(artist),false);
+    albumTable->populateTableView(connection.getArtistTracks(artist));
     auto art = connection.getArtistArt(artist);
     if(!art.isEmpty()) cover->putPixmap(art);
     else cover->putDefaultPixmap();

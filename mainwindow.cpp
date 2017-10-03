@@ -619,7 +619,7 @@ void MainWindow::setUpPlaylist()
 
         for(auto track : results)
         {
-            mainList->addRowAt(current_song_pos+i,track,true);
+            mainList->addRowAt(current_song_pos+i,track);
             //            mainList->item(current_song_pos+i,BabeTable::TITLE)->setIcon(QIcon::fromTheme("filename-space-amarok"));
             mainList->colorizeRow({current_song_pos+i},"#000");
 
@@ -1042,9 +1042,8 @@ void MainWindow::refreshTables(const Bae::DBTables &reset) //tofix
     nof.notify("Loading collection","this might take some time depending on your colleciton size");
 
     QSqlQuery query;
-    collectionTable->flushTable();
     query.prepare(QString("SELECT * FROM %1 ORDER BY  %2").arg(Bae::DBTablesMap[Bae::DBTables::TRACKS],Bae::DBColsMap[Bae::DBCols::ARTIST]));
-    collectionTable->populateTableView(query,false);
+    collectionTable->populateTableView(query);
 
     query.prepare(QString("SELECT * FROM %1 ORDER BY  %2").arg(Bae::DBTablesMap[Bae::DBTables::ALBUMS],Bae::DBColsMap[Bae::DBCols::ALBUM]));
     albumsTable->populateAlbumsView(query);
@@ -1522,7 +1521,7 @@ void MainWindow::appendFiles(const QStringList &paths,const appendPos &pos)
 void MainWindow::populateMainList()
 {   
     auto results = connection.getBabedTracks();
-    mainList->populateTableView(results,true);
+    mainList->populateTableView(results);
     mainList->resizeRowsToContents();
     currentList = mainList->getAllTableContent();
 }
@@ -1531,7 +1530,7 @@ void MainWindow::updateList()
 {
     mainList->flushTable();
     for(auto list: currentList)
-        mainList->addRow(list,true);
+        mainList->addRow(list);
 }
 
 
@@ -1724,7 +1723,7 @@ void MainWindow::addToQueue(const Bae::DB_LIST &tracks)
     {
         if(!queued_songs.contains(track[Bae::DBCols::URL]))
         {
-            mainList->addRowAt(queued_songs.size(),track,true);
+            mainList->addRowAt(queued_songs.size(),track);
             mainList->item(queued_songs.size(),Bae::DBCols::TITLE)->setIcon(QIcon::fromTheme("clock"));
             mainList->colorizeRow({queued_songs.size()},"#333");
             queued_songs.insert(track[Bae::DBCols::URL],track);
@@ -2114,27 +2113,27 @@ void MainWindow::addToPlaylist(const Bae::DB_LIST &mapList, const bool &notRepea
                     switch(pos)
                     {
                     case APPENDBOTTOM:
-                        mainList->addRow(track,true);
+                        mainList->addRow(track);
                         mainList->scrollToBottom();
 
                         break;
                     case APPENDTOP:
-                        mainList->addRowAt(0,track,true);
+                        mainList->addRowAt(0,track);
                         mainList->scrollToItem(mainList->item(0,Bae::DBCols::TITLE),QAbstractItemView::PositionAtTop);
 
                         break;
                     case APPENDAFTER:
-                        mainList->addRowAt(current_song_pos+1,track,true);
+                        mainList->addRowAt(current_song_pos+1,track);
                         mainList->scrollToItem(mainList->item(current_song_pos+1,Bae::DBCols::TITLE),QAbstractItemView::PositionAtTop);
 
                         break;
                     case APPENDBEFORE:
-                        mainList->addRowAt(current_song_pos,track,true);
+                        mainList->addRowAt(current_song_pos,track);
                         mainList->scrollToItem(mainList->item(current_song_pos,Bae::DBCols::TITLE),QAbstractItemView::PositionAtTop);
 
                         break;
                     case APPENDINDEX:
-                        mainList->addRowAt(mainList->getIndex(),track,true);
+                        mainList->addRowAt(mainList->getIndex(),track);
                         mainList->scrollToItem(mainList->item(mainList->getIndex(),Bae::DBCols::TITLE),QAbstractItemView::PositionAtTop);
 
                         break;
@@ -2151,27 +2150,27 @@ void MainWindow::addToPlaylist(const Bae::DB_LIST &mapList, const bool &notRepea
                 switch(pos)
                 {
                 case APPENDBOTTOM:
-                    mainList->addRow(track,true);
+                    mainList->addRow(track);
                     mainList->scrollToBottom();
 
                     break;
                 case APPENDTOP:
-                    mainList->addRowAt(0,track,true);
+                    mainList->addRowAt(0,track);
                     mainList->scrollToItem(mainList->item(0,Bae::DBCols::TITLE),QAbstractItemView::PositionAtTop);
 
                     break;
                 case APPENDAFTER:
-                    mainList->addRowAt(current_song_pos+1,track,true);
+                    mainList->addRowAt(current_song_pos+1,track);
                     mainList->scrollToItem(mainList->item(current_song_pos+1,Bae::DBCols::TITLE),QAbstractItemView::PositionAtTop);
 
                     break;
                 case APPENDBEFORE:
-                    mainList->addRowAt(current_song_pos,track,true);
+                    mainList->addRowAt(current_song_pos,track);
                     mainList->scrollToItem(mainList->item(current_song_pos,Bae::DBCols::TITLE),QAbstractItemView::PositionAtTop);
 
                     break;
                 case APPENDINDEX:
-                    mainList->addRowAt(mainList->getIndex(),track,true);
+                    mainList->addRowAt(mainList->getIndex(),track);
                     mainList->scrollToItem(mainList->item(mainList->getIndex(),Bae::DBCols::TITLE),QAbstractItemView::PositionAtTop);
 
                     break;
@@ -2256,7 +2255,7 @@ void MainWindow::populateResultsTable(const Bae::DB_LIST &mapList)
 {
     if(views->currentIndex()!=ALBUMS&&views->currentIndex()!=ARTISTS)
         views->setCurrentIndex(RESULTS);
-    resultsTable->populateTableView(mapList,false);
+    resultsTable->populateTableView(mapList);
 }
 
 Bae::DB_LIST MainWindow::searchFor(const QStringList &queries)
@@ -2438,7 +2437,7 @@ void MainWindow::on_filter_textChanged(const QString &arg1)
         if(!searchResults.isEmpty())
         {
             qDebug()<<"GOT SEARCH RESULTS";
-            filterList->populateTableView(searchResults,true);
+            filterList->populateTableView(searchResults);
         }
 
 

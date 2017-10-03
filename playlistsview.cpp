@@ -246,7 +246,7 @@ void PlaylistsView::populatePlaylist(const QModelIndex &index)
         mapList = connection.getPlaylistTracks(currentPlaylist);
         //        queryTxt = QString("SELECT * FROM tracks t INNER JOIN tracks_playlists tpl on tpl.tracks_url = t.url INNER JOIN playlists pl on pl.title = tpl.playlists_title WHERE pl.title = \"%1\" ORDER by addDate desc").arg(currentPlaylist);
     }
-    table->populateTableView(mapList,false);
+    table->populateTableView(mapList);
 }
 
 void PlaylistsView::createPlaylist()
@@ -286,7 +286,7 @@ void PlaylistsView::removePlaylist()
         }
         return;
     }
-    table->populateTableView(mapList,false);
+    table->populateTableView(mapList);
 
 }
 
@@ -301,7 +301,7 @@ bool PlaylistsView::insertPlaylist(const QString &playlist)
 void PlaylistsView::refreshCurrentPlaylist()
 {
     this->table->flushTable();
-    this->table->populateTableView(connection.getPlaylistTracks(currentPlaylist),false);
+    this->table->populateTableView(connection.getPlaylistTracks(currentPlaylist));
 }
 
 void PlaylistsView::playlistName(QListWidgetItem *item) {
@@ -385,7 +385,7 @@ void PlaylistsView::setPlaylistsMoods()
         QSqlQuery query;
         QString queryTxt = "SELECT * FROM tracks WHERE art = \"" + currentPlaylist + "\"";
         query.prepare(queryTxt);
-        table->populateTableView(query,false);
+        table->populateTableView(query);
     });
 
     //    moodsLayout->addStretch();
