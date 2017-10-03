@@ -68,13 +68,16 @@ public slots:
         qDebug()<<"GETTING TRACKS FROM BABETABLE";
 
         QSqlQuery mquery(query);
-        for(auto trackMap : this->connection.getTrackData(mquery))
-        {   if(go)
-            {
-                emit trackReady(trackMap);
-            }else break;
+        auto tracks = this->connection.getTrackData(mquery);
+        if(tracks.size()>0)
+        {
+            for(auto trackMap : tracks)
+            {   if(go)
+                {
+                    emit trackReady(trackMap);
+                }else break;
+            }
         }
-
         emit finished();
     }
 

@@ -50,7 +50,7 @@ private:
     const QString extensionFetchingPath = Bae::ExtensionFetchingPath;
 
 signals:
-    void  youtubeTrackReady(bool state);
+    void  youtubeTrackReady(const QString &cachePath);
 };
 
 #endif // YOUTUBE_H

@@ -26,12 +26,16 @@ GridView::GridView(QWidget *parent) : QListWidget(parent)
 void GridView::addAlbum(const Bae::DB &albumMap)
 {
 
-    if(!this->albumsMap.contains(albumMap))
+    Bae::DB auxMap {{Bae::DBCols::ARTIST,albumMap[Bae::DBCols::ARTIST]},{Bae::DBCols::ALBUM,albumMap[Bae::DBCols::ALBUM]}};
+//    qDebug()<<"ALBUMS ON GRID:"<<albumsMap.keys();
+
+
+    if(!this->albumsMap.contains(auxMap))
     {
         auto album= new Album(this);
         album->createAlbum(albumMap,Bae::MEDIUM_ALBUM,4,true);
 
-        this->albumsMap.insert(album->getAlbumMap(),album);
+        this->albumsMap.insert(auxMap,album);
 
         connect(album,&Album::albumCoverClicked,[&](const Bae::DB &albumMap)
         {
@@ -57,13 +61,13 @@ void GridView::addAlbum(const Bae::DB &albumMap)
         connect(album,&Album::albumDragStarted,[this](){emit this->dragAlbum();});
         connect(album,&Album::albumCoverEnter,[=]()
         {
-            if(!album->visibleTitle) album->showTitle(true);
+            if(hiddenLabels) album->showTitle(true);
             shadow->setColor(QColor(0, 0, 0, 180));
             shadow->setOffset(2,3);
         });
         connect(album, &Album::albumCoverLeave,[=]()
         {
-            if(!album->visibleTitle) album->showTitle(false);
+            if(hiddenLabels) album->showTitle(false);
             shadow->setColor(QColor(0, 0, 0, 140));
             shadow->setOffset(3,5);
         });
@@ -79,9 +83,10 @@ void GridView::addAlbum(const Bae::DB &albumMap)
         item->setTextAlignment(Qt::AlignCenter);
         this->addItem(item);
         this->setItemWidget(item,album);
-        emit this->albumReady();
-    }
-//    this->sortItems(Qt::AscendingOrder);
+
+    }else this->albumsMap[auxMap]->putPixmap(albumMap[Bae::DBCols::ARTWORK]);
+
+    emit this->albumReady();
 }
 
 void GridView::flushGrid()

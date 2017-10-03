@@ -54,7 +54,8 @@ enum DBTables
     TAGS=9,
     ALBUMS_TAGS=10,
     ARTISTS_TAGS=11,
-    TRACKS_TAGS=12
+    TRACKS_TAGS=12,
+    ALL=13
 };
 
 static const QMap<DBTables,QString> DBTablesMap =

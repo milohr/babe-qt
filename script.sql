@@ -1,20 +1,19 @@
+CREATE TABLE ARTISTS
+(
+artist   TEXT  ,
+artwork TEXT ,
+wiki    TEXT,
+PRIMARY KEY(artist)
+) ;
 
 CREATE TABLE ALBUMS
 (
-album   TEXT,
+album   TEXT ,
 artist  TEXT,
 artwork TEXT,
 wiki    TEXT,
 PRIMARY KEY(album, artist),
 FOREIGN KEY(artist) REFERENCES artists(artist)
-) ;
-
-
-CREATE TABLE ARTISTS
-(
-artist   TEXT PRIMARY KEY ,
-artwork TEXT ,
-wiki    TEXT
 ) ;
 
 CREATE TABLE TAGS
@@ -34,6 +33,11 @@ playlist       TEXT PRIMARY KEY ,
 addDate DATE NOT NULL
 ) ;
 
+CREATE TABLE SOURCES_TYPES
+(
+id   INTEGER PRIMARY KEY ,
+name TEXT NOT NULL
+) ;
 
 CREATE TABLE SOURCES
 (
@@ -42,17 +46,9 @@ SOURCE_TYPES_id INTEGER NOT NULL,
 FOREIGN KEY(SOURCE_TYPES_id) REFERENCES SOURCES_TYPES(id)
 ) ;
 
-
-CREATE TABLE SOURCES_TYPES
-(
-id   INTEGER PRIMARY KEY ,
-name TEXT NOT NULL
-) ;
-
-
 CREATE TABLE TRACKS
 (
-url         TEXT PRIMARY KEY ,
+url         TEXT ,
 sources_url TEXT  ,
 track       INTEGER ,
 title       TEXT  ,
@@ -67,9 +63,9 @@ addDate     DATE ,
 lyrics     TEXT ,
 genre      TEXT,
 art        TEXT,
+PRIMARY KEY (url),
 FOREIGN KEY(sources_url) REFERENCES SOURCES(url),
-FOREIGN KEY(artist) REFERENCES artists(artist),
-FOREIGN KEY(album) REFERENCES albums(album)
+FOREIGN KEY(album, artist) REFERENCES albums(album, artist)
 ) ;
 
 
@@ -109,8 +105,7 @@ album TEXT NOT NULL ,
 artist TEXT NOT NULL,
 PRIMARY KEY (tag, album, artist),
 FOREIGN KEY(tag) REFERENCES TAGS(tag),
-FOREIGN KEY(album) REFERENCES ALBUMS(album)
-FOREIGN KEY(artist) REFERENCES ALBUMS(artist)
+FOREIGN KEY(album, artist) REFERENCES ALBUMS(album, artist)
 ) ;
 
 CREATE TABLE PLAYLISTS_MOODS
@@ -138,6 +133,3 @@ FOREIGN KEY(url) REFERENCES TRACKS(url)
 INSERT INTO SOURCES_TYPES VALUES (1,"LOCAL");
 INSERT INTO SOURCES_TYPES VALUES (2,"ONLINE");
 INSERT INTO SOURCES_TYPES VALUES (3,"DEVICE");
-
-
-COMMIT;

@@ -154,9 +154,8 @@ private slots:
 
     /*the view stacked actions*/
     void addToCollectionDB(const QStringList &url,const QString &babe="0");
-    void scanNewDir(const QString &url,const QString &babe="0");
     void setToolbarIconSize(const int &iconSize);
-    void collectionDBFinishedAdding();
+
     void on_fav_btn_clicked();
     void showControls(const bool &state);
     void on_search_returnPressed();
@@ -166,7 +165,8 @@ private slots:
     void setCoverArt(const Bae::DB &song);
     void on_rowInserted(QModelIndex model ,int x,int y);
 
-    void refreshTables();
+    void refreshAlbumsView();
+    void refreshTables(const Bae::DBTables &reset);
     void addToPlayed(const QString &url);
     void on_tracks_view_2_clicked();
     void on_addAll_clicked();
@@ -302,7 +302,7 @@ private:
 
 signals:
     void finishedPlayingSong(QString url);
-    void collectionChecked();
+    void collectionChecked(const Bae::DBTables &reset);
     void fetchCover(const Bae::DB &song);
     void finishRefresh();
     void operate();

@@ -25,11 +25,11 @@ void Album::createAlbum(const Bae::DB &info, const Bae::ALbumSizeHint &widgetSiz
         this->subSize=Bae::SMALL_ALBUM_FACTOR_SUBWIDGET;
         break;
     }
+    this->albumMap=info;
 
-
-    auto artist = info[Bae::DBCols::ARTIST];
-    auto album = info[Bae::DBCols::ALBUM];
-    auto artwork = info[Bae::DBCols::ARTWORK];
+    auto artist = this->albumMap[Bae::DBCols::ARTIST];
+    auto album = this->albumMap[Bae::DBCols::ALBUM];
+    auto artwork = this->albumMap[Bae::DBCols::ARTWORK];
 
     if(album.isEmpty())
     {

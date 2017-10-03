@@ -62,10 +62,8 @@ public:
             QMetaObject::invokeMethod(this, "getArtists", Q_ARG(QString, query));
     }
 
-    void next()
-    {
-        this->nextAlbum = !this->nextAlbum;
-    }
+    void next() { this->nextAlbum = false;  }
+
 public slots:
 
 
@@ -74,33 +72,46 @@ public slots:
         qDebug()<<"GETTING TRACKS FROM ALBUMSVIEW";
 
         QSqlQuery mquery(query);
-        for(auto albumMap : this->connection.getAlbumData(mquery))
-        {   if(go)
-            {
-                while(!this->nextAlbum){ }
-                this->nextAlbum=!this->nextAlbum;
-                emit albumReady(albumMap);
-            }else break;
+        auto albums = this->connection.getAlbumData(mquery);
+        if(albums.size()>0)
+        {
+            for(auto albumMap : albums)
+            {   if(go)
+                {
+                    emit albumReady(albumMap);
+                    while(this->nextAlbum==true){t.msleep(100);}
+                    this->nextAlbum=!this->nextAlbum;
+
+                }else break;
+            }
         }
+        t.msleep(100);
+        emit finished();
     }
 
     void getArtists(QString query)
     {
         QSqlQuery mquery(query);
-        for(auto albumMap : this->connection.getArtistData(mquery))
+        auto artists = this->connection.getArtistData(mquery);
+        if(artists.size()>0)
         {
-            if(go)
+            for(auto albumMap : artists)
             {
-                while(!this->nextAlbum){ }
-                this->nextAlbum=!this->nextAlbum;
-                emit albumReady(albumMap);
-            }else break;
+                if(go)
+                {
+                    emit albumReady(albumMap);
+                    while(this->nextAlbum==true){t.msleep(100); }
+                    this->nextAlbum=true;
+                }else break;
+            }
         }
+        t.msleep(100);
+        emit finished();
     }
 
 signals:
     void albumReady(const Bae::DB &albumMap);
-    void finish(const int &amount);
+    void finished();
 
 private:
     QThread t;

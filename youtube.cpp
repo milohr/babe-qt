@@ -152,7 +152,7 @@ void YouTube::processFinished_totally(const int &state,const QMap<int,QString> &
             ids.removeAll(doneId);
             qDebug()<<"ids left to process: "<<ids;
 
-            if(ids.isEmpty()) emit youtubeTrackReady(true);
+            if(ids.isEmpty()) emit youtubeTrackReady(this->cachePath);
         }
     }
 }

@@ -41,7 +41,7 @@ QString lastfm::setUpService(const Ontology &type)
         url.append("&track=" + encodedTrack.toString());
         break;
     }
-qDebug()<<"setUpService LastFm["<<url<<"]";
+//qDebug()<<"setUpService LastFm["<<url<<"]";
     return url;
 }
 
@@ -54,7 +54,7 @@ bool lastfm::parseLastFmArtist(const QByteArray &array, const ArtistInfo &infoTy
 
     if (!doc.setContent(xmlData))
     {
-        qDebug() << "The XML obtained from last.fm is invalid.";
+        //qDebug() << "The XML obtained from last.fm is invalid.";
         return false;
 
     }else
@@ -84,7 +84,7 @@ bool lastfm::parseLastFmArtist(const QByteArray &array, const ArtistInfo &infoTy
                         if (imgSize == "extralarge" && n.isElement())
                         {
                             auto artistArt_url = n.toElement().text();
-                            qDebug()<<"Fetching ArtistArt LastFm["<<artistArt_url<<"]";
+                            //qDebug()<<"Fetching ArtistArt LastFm["<<artistArt_url<<"]";
                             emit artistArtReady(startConnection(artistArt_url));
                             if(infoType == ArtistArt) return true;
                             else continue;
@@ -99,7 +99,7 @@ bool lastfm::parseLastFmArtist(const QByteArray &array, const ArtistInfo &infoTy
                     if (n.nodeName() == "bio")
                     {
                         auto artistWiki = n.childNodes().item(2).toElement().text();
-                        qDebug()<<"Fetching ArtistWiki LastFm[]";
+                        //qDebug()<<"Fetching ArtistWiki LastFm[]";
                         emit artistWikiReady(artistWiki,this->track);
                         if(infoType == ArtistWiki) return true;
                         else continue;
@@ -113,7 +113,7 @@ bool lastfm::parseLastFmArtist(const QByteArray &array, const ArtistInfo &infoTy
                     if(n.nodeName() == "similar")
                     {
                         auto similarList = n.toElement().childNodes();
-                        qDebug()<<"Fetching ArtistSimilar LastFm[]";
+                        //qDebug()<<"Fetching ArtistSimilar LastFm[]";
 
                         for(int i=0; i<similarList.count(); i++)
                         {
@@ -152,7 +152,7 @@ bool lastfm::parseLastFmArtist(const QByteArray &array, const ArtistInfo &infoTy
                     if(n.nodeName() == "tags")
                     {
                         auto tagsList = n.toElement().childNodes();
-                        qDebug()<<"Fetching ArtistTags LastFm[]";
+                        //qDebug()<<"Fetching ArtistTags LastFm[]";
 
                         for(int i=0; i<tagsList.count(); i++)
                         {
@@ -179,14 +179,14 @@ bool lastfm::parseLastFmAlbum(const QByteArray &array, const AlbumInfo &infoType
 
     if (!doc.setContent(xmlData))
     {
-        qDebug() << "The XML obtained from last.fm is invalid.";
+        //qDebug() << "The XML obtained from last.fm is invalid.";
         return false;
 
     }else
     {
         if (doc.documentElement().toElement().attributes().namedItem("status").nodeValue()!="ok")
         {
-            qDebug() << "lfm status=failed.";
+            //qDebug() << "lfm status=failed.";
 
             return false;
         }
@@ -202,7 +202,7 @@ bool lastfm::parseLastFmAlbum(const QByteArray &array, const AlbumInfo &infoType
                 //Here retrieve the artist image
                 if(infoType == AlbumArt || infoType == AllAlbumInfo)
                 {
-                    //qDebug()<<"lastfm[AlbumArt]";
+                    ////qDebug()<<"lastfm[AlbumArt]";
                     if(n.nodeName() == "image" && n.hasAttributes())
                     {
                         QString imgSize = n.attributes().namedItem("size").nodeValue();
@@ -210,7 +210,7 @@ bool lastfm::parseLastFmAlbum(const QByteArray &array, const AlbumInfo &infoType
                         if (imgSize == "extralarge" && n.isElement())
                         {
                             auto albumArt_url = n.toElement().text();
-                            qDebug()<<"Fetching AlbumArt LastFm[]";
+                            //qDebug()<<"Fetching AlbumArt LastFm[]";
 
                             emit albumArtReady(startConnection(albumArt_url));
 
@@ -227,7 +227,7 @@ bool lastfm::parseLastFmAlbum(const QByteArray &array, const AlbumInfo &infoType
                     if (n.nodeName() == "wiki")
                     {
                         auto albumWiki = n.childNodes().item(1).toElement().text();
-                        qDebug()<<"Fetching AlbumWiki LastFm[]";
+                        //qDebug()<<"Fetching AlbumWiki LastFm[]";
 
                         emit albumWikiReady(albumWiki,this->track);
                         if(infoType == AlbumWiki) return true;
@@ -238,7 +238,7 @@ bool lastfm::parseLastFmAlbum(const QByteArray &array, const AlbumInfo &infoType
 
                 if(infoType == AlbumTags || infoType == AllAlbumInfo)
                 {
-                    //qDebug()<<"lastfm[AlbumTags]";
+                    ////qDebug()<<"lastfm[AlbumTags]";
 
                     if (n.nodeName() == "tags")
                     {
@@ -249,7 +249,7 @@ bool lastfm::parseLastFmAlbum(const QByteArray &array, const AlbumInfo &infoType
                             QDomNode m = tagsList.item(i);
                             albumTags<<m.childNodes().item(0).toElement().text();
                         }
-                        qDebug()<<"Fetching AlbumTags LastFm["<<albumTags<<"]";
+                        //qDebug()<<"Fetching AlbumTags LastFm["<<albumTags<<"]";
 
                         emit albumTagsReady(albumTags,this->track);
                         if(infoType == AlbumTags) return true;
@@ -267,13 +267,13 @@ bool lastfm::parseLastFmAlbum(const QByteArray &array, const AlbumInfo &infoType
 
 bool lastfm::parseLastFmTrack(const QByteArray &array, const TrackInfo &infoType)
 {
-    qDebug()<< "parseLastFmTrack";
+    //qDebug()<< "parseLastFmTrack";
     QString xmlData(array);
     QDomDocument doc;
 
     if (!doc.setContent(xmlData))
     {
-        qDebug() << "The XML obtained from last.fm is invalid.";
+        //qDebug() << "The XML obtained from last.fm is invalid.";
         return false;
 
     }else
@@ -294,7 +294,7 @@ bool lastfm::parseLastFmTrack(const QByteArray &array, const TrackInfo &infoType
                 {
                     if(n.nodeName() == "album" && n.hasAttributes())
                     {
-                        qDebug()<<"Fetching TrackPosition LastFm[]";
+                        //qDebug()<<"Fetching TrackPosition LastFm[]";
 
                         int position = n.attributes().namedItem("position").toElement().text().toInt();
                         emit trackPositionReady(position,this->track);
@@ -306,10 +306,10 @@ bool lastfm::parseLastFmTrack(const QByteArray &array, const TrackInfo &infoType
 
                 if(infoType == TrackAlbum || infoType == AllTrackInfo)
                 {
-                    //qDebug()<<"lastfm[AlbumArt]";
+                    ////qDebug()<<"lastfm[AlbumArt]";
                     if(n.nodeName() == "album")
                     {
-                        qDebug()<<"Fetching TrackAlbum LastFm[]";
+                        //qDebug()<<"Fetching TrackAlbum LastFm[]";
 
                         auto trackAlbum = n.namedItem("title").toElement().text();
                         emit trackAlbumReady(trackAlbum,this->track);
@@ -324,10 +324,10 @@ bool lastfm::parseLastFmTrack(const QByteArray &array, const TrackInfo &infoType
 
                     if (n.nodeName() == "wiki")
                     {
-                        qDebug()<<"Fetching TrackWiki LastFm[]";
+                        //qDebug()<<"Fetching TrackWiki LastFm[]";
 
                         auto trackWiki = n.namedItem("summary").toElement().text();
-                        qDebug()<<trackWiki;
+                        //qDebug()<<trackWiki;
                         emit trackWikiReady(trackWiki,this->track);
                         if(infoType == TrackWiki) return true;
                         else continue;
@@ -341,7 +341,7 @@ bool lastfm::parseLastFmTrack(const QByteArray &array, const TrackInfo &infoType
                     if (n.nodeName() == "toptags")
                     {
 
-                        qDebug()<<"Fetching TrackTags LastFm[]";
+                        //qDebug()<<"Fetching TrackTags LastFm[]";
                         auto tagsList = n.toElement().childNodes();
                         QStringList trackTags;
                         for(int i=0; i<tagsList.count(); i++)
@@ -368,7 +368,7 @@ QVariant lastfm::getTrackInfo(const QByteArray &array, const TrackInfo &infoType
 
     if (!doc.setContent(xmlData))
     {
-        qDebug() << "The XML obtained from last.fm is invalid.";
+        //qDebug() << "The XML obtained from last.fm is invalid.";
         return QVariant();
 
     }else
@@ -398,7 +398,7 @@ QVariant lastfm::getTrackInfo(const QByteArray &array, const TrackInfo &infoType
 
                 if(infoType == TrackAlbum || infoType == AllTrackInfo)
                 {
-                    //qDebug()<<"lastfm[AlbumArt]";
+                    ////qDebug()<<"lastfm[AlbumArt]";
                     if(n.nodeName() == "album")
                     {
                         auto trackAlbum = n.namedItem("title").toElement().text();
@@ -413,7 +413,7 @@ QVariant lastfm::getTrackInfo(const QByteArray &array, const TrackInfo &infoType
                     if (n.nodeName() == "wiki")
                     {
                         auto trackWiki = n.namedItem("summary").toElement().text();
-                        qDebug()<<trackWiki;
+                        //qDebug()<<trackWiki;
                         return QVariant(trackWiki);
 
                     }else if(infoType == TrackWiki) continue;
@@ -424,7 +424,7 @@ QVariant lastfm::getTrackInfo(const QByteArray &array, const TrackInfo &infoType
                 {
                     if (n.nodeName() == "toptags")
                     {
-                        qDebug()<<"found toptags";
+                        //qDebug()<<"found toptags";
                         auto tagsList = n.toElement().childNodes();
                         QStringList trackTags;
                         for(int i=0; i<tagsList.count(); i++)

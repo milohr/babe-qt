@@ -49,11 +49,11 @@ public:
     bool check_existance(const QString &tableName, const QString &searchId, const QString &search);
 
     /* usefull actions */
-    bool removeSource(const QString &path);
+
     void insertArtwork(const Bae::DB &track);
 
     void addTrack(const Bae::DB &track);
-    bool removeTrack(const QString &path);
+
     bool rateTrack(const QString &path, const int &value);
     bool babeTrack(const QString &path, const bool &value);
     bool moodTrack(const QString &path, const QString &value);
@@ -104,8 +104,12 @@ public:
 
     bool removePlaylistTrack(const QString &url, const QString &playlist);
     bool removePlaylist(const QString &playlist);
-
-
+    bool removeArtist(const QString &artist);
+    bool cleanArtists();
+    bool removeAlbum(const QString &album, const QString &artist);
+    bool cleanAlbums();
+    bool removeSource(const QString &path);
+    bool removeTrack(const QString &path);
     /*useful tools*/
     sourceTypes sourceType(const QString &url);
 
@@ -126,10 +130,6 @@ private:
 
 public slots:
     void closeConnection();
-    void setCollectionLists();
-    void refreshArtistsTable();
-    void cleanCollectionLists();
-
     /*useful*/
 
 signals:

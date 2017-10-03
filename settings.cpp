@@ -60,7 +60,8 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
     if (!youtubeCache_dir.exists())
         youtubeCache_dir.mkpath(".");
 
-    connect(this, &settings::DBactionFinished, this,&settings::finishedAddingTracks);
+    connect(this, &settings::getArtwork, this, &settings::fetchArt);
+
     connect(&collection_db,&CollectionDB::trackInserted,[this]()
     {
         trackSaver.next();
@@ -68,25 +69,42 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
     });
     connect(&trackSaver,&TrackSaver::collectionSize,[this](int size)
     {
-        ui->progressBar->setValue(0);
-        ui->progressBar->setMaximum(size);
-        ui->progressBar->show();
+        qDebug()<<"COLLECTION SIZE"<<size;
+        if(size>0)
+        {
+            ui->progressBar->setValue(1);
+            ui->progressBar->setMaximum(size);
+            ui->progressBar->show();
+        }else
+        {
+            this->refreshWatchFiles();
+        }
     });
 
     connect(&trackSaver,&TrackSaver::finished,[this]()
     {
+        qDebug()<<"FINISHED TRACKSAVER";
+//        nof.notify("Songs added to collection","finished writting new songs to the collection :)");
         ui->progressBar->hide();
         ui->progressBar->setValue(0);
-        emit DBactionFinished();
+
+        collectionWatcher();
+        emit refreshTables(Bae::DBTables::TRACKS);
+        emit getArtwork();
+        this->ui->sourcesFrame->setEnabled(true);
+
     });
 
     connect(&trackSaver,&TrackSaver::trackReady,&collection_db, &CollectionDB::addTrack);
 
     connect(this, &settings::collectionPathChanged, this, &settings::populateDB);
 
+
     ui->ytLineEdit->setText(extensionFetchingPath);
     ytFetch = new YouTube(this);
-    connect(ytFetch,&YouTube::youtubeTrackReady,this,&settings::youtubeTrackReady);
+     connect(ytFetch,&YouTube::youtubeTrackReady, this, &settings::populateDB);
+
+//    connect(ytFetch,&YouTube::youtubeTrackReady,[this](){ emit collectionPathChanged(youtubeCachePath);});
     ytFetch->searchPendingFiles();
     extensionWatcher = new QFileSystemWatcher();
     extensionWatcher->addPath(extensionFetchingPath);
@@ -115,26 +133,6 @@ settings::~settings() {
 }
 
 
-void settings::youtubeTrackReady(const bool &state)
-{
-    if(state)
-    {
-        qDebug()<<"the youtube track is ready";
-        emit dirChanged(youtubeCachePath,"1");
-
-    }
-}
-
-void settings::handleDirectoryChanged_cache(QString dir)
-{
-    Q_UNUSED(dir);
-    qDebug()<<"the cache youtube dir has some changes but...";
-    if(youtubeTrackDone)
-    {
-        qDebug()<<"youtubeTrackDone";
-    }
-}
-
 void settings::handleDirectoryChanged_extension()
 {
     QStringList urls;
@@ -146,6 +144,8 @@ void settings::handleDirectoryChanged_extension()
     if (!urls.isEmpty()) ytFetch->fetch(urls);
 
 }
+
+
 
 void settings::on_collectionPath_clicked(const QModelIndex &index) {
     ui->remove->setEnabled(true);
@@ -163,13 +163,10 @@ void settings::on_remove_clicked()
             collectionPaths.removeAll(pathToRemove);
 
             refreshCollectionPaths();
-            refreshWatchFiles();
+            this->refreshWatchFiles();
             ui->remove->setEnabled(false);
-            collection_db.setCollectionLists();
-            collection_db.cleanCollectionLists();
-            emit collectionDBFinishedAdding();
+            emit refreshTables(Bae::DBTables::ALL);
         }
-        //emit collectionPathRemoved(pathToRemove);
     }
 }
 
@@ -183,17 +180,16 @@ void settings::refreshWatchFiles()
     qDebug()<<"refreshing watched files";
 
     dirs.clear();
-
-    QSqlQuery query = collection_db.getQuery("SELECT * FROM tracks");
+    auto queryTxt = QString("SELECT %1 FROM %2").arg(Bae::DBColsMap[Bae::DBCols::URL],Bae::DBTablesMap[Bae::DBTables::TRACKS]);
+    QSqlQuery query = collection_db.getQuery(queryTxt);
 
     while (query.next())
     {
-        if(!query.value(Bae::DBCols::URL).toString().contains(youtubeCachePath))
+        if(!query.value(Bae::DBColsMap[Bae::DBCols::URL]).toString().contains(youtubeCachePath))
         {
-            if (!dirs.contains(QFileInfo(query.value(Bae::DBCols::URL).toString()).dir().path())&&QFileInfo(query.value(Bae::DBCols::URL).toString()).exists())
+            if (!dirs.contains(QFileInfo(query.value(Bae::DBColsMap[Bae::DBCols::URL]).toString()).dir().path())&&QFileInfo(query.value(Bae::DBCols::URL).toString()).exists())
             {
-
-                QString dir =QFileInfo(query.value(Bae::DBCols::URL).toString()).dir().path();
+                QString dir =QFileInfo(query.value(Bae::DBColsMap[Bae::DBCols::URL]).toString()).dir().path();
 
                 dirs << dir;
                 QDirIterator it(dir,QDir::Dirs | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
@@ -209,10 +205,8 @@ void settings::refreshWatchFiles()
                             dirs <<subDir;
                     }
                 }
-
             }
         }
-
     }
 
     /*for(auto path:files) qDebug() << "refreshed watcher -file:"<< path;
@@ -237,7 +231,7 @@ void settings::on_open_clicked()
 
     if (!collectionPaths.contains(url) && !url.isEmpty())
     {
-        ui->collectionPath->addItem(url);
+        ui->collectionPath->addItem(QDir(url).absolutePath());
         collectionPaths << url;
         qDebug() << "Collection dir added: " << url;
         setSettings({"collectionPath=", url});
@@ -359,11 +353,8 @@ void settings::collectionWatcher()
     addToWatcher(dirs);
 }
 
-void settings::handleDirectoryChanged(QString dir)
+void settings::handleDirectoryChanged(const QString &dir)
 {
-    qDebug() << "this directory changed: " << dir;
-
-    emit dirChanged(dir);
 }
 
 void settings::readSettings()
@@ -409,19 +400,14 @@ void settings::setToolbarIconSize(const int &iconSize)
 
 bool settings::checkCollection()
 {
-
-
     if (Bae::fileExists(collectionDBPath + collectionDBName))
     {
         qDebug() << "The CollectionDB does exists.";
 
         collection_db.setUpCollection(collectionDBPath + collectionDBName);
         collectionWatcher();
-
         return true;
-
     } else return false;
-
 }
 
 
@@ -435,24 +421,17 @@ void settings::createCollectionDB()
 
 }
 
+
+
 void settings::populateDB(const QString &path)
 {
 
     qDebug() << "Function Name: " << Q_FUNC_INFO
              << "new path for database action: " << path;
-
     trackSaver.requestPath(path);
+    this->ui->sourcesFrame->setEnabled(false);
 }
 
-void settings::finishedAddingTracks()
-{
-    nof.notify("Songs added to collection","finished writting new songs to the collection :)");
-    qDebug() << "good to hear it finished yay! now going to fetch artwork";
-
-    collectionWatcher();
-    emit refreshTables();
-    fetchArt();
-}
 
 void settings::fetchArt()
 {
@@ -473,13 +452,9 @@ void settings::fetchArt()
             Bae::DBColsMap[Bae::DBCols::ARTIST],Bae::DBTablesMap[Bae::DBTables::ALBUMS],Bae::DBColsMap[Bae::DBCols::ARTWORK]);
     query_Covers.prepare(queryTxt);
 
-    qDebug()<<"FETCHART"<<queryTxt;
-
     queryTxt = QString("SELECT %1 FROM %2 WHERE %3 = ''").arg(Bae::DBColsMap[Bae::DBCols::ARTIST],
             Bae::DBTablesMap[Bae::DBTables::ARTISTS],Bae::DBColsMap[Bae::DBCols::ARTWORK]);
     query_Heads.prepare(queryTxt);
-
-    qDebug()<<"FETCHART"<<queryTxt;
 
     if(query_Covers.exec())
         while (query_Covers.next())
@@ -511,7 +486,7 @@ void settings::fetchArt()
         while (query_Heads.next())
         {
             QString artist = query_Heads.value(Bae::DBColsMap[Bae::DBCols::ARTIST]).toString();
-            qDebug()<< "QUERYHEAD ARTIOSTSSSSS:"<<artist;
+            //            qDebug()<< "QUERYHEAD ARTIOSTSSSSS:"<<artist;
             collection_db.insertArtwork({{Bae::DBCols::ARTWORK,""},{Bae::DBCols::ARTIST,artist}});
 
             Pulpo art({{Bae::DBCols::ARTIST,artist}});
@@ -530,8 +505,7 @@ void settings::fetchArt()
     movie->stop();
     ui->label->hide();
 
-    emit collectionDBFinishedAdding();
-    // emit refreshTables();
+    emit refreshAlbumsView();
 }
 
 void settings::on_pushButton_clicked()

@@ -83,11 +83,8 @@ void CollectionDB::prepareCollectionDB()
     QString cleanedLine;
     QStringList strings;
 
-
-
     while (!file.atEnd())
     {
-        qDebug()<<"finished creating schema";
         hasText     = false;
         line        = "";
         readLine    = "";
@@ -108,11 +105,13 @@ void CollectionDB::prepareCollectionDB()
         }
         if (!line.isEmpty())
         {
-            if (query.exec(line)) qDebug()<<"exec fine";
+            if (!query.exec(line))
+            {
+                qDebug()<<"exec failed"<<query.lastQuery()<<query.lastError();
+            }
+
         } else qDebug()<<"exec wrong"<<query.lastError();
     }
-
-    qDebug()<<"finished creating schema";
     file.close();
 }
 
@@ -121,7 +120,7 @@ bool CollectionDB::check_existance(const QString &tableName, const QString &sear
     auto queryStr = QString("SELECT %1 FROM %2 WHERE %3 = \"%4\"").arg(searchId, tableName, searchId, search);
     QSqlQuery query;
     query.prepare(queryStr);
-    qDebug()<<queryStr;
+    //    qDebug()<<queryStr;
     if (query.exec())
     {
         if (query.next()) return true;
@@ -180,8 +179,6 @@ bool CollectionDB::openDB()
 {
     if (m_db.open())
         return true;
-
-
     qDebug() << "Error: connection with database fail" <<m_db.lastError().text();
     return false;
 }
@@ -203,8 +200,15 @@ void CollectionDB::addTrack(const Bae::DB &track)
         auto duration = track[Bae::DBCols::DURATION];
         auto babe = track[Bae::DBCols::BABE];
         auto trackNumber = track[Bae::DBCols::TRACK];
+        if(album.isEmpty())
+        {
+            TagInfo info(url);
+            qDebug()<<"the album has not title, so i'm going to try and get it.";
+            info.writeData(); // actually means to search the name and load it into metadata
+            album=info.getAlbum();
+            trackNumber=QString::number(info.getTrack());
+        }
 
-        qDebug()<<"started writing to database...";
 
         qDebug()<< "writting to db: "<<title<<artist;
         /* first needs to insert album and artist*/
@@ -242,8 +246,10 @@ void CollectionDB::addTrack(const Bae::DB &track)
                               {Bae::DBColsMap[Bae::DBCols::ART],""}};
 
         this->insert(Bae::DBTablesMap[Bae::DBTables::TRACKS],trackMap);
-        emit trackInserted();
+
     }
+    qDebug()<<"DONE WRITING TO DB";
+     emit trackInserted();
 }
 
 bool CollectionDB::rateTrack(const QString &path, const int &value)
@@ -411,7 +417,6 @@ Bae::DB_LIST CollectionDB::getTrackData(const QStringList &urls)
 
 Bae::DB_LIST CollectionDB::getTrackData(QSqlQuery &query)
 {
-    //    qDebug()<<"on getTrackData "<<queryText;
     Bae::DB_LIST mapList;
 
     if(query.exec())
@@ -769,24 +774,31 @@ bool CollectionDB::removeTrack(const QString &path)
     auto queryTxt = QString("DELETE FROM %1 WHERE %2 =  \"%3\"").arg(Bae::DBTablesMap[Bae::DBTables::TRACKS],
             Bae::DBColsMap[Bae::DBCols::URL],path);
     QSqlQuery query(queryTxt);
-    if(query.exec()) return true;
-
+    if(query.exec())
+    {
+        if(this->cleanAlbums()) this->cleanArtists();
+        return true;
+    }
     return false;
 }
 
 bool CollectionDB::removeSource(const QString &path)
 {
-    auto queryTxt = QString("DELETE FROM %1 WHERE %2 =  \"%3\"").arg(Bae::DBTablesMap[Bae::DBTables::TRACKS],
+    auto queryTxt = QString("DELETE FROM %1 WHERE %2 LIKE \"%3%\"").arg(Bae::DBTablesMap[Bae::DBTables::TRACKS],
             Bae::DBColsMap[Bae::DBCols::SOURCES_URL],path);
+    qDebug()<<queryTxt;
     QSqlQuery query(queryTxt);
     if(query.exec())
     {
-        queryTxt = QString("DELETE FROM %1 WHERE %2 =  \"%3\"").arg(Bae::DBTablesMap[Bae::DBTables::SOURCES],
-                Bae::DBColsMap[Bae::DBCols::SOURCES_URL],path);
+        queryTxt = QString("DELETE FROM %1 WHERE %2 LIKE \"%3%\"").arg(Bae::DBTablesMap[Bae::DBTables::SOURCES],
+                Bae::DBColsMap[Bae::DBCols::URL],path);
         query.prepare(queryTxt);
-        if(query.exec()) return true;
+        if(query.exec())
+        {
+            if(this->cleanAlbums()) this->cleanArtists();
+            return true;
+        }
     }
-
     return false;
 }
 
@@ -808,59 +820,7 @@ QSqlQuery CollectionDB::getQuery(const QString &queryTxt)
     return query;
 }
 
-
-
 /*******************OLD STUFF********************/
-
-
-
-
-
-
-
-
-void CollectionDB::cleanCollectionLists()
-{
-    QSqlQuery queryArtists("SELECT * FROM artists");
-    if(queryArtists.exec())
-    {
-        while(queryArtists.next())
-        {
-            QString  oldArtists = queryArtists.value(0).toString();
-            if(artists.contains(oldArtists))
-                continue;
-            else
-            {
-                qDebug()<<"artists list does not longer contains: "<<oldArtists;
-                QSqlQuery queryArtist_delete;
-                queryArtist_delete.prepare("DELETE FROM artists  WHERE title = \""+oldArtists+"\"");
-                if(queryArtist_delete.exec()) qDebug()<<"deleted missing artist";
-            }
-        }
-    }
-
-    QSqlQuery queryAlbums("SELECT * FROM albums");
-    if(queryAlbums.exec())
-    {
-        while(queryAlbums.next())
-        {
-            QString  oldAlbum = queryAlbums.value(1).toString()+" "+queryAlbums.value(0).toString();
-            if(albums.contains(oldAlbum))
-                continue;
-            else
-            {
-                qDebug()<<"albums list does not longer contains: "<<oldAlbum;
-                QSqlQuery queryAlbum_delete;
-                queryAlbum_delete.prepare("DELETE FROM albums  WHERE title = \""+queryAlbums.value(0).toString()+"\"");
-                if(queryAlbum_delete.exec()) qDebug()<<"deleted missing album";
-            }
-        }
-    }
-}
-
-
-
-
 
 bool CollectionDB::removeQuery(QString queryTxt)
 {
@@ -886,58 +846,13 @@ bool CollectionDB::checkQuery(QString queryTxt)
     else return false;
 }
 
-void CollectionDB::setCollectionLists()
-{
-    albums.clear(); artists.clear();
-    QSqlQuery query ("SELECT * FROM tracks");
-    while (query.next())
-    {
-        QString artist = query.value(Bae::DBCols::ARTIST).toString();
-        QString album = query.value(Bae::DBCols::ALBUM).toString();
-        //QString file = query.value(LOCATION).toString();
-
-        if(!albums.contains(artist+" "+album)) albums<<artist+" "+album;
-        if(!artists.contains(artist)) artists<<artist;
-    }
-    // refreshArtistsTable();
-    /*qDebug()<<"artist in collection list::";
-    for(auto artist:artists)qDebug()<<artist;
-    qDebug()<<"albums in collection list::";
-    for(auto album:albums)qDebug()<<album;*/
-}
-
-void CollectionDB::refreshArtistsTable()
-{
-    QSqlQuery query ("SELECT * FROM tracks");
-
-    qDebug()<<"updating artists table";
-
-    if(query.exec())
-    {
-        while(query.next())
-        {
-            //success = true;
-            QString artist = query.value(Bae::DBCols::ARTIST).toString();
-            QString file = query.value(Bae::DBCols::URL).toString();
-            if(!artists.contains(artist))
-            {
-                query.prepare("INSERT INTO artists (title, art, location) VALUES (:title, :art, :location)");
-                query.bindValue(":title", artist);
-                query.bindValue(":art", "");
-                query.bindValue(":location", QFileInfo(file).dir().path());
-                if(query.exec()) artists<<artist;
-            }
-        }
-    }
-}
-
 void CollectionDB::insertArtwork(const Bae::DB &track)
 {
 
     auto artist = track[Bae::DBCols::ARTIST];
     auto album =track[Bae::DBCols::ALBUM];
     auto path = track[Bae::DBCols::ARTWORK];
-    qDebug()<<"the path:"<<path<<"the list:"<<track[Bae::DBCols::ARTIST]<<track[Bae::DBCols::ALBUM];
+    //    qDebug()<<"the path:"<<path<<"the list:"<<track[Bae::DBCols::ARTIST]<<track[Bae::DBCols::ALBUM];
 
     if(!artist.isEmpty() && !album.isEmpty())
     {
@@ -950,8 +865,7 @@ void CollectionDB::insertArtwork(const Bae::DB &track)
                 artist);
 
         QSqlQuery query(queryStr);
-        if(query.exec()) qDebug()<<"Artwork[cover] inserted into DB"<<artist<<album;
-        else qDebug()<<"COULDNT Artwork[cover] inerted into DB"<<artist<<album;
+        if(!query.exec())qDebug()<<"COULDNT Artwork[cover] inerted into DB"<<artist<<album;
 
     }else if(!artist.isEmpty()&&album.isEmpty())
     {
@@ -961,8 +875,7 @@ void CollectionDB::insertArtwork(const Bae::DB &track)
                 Bae::DBColsMap[Bae::DBCols::ARTIST],
                 artist);
         QSqlQuery query(queryStr);
-        if(query.exec()) qDebug()<<"Artwork[head] inserted into DB"<<artist;
-        else qDebug()<<"COULDNT Artwork[head] inerted into DB"<<artist;
+        if(!query.exec())qDebug()<<"COULDNT Artwork[head] inerted into DB"<<artist;
     }
 }
 
@@ -1003,9 +916,6 @@ bool CollectionDB::insertInto(const QString &tableName, const QString &column, c
     }else return false;
 
 }
-
-
-
 
 QStringList CollectionDB::getPlaylistsMoods()
 {
@@ -1048,6 +958,54 @@ bool CollectionDB::removePlaylist(const QString &playlist)
     query.prepare(queryTxt);
     if(!query.exec()) return false;
     return true;
+}
+
+bool CollectionDB::removeArtist(const QString &artist)
+{
+    auto queryTxt = QString("DELETE FROM %1 WHERE %2 = \"%3\" ").arg(Bae::DBTablesMap[Bae::DBTables::ARTISTS],
+            Bae::DBColsMap[Bae::DBCols::ARTIST],artist);
+    QSqlQuery query(queryTxt);
+    if(!query.exec()) return false;
+    return true;
+}
+
+bool CollectionDB::cleanArtists()
+{
+    //    delete from artists where artist in (select artist from artists except select distinct artist from tracks);
+    auto queryTxt=QString("DELETE FROM %1 WHERE %2 IN (SELECT %2 FROM %1 EXCEPT SELECT DISTINCT %2 FROM %3)").arg(
+                Bae::DBTablesMap[Bae::DBTables::ARTISTS],
+            Bae::DBColsMap[Bae::DBCols::ARTIST],
+            Bae::DBTablesMap[Bae::DBTables::TRACKS]
+            );
+    qDebug()<<queryTxt;
+
+    QSqlQuery query(queryTxt);
+
+    return query.exec();
+}
+
+bool CollectionDB::removeAlbum(const QString &album, const QString &artist)
+{
+    auto queryTxt = QString("DELETE FROM %1 WHERE %2 = \"%3\" AND %4 = \"%5\"").arg(Bae::DBTablesMap[Bae::DBTables::ALBUMS],
+            Bae::DBColsMap[Bae::DBCols::ALBUM],album,Bae::DBColsMap[Bae::DBCols::ARTIST],artist);
+    QSqlQuery query(queryTxt);
+    if(!query.exec()) return false;
+    return true;
+}
+
+bool CollectionDB::cleanAlbums()
+{
+    //    delete from albums where (album, artist) in (select a.album, a.artist from albums a except select distinct album, artist from tracks);
+    auto queryTxt=QString("DELETE FROM %1 WHERE (%2, %3) IN (SELECT %2, %3 FROM %1 EXCEPT SELECT DISTINCT %2, %3  FROM %4)").arg(
+                Bae::DBTablesMap[Bae::DBTables::ALBUMS],
+            Bae::DBColsMap[Bae::DBCols::ALBUM],
+            Bae::DBColsMap[Bae::DBCols::ARTIST],
+            Bae::DBTablesMap[Bae::DBTables::TRACKS]
+            );
+    qDebug()<<queryTxt;
+    QSqlQuery query(queryTxt);
+
+    return query.exec();
 }
 
 

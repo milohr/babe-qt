@@ -38,6 +38,7 @@ public:
     TrackSaver() : QObject()
     {
         qRegisterMetaType<Bae::DB>("Bae::DB");
+        qRegisterMetaType<Bae::DBTables>("Bae::DBTables");
         moveToThread(&t);
         t.start();
     }
@@ -56,7 +57,7 @@ public:
 
     void next()
     {
-        this->nextTrack = !this->nextTrack;
+        this->wait = !this->wait;
     }
 
 public slots:
@@ -74,54 +75,48 @@ public slots:
 
         emit collectionSize(urls.size());
 
-        for(auto url : urls)
+        if(urls.size()>0)
         {
-            if(go)
+            for(auto url : urls)
             {
-                TagInfo info(url);
-                QString  album;
-                int track;
-                QString title = Bae::fixString(info.getTitle()); /* to fix*/
-                QString artist = Bae::fixString(info.getArtist());
-                QString genre = info.getGenre();
-                QString sourceUrl = QFileInfo(url).dir().path();
-                int duration = info.getDuration();
-                auto year = info.getYear();
-
-                if(info.getAlbum().isEmpty())
+                if(go)
                 {
-                    qDebug()<<"the album has not title, so i'm going to try and get it.";
-                    info.writeData(); // actually means to search the name and load it into metadata
-                    album=info.getAlbum();
-                    track=info.getTrack();
-                }else
-                {
-                    album=info.getAlbum();
-                    track=info.getTrack();
-                }
+                    if(!connection.check_existance(Bae::DBTablesMap[Bae::DBTables::TRACKS],Bae::DBColsMap[Bae::DBCols::URL],url))
+                    {
+                        TagInfo info(url);
+                        QString  album = Bae::fixString(info.getAlbum());
+                        int track=0;
+                        QString title = Bae::fixString(info.getTitle()); /* to fix*/
+                        QString artist = Bae::fixString(info.getArtist());
+                        QString genre = info.getGenre();
+                        QString sourceUrl = QFileInfo(url).dir().path();
+                        int duration = info.getDuration();
+                        auto year = info.getYear();
 
-                album=Bae::fixString(album);
-                Bae::DB trackMap
-                {
-                    {Bae::DBCols::URL,url},
-                    {Bae::DBCols::TRACK,QString::number(track)},
-                    {Bae::DBCols::TITLE,title},
-                    {Bae::DBCols::ARTIST,artist},
-                    {Bae::DBCols::ALBUM,album},
-                    {Bae::DBCols::DURATION,QString::number(duration)},
-                    {Bae::DBCols::GENRE,genre},
-                    {Bae::DBCols::SOURCES_URL,sourceUrl},
-                    {Bae::DBCols::BABE,"0"},
-                    {Bae::DBCols::RELEASE_DATE,QString::number(year)}
-                };
-                qDebug()<<"TRACK READY"<<url;
+                        Bae::DB trackMap
+                        {
+                            {Bae::DBCols::URL,url},
+                            {Bae::DBCols::TRACK,QString::number(track)},
+                            {Bae::DBCols::TITLE,title},
+                            {Bae::DBCols::ARTIST,artist},
+                            {Bae::DBCols::ALBUM,album},
+                            {Bae::DBCols::DURATION,QString::number(duration)},
+                            {Bae::DBCols::GENRE,genre},
+                            {Bae::DBCols::SOURCES_URL,sourceUrl},
+                            {Bae::DBCols::BABE,QString::number(0)},
+                            {Bae::DBCols::RELEASE_DATE,QString::number(year)}
+                        };
 
-                while(!this->nextTrack){ }
-                this->nextTrack=!this->nextTrack;
-                emit trackReady(trackMap);
-            }else break;
+                        emit trackReady(trackMap);
+                        while(this->wait){t.msleep(100);}
+                        this->wait=!this->wait;
+
+                    }
+
+                }else break;
+            }
         }
-
+        t.msleep(100);
         emit finished();
     }
 
@@ -132,8 +127,10 @@ signals:
 
 private:
     QThread t;
+    CollectionDB connection;
     bool go=true;
-    bool nextTrack=true;
+    bool wait=true;
+
 };
 
 
@@ -180,9 +177,8 @@ private slots:
 
     void on_open_clicked();
     void on_toolbarIconSize_activated(const QString &arg1);
-    void finishedAddingTracks();
     void on_pushButton_clicked();
-    void handleDirectoryChanged(QString dir);
+    void handleDirectoryChanged(const QString &dir);
     void on_collectionPath_clicked(const QModelIndex &index);
     void on_remove_clicked();
 
@@ -199,14 +195,13 @@ public slots:
     void populateDB(const QString &path);
     void fetchArt();
     void refreshWatchFiles();
-    void youtubeTrackReady(const bool &state);
-    void handleDirectoryChanged_cache(QString dir);
     void handleDirectoryChanged_extension();
 
 
 private:
     Ui::settings *ui;
     TrackSaver trackSaver;
+    bool busy =false;
 
     const QString notifyDir= Bae::NotifyDir;
     const QString collectionDBName = "collection.db";
@@ -234,11 +229,11 @@ signals:
     void toolbarIconSizeChanged(int newSize);
     void collectionPathChanged(QString newPath);
     void collectionDBFinishedAdding();
-    void fileChanged(QString url);
-    void dirChanged(QString url,QString babe="0");
-    void collectionPathRemoved(QString url);
-    void refreshTables();
-    void DBactionFinished();
+    void refreshTables(const Bae::DBTables &reset);
+    void refreshAlbumsView();
+    void finishedTrackInsertion();
+
+    void getArtwork();
 
 };
 

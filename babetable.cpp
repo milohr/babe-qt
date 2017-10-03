@@ -461,16 +461,15 @@ void BabeTable::insertTrack(const Bae::DB &track,const bool &descriptiveTitle)
 
 void BabeTable::populateTableView(const Bae::DB_LIST &mapList, const bool &descriptiveTitle)
 {
-    qDebug() << "ON POPULATE by mapList";
     this->setSortingEnabled(false);
-      if(!mapList.isEmpty())
+    if(!mapList.isEmpty())
     {
         for(auto trackMap : mapList) insertTrack(trackMap,descriptiveTitle);
 
         this->setSortingEnabled(true);
         emit finishedPopulating();
 
-    }else qDebug()<<"Error: the mapList was empty";
+    }
 
 }
 
@@ -605,7 +604,8 @@ QMap<QString,QString> BabeTable::getKdeConnectDevices()
 
     process.setReadChannel(QProcess::StandardOutput);
 
-    while (process.canReadLine()) {
+    while (process.canReadLine())
+    {
         QString line = QString::fromLocal8Bit(process.readLine());
         qDebug()<<"line:"<<line;
         if(line.contains("(paired and reachable)"))
@@ -1121,6 +1121,7 @@ QList<int> BabeTable::getSelectedRows(const bool &onRightClick)
 
 void BabeTable::flushTable()
 {
+    qDebug()<<"ORDER TO CLEAN TABLE";
     this->clearContents();
     this->setRowCount(0);
 }

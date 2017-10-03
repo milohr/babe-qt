@@ -12,6 +12,10 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     this->grid = new GridView(this);
     connect(grid,&GridView::albumReady,[this](){albumLoader.next();});
     connect(&albumLoader, &AlbumLoader::albumReady,this->grid, &GridView::addAlbum);
+    connect(&albumLoader, &AlbumLoader::finished,[this]()
+    {
+        this->grid->sortItems(Qt::AscendingOrder);
+    });
     connect(grid,&GridView::albumClicked,[this](const Bae::DB &albumMap)
     {
         if(albumMap[Bae::DBCols::ALBUM].isEmpty()) getArtistInfo(albumMap);
@@ -68,7 +72,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     this->cover = new Album(this);
     connect(this->cover,&Album::playAlbum,[this] (const Bae::DB &info) { emit this->playAlbum(info); });
     connect(this->cover,&Album::babeAlbum,this,&AlbumsView::babeAlbum);
-    this->cover->createAlbum(Bae::DB{{Bae::DBCols::ARTWORK,":Data/data/cover.svg"}},Bae::MEDIUM_ALBUM,0,true);
+    this->cover->createAlbum({{Bae::DBCols::ARTWORK,":Data/data/cover.svg"}},Bae::MEDIUM_ALBUM,0,true);
     this->cover->showTitle(false);
 
     this->closeBtn = new QToolButton(cover);
@@ -184,12 +188,14 @@ void  AlbumsView::flushView()
 
 void AlbumsView::populateAlbumsView(QSqlQuery &query)
 {
-
+    qDebug()<<"POPULATING ALBUMS WAS CALLED";
     albumLoader.requestAlbums(Bae::DBTables::ALBUMS,query.lastQuery());
 }
 
 void AlbumsView::populateArtistsView(QSqlQuery &query)
 {
+    qDebug()<<"POPULATING ARTISTS WAS CALLED";
+
     albumLoader.requestAlbums(Bae::DBTables::ARTISTS,query.lastQuery());
 }
 
