@@ -68,6 +68,7 @@ set(babe_SRCS
   pulpo/services/lyricwikiaService.cpp
   pulpo/services/geniusService.cpp
   playlistform.cpp
+  gridview.cpp
 
 )
 
