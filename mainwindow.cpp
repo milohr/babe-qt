@@ -89,7 +89,7 @@ MainWindow::MainWindow(const QStringList &files, QWidget *parent) :
         emit ui->miniPlaybackBtn->clicked();
     else ui->controls->setVisible(false);
 
-    movePanel(this->loadSettings("PANEL_POS","MAINWINDOW",RIGHT).toInt());
+    movePanel(static_cast<position>(this->loadSettings("PANEL_POS","MAINWINDOW",RIGHT).toInt()));
     this->loadStyle();
     this->player->setVolume(100);
 }
@@ -114,7 +114,7 @@ void MainWindow::start()
 
     if(mainList->rowCount()>0)
     {
-        mainList->setCurrentCell(current_song_pos>=mainList->rowCount()? 0 : current_song_pos,Bae::DBCols::TITLE);
+        mainList->setCurrentCell(current_song_pos>=mainList->rowCount()? 0 : current_song_pos,static_cast<int>(Bae::DBCols::TITLE));
         loadTrack();
         collectionView();
         go_playlistMode();
@@ -164,12 +164,12 @@ void MainWindow::setUpViews()
 
 
     collectionTable = new BabeTable(this);
-    collectionTable->showColumn(Bae::DBCols::STARS);
-    collectionTable->showColumn(Bae::DBCols::GENRE);
+    collectionTable->showColumn(static_cast<int>(Bae::DBCols::STARS));
+    collectionTable->showColumn(static_cast<int>(Bae::DBCols::GENRE));
     connect(collectionTable,&BabeTable::tableWidget_doubleClicked, [this] (Bae::DB_LIST list) { addToPlaylist(list,false,APPENDBOTTOM);});
     connect(collectionTable,&BabeTable::finishedPopulating,[this]()
     {
-        collectionTable->sortByColumn(Bae::DBCols::ARTIST, Qt::AscendingOrder);
+        collectionTable->sortByColumn(static_cast<int>(Bae::DBCols::ARTIST), Qt::AscendingOrder);
     });
     connect(collectionTable,&BabeTable::removeIt_clicked,this,&MainWindow::removeSong);
     connect(collectionTable,&BabeTable::babeIt_clicked,this,&MainWindow::babeIt);
@@ -184,9 +184,9 @@ void MainWindow::setUpViews()
 
     mainList = new BabeTable(this);
     mainList->setObjectName("mainList");
-    mainList->hideColumn(Bae::DBCols::ALBUM);
-    mainList->hideColumn(Bae::DBCols::ARTIST);
-    mainList->hideColumn(Bae::DBCols::DURATION);
+    mainList->hideColumn(static_cast<int>(Bae::DBCols::ALBUM));
+    mainList->hideColumn(static_cast<int>(Bae::DBCols::ARTIST));
+    mainList->hideColumn(static_cast<int>(Bae::DBCols::DURATION));
     mainList->horizontalHeader()->setVisible(false);
     mainList->enableRowColoring(true);
     mainList->enableRowDragging(true);
@@ -227,8 +227,8 @@ void MainWindow::setUpViews()
     connect(mainList,&BabeTable::saveToPlaylist,playlistTable,&PlaylistsView::saveToPlaylist);
 
     filterList = new BabeTable(this);
-    filterList->hideColumn(Bae::DBCols::ALBUM);
-    filterList->hideColumn(Bae::DBCols::ARTIST);
+    filterList->hideColumn(static_cast<int>(Bae::DBCols::ALBUM));
+    filterList->hideColumn(static_cast<int>(Bae::DBCols::ARTIST));
     filterList->horizontalHeader()->setVisible(false);
     filterList->enableRowColoring(true);
 
@@ -263,8 +263,8 @@ void MainWindow::setUpViews()
     resultsTable=new BabeTable(this);
     //    resultsTable->passStyle("QHeaderView::section { background-color:#575757; color:white; }");
     resultsTable->horizontalHeader()->setHighlightSections(true);
-    resultsTable->showColumn(Bae::DBCols::STARS);
-    resultsTable->showColumn(Bae::DBCols::GENRE);
+    resultsTable->showColumn(static_cast<int>(Bae::DBCols::STARS));
+    resultsTable->showColumn(static_cast<int>(Bae::DBCols::GENRE));
     connect(resultsTable,&BabeTable::tableWidget_doubleClicked, [this] (Bae::DB_LIST list) { addToPlaylist(list,false,APPENDBOTTOM);});
     connect(resultsTable,&BabeTable::removeIt_clicked,this,&MainWindow::removeSong);
     connect(resultsTable,&BabeTable::babeIt_clicked,this,&MainWindow::babeIt);
@@ -312,12 +312,12 @@ void MainWindow::setUpViews()
 
 
     artistsTable = new AlbumsView(true,this);
-    connect(artistsTable, &AlbumsView::populateFinished, [this]()
+    connect(artistsTable, &AlbumsView::populateFinished, []()
     {
         qDebug()<<"Finished populating artistTable";
     });
     artistsTable->expandBtn->setVisible(false);
-    artistsTable->albumTable->showColumn(Bae::DBCols::ALBUM);
+    artistsTable->albumTable->showColumn(static_cast<int>(Bae::DBCols::ALBUM));
     connect(artistsTable->albumTable,&BabeTable::tableWidget_doubleClicked, [this] (Bae::DB_LIST list) { addToPlaylist(list,false,APPENDBOTTOM);});
     connect(artistsTable->albumTable,&BabeTable::removeIt_clicked,this,&MainWindow::removeSong);
     connect(artistsTable->albumTable,&BabeTable::babeIt_clicked,this,&MainWindow::babeIt);
@@ -387,8 +387,17 @@ void MainWindow::setUpViews()
 
     settings_widget->readSettings();
     connect(settings_widget,&settings::toolbarIconSizeChanged, this, &MainWindow::setToolbarIconSize);
-    connect(settings_widget,&settings::refreshAlbumsView, this, &MainWindow::refreshAlbumsView);
     connect(settings_widget,&settings::refreshTables,this,  &MainWindow::refreshTables);
+    connect(settings_widget,&settings::albumArtReady,[this](const Bae::DB albumMap)
+    {
+        auto albumType = Bae::albumType(albumMap);
+
+        if(albumType==Bae::DBTables::ALBUMS)
+            this->albumsTable->addAlbum(albumMap);
+        else if(albumType==Bae::DBTables::ARTISTS)
+            this->artistsTable->addAlbum(albumMap);
+
+    });
 
     /* THE BUTTONS VIEWS */
     connect(ui->tracks_view,&QToolButton::clicked, this, &MainWindow::collectionView);
@@ -442,7 +451,7 @@ void MainWindow::setUpCollectionViewer()
     {
         for(auto btn : ui->viewsUtils->children())
         {
-            if(qobject_cast<QToolButton *>(btn)!=NULL)
+            if(qobject_cast<QToolButton *>(btn)!=nullptr)
             {
                 if(qobject_cast<QToolButton *>(btn)->toolButtonStyle()==Qt::ToolButtonTextBesideIcon)
                 {
@@ -461,6 +470,12 @@ void MainWindow::setUpCollectionViewer()
 
     });
 
+
+    this->searchTimer = new QTimer(this);
+    this->searchTimer ->setSingleShot(true);
+    this->searchTimer ->setInterval(500);
+    connect(this->searchTimer, &QTimer::timeout,this, &MainWindow::runSearch);
+    connect(this->ui->search, SIGNAL(textEdited(QString)), this->searchTimer, SLOT(start()));
 
     ui->search->setClearButtonEnabled(true);
     ui->collectionUtils->setVisible(false);
@@ -589,23 +604,26 @@ void MainWindow::setUpPlaylist()
     ui->calibrateBtn->setPopupMode(QToolButton::InstantPopup);
 
     auto refreshIt = new QAction("Calibrate...");
+    refreshIt->setToolTip("Clean & play Babe'd tracks");
     connect(refreshIt, &QAction::triggered, [this]() { calibrateMainList(); });
     calibrateBtn_menu->addAction(refreshIt);
 
     auto clearIt = new QAction("Clear...");
+    clearIt->setToolTip("Remove unselected tracks");
     connect(clearIt, &QAction::triggered, [this]()
     {
         this->clearMainList();
         if(mainList->rowCount()>0)
         {
-            this->mainList->setCurrentCell(current_song_pos,Bae::DBCols::TITLE);
-            this->mainList->item(current_song_pos,Bae::DBCols::TITLE)->setIcon(QIcon::fromTheme("media-playback-start"));
+            this->mainList->setCurrentCell(current_song_pos,static_cast<int>(Bae::DBCols::TITLE));
+            this->mainList->getItem(current_song_pos,Bae::DBCols::TITLE)->setIcon(QIcon::fromTheme("media-playback-start"));
         }
     });
 
     calibrateBtn_menu->addAction(clearIt);
 
     auto cleanIt = new QAction("Clean...");
+    cleanIt->setToolTip("Remove repeated tracks");
     connect(cleanIt, &QAction::triggered, [this]() { mainList->removeRepeated(); /*this->removequeuedTracks();*/ });
     calibrateBtn_menu->addAction(cleanIt);
 
@@ -648,7 +666,7 @@ void MainWindow::setUpPlaylist()
 }
 
 
-void MainWindow::movePanel(const int &pos)
+void MainWindow::movePanel(const position &pos)
 {
 
     auto position = QWidget::mapToGlobal(leftFrame->pos());
@@ -694,14 +712,14 @@ void MainWindow::movePanel(const int &pos)
 void MainWindow::loadStyle()
 {
     /*LOAD THE STYLE*/
-//    QFile styleFile(stylePath);
-//    if(styleFile.exists())
-//    {
-//        qDebug()<<"A Babe style file exists";
-//        styleFile.open(QFile::ReadOnly);
-//        QString style(styleFile.readAll());
-//        this->setStyleSheet(style);
-//    }
+    //    QFile styleFile(stylePath);
+    //    if(styleFile.exists())
+    //    {
+    //        qDebug()<<"A Babe style file exists";
+    //        styleFile.open(QFile::ReadOnly);
+    //        QString style(styleFile.readAll());
+    //        this->setStyleSheet(style);
+    //    }
 }
 
 void MainWindow::setUpRightFrame()
@@ -755,17 +773,17 @@ void MainWindow::playItNow(const Bae::DB_LIST &list)
             auto it = this->mainList->getAllTableContent().indexOf(list.first());
 
             if( it!=-1)
-                mainList->setCurrentCell(it,Bae::DBCols::TITLE);
+                mainList->setCurrentCell(it,static_cast<int>(Bae::DBCols::TITLE));
             else
             {
                 addToPlaylist(list,false,APPENDBOTTOM);
-                mainList->setCurrentCell(mainList->rowCount()-list.size(),Bae::DBCols::TITLE);
+                mainList->setCurrentCell(mainList->rowCount()-list.size(),static_cast<int>(Bae::DBCols::TITLE));
             }
 
         }else if(list.size()>1)
         {
             addToPlaylist(list,false,APPENDBOTTOM);
-            mainList->setCurrentCell(mainList->rowCount()-list.size(),Bae::DBCols::TITLE);
+            mainList->setCurrentCell(mainList->rowCount()-list.size(),static_cast<int>(Bae::DBCols::TITLE));
         }
 
         this->loadTrack();
@@ -810,7 +828,7 @@ void MainWindow::putOnPlay(const Bae::DB_LIST &mapList)
         {
             current_song_pos=0;
             prev_song_pos=current_song_pos;
-            mainList->setCurrentCell(current_song_pos,Bae::DBCols::TITLE);
+            mainList->setCurrentCell(current_song_pos,static_cast<int>(Bae::DBCols::TITLE));
 
             loadTrack();
         }
@@ -1006,16 +1024,16 @@ void MainWindow::refreshAlbumsView()
     qDebug()<<"now it i time to put the tracks in the table ;)";
     QSqlQuery query;
     query.prepare(QString("SELECT * FROM %1 ORDER BY  %2").arg(Bae::DBTablesMap[Bae::DBTables::ALBUMS],Bae::DBColsMap[Bae::DBCols::ALBUM]));
-    albumsTable->populateAlbumsView(query);
+    albumsTable->populateAlbumsView(Bae::DBTables::ALBUMS,query);
     albumsTable->hideAlbumFrame();
 
     query.prepare(QString("SELECT * FROM %1 ORDER BY  %2").arg(Bae::DBTablesMap[Bae::DBTables::ARTISTS],Bae::DBColsMap[Bae::DBCols::ARTIST]));
-    artistsTable->populateArtistsView(query);
+    artistsTable->populateAlbumsView(Bae::DBTables::ARTISTS,query);
     artistsTable->hideAlbumFrame();
 }
 
 void MainWindow::refreshTables(const Bae::DBTables &reset) //tofix
-{    
+{
     switch(reset)
     {
     case Bae::DBTables::TRACKS:
@@ -1046,11 +1064,11 @@ void MainWindow::refreshTables(const Bae::DBTables &reset) //tofix
     collectionTable->populateTableView(query);
 
     query.prepare(QString("SELECT * FROM %1 ORDER BY  %2").arg(Bae::DBTablesMap[Bae::DBTables::ALBUMS],Bae::DBColsMap[Bae::DBCols::ALBUM]));
-    albumsTable->populateAlbumsView(query);
+    albumsTable->populateAlbumsView(Bae::DBTables::ALBUMS,query);
     albumsTable->hideAlbumFrame();
 
     query.prepare(QString("SELECT * FROM %1 ORDER BY  %2").arg(Bae::DBTablesMap[Bae::DBTables::ARTISTS],Bae::DBColsMap[Bae::DBCols::ARTIST]));
-    artistsTable->populateArtistsView(query);
+    artistsTable->populateAlbumsView(Bae::DBTables::ARTISTS,query);
     artistsTable->hideAlbumFrame();
 
     playlistTable->list->clear();
@@ -1519,7 +1537,7 @@ void MainWindow::appendFiles(const QStringList &paths,const appendPos &pos)
 }
 
 void MainWindow::populateMainList()
-{   
+{
     auto results = connection.getBabedTracks();
     mainList->populateTableView(results);
     mainList->resizeRowsToContents();
@@ -1537,7 +1555,6 @@ void MainWindow::updateList()
 void MainWindow::on_mainList_clicked(const Bae::DB_LIST &list)
 {
     Q_UNUSED(list);
-
     loadTrack();
 }
 
@@ -1575,14 +1592,12 @@ void MainWindow::feedRabbit()
     //    rabbitTable->populateGeneralSuggestion(connection.getTrackData(QString("SELECT * FROM tracks WHERE genre = \""+current_song[BabeTable::GENRE]+"\"")));
 }
 
-void MainWindow::expandAlbumList(const QString &artist, const QString &album)
+void MainWindow::expandAlbumList(const QString &artist)
 {
     if(!artist.isEmpty())
-
     {
         emit ui->artists_view->clicked();
-        artistsTable->getArtistInfo({{Bae::DBCols::ARTIST,artist},{Bae::DBCols::ALBUM,album}});
-
+        artistsTable->showAlbumInfo({{Bae::DBCols::ARTIST,artist}});
     }
 
 }
@@ -1594,18 +1609,18 @@ void MainWindow::loadTrack()
     prev_song = current_song;
     prev_song_pos = current_song_pos;
 
-    if(prev_song_pos<this->mainList->rowCount() && mainList->item(current_song_pos,Bae::DBCols::TITLE)->icon().name()!="clock")
-        mainList->item(prev_song_pos,Bae::DBCols::TITLE)->setIcon(QIcon());
+    if(prev_song_pos<this->mainList->rowCount() && mainList->getItem(current_song_pos,Bae::DBCols::TITLE)->icon().name()!="clock")
+        mainList->getItem(prev_song_pos,Bae::DBCols::TITLE)->setIcon(QIcon());
 
     calibrateBtn_menu->actions().at(3)->setEnabled(false);
 
     current_song_pos = mainList->getIndex();
     current_song = mainList->getRowData(current_song_pos);
 
-    if(mainList->item(current_song_pos,Bae::DBCols::TITLE)->icon().name()!="clock")
-        mainList->item(current_song_pos,Bae::DBCols::TITLE)->setIcon(QIcon::fromTheme("media-playback-start"));
+    if(mainList->getItem(current_song_pos,Bae::DBCols::TITLE)->icon().name()!="clock")
+        mainList->getItem(current_song_pos,Bae::DBCols::TITLE)->setIcon(QIcon::fromTheme("media-playback-start"));
 
-    mainList->scrollTo(mainList->model()->index(current_song_pos,Bae::DBCols::TITLE));
+    mainList->scrollTo(mainList->model()->index(current_song_pos,static_cast<int>(Bae::DBCols::TITLE)));
 
     qDebug()<<"in mainlist="<<current_song[Bae::DBCols::URL];
 
@@ -1627,9 +1642,9 @@ void MainWindow::loadTrack()
 
         if(!this->isActiveWindow())
             nof.notifySong(current_song,QPixmap(current_artwork));
-        
+
         //        loadInfo(current_song);
-        
+
         if(miniPlayback)
         {
             this->blurWidget(*album_art,28);
@@ -1640,13 +1655,9 @@ void MainWindow::loadTrack()
 
 }
 
-bool MainWindow::isBabed(const Bae::DB &track)
+int MainWindow::isBabed(const Bae::DB &track)
 {
-    if(this->connection.checkQuery("SELECT * FROM tracks WHERE url = \""+track[Bae::DBCols::URL]+"\" AND babe = \"1\""))
-        return true;
-
-    return false;
-
+    return connection.getTrackBabe(track[Bae::DBCols::URL]);
 }
 
 void MainWindow::loadMood()
@@ -1724,7 +1735,7 @@ void MainWindow::addToQueue(const Bae::DB_LIST &tracks)
         if(!queued_songs.contains(track[Bae::DBCols::URL]))
         {
             mainList->addRowAt(queued_songs.size(),track);
-            mainList->item(queued_songs.size(),Bae::DBCols::TITLE)->setIcon(QIcon::fromTheme("clock"));
+            mainList->getItem(queued_songs.size(),Bae::DBCols::TITLE)->setIcon(QIcon::fromTheme("clock"));
             mainList->colorizeRow({queued_songs.size()},"#333");
             queued_songs.insert(track[Bae::DBCols::URL],track);
             queuedList<<track[Bae::DBCols::TITLE]+" by "+track[Bae::DBCols::ARTIST];
@@ -1735,7 +1746,7 @@ void MainWindow::addToQueue(const Bae::DB_LIST &tracks)
     //mainList->addRowAt(current_song_pos+1,track,true);
     qDebug()<<"saving track pos to restore after queued is empty"<<prev_queued_song_pos;
 
-    mainList->scrollToItem(mainList->item(0,Bae::DBCols::TITLE),QAbstractItemView::PositionAtTop);
+    mainList->scrollToItem(mainList->getItem(0,Bae::DBCols::TITLE),QAbstractItemView::PositionAtTop);
 
     nof.notify("Song added to Queue",queuedList.join("\n"));
 
@@ -1786,7 +1797,7 @@ void MainWindow::update()
 bool MainWindow::removeQueuedTrack(const Bae::DB &track, const int &pos)
 {
     if(queued_songs.contains(track[Bae::DBCols::URL]))
-        if(mainList->item(pos,Bae::DBCols::TITLE)->icon().name()=="clock")
+        if(mainList->getItem(pos,Bae::DBCols::TITLE)->icon().name()=="clock")
         {
             mainList->removeRow(pos);
             queued_songs.remove(track[Bae::DBCols::URL]);
@@ -1802,7 +1813,7 @@ void MainWindow::removequeuedTracks()
 
     for(auto row=0;row<this->mainList->rowCount();row++)
 
-        if(mainList->item(row,Bae::DBCols::TITLE)->icon().name()=="clock")
+        if(mainList->getItem(row,Bae::DBCols::TITLE)->icon().name()=="clock")
         {
             mainList->removeRow(row);
             queued_songs.remove(mainList->getRowData(row)[Bae::DBCols::URL]);
@@ -1836,7 +1847,7 @@ void MainWindow::next()
     if(!queued_songs.isEmpty())
         nextSong=0;
 
-    mainList->setCurrentCell((shuffle&&queued_songs.isEmpty()) ? shuffleNumber():nextSong, Bae::DBCols::TITLE);
+    mainList->setCurrentCell((shuffle&&queued_songs.isEmpty()) ? shuffleNumber():nextSong, static_cast<int>(Bae::DBCols::TITLE));
 
     loadTrack();
 }
@@ -1849,7 +1860,7 @@ void MainWindow::back()
     if(lCounter < 0)
         lCounter = mainList->rowCount() - 1;
 
-    mainList->setCurrentCell(!shuffle ? lCounter : shuffleNumber(), Bae::DBCols::TITLE);
+    mainList->setCurrentCell(!shuffle ? lCounter : shuffleNumber(), static_cast<int>(Bae::DBCols::TITLE));
 
     loadTrack();
 }
@@ -1966,7 +1977,7 @@ void MainWindow::on_fav_btn_clicked()
 }
 
 void MainWindow::babeAlbum(const Bae::DB &info)
-{        
+{
     auto artist =info[Bae::DBCols::ARTIST];
     auto album = info[Bae::DBCols::ALBUM];
 
@@ -2015,8 +2026,9 @@ bool MainWindow::babeTrack(const Bae::DB &track)
         }else
         {
             ui->fav_btn->setEnabled(false);
-
-            addToCollectionDB({url},"1");
+            auto newTrack = track;
+            newTrack.insert(Bae::DBCols::BABE, "1");
+            connection.addTrack(newTrack);
 
             ui->fav_btn->setEnabled(true);
             return true;
@@ -2086,14 +2098,6 @@ void  MainWindow::infoIt(const Bae::DB &track)
 }
 
 
-void MainWindow::addToCollectionDB(const QStringList &url, const QString &babe)
-{
-
-    //    if(babe.contains("1"))
-    //        addToPlaylist(connection.getTrackData(url),true,APPENDBOTTOM);
-}
-
-
 void MainWindow::addToPlaylist(const Bae::DB_LIST &mapList, const bool &notRepeated, const appendPos &pos)
 {
     qDebug()<<"Adding mapList to mainPlaylist";
@@ -2119,22 +2123,22 @@ void MainWindow::addToPlaylist(const Bae::DB_LIST &mapList, const bool &notRepea
                         break;
                     case APPENDTOP:
                         mainList->addRowAt(0,track);
-                        mainList->scrollToItem(mainList->item(0,Bae::DBCols::TITLE),QAbstractItemView::PositionAtTop);
+                        mainList->scrollToItem(mainList->getItem(0,Bae::DBCols::TITLE),QAbstractItemView::PositionAtTop);
 
                         break;
                     case APPENDAFTER:
                         mainList->addRowAt(current_song_pos+1,track);
-                        mainList->scrollToItem(mainList->item(current_song_pos+1,Bae::DBCols::TITLE),QAbstractItemView::PositionAtTop);
+                        mainList->scrollToItem(mainList->getItem(current_song_pos+1,Bae::DBCols::TITLE),QAbstractItemView::PositionAtTop);
 
                         break;
                     case APPENDBEFORE:
                         mainList->addRowAt(current_song_pos,track);
-                        mainList->scrollToItem(mainList->item(current_song_pos,Bae::DBCols::TITLE),QAbstractItemView::PositionAtTop);
+                        mainList->scrollToItem(mainList->getItem(current_song_pos,Bae::DBCols::TITLE),QAbstractItemView::PositionAtTop);
 
                         break;
                     case APPENDINDEX:
                         mainList->addRowAt(mainList->getIndex(),track);
-                        mainList->scrollToItem(mainList->item(mainList->getIndex(),Bae::DBCols::TITLE),QAbstractItemView::PositionAtTop);
+                        mainList->scrollToItem(mainList->getItem(mainList->getIndex(),Bae::DBCols::TITLE),QAbstractItemView::PositionAtTop);
 
                         break;
                     }
@@ -2156,22 +2160,22 @@ void MainWindow::addToPlaylist(const Bae::DB_LIST &mapList, const bool &notRepea
                     break;
                 case APPENDTOP:
                     mainList->addRowAt(0,track);
-                    mainList->scrollToItem(mainList->item(0,Bae::DBCols::TITLE),QAbstractItemView::PositionAtTop);
+                    mainList->scrollToItem(mainList->getItem(0,Bae::DBCols::TITLE),QAbstractItemView::PositionAtTop);
 
                     break;
                 case APPENDAFTER:
                     mainList->addRowAt(current_song_pos+1,track);
-                    mainList->scrollToItem(mainList->item(current_song_pos+1,Bae::DBCols::TITLE),QAbstractItemView::PositionAtTop);
+                    mainList->scrollToItem(mainList->getItem(current_song_pos+1,Bae::DBCols::TITLE),QAbstractItemView::PositionAtTop);
 
                     break;
                 case APPENDBEFORE:
                     mainList->addRowAt(current_song_pos,track);
-                    mainList->scrollToItem(mainList->item(current_song_pos,Bae::DBCols::TITLE),QAbstractItemView::PositionAtTop);
+                    mainList->scrollToItem(mainList->getItem(current_song_pos,Bae::DBCols::TITLE),QAbstractItemView::PositionAtTop);
 
                     break;
                 case APPENDINDEX:
                     mainList->addRowAt(mainList->getIndex(),track);
-                    mainList->scrollToItem(mainList->item(mainList->getIndex(),Bae::DBCols::TITLE),QAbstractItemView::PositionAtTop);
+                    mainList->scrollToItem(mainList->getItem(mainList->getIndex(),Bae::DBCols::TITLE),QAbstractItemView::PositionAtTop);
 
                     break;
                 }
@@ -2181,7 +2185,7 @@ void MainWindow::addToPlaylist(const Bae::DB_LIST &mapList, const bool &notRepea
 
         if(stopped)
         {
-            mainList->setCurrentCell(0,Bae::DBCols::TITLE);
+            mainList->setCurrentCell(0,static_cast<int>(Bae::DBCols::TITLE));
             album_art->setVisible(true);
             ui->frame_4->setVisible(true);
             seekBar->setVisible(true);
@@ -2202,27 +2206,12 @@ void  MainWindow::clearCurrentList()
     mainList->flushTable();
 }
 
-void MainWindow::on_search_returnPressed()
+void MainWindow::runSearch()
 {
-
-    if(views->currentIndex()!=ALBUMS && views->currentIndex()!=ARTISTS)
-    {
-
-        if(resultsTable->rowCount()<1)
-        {
-            views->setCurrentIndex(prevIndex);
-            resultsTable->flushTable();
-            // ui->saveResults->setEnabled(false);
-        }else views->setCurrentIndex(RESULTS);
-    }
-}
-
-void MainWindow::on_search_textChanged(const QString &arg1)
-{
-
     if(!ui->search->text().isEmpty())
     {
-        QStringList searchList=arg1.split(",");
+        qDebug()<<"Looking for";
+        QStringList searchList=ui->search->text().split(",");
         auto searchResults = searchFor(searchList);
         resultsTable->flushTable();
         if(!searchResults.isEmpty())
@@ -2232,17 +2221,15 @@ void MainWindow::on_search_textChanged(const QString &arg1)
             populateResultsTable(searchResults);
         }else
         {
-            this->resultsTable->setAddMusicMsg("Nothing on: \n"+arg1);
+            this->resultsTable->setAddMusicMsg("Nothing on: \n"+ui->search->text());
         }
 
 
     }else
     {
         albumsTable->hide_all(false);
-
         artistsTable->hide_all(false);
         resultsTable->flushTable();
-
         if(views->currentIndex()!=ALBUMS||views->currentIndex()!=ARTISTS)
         {
             if(prevIndex==RESULTS) views->setCurrentIndex(COLLECTION);
@@ -2332,7 +2319,7 @@ void MainWindow::on_rowInserted(QModelIndex model ,int x,int y)
 {
     Q_UNUSED(model);
     Q_UNUSED(y);
-    mainList->scrollTo(mainList->model()->index(x,Bae::DBCols::TITLE),QAbstractItemView::PositionAtCenter);
+    mainList->scrollTo(mainList->model()->index(x,static_cast<int>(Bae::DBCols::TITLE)),QAbstractItemView::PositionAtCenter);
 
 }
 
@@ -2464,8 +2451,8 @@ void MainWindow::calibrateMainList()
 
     if(mainList->rowCount()>0)
     {
-        this->mainList->setCurrentCell(current_song_pos,Bae::DBCols::TITLE);
-        this->mainList->item(current_song_pos,Bae::DBCols::TITLE)->setIcon(QIcon::fromTheme("media-playback-start"));
+        this->mainList->setCurrentCell(current_song_pos,static_cast<int>(Bae::DBCols::TITLE));
+        this->mainList->getItem(current_song_pos,Bae::DBCols::TITLE)->setIcon(QIcon::fromTheme("media-playback-start"));
         this->mainList->removeRepeated();
     }
 }

@@ -128,9 +128,8 @@ public:
 
     explicit AlbumsView(bool extraList=false, QWidget *parent = nullptr);
 
-    void populateAlbumsView(QSqlQuery &query);
-    void populateArtistsView(QSqlQuery &query);
-
+    void populateAlbumsView(const Bae::DBTables &type, QSqlQuery &query);
+    void addAlbum(const Bae::DB &albumMap);
     void populateExtraList(const QStringList &albums);
     void flushView();
     int getAlbumSize() { return this->albumSize; }
@@ -163,8 +162,7 @@ private:
 public slots:
     void hideAlbumFrame();
     void expandList();
-    void getAlbumInfo(const Bae::DB &info);
-    void getArtistInfo(const Bae::DB &info);
+    void showAlbumInfo(const Bae::DB &albumMap);
 
 private slots:
 
@@ -178,7 +176,7 @@ signals:
     void playAlbum(const Bae::DB &info);
     void babeAlbum(const Bae::DB info);
     void populateFinished();
-    void expandTo(QString artist, QString album);
+    void expandTo(const QString &artist);
     void createdAlbum(Album *album);
 };
 

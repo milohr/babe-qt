@@ -248,8 +248,8 @@ void CollectionDB::addTrack(const Bae::DB &track)
         this->insert(Bae::DBTablesMap[Bae::DBTables::TRACKS],trackMap);
 
     }
-    qDebug()<<"DONE WRITING TO DB";
-     emit trackInserted();
+
+    emit trackInserted();
 }
 
 bool CollectionDB::rateTrack(const QString &path, const int &value)
@@ -423,22 +423,22 @@ Bae::DB_LIST CollectionDB::getTrackData(QSqlQuery &query)
         while(query.next())
             mapList << Bae::DB
             {
-            {Bae::DBCols::TRACK, query.value(Bae::DBColsMap[Bae::DBCols::TRACK]).toString()},
-{Bae::DBCols::TITLE, query.value(Bae::DBColsMap[Bae::DBCols::TITLE]).toString()},
-{Bae::DBCols::ARTIST, query.value(Bae::DBColsMap[Bae::DBCols::ARTIST]).toString()},
-{Bae::DBCols::ALBUM, query.value(Bae::DBColsMap[Bae::DBCols::ALBUM]).toString()},
-{Bae::DBCols::DURATION, query.value(Bae::DBColsMap[Bae::DBCols::DURATION]).toString()},
-{Bae::DBCols::GENRE, query.value(Bae::DBColsMap[Bae::DBCols::GENRE]).toString()},
-{Bae::DBCols::URL, query.value(Bae::DBColsMap[Bae::DBCols::URL]).toString()},
-{Bae::DBCols::STARS, query.value(Bae::DBColsMap[Bae::DBCols::STARS]).toString()},
-{Bae::DBCols::BABE, query.value(Bae::DBColsMap[Bae::DBCols::BABE]).toString()},
-{Bae::DBCols::ART, query.value(Bae::DBColsMap[Bae::DBCols::ART]).toString()},
-{Bae::DBCols::PLAYED, query.value(Bae::DBColsMap[Bae::DBCols::PLAYED]).toString()},
-{Bae::DBCols::ADD_DATE, query.value(Bae::DBColsMap[Bae::DBCols::ADD_DATE]).toString()},
-{Bae::DBCols::RELEASE_DATE, query.value(Bae::DBColsMap[Bae::DBCols::RELEASE_DATE]).toString()},
-{Bae::DBCols::LYRICS, query.value(Bae::DBColsMap[Bae::DBCols::LYRICS]).toString()},
-{Bae::DBCols::SOURCES_URL, query.value(Bae::DBColsMap[Bae::DBCols::SOURCES_URL]).toString()}
-};
+                {Bae::DBCols::TRACK, query.value(Bae::DBColsMap[Bae::DBCols::TRACK]).toString()},
+                {Bae::DBCols::TITLE, query.value(Bae::DBColsMap[Bae::DBCols::TITLE]).toString()},
+                {Bae::DBCols::ARTIST, query.value(Bae::DBColsMap[Bae::DBCols::ARTIST]).toString()},
+                {Bae::DBCols::ALBUM, query.value(Bae::DBColsMap[Bae::DBCols::ALBUM]).toString()},
+                {Bae::DBCols::DURATION, query.value(Bae::DBColsMap[Bae::DBCols::DURATION]).toString()},
+                {Bae::DBCols::GENRE, query.value(Bae::DBColsMap[Bae::DBCols::GENRE]).toString()},
+                {Bae::DBCols::URL, query.value(Bae::DBColsMap[Bae::DBCols::URL]).toString()},
+                {Bae::DBCols::STARS, query.value(Bae::DBColsMap[Bae::DBCols::STARS]).toString()},
+                {Bae::DBCols::BABE, query.value(Bae::DBColsMap[Bae::DBCols::BABE]).toString()},
+                {Bae::DBCols::ART, query.value(Bae::DBColsMap[Bae::DBCols::ART]).toString()},
+                {Bae::DBCols::PLAYED, query.value(Bae::DBColsMap[Bae::DBCols::PLAYED]).toString()},
+                {Bae::DBCols::ADD_DATE, query.value(Bae::DBColsMap[Bae::DBCols::ADD_DATE]).toString()},
+                {Bae::DBCols::RELEASE_DATE, query.value(Bae::DBColsMap[Bae::DBCols::RELEASE_DATE]).toString()},
+                {Bae::DBCols::LYRICS, query.value(Bae::DBColsMap[Bae::DBCols::LYRICS]).toString()},
+                {Bae::DBCols::SOURCES_URL, query.value(Bae::DBColsMap[Bae::DBCols::SOURCES_URL]).toString()}
+            };
 
 return mapList;
 }
@@ -634,8 +634,8 @@ QString CollectionDB::getTrackLyrics(const QString &url)
             Bae::DBColsMap[Bae::DBCols::URL],url));
 
     if(query.exec())
-        while (query.next())
-            lyrics=query.value(0).toString();
+        if(query.next())
+            lyrics=query.value(Bae::DBColsMap[Bae::DBCols::LYRICS]).toString();
 
     return lyrics;
 }
@@ -649,8 +649,8 @@ QString CollectionDB::getTrackArt(const QString &path)
             Bae::DBColsMap[Bae::DBCols::URL],path));
 
     if(query.exec())
-        while (query.next())
-            color=query.value(0).toString();
+        if(query.next())
+            color=query.value(Bae::DBColsMap[Bae::DBCols::ART]).toString();
 
     return color;
 }
@@ -658,6 +658,34 @@ QString CollectionDB::getTrackArt(const QString &path)
 QStringList CollectionDB::getTrackTags(const QString &path)
 {
     return {};
+}
+
+int CollectionDB::getTrackStars(const QString &path)
+{
+    int stars = 0;
+    QSqlQuery query(QString("SELECT %1 FROM %2 WHERE %3 = \"%4\"").arg(Bae::DBColsMap[Bae::DBCols::STARS],
+                    Bae::DBTablesMap[Bae::DBTables::TRACKS],
+            Bae::DBColsMap[Bae::DBCols::URL],path));
+
+    if(query.exec())
+        if(query.next())
+            stars=query.value(Bae::DBColsMap[Bae::DBCols::STARS]).toInt();
+
+    return stars;
+}
+
+int CollectionDB::getTrackBabe(const QString &path)
+{
+    int babe = 0;
+    QSqlQuery query(QString("SELECT %1 FROM %2 WHERE %3 = \"%4\"").arg(Bae::DBColsMap[Bae::DBCols::BABE],
+                    Bae::DBTablesMap[Bae::DBTables::TRACKS],
+            Bae::DBColsMap[Bae::DBCols::URL],path));
+
+    if(query.exec())
+        if(query.next())
+            babe=query.value(Bae::DBColsMap[Bae::DBCols::BABE]).toInt();
+
+    return babe;
 }
 
 QString CollectionDB::getArtistArt(const QString &artist)
@@ -877,6 +905,8 @@ void CollectionDB::insertArtwork(const Bae::DB &track)
         QSqlQuery query(queryStr);
         if(!query.exec())qDebug()<<"COULDNT Artwork[head] inerted into DB"<<artist;
     }
+
+    emit artworkInserted(track);
 }
 
 

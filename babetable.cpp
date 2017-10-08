@@ -68,20 +68,20 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent)
     this->setSelectionBehavior(QAbstractItemView::SelectRows);
     this->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
-    this->setColumnWidth(Bae::DBCols::TRACK, 20);
-    this->setColumnWidth(Bae::DBCols::PLAYED, 20);
-    this->setColumnWidth(Bae::DBCols::STARS, 80);
-    this->hideColumn(Bae::DBCols::URL);
-    this->hideColumn(Bae::DBCols::STARS);
-    this->hideColumn(Bae::DBCols::BABE);
-    this->hideColumn(Bae::DBCols::GENRE);
-    this->hideColumn(Bae::DBCols::TRACK);
-    this->hideColumn(Bae::DBCols::PLAYED);
-    this->hideColumn(Bae::DBCols::ART);
-    this->hideColumn(Bae::DBCols::RELEASE_DATE);
-    this->hideColumn(Bae::DBCols::ADD_DATE);
-    this->hideColumn(Bae::DBCols::SOURCES_URL);
-    this->hideColumn(Bae::DBCols::LYRICS);
+    this->setColumnWidth(static_cast<int>(Bae::DBCols::TRACK), 20);
+    this->setColumnWidth(static_cast<int>(Bae::DBCols::PLAYED), 20);
+    this->setColumnWidth(static_cast<int>(Bae::DBCols::STARS), 80);
+    this->hideColumn(static_cast<int>(Bae::DBCols::URL));
+    this->hideColumn(static_cast<int>(Bae::DBCols::STARS));
+    this->hideColumn(static_cast<int>(Bae::DBCols::BABE));
+    this->hideColumn(static_cast<int>(Bae::DBCols::GENRE));
+    this->hideColumn(static_cast<int>(Bae::DBCols::TRACK));
+    this->hideColumn(static_cast<int>(Bae::DBCols::PLAYED));
+    this->hideColumn(static_cast<int>(Bae::DBCols::ART));
+    this->hideColumn(static_cast<int>(Bae::DBCols::RELEASE_DATE));
+    this->hideColumn(static_cast<int>(Bae::DBCols::ADD_DATE));
+    this->hideColumn(static_cast<int>(Bae::DBCols::SOURCES_URL));
+    this->hideColumn(static_cast<int>(Bae::DBCols::LYRICS));
 
     fav1 = new QToolButton();
     fav2 = new QToolButton();
@@ -246,7 +246,7 @@ void BabeTable::dropEvent(QDropEvent *event)
         int newRow = this->indexAt(event->pos()).row();
         auto insertionRow = newRow;
 
-        if(this->item(insertionRow,Bae::DBCols::TITLE)->icon().name()!="clock")
+        if(this->getItem(insertionRow,Bae::DBCols::TITLE)->icon().name()!="clock")
         {
             qDebug()<<"new row position"<< newRow;
             auto list = this->getSelectedRows(false);
@@ -256,7 +256,7 @@ void BabeTable::dropEvent(QDropEvent *event)
 
             for(auto track : list)
             {
-                if(this->item(track,Bae::DBCols::TITLE)->icon().name().isEmpty())
+                if(this->getItem(track,Bae::DBCols::TITLE)->icon().name().isEmpty())
                 {
                     tracks<<this->getRowData(track);
                     newList<<track;
@@ -325,7 +325,7 @@ void BabeTable::update()
 
     {
 
-        this->item(this->previewRow,Bae::DBCols::TITLE)->setIcon(QIcon::fromTheme(""));
+        this->getItem(this->previewRow,Bae::DBCols::TITLE)->setIcon(QIcon::fromTheme(""));
         emit previewFinished();
         previewRow=-1;
     }
@@ -366,6 +366,16 @@ void BabeTable::passStyle(QString style) { this->setStyleSheet(style); }
 
 int BabeTable::getIndex() { return this->currentIndex().row(); }
 
+QTableWidgetItem *BabeTable::getItem(const int &row, const Bae::DBCols &column)
+{
+    return this->item(row,static_cast<int>(column));
+}
+
+void BabeTable::putItem(const int &row, const Bae::DBCols &col, QTableWidgetItem *item)
+{
+    this->setItem(row, static_cast<int>(col), item);
+}
+
 
 void BabeTable::enableRowColoring(const bool &state)
 {
@@ -399,55 +409,55 @@ void BabeTable::addRow(const Bae::DB &map)
 {
     this->insertRow(this->rowCount());
 
-    this->setItem(this->rowCount() - 1, Bae::DBCols::TRACK, new QTableWidgetItem(map[Bae::DBCols::TRACK]));
-    this->setItem(this->rowCount() - 1, Bae::DBCols::TITLE, new QTableWidgetItem(map[Bae::DBCols::TITLE]));
-    this->setItem(this->rowCount() - 1, Bae::DBCols::ARTIST, new QTableWidgetItem(map[Bae::DBCols::ARTIST]));
-    this->setItem(this->rowCount() - 1, Bae::DBCols::ALBUM, new QTableWidgetItem(map[Bae::DBCols::ALBUM]));
-    this->setItem(this->rowCount() - 1, Bae::DBCols::DURATION, new QTableWidgetItem(Bae::transformTime(map[Bae::DBCols::DURATION].toInt())));
-    this->setItem(this->rowCount() - 1, Bae::DBCols::GENRE, new QTableWidgetItem(map[Bae::DBCols::GENRE]));
-    this->setItem(this->rowCount() - 1, Bae::DBCols::URL, new QTableWidgetItem(map[Bae::DBCols::URL]));
-    this->setItem(this->rowCount() - 1, Bae::DBCols::STARS, new QTableWidgetItem(this->getStars(map[Bae::DBCols::STARS].toInt())));
-    this->setItem(this->rowCount() - 1, Bae::DBCols::BABE, new QTableWidgetItem(this->getHearts(map[Bae::DBCols::BABE].toInt())));
+    this->putItem(this->rowCount() - 1,Bae::DBCols::TRACK, new QTableWidgetItem(map[Bae::DBCols::TRACK]));
+    this->putItem(this->rowCount() - 1,Bae::DBCols::TITLE, new QTableWidgetItem(map[Bae::DBCols::TITLE]));
+    this->putItem(this->rowCount() - 1,Bae::DBCols::ARTIST, new QTableWidgetItem(map[Bae::DBCols::ARTIST]));
+    this->putItem(this->rowCount() - 1,Bae::DBCols::ALBUM, new QTableWidgetItem(map[Bae::DBCols::ALBUM]));
+    this->putItem(this->rowCount() - 1,Bae::DBCols::DURATION, new QTableWidgetItem(Bae::transformTime(map[Bae::DBCols::DURATION].toInt())));
+    this->putItem(this->rowCount() - 1,Bae::DBCols::GENRE, new QTableWidgetItem(map[Bae::DBCols::GENRE]));
+    this->putItem(this->rowCount() - 1,Bae::DBCols::URL, new QTableWidgetItem(map[Bae::DBCols::URL]));
+    this->putItem(this->rowCount() - 1,Bae::DBCols::STARS, new QTableWidgetItem(this->getStars(map[Bae::DBCols::STARS].toInt())));
+    this->putItem(this->rowCount() - 1,Bae::DBCols::BABE, new QTableWidgetItem(this->getHearts(map[Bae::DBCols::BABE].toInt())));
     //    this->setItem(this->rowCount() - 1, Bae::DBCols::ART, new QTableWidgetItem(map[Bae::DBCols::ART]));
-    this->setItem(this->rowCount() - 1, Bae::DBCols::PLAYED, new QTableWidgetItem(map[Bae::DBCols::PLAYED]));
-    this->setItem(this->rowCount() - 1, Bae::DBCols::RELEASE_DATE, new QTableWidgetItem(map[Bae::DBCols::RELEASE_DATE]));
-    this->setItem(this->rowCount() - 1, Bae::DBCols::ADD_DATE, new QTableWidgetItem(map[Bae::DBCols::ADD_DATE]));
+    this->putItem(this->rowCount() - 1,Bae::DBCols::PLAYED, new QTableWidgetItem(map[Bae::DBCols::PLAYED]));
+    this->putItem(this->rowCount() - 1,Bae::DBCols::RELEASE_DATE, new QTableWidgetItem(map[Bae::DBCols::RELEASE_DATE]));
+    this->putItem(this->rowCount() - 1,Bae::DBCols::ADD_DATE, new QTableWidgetItem(map[Bae::DBCols::ADD_DATE]));
 
     if(this->rowColoring && !map[Bae::DBCols::ART].isEmpty())
         this->colorizeRow({this->rowCount()-1},map[Bae::DBCols::ART]);
 
-//    if(descriptiveTooltip)
-//        this->item(this->rowCount()-1,Bae::DBCols::TITLE)->setToolTip( "by "+map[Bae::DBCols::ARTIST]);
+    //    if(descriptiveTooltip)
+    //        this->item(this->rowCount()-1,Bae::DBCols::TITLE)->setToolTip( "by "+map[Bae::DBCols::ARTIST]);
 }
 
 void BabeTable::addRowAt(const int &row, const Bae::DB &map)
 {
     this->insertRow(row);
-    this->setItem(row , Bae::DBCols::URL, new QTableWidgetItem(map[Bae::DBCols::URL]));
-    this->setItem(row , Bae::DBCols::TITLE, new QTableWidgetItem(map[Bae::DBCols::TITLE]));
+    this->putItem(row,Bae::DBCols::URL, new QTableWidgetItem(map[Bae::DBCols::URL]));
+    this->putItem(row ,Bae::DBCols::TITLE, new QTableWidgetItem(map[Bae::DBCols::TITLE]));
 
-    this->setItem(row , Bae::DBCols::TRACK, new QTableWidgetItem(map[Bae::DBCols::TRACK]));
-    this->setItem(row , Bae::DBCols::ARTIST, new QTableWidgetItem(map[Bae::DBCols::ARTIST]));
-    this->setItem(row , Bae::DBCols::ALBUM, new QTableWidgetItem(map[Bae::DBCols::ALBUM]));
+    this->putItem(row,Bae::DBCols::TRACK, new QTableWidgetItem(map[Bae::DBCols::TRACK]));
+    this->putItem(row,Bae::DBCols::ARTIST, new QTableWidgetItem(map[Bae::DBCols::ARTIST]));
+    this->putItem(row ,Bae::DBCols::ALBUM, new QTableWidgetItem(map[Bae::DBCols::ALBUM]));
 
-    this->setItem(row , Bae::DBCols::DURATION, new QTableWidgetItem(Bae::transformTime(map[Bae::DBCols::DURATION].toInt())));
-    this->setItem(row , Bae::DBCols::GENRE, new QTableWidgetItem(map[Bae::DBCols::GENRE]));
-    this->setItem(row , Bae::DBCols::STARS, new QTableWidgetItem(this->getStars(map[Bae::DBCols::STARS].toInt())));
+    this->putItem(row,Bae::DBCols::DURATION, new QTableWidgetItem(Bae::transformTime(map[Bae::DBCols::DURATION].toInt())));
+    this->putItem(row,Bae::DBCols::GENRE, new QTableWidgetItem(map[Bae::DBCols::GENRE]));
+    this->putItem(row,Bae::DBCols::STARS, new QTableWidgetItem(this->getStars(map[Bae::DBCols::STARS].toInt())));
 
-    this->setItem(row , Bae::DBCols::BABE, new QTableWidgetItem(this->getHearts(map[Bae::DBCols::BABE].toInt())));
+    this->putItem(row ,Bae::DBCols::BABE, new QTableWidgetItem(this->getHearts(map[Bae::DBCols::BABE].toInt())));
     //    this->setItem(row , Bae::DBCols::ART, new QTableWidgetItem(map[Bae::DBCols::ART]));
-    this->setItem(row , Bae::DBCols::PLAYED, new QTableWidgetItem(map[Bae::DBCols::PLAYED]));
-    this->setItem(row , Bae::DBCols::RELEASE_DATE, new QTableWidgetItem(map[Bae::DBCols::RELEASE_DATE]));
-    this->setItem(row , Bae::DBCols::ADD_DATE, new QTableWidgetItem(map[Bae::DBCols::ADD_DATE]));
-    this->setItem(row , Bae::DBCols::SOURCES_URL, new QTableWidgetItem(map[Bae::DBCols::SOURCES_URL]));
-    this->setItem(row , Bae::DBCols::LYRICS, new QTableWidgetItem(map[Bae::DBCols::LYRICS]));
+    this->putItem(row,Bae::DBCols::PLAYED, new QTableWidgetItem(map[Bae::DBCols::PLAYED]));
+    this->putItem(row,Bae::DBCols::RELEASE_DATE, new QTableWidgetItem(map[Bae::DBCols::RELEASE_DATE]));
+    this->putItem(row,Bae::DBCols::ADD_DATE, new QTableWidgetItem(map[Bae::DBCols::ADD_DATE]));
+    this->putItem(row,Bae::DBCols::SOURCES_URL, new QTableWidgetItem(map[Bae::DBCols::SOURCES_URL]));
+    this->putItem(row,Bae::DBCols::LYRICS, new QTableWidgetItem(map[Bae::DBCols::LYRICS]));
 
     if(this->rowColoring && !map[Bae::DBCols::ART].isEmpty())
         this->colorizeRow({row},map[Bae::DBCols::ART]);
 
 
-//    if(descriptiveTooltip)
-//        this->item(row,Bae::DBCols::TITLE)->setToolTip( "by "+map[Bae::DBCols::ARTIST]);
+    //    if(descriptiveTooltip)
+    //        this->item(row,Bae::DBCols::TITLE)->setToolTip( "by "+map[Bae::DBCols::ARTIST]);
 }
 
 void BabeTable::removeMissing(const QString &url)
@@ -580,16 +590,16 @@ void BabeTable::setTableOrder(int column, Bae::Order order)
     }
 }
 
-void BabeTable::setVisibleColumn(int column) {
-    if (column == Bae::DBCols::URL) {
-        this->showColumn(Bae::DBCols::URL);
-    } else if (column == Bae::DBCols::STARS) {
-        this->showColumn(Bae::DBCols::STARS);
-    } else if (column == Bae::DBCols::BABE) {
-        this->showColumn(Bae::DBCols::BABE);
-    } else if (column == Bae::DBCols::ALBUM) {
-        this->showColumn(Bae::DBCols::ALBUM);
-    }
+void BabeTable::setVisibleColumn(const Bae::DBCols &column)
+{
+    if (column == Bae::DBCols::URL)
+        this->showColumn(static_cast<int>(Bae::DBCols::URL));
+    else if (column == Bae::DBCols::STARS)
+        this->showColumn(static_cast<int>(Bae::DBCols::STARS));
+    else if (column == Bae::DBCols::BABE)
+        this->showColumn(static_cast<int>(Bae::DBCols::BABE));
+    else if (column == Bae::DBCols::ALBUM)
+        this->showColumn(static_cast<int>(Bae::DBCols::ALBUM));
 }
 
 
@@ -631,8 +641,6 @@ void BabeTable::setUpContextMenu(const int row, const int column)
     qDebug() << "setUpContextMenu";
     //contextMenu->exec(QCursor::pos());
 
-    int rate = 0;
-    bool babe = false;
     this->rRow = row;
     this->rColumn= column;
 
@@ -641,7 +649,6 @@ void BabeTable::setUpContextMenu(const int row, const int column)
     while (i.hasNext())
     {
         i.next();
-        qDebug()<<i.key();
         sendToMenu->addAction(i.value());
     }
 
@@ -649,19 +656,9 @@ void BabeTable::setUpContextMenu(const int row, const int column)
     if(!rowData.isEmpty())
     {
         QString url =rowData[Bae::DBCols::URL];
+        setRating(this->connection.getTrackStars(url));
 
-        QSqlQuery query = connection.getQuery(
-                    "SELECT * FROM tracks WHERE url = \"" + url + "\"");
-
-        while (query.next())
-        {
-            rate = query.value(Bae::DBCols::STARS).toInt();
-            babe = query.value(Bae::DBCols::BABE).toInt() == 1 ? true : false;
-        }
-
-        setRating(rate);
-
-        if (babe)
+        if (this->connection.getTrackBabe(url))
             contextMenu->actions().at(0)->setText("Un-Babe it");
         else
             contextMenu->actions().at(0)->setText("Babe it");
@@ -805,7 +802,7 @@ void BabeTable::keyPressEvent(QKeyEvent *event)
     case Qt::Key_I:
 
     {
-        auto url = this->model()->data(this->model()->index(this->getIndex(), Bae::DBCols::URL)).toString();
+        auto url =  this->getRowData(this->getIndex())[Bae::DBCols::URL];
         emit infoIt_clicked(this->connection.getTrackData(QStringList(url)).first());
         break;
     }
@@ -876,7 +873,7 @@ void BabeTable::startPreview(const QString &url)
 {
     preview->setMedia(QUrl::fromLocalFile(url));
     preview->play();
-    this->item(this->getIndex(),Bae::DBCols::TITLE)->setIcon(QIcon::fromTheme("quickview"));
+    this->getItem(this->getIndex(),Bae::DBCols::TITLE)->setIcon(QIcon::fromTheme("quickview"));
     emit previewStarted();
 }
 
@@ -885,7 +882,7 @@ void BabeTable::stopPreview()
     if(preview->state()==QMediaPlayer::PlayingState)
     {
         preview->stop();
-        this->item(this->previewRow,Bae::DBCols::TITLE)->setIcon(QIcon::fromTheme(""));
+        this->getItem(this->previewRow,Bae::DBCols::TITLE)->setIcon(QIcon::fromTheme(""));
         emit previewFinished();
         previewRow=-1;
     }
@@ -923,7 +920,7 @@ void BabeTable::rateGroup(const int &id, const bool &rightClick)
             for (int i = 0; i < id; i++)
                 stars += "\xe2\x98\x86 ";
 
-            this->item(row, Bae::DBCols::STARS)->setText(stars);
+            this->getItem(row,Bae::DBCols::STARS)->setText(stars);
 
         } else qDebug() << "rating failed for"<< location;
     }
@@ -931,25 +928,25 @@ void BabeTable::rateGroup(const int &id, const bool &rightClick)
 
 Bae::DB BabeTable::getRowData(const int &row)
 {
-    QString url = this->model()->data(this->model()->index(row, Bae::DBCols::URL)).toString();
+    QString url = this->model()->data(this->model()->index(row,static_cast<int>(Bae::DBCols::URL))).toString();
 
     if(connection.check_existance(Bae::DBTablesMap[Bae::DBTables::TRACKS],Bae::TracksColsMap[Bae::DBCols::URL],url))
         return connection.getTrackData(QStringList(url)).first();
     else
     {
-        QString track = this->model()->data(this->model()->index(row, Bae::DBCols::TRACK)).toString();
-        QString title = this->model()->data(this->model()->index(row, Bae::DBCols::TITLE)).toString();
-        QString artist = this->model()->data(this->model()->index(row, Bae::DBCols::ARTIST)).toString();
-        QString album = this->model()->data(this->model()->index(row, Bae::DBCols::ALBUM)).toString();
-        QString duration = this->model()->data(this->model()->index(row, Bae::DBCols::DURATION)).toString();
-        QString genre = this->model()->data(this->model()->index(row, Bae::DBCols::GENRE)).toString();
-        QString location = this->model()->data(this->model()->index(row, Bae::DBCols::URL)).toString();
-        QString stars = this->model()->data(this->model()->index(row, Bae::DBCols::STARS)).toString();
-        QString babe = this->model()->data(this->model()->index(row, Bae::DBCols::BABE)).toString();
-        QString releaseDate = this->model()->data(this->model()->index(row, Bae::DBCols::RELEASE_DATE)).toString();
-        QString addDate = this->model()->data(this->model()->index(row, Bae::DBCols::ADD_DATE)).toString();
-        QString played = this->model()->data(this->model()->index(row, Bae::DBCols::PLAYED)).toString();
-        QString art = this->model()->data(this->model()->index(row, Bae::DBCols::ART)).toString();
+        QString track = this->model()->data(this->model()->index(row,static_cast<int>(Bae::DBCols::TRACK))).toString();
+        QString title = this->model()->data(this->model()->index(row,static_cast<int>(Bae::DBCols::TITLE))).toString();
+        QString artist = this->model()->data(this->model()->index(row,static_cast<int>(Bae::DBCols::ARTIST))).toString();
+        QString album = this->model()->data(this->model()->index(row,static_cast<int>(Bae::DBCols::ALBUM))).toString();
+        QString duration = this->model()->data(this->model()->index(row,static_cast<int>(Bae::DBCols::DURATION))).toString();
+        QString genre = this->model()->data(this->model()->index(row,static_cast<int>(Bae::DBCols::GENRE))).toString();
+        QString location = this->model()->data(this->model()->index(row,static_cast<int>(Bae::DBCols::URL))).toString();
+        QString stars = this->model()->data(this->model()->index(row,static_cast<int>(Bae::DBCols::STARS))).toString();
+        QString babe = this->model()->data(this->model()->index(row,static_cast<int>(Bae::DBCols::BABE))).toString();
+        QString releaseDate = this->model()->data(this->model()->index(row,static_cast<int>(Bae::DBCols::RELEASE_DATE))).toString();
+        QString addDate = this->model()->data(this->model()->index(row,static_cast<int>(Bae::DBCols::ADD_DATE))).toString();
+        QString played = this->model()->data(this->model()->index(row,static_cast<int>(Bae::DBCols::PLAYED))).toString();
+        QString art = this->model()->data(this->model()->index(row,static_cast<int>(Bae::DBCols::ART))).toString();
 
         return Bae::DB
         {
@@ -1030,19 +1027,19 @@ void BabeTable::editIt_action()
     // emit this->edit(this->model()->index(rRow,rColumn));
 
     auto infoForm = new metadataForm(getRowData(rRow),this);
-    connect(infoForm,SIGNAL(infoModified(QMap<int, QString>)),this,SLOT(itemEdited(QMap<int, QString>)));
+    connect(infoForm, &metadataForm::infoModified,this,&BabeTable::itemEdited);
     infoForm->show();
 
 }
 
-void BabeTable::itemEdited(Bae::DB map)
+void BabeTable::itemEdited(const Bae::DB &map)
 {
     qDebug()<<"item changed: " << map[Bae::DBCols::TITLE];
-    this->item(rRow,Bae::DBCols::TRACK)->setText(map[Bae::DBCols::TRACK]);
-    this->item(rRow,Bae::DBCols::TITLE)->setText(map[Bae::DBCols::TITLE]);
-    this->item(rRow,Bae::DBCols::ARTIST)->setText(map[Bae::DBCols::ARTIST]);
-    this->item(rRow,Bae::DBCols::ALBUM)->setText(map[Bae::DBCols::ALBUM]);
-    this->item(rRow,Bae::DBCols::GENRE)->setText(map[Bae::DBCols::GENRE]);
+    this->getItem(rRow,Bae::DBCols::TRACK)->setText(map[Bae::DBCols::TRACK]);
+    this->getItem(rRow,Bae::DBCols::TITLE)->setText(map[Bae::DBCols::TITLE]);
+    this->getItem(rRow,Bae::DBCols::ARTIST)->setText(map[Bae::DBCols::ARTIST]);
+    this->getItem(rRow,Bae::DBCols::ALBUM)->setText(map[Bae::DBCols::ALBUM]);
+    this->getItem(rRow,Bae::DBCols::GENRE)->setText(map[Bae::DBCols::GENRE]);
 
     //connection.insertInto("tracks",column,this->model()->index(newIndex.row(),LOCATION).data().toString(),newIndex.data().toString());
 
@@ -1050,17 +1047,11 @@ void BabeTable::itemEdited(Bae::DB map)
 
 void BabeTable::infoIt_action()
 {
-    QString url = this->model()->data(this->model()->index(rRow, Bae::DBCols::URL)).toString();
-    emit infoIt_clicked(this->connection.getTrackData(QStringList(url)).first());
+    emit infoIt_clicked(this->getRowData(rRow));
 }
 
 void BabeTable::removeIt_action()
 {
-    qDebug() << "removeIt/right clicked!";
-    // int row= this->currentIndex().row();
-    qDebug()
-            << this->model()->data(this->model()->index(rRow, Bae::DBCols::URL)).toString();
-    //    this->removeRow(rRow);
     emit removeIt_clicked(rRow);
 }
 
@@ -1085,12 +1076,12 @@ void BabeTable::colorizeRow(const QList<int> &rows, const QString &color, const 
         QColor coloring;
         coloring.setNamedColor(color);
         if(!dark) coloring.setAlpha(60);
-        this->item(row,Bae::DBCols::TITLE)->setBackgroundColor(coloring);
+        this->getItem(row,Bae::DBCols::TITLE)->setBackgroundColor(coloring);
         if(dark)
         {
             QBrush brush;
             brush.setColor("#fff");
-            this->item(row,Bae::DBCols::TITLE)->setForeground(brush);
+            this->getItem(row,Bae::DBCols::TITLE)->setForeground(brush);
         }
         //this->item(row,TITLE)->setTextAlignment(Qt::AlignCenter);
     }
@@ -1109,7 +1100,7 @@ void BabeTable::queueIt_action()
 QList<int> BabeTable::getSelectedRows(const bool &onRightClick)
 {
     QList<int> selectedRows;
-    auto selection = this->selectionModel()->selectedRows(Bae::DBCols::TITLE);
+    auto selection = this->selectionModel()->selectedRows(static_cast<int>(Bae::DBCols::TITLE));
     QList<QMap<int, QString>> list;
 
     for(auto model : selection) selectedRows<<model.row();
@@ -1130,10 +1121,10 @@ QStringList BabeTable::getTableColumnContent(const Bae::DBCols &column)
 {
     QStringList result;
 
-    if(column <= this->columnCount())
+    if(static_cast<int>(column) <= this->columnCount())
     {
         for (int i = 0; i < this->rowCount(); i++)
-            result << this->model()->data(this->model()->index(i, column)).toString();
+            result << this->getRowData(i)[column];
     }
     return result;
 }
@@ -1159,7 +1150,7 @@ void BabeTable::removeRepeated()//tofix
         auto track = this->getRowData(row);
         auto trackInfo = track[Bae::DBCols::TITLE]+"/&/"+track[Bae::DBCols::ARTIST]+"/&/"+track[Bae::DBCols::ALBUM];
 
-        if(index.contains(trackInfo) && this->item(row,Bae::DBCols::TITLE)->icon().name().isEmpty())
+        if(index.contains(trackInfo) && this->getItem(row,Bae::DBCols::TITLE)->icon().name().isEmpty())
         {
             qDebug()<<"index contains:"<<track[Bae::DBCols::TITLE]<<row;;
             this->removeRow(row);

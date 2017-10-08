@@ -90,6 +90,8 @@ public:
     QString getTrackLyrics(const QString &url);
     QString getTrackArt(const QString &path);
     QStringList getTrackTags(const QString &path);
+    int getTrackStars(const QString &path);
+    int getTrackBabe(const QString &path);
     QString getArtistArt(const QString &artist);
     QString getArtistWiki(const QString &artist);
     QStringList getArtistTags(const QString &artist);
@@ -134,6 +136,7 @@ public slots:
 
 signals:
     void trackInserted();
+    void artworkInserted(const Bae::DB &albumMap);
     void DBactionFinished();
 
 };

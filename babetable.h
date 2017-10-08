@@ -143,12 +143,14 @@ public:
     void removeMissing(const QString &url);
     void setRating(int rate);
     void setTableOrder(int column, Bae::Order order);
-    void setVisibleColumn(int column);
+    void setVisibleColumn(const Bae::DBCols &column);
     void addRow(const Bae::DB &map);
     void addRowAt(const int &row, const Bae::DB &map);
     void passStyle(QString style);
     void setAddMusicMsg(const QString &msg, const QString &icon= "face-sleeping");
     int getIndex();
+    QTableWidgetItem *getItem(const int &row, const Bae::DBCols &column);
+    void putItem(const int &row, const Bae::DBCols &col, QTableWidgetItem *item);
     void enablePreview(const bool state);
     void startPreview(const QString &url);
     void stopPreview();
@@ -195,7 +197,7 @@ private slots:
     void update();
 
 public slots:
-    void itemEdited(Bae::DB map);
+    void itemEdited(const Bae::DB &map);
     void flushTable();
     void colorizeRow(const QList<int> &rows, const QString &color, const bool &dark=false);
 
@@ -204,24 +206,24 @@ public slots:
 
 signals:
 
-    void tableWidget_doubleClicked(Bae::DB_LIST mapList);
-    void songRated(QStringList list);
+    void tableWidget_doubleClicked(const Bae::DB_LIST &mapList);
+    void songRated(const QStringList &list);
     void enterTable();
     void leaveTable();
     void finishedPopulating();
-    void rightClicked(const int row, const int column);
-    void babeIt_clicked(Bae::DB_LIST tracks);
-    void removeIt_clicked(int index);
-    void moodIt_clicked(QList<int> rows, QString color, bool dark);
-    void queueIt_clicked(Bae::DB_LIST track);
+    void rightClicked(const int &row, const int &column);
+    void babeIt_clicked(const Bae::DB_LIST &tracks);
+    void removeIt_clicked(const int &index);
+    void moodIt_clicked(const QList<int> &rows,const QString &color,const bool &dark);
+    void queueIt_clicked(const Bae::DB_LIST &track);
     void infoIt_clicked(const Bae::DB &track);
-    void indexesMoved(int track,int newRow);
+    void indexesMoved(const int &track,const int &newRow);
     void previewStarted();
     void previewFinished();
-    void indexRemoved(int row);
-    void playItNow(Bae::DB_LIST tracks);
-    void appendIt(Bae::DB_LIST tracks);
-    void saveToPlaylist(Bae::DB_LIST tracks);
+    void indexRemoved(const int &row);
+    void playItNow(const Bae::DB_LIST &tracks);
+    void appendIt(const Bae::DB_LIST &tracks);
+    void saveToPlaylist(const Bae::DB_LIST &tracks);
 
 };
 

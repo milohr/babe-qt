@@ -15,7 +15,7 @@ class metadataForm : public QWidget
     Q_OBJECT
 
 public:
-    explicit metadataForm(const Bae::DB &info, QWidget *parent = 0);
+    explicit metadataForm(const Bae::DB &info, QWidget *parent = nullptr);
     ~metadataForm();
 
 private slots:

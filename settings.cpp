@@ -25,12 +25,12 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
     // QFrame frame = new QFrame();
 
     // collectionDBPath=QDir().absolutePath()+collectionDBPath;
-    qDebug() << "Getting collectionDB info from: " << collectionDBPath;
-    qDebug() << "Getting settings info from: " << settingPath;
-    qDebug() << "Getting artwork files from: " << cachePath;
-    qDebug() << "Getting extension files files from: " << extensionFetchingPath;
+    qDebug() << "Getting collectionDB info from: " << Bae::CollectionDBPath;
+    qDebug() << "Getting settings info from: " << Bae::SettingPath;
+    qDebug() << "Getting artwork files from: " << Bae::CachePath;
+    qDebug() << "Getting extension files files from: " <<Bae::ExtensionFetchingPath;
 
-    ui->ytLineEdit->setText(extensionFetchingPath);
+    ui->ytLineEdit->setText(Bae::ExtensionFetchingPath);
     ui->frame_4->setEnabled(false);
 
 
@@ -46,10 +46,10 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
 
     }
 
-    QDir collectionDBPath_dir(collectionDBPath);
-    QDir settingsPath_dir(settingPath);
-    QDir cachePath_dir(cachePath);
-    QDir youtubeCache_dir(youtubeCachePath);
+    QDir collectionDBPath_dir(Bae::CollectionDBPath);
+    QDir settingsPath_dir(Bae::SettingPath);
+    QDir cachePath_dir(Bae::CachePath);
+    QDir youtubeCache_dir(Bae::YoutubeCachePath);
 
     if (!collectionDBPath_dir.exists())
         collectionDBPath_dir.mkpath(".");
@@ -60,11 +60,24 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
     if (!youtubeCache_dir.exists())
         youtubeCache_dir.mkpath(".");
 
+    connect(&trackSaver, &TrackSaver::artworkReady,[this](Bae::DB albumMap)
+    {
+        emit albumArtReady(albumMap);
+    });
+
+    connect(&trackSaver, &TrackSaver::finishedFetchingArtwork,[this]()
+    {
+        movie->stop();
+        ui->label->hide();
+        this->ui->sourcesFrame->setEnabled(true);
+
+    });
+
     connect(this, &settings::getArtwork, this, &settings::fetchArt);
 
     connect(&collection_db,&CollectionDB::trackInserted,[this]()
     {
-        trackSaver.next();
+        trackSaver.nextTrack();
         this->ui->progressBar->setValue(this->ui->progressBar->value()+1);
     });
     connect(&trackSaver,&TrackSaver::collectionSize,[this](int size)
@@ -98,14 +111,14 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
     connect(this, &settings::collectionPathChanged, this, &settings::populateDB);
 
 
-    ui->ytLineEdit->setText(extensionFetchingPath);
+    ui->ytLineEdit->setText(Bae::ExtensionFetchingPath);
     ytFetch = new YouTube(this);
     connect(ytFetch,&YouTube::youtubeTrackReady, this, &settings::populateDB);
 
     //    connect(ytFetch,&YouTube::youtubeTrackReady,[this](){ emit collectionPathChanged(youtubeCachePath);});
     ytFetch->searchPendingFiles();
     extensionWatcher = new QFileSystemWatcher();
-    extensionWatcher->addPath(extensionFetchingPath);
+    extensionWatcher->addPath(Bae::ExtensionFetchingPath);
     connect(extensionWatcher, SIGNAL(directoryChanged(QString)), this,
             SLOT(handleDirectoryChanged_extension()));
 
@@ -135,7 +148,7 @@ void settings::handleDirectoryChanged_extension()
 {
     QStringList urls;
 
-    QDirIterator it(extensionFetchingPath, QStringList() << "*.babe", QDir::Files);
+    QDirIterator it(Bae::ExtensionFetchingPath, QStringList() << "*.babe", QDir::Files);
 
     while (it.hasNext()) urls<< it.next();
 
@@ -183,9 +196,9 @@ void settings::refreshWatchFiles()
 
     while (query.next())
     {
-        if(!query.value(Bae::DBColsMap[Bae::DBCols::URL]).toString().contains(youtubeCachePath))
+        if(!query.value(Bae::DBColsMap[Bae::DBCols::URL]).toString().contains(Bae::YoutubeCachePath))
         {
-            if (!dirs.contains(QFileInfo(query.value(Bae::DBColsMap[Bae::DBCols::URL]).toString()).dir().path())&&QFileInfo(query.value(Bae::DBCols::URL).toString()).exists())
+            if (!dirs.contains(QFileInfo(query.value(Bae::DBColsMap[Bae::DBCols::URL]).toString()).dir().path())&&QFileInfo(query.value(Bae::DBColsMap[Bae::DBCols::URL]).toString()).exists())
             {
                 QString dir =QFileInfo(query.value(Bae::DBColsMap[Bae::DBCols::URL]).toString()).dir().path();
 
@@ -244,7 +257,7 @@ void settings::setSettings(QStringList setting) {
     bool replace = false;
     /**/
     // qDebug()<<setting.at(0);
-    std::ifstream settings(settingPath.toStdString() +
+    std::ifstream settings(Bae::SettingPath.toStdString() +
                            settingsName.toStdString());
     QStringList newline;
     std::string line;
@@ -262,14 +275,14 @@ void settings::setSettings(QStringList setting) {
     }
 
     if (replace) {
-        std::ofstream write(settingPath.toStdString() + settingsName.toStdString());
+        std::ofstream write(Bae::SettingPath.toStdString() + settingsName.toStdString());
 
         for (auto ln : newline) {
             write << ln.toStdString() << std::endl;
         }
 
     } else {
-        std::ofstream write(settingPath.toStdString() + settingsName.toStdString(),
+        std::ofstream write(Bae::SettingPath.toStdString() + settingsName.toStdString(),
                             std::ios::app);
         write << strNew << std::endl;
     }
@@ -282,7 +295,7 @@ void settings::removeSettings(QStringList setting) {
     bool replace = false;
     /**/
     // qDebug()<<setting.at(0);
-    std::ifstream settings(settingPath.toStdString() +
+    std::ifstream settings(Bae::SettingPath.toStdString() +
                            settingsName.toStdString());
     QStringList newline;
     std::string line;
@@ -301,7 +314,7 @@ void settings::removeSettings(QStringList setting) {
 
     if (replace)
     {
-        std::ofstream write(settingPath.toStdString() + settingsName.toStdString());
+        std::ofstream write(Bae::SettingPath.toStdString() + settingsName.toStdString());
 
         for (auto ln : newline)
             write << ln.toStdString() << std::endl;
@@ -309,7 +322,7 @@ void settings::removeSettings(QStringList setting) {
 
     } else
     {
-        std::ofstream write(settingPath.toStdString() + settingsName.toStdString(),
+        std::ofstream write(Bae::SettingPath.toStdString() + settingsName.toStdString(),
                             std::ios::app);
         write << strNew << std::endl;
     }
@@ -328,7 +341,7 @@ void settings::collectionWatcher()
     while (query.next())
     {
         QString location = query.value(1).toString();
-        if(!location.startsWith(youtubeCachePath,Qt::CaseInsensitive)) //exclude the youtube cache folder
+        if(!location.startsWith(Bae::YoutubeCachePath,Qt::CaseInsensitive)) //exclude the youtube cache folder
         {
             if (!dirs.contains(QFileInfo(location).dir().path()) && Bae::fileExists(location)) //check if parent dir isn't already in list and it exists
             {
@@ -357,7 +370,7 @@ void settings::handleDirectoryChanged(const QString &dir)
 
 void settings::readSettings()
 {
-    std::ifstream settings(settingPath.toStdString() +
+    std::ifstream settings(Bae::SettingPath.toStdString() +
                            settingsName.toStdString());
     std::string line;
     while (std::getline(settings, line))
@@ -398,11 +411,11 @@ void settings::setToolbarIconSize(const int &iconSize)
 
 bool settings::checkCollection()
 {
-    if (Bae::fileExists(collectionDBPath + collectionDBName))
+    if (Bae::fileExists(Bae::CollectionDBPath + collectionDBName))
     {
         qDebug() << "The CollectionDB does exists.";
 
-        collection_db.setUpCollection(collectionDBPath + collectionDBName);
+        collection_db.setUpCollection(Bae::CollectionDBPath + collectionDBName);
         collectionWatcher();
         return true;
     } else return false;
@@ -414,7 +427,7 @@ void settings::createCollectionDB()
     qDebug() << "The CollectionDB doesn't exists. Going to create the database "
                 "and tables";
 
-    collection_db.setUpCollection(collectionDBPath + collectionDBName);
+    collection_db.setUpCollection(Bae::CollectionDBPath + collectionDBName);
     collection_db.prepareCollectionDB();
 
 }
@@ -434,76 +447,12 @@ void settings::populateDB(const QString &path)
 void settings::fetchArt()
 {
 
+    this->trackSaver.requestArtwork();
     nof.notify("Fetching art","this might take some time depending on your collection size and internet connection speed...");
-
-    int amountArtists=0;
-    int amountAlbums=0;
-
     ui->label->show();
     movie->start();
 
-    QString queryTxt;
-    QSqlQuery query_Covers;
-    QSqlQuery query_Heads;
 
-    queryTxt = QString("SELECT %1, %2 FROM %3 WHERE %4 = ''").arg(Bae::DBColsMap[Bae::DBCols::ALBUM],
-            Bae::DBColsMap[Bae::DBCols::ARTIST],Bae::DBTablesMap[Bae::DBTables::ALBUMS],Bae::DBColsMap[Bae::DBCols::ARTWORK]);
-    query_Covers.prepare(queryTxt);
-
-    queryTxt = QString("SELECT %1 FROM %2 WHERE %3 = ''").arg(Bae::DBColsMap[Bae::DBCols::ARTIST],
-            Bae::DBTablesMap[Bae::DBTables::ARTISTS],Bae::DBColsMap[Bae::DBCols::ARTWORK]);
-    query_Heads.prepare(queryTxt);
-
-    if(query_Covers.exec())
-        while (query_Covers.next())
-        {
-            QString album = query_Covers.value(Bae::DBColsMap[Bae::DBCols::ALBUM]).toString();
-            QString artist = query_Covers.value(Bae::DBColsMap[Bae::DBCols::ARTIST]).toString();
-            QString title;
-            QSqlQuery query_Title =
-                    collection_db.getQuery("SELECT title FROM tracks WHERE artist = \""+artist+"\" AND album = \""+album+"\"");
-            if(query_Title.next()) title=query_Title.value(Bae::DBColsMap[Bae::DBCols::TITLE]).toString();
-
-            collection_db.insertArtwork({{Bae::DBCols::ARTWORK,""},{Bae::DBCols::ALBUM,album},{Bae::DBCols::ARTIST,artist}});
-
-            Pulpo art({{Bae::DBCols::TITLE,title},{Bae::DBCols::ARTIST,artist},{Bae::DBCols::ALBUM,album}});
-
-            connect(&art, &Pulpo::albumArtReady,[this,&art] (QByteArray array){ art.saveArt(array,this->cachePath); });
-            connect(&art, &Pulpo::artSaved, &collection_db, &CollectionDB::insertArtwork);
-
-            if (art.fetchAlbumInfo(Pulpo::AlbumArt,Pulpo::LastFm)) qDebug()<<"using lastfm";
-            else if(art.fetchAlbumInfo(Pulpo::AlbumArt,Pulpo::Spotify)) qDebug()<<"using spotify";
-            else if(art.fetchAlbumInfo(Pulpo::AlbumArt,Pulpo::GeniusInfo)) qDebug()<<"using genius";
-            else art.albumArtReady(QByteArray());
-            amountAlbums++;
-        }
-    else qDebug()<<"fetchArt queryCover failed";
-
-
-    if(query_Heads.exec())
-        while (query_Heads.next())
-        {
-            QString artist = query_Heads.value(Bae::DBColsMap[Bae::DBCols::ARTIST]).toString();
-            //            qDebug()<< "QUERYHEAD ARTIOSTSSSSS:"<<artist;
-            collection_db.insertArtwork({{Bae::DBCols::ARTWORK,""},{Bae::DBCols::ARTIST,artist}});
-
-            Pulpo art({{Bae::DBCols::ARTIST,artist}});
-
-            connect(&art, &Pulpo::artistArtReady,[this,&art] (QByteArray array){ art.saveArt(array,this->cachePath); });
-            connect(&art, &Pulpo::artSaved, &collection_db, &CollectionDB::insertArtwork);
-
-            art.fetchArtistInfo(Pulpo::ArtistArt,Pulpo::LastFm);
-
-            amountArtists++;
-        }
-    else qDebug()<<"fetchArt queryHeads failed";
-
-
-    nof.notify("Finished fetching art","the artwork for your collection is now ready :)\n "+QString::number(amountArtists)+" artists and "+QString::number(amountAlbums)+" albums");
-    movie->stop();
-    ui->label->hide();
-    this->ui->sourcesFrame->setEnabled(true);
-    emit refreshAlbumsView();
 }
 
 void settings::on_pushButton_clicked()
@@ -520,20 +469,6 @@ void settings::on_debugBtn_clicked()
     qDebug()<<"Current dirs being watched:";
     for(auto dir: watcher->directories()) qDebug()<<dir;
 
-}
-
-void settings::on_ytBtn_clicked()
-{
-
-}
-
-void settings::on_fetchBtn_clicked()
-{
-    //    if(!ui->fetch->text().isEmpty())
-    //    {
-    //        ytFetch->fetch({ui->fetch->text()});
-    //        ui->fetch->clear();
-    //    }
 }
 
 void settings::on_checkBox_stateChanged(int arg1)

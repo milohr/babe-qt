@@ -11,17 +11,14 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     this->setAcceptDrops(false);
     this->grid = new GridView(this);
     connect(grid,&GridView::albumReady,[this](){albumLoader.next();});
-    connect(&albumLoader, &AlbumLoader::albumReady,this->grid, &GridView::addAlbum);
+    connect(&albumLoader, &AlbumLoader::albumReady,this, &AlbumsView::addAlbum);
     connect(&albumLoader, &AlbumLoader::finished,[this]()
     {
         this->grid->sortItems(Qt::AscendingOrder);
     });
-    connect(grid,&GridView::albumClicked,[this](const Bae::DB &albumMap)
-    {
-        if(albumMap[Bae::DBCols::ALBUM].isEmpty()) getArtistInfo(albumMap);
-        else  getAlbumInfo(albumMap);
 
-    });
+    connect(grid,&GridView::albumClicked,this,&AlbumsView::showAlbumInfo);
+
     connect(grid,&GridView::albumDoubleClicked,[this](const Bae::DB &albumMap)
     {
          emit this->albumDoubleClicked(albumMap);
@@ -52,10 +49,10 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
 
     this->albumTable = new BabeTable(this);
     this->albumTable->setFrameShape(QFrame::NoFrame);
-    this->albumTable->showColumn(Bae::DBCols::TRACK);
-    this->albumTable->showColumn(Bae::DBCols::STARS);
-    this->albumTable->hideColumn(Bae::DBCols::ARTIST);
-    this->albumTable->hideColumn(Bae::DBCols::ALBUM);
+    this->albumTable->showColumn(static_cast<int>(Bae::DBCols::TRACK));
+    this->albumTable->showColumn(static_cast<int>(Bae::DBCols::STARS));
+    this->albumTable->hideColumn(static_cast<int>(Bae::DBCols::ARTIST));
+    this->albumTable->hideColumn(static_cast<int>(Bae::DBCols::ALBUM));
 
     auto albumBox = new QGridLayout();
     albumBox->setContentsMargins(0,0,0,0);
@@ -138,9 +135,9 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
 
     albumBox_frame->hide(); line_h->hide();
 
-    splitter->setSizes({0,0,0});
-    splitter->setStretchFactor(0, 1);
-    splitter->setStretchFactor(2, 0);
+    splitter->setSizes({0,0,0,0});
+    splitter->setStretchFactor(1, 1);
+    splitter->setStretchFactor(3, 0);
 
     this->setLayout(layout);
 }
@@ -150,8 +147,7 @@ void AlbumsView::expandList()
 {
     auto album = cover->getAlbum();
     auto artist = cover->getArtist();
-
-    emit expandTo(artist, album);
+    emit expandTo(artist);
 }
 
 
@@ -186,17 +182,15 @@ void  AlbumsView::flushView()
 
 
 
-void AlbumsView::populateAlbumsView(QSqlQuery &query)
+void AlbumsView::populateAlbumsView(const Bae::DBTables &type,QSqlQuery &query)
 {
     qDebug()<<"POPULATING ALBUMS WAS CALLED";
-    albumLoader.requestAlbums(Bae::DBTables::ALBUMS,query.lastQuery());
+    albumLoader.requestAlbums(type, query.lastQuery());
 }
 
-void AlbumsView::populateArtistsView(QSqlQuery &query)
+void AlbumsView::addAlbum(const Bae::DB &albumMap)
 {
-    qDebug()<<"POPULATING ARTISTS WAS CALLED";
-
-    albumLoader.requestAlbums(Bae::DBTables::ARTISTS,query.lastQuery());
+    this->grid->addAlbum(albumMap);
 }
 
 
@@ -250,72 +244,46 @@ void AlbumsView::populateExtraList(const QStringList &albums)
 }
 
 
-void AlbumsView::getAlbumInfo(const Bae::DB &info)
+void AlbumsView::showAlbumInfo(const Bae::DB &albumMap)
 {
     albumBox_frame->setVisible(true);
     line_h->setVisible(true);
-    QString artist =info[Bae::DBCols::ARTIST];
-    QString album = info[Bae::DBCols::ALBUM];
-
-    cover->setTitle(artist,album);
-    expandBtn->setToolTip("View "+ cover->getArtist());
-
     albumTable->flushTable();
 
-    albumTable->populateTableView(connection.getAlbumTracks(album, artist));
+    auto type = Bae::albumType(albumMap);
 
-    auto art = connection.getAlbumArt(album,artist);
-    art = art.isEmpty()? connection.getArtistArt(artist) : art;
+    if(type== Bae::DBTables::ALBUMS)
+    {
+        auto artist = albumMap[Bae::DBCols::ARTIST];
+        auto album = albumMap[Bae::DBCols::ALBUM];
 
-    cover->putPixmap(art); if(!art.isEmpty()) cover->putPixmap(art);
-    else cover->putDefaultPixmap();
+        cover->setTitle(artist,album);
+        expandBtn->setToolTip("View "+ cover->getArtist());
 
-}
+        albumTable->populateTableView(connection.getAlbumTracks(album, artist));
 
-void AlbumsView::getArtistInfo(const Bae::DB &info)
-{
-    albumBox_frame->show();
-    line_h->show();
+        auto art = connection.getAlbumArt(album,artist);
+        art = art.isEmpty()? connection.getArtistArt(artist) : art;
 
-    QString artist =info[Bae::DBCols::ARTIST];
-    cover->setTitle(artist);
-    albumTable->flushTable();
+        cover->putPixmap(art);
 
-    albumTable->populateTableView(connection.getArtistTracks(artist));
-    auto art = connection.getArtistArt(artist);
-    if(!art.isEmpty()) cover->putPixmap(art);
-    else cover->putDefaultPixmap();
+        if(!art.isEmpty()) cover->putPixmap(art);
+        else cover->putDefaultPixmap();
 
-    if(extraList)
-        populateExtraList(connection.getArtistAlbums(artist));
+    }else if(type== Bae::DBTables::ARTISTS)
+    {
 
-    //    QListView w;
-    //    QPalette p = w.palette();
-    //    p.setBrush(QPalette::Base, QPixmap("/usr/share/wallpapers/Air/contents/images/1024x768.jpg"));
-    //    w.setPalette(p);
+        auto artist =albumMap[Bae::DBCols::ARTIST];
+        cover->setTitle(artist);
 
-    //    QGraphicsBlurEffect* effect	= new QGraphicsBlurEffect();
-    //    effect->setBlurRadius(5);
-    //    int extent =0;
-    //    auto src = QPixmap(art).toImage();
-    //    QGraphicsScene scene;
-    //    QGraphicsPixmapItem item;
-    //    item.setPixmap(QPixmap::fromImage(src));
-    //    item.setGraphicsEffect(effect);
-    //    scene.addItem(&item);
-    //    QImage res(src.size()+QSize(extent*2, extent*2), QImage::Format_ARGB32);
-    //    res.fill(Qt::transparent);
-    //    QPainter ptr(&res);
-    //    scene.render(&ptr, QRectF(), QRectF( -extent, -extent, src.width()+extent*2, src.height()+extent*2 ) );
+        albumTable->populateTableView(connection.getArtistTracks(artist));
+        auto art = connection.getArtistArt(artist);
+        if(!art.isEmpty()) cover->putPixmap(art);
+        else cover->putDefaultPixmap();
 
+        if(extraList)
+            populateExtraList(connection.getArtistAlbums(artist));
 
-    //    QPalette palette = albumBox_frame->palette();
-    //    palette.setBrush(QPalette::Background,res);
-    //    albumBox_frame->setPalette(palette);
-    //    albumBox_frame->setGraphicsEffect(effect);
-
-
+    }
 
 }
-
-

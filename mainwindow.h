@@ -61,7 +61,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(const QStringList &files={}, QWidget *parent = 0);
+    explicit MainWindow(const QStringList &files={}, QWidget *parent = nullptr);
     ~MainWindow();
 
     enum views
@@ -153,13 +153,11 @@ private slots:
     void settingsView();
 
     /*the view stacked actions*/
-    void addToCollectionDB(const QStringList &url,const QString &babe="0");
     void setToolbarIconSize(const int &iconSize);
 
     void on_fav_btn_clicked();
     void showControls(const bool &state);
-    void on_search_returnPressed();
-    void on_search_textChanged(const QString &arg1);
+    void runSearch();
 
     //void on_resultsPLaylist_clicked();
     void setCoverArt(const Bae::DB &song);
@@ -260,24 +258,23 @@ private:
 
     void updateList();
     void populateMainList();
-    bool isBabed(const Bae::DB &track);
+    int isBabed(const Bae::DB &track);
     void feedRabbit();
-    void expandAlbumList(const QString &artist, const QString &album);
+    void expandAlbumList(const QString &artist);
     void blurWidget(Album &widget, const int &radius );
     void babedIcon(const bool &state);
     void saveSettings(const QString &key, const QVariant &value,const QString &group);
-    void movePanel(const int &pos);
+    void movePanel(const position &pos);
     void loadStyle();
     QVariant loadSettings(const QString &key, const QString &group, const QVariant &defaultValue = QVariant());
 
     /*the streaming */
     QMediaPlayer *player;
     QTimer *updater = new QTimer(this);
-    QTimer *timer;
 
     QSlider *seekBar;
-    QMenu *calibrateBtn_menu;
-
+    QMenu *calibrateBtn_menu;  
+    QTimer *searchTimer;
 
     QMap<QString,Bae::DB> queued_songs;
     int prev_queued_song_pos = -1;

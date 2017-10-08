@@ -40,8 +40,9 @@ static const QMap<Order,QString> OrderMap =
     {Order::ASC,"ASC"}
 };
 
-enum DBTables
+enum class DBTables : uint
 {
+
     ALBUMS=0,
     ARTISTS=1,
     MOODS=2,
@@ -55,7 +56,9 @@ enum DBTables
     ALBUMS_TAGS=10,
     ARTISTS_TAGS=11,
     TRACKS_TAGS=12,
-    ALL=13
+    ALL=13,
+    NONE=14
+
 };
 
 static const QMap<DBTables,QString> DBTablesMap =
@@ -77,9 +80,9 @@ static const QMap<DBTables,QString> DBTablesMap =
 };
 
 
-enum DBCols
+enum class DBCols :uint
 {
-    NONE=-1,
+
     URL=0,
     SOURCES_URL=1,
     TRACK=2,
@@ -100,7 +103,8 @@ enum DBCols
     PLAYLIST=17,
     ARTWORK=18,
     WIKI=19,
-    SOURCE_TYPE=20
+    SOURCE_TYPE=20,
+    NONE=21
 };
 
 typedef QMap<Bae::DBCols, QString> DB;
@@ -273,7 +277,7 @@ inline QString removeSubstring(const QString &newTitle, const QString &subString
     }
 }
 
-inline QString ucfirst(const QString &str)
+inline QString ucfirst(const QString &str)/*uppercase fist letter*/
 {
     if (str.isEmpty()) return "";
 
@@ -331,7 +335,15 @@ inline bool fileExists(const QString &url)
     else return false;
 }
 
+inline Bae::DBTables albumType(const Bae::DB &albumMap)
+{
+    if(albumMap[Bae::DBCols::ALBUM].isEmpty() && !albumMap[Bae::DBCols::ARTIST].isEmpty())
+        return Bae::DBTables::ARTISTS;
+    else if(!albumMap[Bae::DBCols::ALBUM].isEmpty() && !albumMap[Bae::DBCols::ARTIST].isEmpty())
+        return Bae::DBTables::ALBUMS;
 
+    return Bae::DBTables::NONE;
+}
 }
 
 #endif // UTILS_H
