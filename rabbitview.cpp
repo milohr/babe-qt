@@ -1,8 +1,9 @@
 #include "rabbitview.h"
+#include <QColor>
 
 RabbitView::RabbitView(QWidget *parent) : QWidget(parent)
 {
-    auto *suggestionWidget_layout = new QGridLayout();
+    auto *suggestionWidget_layout = new QGridLayout;
     suggestionWidget_layout->setContentsMargins(0,0,0,0);
     suggestionWidget_layout->setSpacing(0);
 
@@ -11,22 +12,28 @@ RabbitView::RabbitView(QWidget *parent) : QWidget(parent)
     line->setFrameShadow(QFrame::Plain);
     line->setMaximumHeight(1);
 
-    artistSuggestion = new QListWidget(this);
-    artistSuggestion->setGridSize(QSize(ALBUM_SIZE_SMALL+10,ALBUM_SIZE_SMALL+10));
-    artistSuggestion->setFixedHeight(ALBUM_SIZE_MEDIUM);
-    artistSuggestion->setFrameShape(QFrame::NoFrame);
-    artistSuggestion->setViewMode(QListWidget::IconMode);
-    artistSuggestion->setResizeMode(QListWidget::Adjust);
+    artistSuggestion = new GridView(Bae::SMALL_ALBUM_FACTOR,Bae::AlbumSizeHint::SMALL_ALBUM,this);
+    artistSuggestion->setAlbumsSpacing(10);
+    artistSuggestion->setFixedHeight(static_cast<int>(ALBUM_SIZE_MEDIUM));
+
     artistSuggestion->setFlow(QListView::TopToBottom);
     artistSuggestion->setSizePolicy(QSizePolicy ::Expanding , QSizePolicy ::Fixed);
-    artistSuggestion->setSizeAdjustPolicy(QListWidget::AdjustToContentsOnFirstShow);
-    artistSuggestion->setStyleSheet("QListWidget {background:#575757; padding-top:10px; padding-left:15px; }");
+
 
     generalSuggestion = new BabeTable(this);
-    generalSuggestion->passStyle("QHeaderView::section { background-color:#333; color:white; }");
+    generalSuggestion->hideColumn(static_cast<int>(Bae::DBCols::ALBUM));
+    generalSuggestion->hideColumn(static_cast<int>(Bae::DBCols::ARTIST));
+    generalSuggestion->hideColumn(static_cast<int>(Bae::DBCols::DURATION));
+    generalSuggestion->horizontalHeader()->setVisible(false);
+    generalSuggestion->enableRowColoring(true);
+    generalSuggestion->enableRowDragging(true);
+//    generalSuggestion->passStyle("QHeaderView::section { background-color:#333; color:white; }");
     generalSuggestion->setAddMusicMsg("\nCouldn't find similar music","face-quiet");
 
-    QSplitter *splitter = new QSplitter(parent);
+    auto bgcolor= QColor(generalSuggestion->palette().color(QPalette::Background).name()).dark(200).name();
+    artistSuggestion->setStyleSheet(QString("QListWidget {background:%1; padding-top:10px; padding-left:15px; }").arg(bgcolor));
+
+    QSplitter *splitter = new QSplitter(this);
     splitter->setChildrenCollapsible(false);
     splitter->setOrientation(Qt::Vertical);
 
@@ -45,28 +52,26 @@ void RabbitView::populateArtistSuggestion(QMap<QString,QByteArray> info)
 {
     for(auto tag: info.keys())
     {
-        auto art = new Album(this);
-        connect(art, &Album::albumCoverClicked,this,&RabbitView:: filterByArtist);
-        connect(art,&Album::playAlbum, [this] (const Bae::DB &info) { emit playAlbum(info); });
-        art->createAlbum(Bae::DB{},Bae::SMALL_ALBUM,2,true);
-        //connect(art,&Album::babeAlbum,this,&RabbitView::babeAlbum);
-        art->setToolTip(Bae::fixString(tag));
-        art->putPixmap(info[tag]);
-        art->borderColor=true;
-        art->setTitle(Bae::fixString(tag));
-        art->showTitle(false);
-        auto item = new QListWidgetItem();
-        item->setSizeHint(QSize(ALBUM_SIZE_SMALL,ALBUM_SIZE_SMALL));
-        artistSuggestion->addItem(item);
-        artistSuggestion->setItemWidget(item, art);
-    }
+        qDebug()<<tag;
 
+        Bae::DB album {{Bae::DBCols::ARTIST,Bae::fixString(tag)}};
+
+        Pulpo saver(album);
+        connect(&saver, &Pulpo::artSaved,[this](const Bae::DB &album)
+        {
+            artistSuggestion->addAlbum(album);
+
+        });
+        saver.saveArt(info[tag],Bae::CachePath);
+
+
+    }
 }
 
 void RabbitView::populateGeneralSuggestion(const Bae::DB_LIST &mapList)
 {
     generalSuggestion->populateTableView(mapList);
-//    generalSuggestion->removeRepeated();
+    //    generalSuggestion->removeRepeated();
 }
 
 void RabbitView::flushSuggestions(RabbitView::suggestionsTables list)

@@ -1,12 +1,14 @@
 #include "gridview.h"
 
-GridView::GridView(QWidget *parent) : QListWidget(parent)
+GridView::GridView(const double &factor, const Bae::AlbumSizeHint &deafultValue, QWidget *parent) : QListWidget(parent)
 {
-    this->albumSize = Bae::getWidgetSizeHint(Bae::MEDIUM_ALBUM_FACTOR,Bae::MEDIUM_ALBUM);
+    this->albumFactor= factor;
+    this->defaultAlbumValue= deafultValue;
+    this->albumSize = Bae::getWidgetSizeHint(factor,deafultValue);
 
     this->installEventFilter(this);
     this->setObjectName("grid");
-    this->setMinimumHeight(albumSize);
+    this->setMinimumHeight(static_cast<int>(this->albumSize));
     this->setViewMode(QListWidget::IconMode);
     this->setResizeMode(QListWidget::Adjust);
     this->setWrapping(true);
@@ -16,7 +18,7 @@ GridView::GridView(QWidget *parent) : QListWidget(parent)
     this->setSizePolicy(QSizePolicy ::Expanding , QSizePolicy ::Expanding );
     this->setSizeAdjustPolicy(QListWidget::AdjustToContentsOnFirstShow);
     this->setStyleSheet("QListWidget,QListWidget::item,QListWidget::item:selected,QListWidget::item:selected:active {background:transparent; color:transparent; }");
-    this->setGridSize(QSize(this->albumSize+this->albumSpacing,this->albumSize+this->albumSpacing));
+    this->setGridSize(QSize(static_cast<int>(this->albumSize+this->albumSpacing),static_cast<int>(this->albumSize+this->albumSpacing)));
     this->setContextMenuPolicy(Qt::ContextMenuPolicy::ActionsContextMenu);
 
     this->setUpActions();
@@ -25,15 +27,12 @@ GridView::GridView(QWidget *parent) : QListWidget(parent)
 
 void GridView::addAlbum(const Bae::DB &albumMap)
 {
-
     Bae::DB auxMap {{Bae::DBCols::ARTIST,albumMap[Bae::DBCols::ARTIST]},{Bae::DBCols::ALBUM,albumMap[Bae::DBCols::ALBUM]}};
-//    qDebug()<<"ALBUMS ON GRID:"<<albumsMap.keys();
-
 
     if(!this->albumsMap.contains(auxMap))
     {
         auto album= new Album(this);
-        album->createAlbum(albumMap,Bae::MEDIUM_ALBUM,4,true);
+        album->createAlbum(albumMap,defaultAlbumValue,4,true);
 
         this->albumsMap.insert(auxMap,album);
 
@@ -42,7 +41,7 @@ void GridView::addAlbum(const Bae::DB &albumMap)
             emit this->albumClicked(albumMap);
         });
 
-        auto shadow = new QGraphicsDropShadowEffect();
+        auto shadow = new QGraphicsDropShadowEffect(this);
         shadow->setColor(QColor(0, 0, 0, 140));
         shadow->setBlurRadius(9);
         shadow->setOffset(3,5);
@@ -65,6 +64,7 @@ void GridView::addAlbum(const Bae::DB &albumMap)
             shadow->setColor(QColor(0, 0, 0, 180));
             shadow->setOffset(2,3);
         });
+
         connect(album, &Album::albumCoverLeave,[=]()
         {
             if(hiddenLabels) album->showTitle(false);
@@ -72,10 +72,9 @@ void GridView::addAlbum(const Bae::DB &albumMap)
             shadow->setOffset(3,5);
         });
 
-
-        auto item = new QListWidgetItem();
+        auto item = new QListWidgetItem;
         this->itemsList.push_back(item);
-        item->setSizeHint(QSize(album->getSize(),album->getSize()));
+        item->setSizeHint(QSize(static_cast<int>(album->getSize()),static_cast<int>(album->getSize())));
 
         if(album->getAlbum().isEmpty() && !album->getArtist().isEmpty()) item->setText(album->getArtist());
         else item->setText(album->getAlbum()+" "+album->getArtist());
@@ -95,7 +94,7 @@ void GridView::flushGrid()
     this->clear();
 }
 
-void GridView::setAlbumsSize(const int &value)
+void GridView::setAlbumsSize(const uint &value)
 {
     this->albumSize=value;
     /*slider->setToolTip(QString::number(value));
@@ -103,11 +102,18 @@ void GridView::setAlbumsSize(const int &value)
     for(auto album : albumsMap.values())
     {
         album->setSize(albumSize);
-        this->setGridSize(QSize(albumSize+this->albumSpacing,albumSize+this->albumSpacing));
+        this->setGridSize(QSize(static_cast<int>(this->albumSize+this->albumSpacing),static_cast<int>(this->albumSize+this->albumSpacing)));
         this->update();
     }
 
-    for(auto item : itemsList) item->setSizeHint(QSize(albumSize, albumSize));
+    for(auto item : itemsList) item->setSizeHint(QSize(static_cast<int>(albumSize), static_cast<int>(albumSize)));
+}
+
+void GridView::setAlbumsSpacing(const uint &space)
+{
+    this->albumSpacing=space;
+    this->setGridSize(QSize(static_cast<int>(this->albumSize+this->albumSpacing),static_cast<int>(this->albumSize+this->albumSpacing)));
+
 }
 
 bool GridView::eventFilter(QObject *obj, QEvent *event)
@@ -122,15 +128,16 @@ void GridView::adjustGrid()
 {
     auto scrollSize = this->verticalScrollBar()->size().width()+1;
     auto gridSize = this->size().width()-scrollSize;
-    auto amount = (gridSize/(albumSize+this->albumSpacing));
-    auto leftSpace = gridSize-amount*albumSize;
-    if(gridSize>this->albumSize)
-        this->setGridSize(QSize(albumSize+(leftSpace/amount),albumSize+this->albumSpacing));
+    auto amount = gridSize/(static_cast<int>(this->albumSize+this->albumSpacing));
+    auto leftSpace = gridSize-amount*static_cast<int>(this->albumSize);
+//    qDebug()<<"ther's space for: "<< amount <<" in "<<gridSize<<" and space left is"<<leftSpace;
+    if(gridSize>static_cast<int>(this->albumSize))
+        this->setGridSize(QSize(static_cast<int>(this->albumSize)+(leftSpace/amount),static_cast<int>(this->albumSize+this->albumSpacing)));
 }
 
 void GridView::setUpActions()
 {
-    this->order  = new QAction("Go Descending");
+    this->order  = new QAction("Go Descending",this);
     this->addAction(order);
     connect(order, &QAction::triggered,[this]()
     {

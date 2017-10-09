@@ -19,6 +19,8 @@ class Playlist
 {
 public:
     Playlist();
+    ~Playlist();
+
     QStringList getList();
     void add(QStringList files);
     void addClean(QStringList files);

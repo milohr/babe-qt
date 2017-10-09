@@ -32,7 +32,7 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView)
         emit this->playAlbum(info);
 
     });
-    artist->createAlbum(Bae::DB{{Bae::DBCols::ARTWORK, ":Data/data/cover.png"}}, Bae::MEDIUM_ALBUM, 100,false);
+    artist->createAlbum(Bae::DB{{Bae::DBCols::ARTWORK, ":Data/data/cover.png"}}, Bae::AlbumSizeHint::MEDIUM_ALBUM, 100,false);
 
     /* ui->lyricsText->setLineWrapMode(QTextEdit::NoWrap);
     ui->lyricsText->setStyleSheet("QTextBrowser{background-color: #575757; color:white;}");
@@ -44,11 +44,11 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView)
     artist->showTitle(false);
     artist->borderColor = true;
 
-    auto artistContainer = new QWidget();
+    auto artistContainer = new QWidget(this);
     artistContainer->setObjectName("artistContainer");
     //    artistContainer->setStyleSheet("QWidget#artistContainer{background-color: #575757; color:white;}");
 
-    auto artistCLayout = new QHBoxLayout();
+    auto artistCLayout = new QHBoxLayout;
 
     //    ui->artistFrame->setMaximumWidth(ALBUM_SIZE_BIG);
 
@@ -56,11 +56,11 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView)
     artistCLayout->addWidget(artist);
     artistCLayout->addStretch();
     artistContainer->setLayout(artistCLayout);
-    artistContainer->setFixedHeight(artist->getSize()+12);
+    artistContainer->setFixedHeight(static_cast<int>(artist->getSize())+12);
 
 
 
-    auto infoUtils_layout = new QHBoxLayout();
+    auto infoUtils_layout = new QHBoxLayout;
     infoUtils_layout->setContentsMargins(0, 0, 0, 0);
     infoUtils_layout->setSpacing(0);
 
@@ -70,7 +70,7 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView)
 
 
 
-    auto similarBtn = new QToolButton();
+    auto similarBtn = new QToolButton(this);
     connect(similarBtn, &QToolButton::clicked, [this]()
     {
         auto list = ui->similarArtistInfo->toPlainText().trimmed().split(",");
@@ -83,7 +83,7 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView)
     similarBtn->setIcon(QIcon::fromTheme("similarartists-amarok"));
     similarBtn->setToolTip("Similar artists...");
 
-    auto moreBtn = new QToolButton();
+    auto moreBtn = new QToolButton(this);
     connect(moreBtn, &QToolButton::clicked, [this]()
     {
         auto list = ui->tagsInfo->toPlainText().split(",");
@@ -98,14 +98,14 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView)
     moreBtn->setToolTip("Similar tags...");
 
 
-    hideBtn = new QToolButton();
+    hideBtn = new QToolButton(this);
     connect(hideBtn, SIGNAL(clicked()), this, SLOT(hideArtistInfo()));
     hideBtn->setIconSize(QSize(16,16));
     hideBtn->setAutoRaise(true);
     hideBtn->setIcon(QIcon::fromTheme("hide_table_column"));
     hideBtn->setVisible(false);
 
-    auto searchBtn = new QToolButton();
+    auto searchBtn = new QToolButton(this);
     connect(searchBtn,&QToolButton::clicked, this, &InfoView::on_searchBtn_clicked);
     searchBtn->setIconSize(QSize(16,16));
     searchBtn->setAutoRaise(true);
@@ -229,7 +229,7 @@ void InfoView::setLyrics(const QString &lyrics)
 {
     if(!lyrics.isEmpty())
     {
-        ui->splitter->setSizes({Bae::BIG_ALBUM, Bae::BIG_ALBUM});
+        ui->splitter->setSizes({static_cast<int>(Bae::AlbumSizeHint::BIG_ALBUM),static_cast<int>(Bae::AlbumSizeHint::BIG_ALBUM)});
         this->page->setHtml(lyrics);
     }
 }
@@ -237,7 +237,7 @@ void InfoView::setLyrics(const QString &lyrics)
 void InfoView::setLyrics(const QUrl &url)
 {
 
-        ui->splitter->setSizes({Bae::BIG_ALBUM, Bae::BIG_ALBUM});
+        ui->splitter->setSizes({static_cast<int>(Bae::AlbumSizeHint::BIG_ALBUM), static_cast<int>(Bae::AlbumSizeHint::BIG_ALBUM)});
         this->page->load(url);
 
 }

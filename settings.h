@@ -198,7 +198,7 @@ public slots:
                             {Bae::DBCols::DURATION,QString::number(duration)},
                             {Bae::DBCols::GENRE,genre},
                             {Bae::DBCols::SOURCES_URL,sourceUrl},
-                            {Bae::DBCols::BABE,QString::number(0)},
+                            {Bae::DBCols::BABE, url.startsWith(Bae::YoutubeCachePath)?"1":"0"},
                             {Bae::DBCols::RELEASE_DATE,QString::number(year)}
                         };
 
@@ -241,7 +241,6 @@ class settings : public QWidget
 public:
 
     explicit settings(QWidget *parent = 0);
-    ~settings();
 
     bool checkCollection();
     void createCollectionDB();

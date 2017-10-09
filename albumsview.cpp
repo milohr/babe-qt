@@ -5,11 +5,11 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     QWidget(parent), extraList(extraList)
 {
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    auto layout = new QGridLayout();
+    auto layout = new QGridLayout;
     layout->setMargin(0);
     layout->setSpacing(0);
     this->setAcceptDrops(false);
-    this->grid = new GridView(this);
+    this->grid = new GridView(Bae::MEDIUM_ALBUM_FACTOR,Bae::AlbumSizeHint::MEDIUM_ALBUM,this);
     connect(grid,&GridView::albumReady,[this](){albumLoader.next();});
     connect(&albumLoader, &AlbumLoader::albumReady,this, &AlbumsView::addAlbum);
     connect(&albumLoader, &AlbumLoader::finished,[this]()
@@ -37,11 +37,11 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
 
     connect(grid,&GridView::dragAlbum,this,&AlbumsView::hideAlbumFrame);
 
-    auto utilsLayout = new QHBoxLayout();
+    auto utilsLayout = new QHBoxLayout;
     utilsLayout->setContentsMargins(0,0,0,0);
     utilsLayout->setSpacing(0);
 
-    this->utilsFrame = new QFrame();
+    this->utilsFrame = new QFrame(this);
     this->utilsFrame->setLayout(utilsLayout);
     this->utilsFrame->setFrameShape(QFrame::NoFrame);
     this->utilsFrame->setFrameShadow(QFrame::Plain);
@@ -54,7 +54,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     this->albumTable->hideColumn(static_cast<int>(Bae::DBCols::ARTIST));
     this->albumTable->hideColumn(static_cast<int>(Bae::DBCols::ALBUM));
 
-    auto albumBox = new QGridLayout();
+    auto albumBox = new QGridLayout;
     albumBox->setContentsMargins(0,0,0,0);
     albumBox->setSpacing(0);
 
@@ -69,7 +69,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     this->cover = new Album(this);
     connect(this->cover,&Album::playAlbum,[this] (const Bae::DB &info) { emit this->playAlbum(info); });
     connect(this->cover,&Album::babeAlbum,this,&AlbumsView::babeAlbum);
-    this->cover->createAlbum({{Bae::DBCols::ARTWORK,":Data/data/cover.svg"}},Bae::MEDIUM_ALBUM,0,true);
+    this->cover->createAlbum({{Bae::DBCols::ARTWORK,":Data/data/cover.svg"}},Bae::AlbumSizeHint::MEDIUM_ALBUM,0,true);
     this->cover->showTitle(false);
 
     this->closeBtn = new QToolButton(cover);
@@ -81,7 +81,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
 
     this->expandBtn = new QToolButton(cover);
     connect(expandBtn,&QToolButton::clicked,this,&AlbumsView::expandList);
-    this->expandBtn->setGeometry(cover->getSize()-18,2,16,16);
+    this->expandBtn->setGeometry(static_cast<int>(cover->getSize())-18,2,16,16);
     this->expandBtn->setIcon(QIcon(":/Data/data/icons/artists_selected.svg"));
     this->expandBtn->setAutoRaise(true);
 
@@ -97,7 +97,7 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
         connect(this->artistList,SIGNAL(clicked(QModelIndex)),this,SLOT(filterAlbum(QModelIndex)));
         this->artistList->setFrameShape(QFrame::NoFrame);
         this->artistList->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-        this->artistList->setMaximumWidth(cover->getSize());
+        this->artistList->setMaximumWidth(static_cast<int>(cover->getSize()));
         this-> artistList->setAlternatingRowColors(true);
         // artistList->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContentsOnFirstShow);
         // artistList->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Minimum);
@@ -236,7 +236,7 @@ void AlbumsView::populateExtraList(const QStringList &albums)
 
     for(auto album : albums)
     {
-        auto item = new QListWidgetItem();
+        auto item = new QListWidgetItem;
         item->setText(album);
         item->setTextAlignment(Qt::AlignCenter);
         artistList->addItem(item);

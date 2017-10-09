@@ -117,7 +117,7 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
 
     //    connect(ytFetch,&YouTube::youtubeTrackReady,[this](){ emit collectionPathChanged(youtubeCachePath);});
     ytFetch->searchPendingFiles();
-    extensionWatcher = new QFileSystemWatcher();
+    extensionWatcher = new QFileSystemWatcher(this);
     extensionWatcher->addPath(Bae::ExtensionFetchingPath);
     connect(extensionWatcher, SIGNAL(directoryChanged(QString)), this,
             SLOT(handleDirectoryChanged_extension()));
@@ -125,9 +125,10 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
 
     ui->remove->setEnabled(false);
     ui->progressBar->hide();
-    about_ui = new About();
+    about_ui = new About(this);
 
-    movie = new QMovie(":Data/data/ajax-loader.gif");
+    movie = new QMovie(this);
+    movie->setFileName(":Data/data/ajax-loader.gif");
     ui->label->setMovie(movie);
     ui->label->hide();
 
@@ -138,10 +139,6 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
             SLOT(handleDirectoryChanged(QString)));
 }
 
-settings::~settings() {
-    //collection_db.closeConnection();
-
-}
 
 
 void settings::handleDirectoryChanged_extension()
@@ -340,7 +337,7 @@ void settings::collectionWatcher()
     QSqlQuery query = collection_db.getQuery("SELECT url FROM tracks");
     while (query.next())
     {
-        QString location = query.value(1).toString();
+        QString location = query.value(Bae::DBColsMap[Bae::DBCols::URL]).toString();
         if(!location.startsWith(Bae::YoutubeCachePath,Qt::CaseInsensitive)) //exclude the youtube cache folder
         {
             if (!dirs.contains(QFileInfo(location).dir().path()) && Bae::fileExists(location)) //check if parent dir isn't already in list and it exists
@@ -366,6 +363,8 @@ void settings::collectionWatcher()
 
 void settings::handleDirectoryChanged(const QString &dir)
 {
+    qDebug()<<"directory changed:"<<dir;
+    emit collectionPathChanged(dir);
 }
 
 void settings::readSettings()

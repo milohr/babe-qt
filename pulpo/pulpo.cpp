@@ -25,7 +25,7 @@
 Pulpo::Pulpo(const Bae::DB &song,QObject *parent)
     : QObject(parent), track(song) {
 
-    page = new webEngine();
+    page = new webEngine(this);
 }
 
 
@@ -143,7 +143,7 @@ bool Pulpo::fetchAlbumInfo(const AlbumInfo &infoType, const InfoServices &servic
         connect(&lastfm,&lastfm::albumTagsReady,[this] (const QStringList &tags,const Bae::DB track) { emit Pulpo::albumTagsReady(tags,track);});
 
         spotify spotify(this->track);
-        connect(&spotify,&spotify::albumArtReady,[this,infoType] (QByteArray array)
+        connect(&spotify,&spotify::albumArtReady,[&] (QByteArray array)
         {
             if((array.isEmpty() || array.isNull()))
             {
@@ -181,7 +181,7 @@ bool Pulpo::fetchAlbumInfo(const AlbumInfo &infoType, const InfoServices &servic
                 if(spotify.parseSpotifyAlbum(array, infoType)) return true;
                 else return false;
 
-            }else return false; break;
+            }else return false;
 
             //        case GeniusInfo:
             //            array = startConnection(genius.setUpService());
@@ -400,7 +400,7 @@ void Pulpo::saveArt(const QByteArray &array, const QString &path)
     {
         QImage img;
         img.loadFromData(array);
-        QString name = this->track[Bae::DBCols::ALBUM].size() > 0 ? this->track[Bae::DBCols::ARTIST] + "_" + this->track[Bae::DBCols::ALBUM] : this->track[Bae::DBCols::ARTIST];
+        QString name = !this->track[Bae::DBCols::ALBUM].isEmpty()? this->track[Bae::DBCols::ARTIST] + "_" + this->track[Bae::DBCols::ALBUM] : this->track[Bae::DBCols::ARTIST];
         name.replace("/", "-");
         name.replace("&", "-");
         QString format = "JPEG";

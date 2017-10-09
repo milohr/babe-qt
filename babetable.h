@@ -59,7 +59,7 @@ public:
 
     void requestTracks(QString query)
     {
-            QMetaObject::invokeMethod(this, "getTracks", Q_ARG(QString, query));
+        QMetaObject::invokeMethod(this, "getTracks", Q_ARG(QString, query));
     }
 
 public slots:
@@ -102,11 +102,6 @@ private:
     QMediaPlayer *preview;
     int previewRow=-1;
     Notify nof;
-    QToolButton *fav1;
-    QToolButton *fav2;
-    QToolButton *fav3;
-    QToolButton *fav4;
-    QToolButton *fav5;
 
     int rRow=0;
     int rColumn=0;
@@ -118,6 +113,7 @@ private:
     QMenu* moodMenu;
     QMap<QString,QString> devices;
     QTimer *updater = new QTimer(this);
+    QButtonGroup *stars;
 
     QWidget *addMusicMsgWidget;
     QLabel *addMusicTxt;
@@ -127,9 +123,6 @@ private:
 public:
 
     explicit BabeTable(QWidget *parent = nullptr);
-    ~BabeTable();
-
-
 
     enum menuActions //this order must be followed
     {
@@ -141,7 +134,7 @@ public:
     void populateTableView(const Bae::DB_LIST &mapList);
     void populateTableView(QSqlQuery &indication);
     void removeMissing(const QString &url);
-    void setRating(int rate);
+    void setRating(const int &rate);
     void setTableOrder(int column, Bae::Order order);
     void setVisibleColumn(const Bae::DBCols &column);
     void addRow(const Bae::DB &map);

@@ -22,8 +22,7 @@ class PlaylistsView : public QWidget
     Q_OBJECT
 
 public:
-    explicit PlaylistsView(QWidget *parent = 0);
-    ~PlaylistsView();
+    explicit PlaylistsView(QWidget *parent = nullptr);
     BabeTable *table;
     QListWidget *list;
     QListWidget *moodList;
@@ -47,7 +46,7 @@ public:
 
 private:
 
-    int ALBUM_SIZE_MEDIUM = Bae::getWidgetSizeHint(Bae::MEDIUM_ALBUM_FACTOR,Bae::MEDIUM_ALBUM);
+    uint ALBUM_SIZE_MEDIUM = Bae::getWidgetSizeHint(Bae::MEDIUM_ALBUM_FACTOR,Bae::AlbumSizeHint::MEDIUM_ALBUM);
 
     QToolButton *addBtn;
     QToolButton *removeBtn;

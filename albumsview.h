@@ -38,6 +38,7 @@ class AlbumLoader : public QObject
     Q_OBJECT
 
 public:
+
     AlbumLoader() : QObject()
     {
         qRegisterMetaType<Bae::DB>("Bae::DB");
@@ -66,7 +67,6 @@ public:
 
 public slots:
 
-
     void getAlbums(QString query)
     {
         qDebug()<<"GETTING TRACKS FROM ALBUMSVIEW";
@@ -79,7 +79,7 @@ public slots:
             {   if(go)
                 {
                     emit albumReady(albumMap);
-                    while(this->nextAlbum==true){t.msleep(100);}
+                    while(this->nextAlbum && go){t.msleep(100);}
                     this->nextAlbum=!this->nextAlbum;
 
                 }else break;
@@ -100,7 +100,7 @@ public slots:
                 if(go)
                 {
                     emit albumReady(albumMap);
-                    while(this->nextAlbum==true){t.msleep(100); }
+                    while(this->nextAlbum && go){t.msleep(100); }
                     this->nextAlbum=true;
                 }else break;
             }

@@ -22,7 +22,7 @@
 PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
 {
 
-    layout = new QGridLayout();
+    layout = new QGridLayout;
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
 
@@ -44,18 +44,18 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
     list->setAlternatingRowColors(true);
     list->setFrameShape(QFrame::NoFrame);
     list->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    auto syncPlaylist = new QAction("Sync to device...");
+    auto syncPlaylist = new QAction("Sync to device...",this->list);
     list->addAction(syncPlaylist);
     list->setContextMenuPolicy(Qt::ActionsContextMenu);
 
 
     table->setFrameShape(QFrame::NoFrame);
-    frame = new QFrame();
+    frame = new QFrame(this);
     frame->setFrameShadow(QFrame::Raised);
     frame->setFrameShape(QFrame::NoFrame);
 
-    addBtn = new QToolButton();
-    removeBtn = new QToolButton();
+    addBtn = new QToolButton(this);
+    removeBtn = new QToolButton(this);
     connect(addBtn, SIGNAL(clicked()), this, SLOT(createPlaylist()));
     connect(removeBtn, SIGNAL(clicked()), this, SLOT(removePlaylist()));
 
@@ -66,14 +66,14 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
     addBtn->setIcon(QIcon::fromTheme("list-add"));
     removeBtn->setIcon(QIcon::fromTheme("entry-delete"));
 
-    auto line = new QFrame();
+    auto line = new QFrame(this);
     line->setFrameShape(QFrame::VLine);
     line->setFrameShadow(QFrame::Plain);
     line->setMaximumWidth(1);
 
     btnContainer = new QWidget(list);
 
-    auto btnLayout = new QHBoxLayout();
+    auto btnLayout = new QHBoxLayout;
     btnLayout->setSpacing(0);
     btnLayout->setContentsMargins(5, 0, 5, 0);
     btnContainer->setLayout(btnLayout);
@@ -101,15 +101,15 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
     line_h2->setFixedHeight(1);
 
 
-    moodWidget = new QWidget();
+    moodWidget = new QWidget(this);
     moodWidget->setAutoFillBackground(true);
     moodWidget->setBackgroundRole(QPalette::Light);
     this->setPlaylistsMoods();
 
     auto playlistsWidget = new QWidget(this);
-    auto playlistsWidget_layout = new QVBoxLayout();
+    auto playlistsWidget_layout = new QVBoxLayout;
     playlistsWidget->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Expanding);
-    playlistsWidget->setMinimumWidth(ALBUM_SIZE_MEDIUM);
+    playlistsWidget->setMinimumWidth(static_cast<int>(ALBUM_SIZE_MEDIUM));
     playlistsWidget_layout->setContentsMargins(0,0,0,0);
     playlistsWidget_layout->setMargin(0);
     playlistsWidget_layout->setSpacing(0);
@@ -138,7 +138,7 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
     layout->addWidget(splitter, 0, 0);
 
 
-    this->removeFromPlaylist = new QAction("Remove from Playlist");
+    this->removeFromPlaylist = new QAction("Remove from Playlist",this->table);
     connect (this->removeFromPlaylist,&QAction::triggered, [this]()
     {
         for(auto row : this->table->getSelectedRows(true))
@@ -161,7 +161,7 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
 
 void PlaylistsView::showPlaylistDialog()
 {
-    QDialog *playlistDialog = new QDialog();
+    QDialog *playlistDialog = new QDialog(this);
     playlistDialog->show();
 
 }
@@ -170,28 +170,28 @@ void PlaylistsView::dummy() { qDebug() << "signal was recived"; }
 
 void PlaylistsView::setDefaultPlaylists()
 {
-    auto mostPlayed = new QListWidgetItem();
-    mostPlayed->setIcon(QIcon::fromTheme("favorite-genres-amarok"));
+    auto mostPlayed = new QListWidgetItem;
+    mostPlayed->setIcon(QIcon::fromTheme("amarok_playcount"));
     mostPlayed->setText("Most Played");
     list->addItem(mostPlayed);
 
-    auto favorites = new QListWidgetItem();
+    auto favorites = new QListWidgetItem;
     favorites->setIcon(QIcon::fromTheme("draw-star"));
     favorites->setText("Favorites");
     list->addItem(favorites);
 
-    auto recent = new QListWidgetItem();
-    recent->setIcon(QIcon::fromTheme("draw-star"));
+    auto recent = new QListWidgetItem;
+    recent->setIcon(QIcon::fromTheme("filename-year-amarok"));
     recent->setText("Recent");
     list->addItem(recent);
 
-    auto babes = new QListWidgetItem();
+    auto babes = new QListWidgetItem;
     babes->setIcon(QIcon::fromTheme("love-amarok"));
     babes->setText("Babes");
     list->addItem(babes);
 
-    auto online = new QListWidgetItem();
-    online->setIcon(QIcon::fromTheme("kstars_constellationart"));
+    auto online = new QListWidgetItem;
+    online->setIcon(QIcon::fromTheme("internet-amarok"));
     online->setText("Online");
     list->addItem(online);
 
@@ -251,13 +251,12 @@ void PlaylistsView::populatePlaylist(const QModelIndex &index)
 
 void PlaylistsView::createPlaylist()
 {
-
-    auto *item = new QListWidgetItem("new playlist");
+    auto item = new QListWidgetItem;
+    item->setText("new playlist");
     item->setFlags(item->flags() | Qt::ItemIsEditable);
     this->list->addItem(item);
     currentPlaylist = "";
     emit this->list->doubleClicked(list->model()->index(this->list->count() - 1, 0));
-
     // item->setFlags (item->flags () & Qt::ItemIsEditable);
 }
 
@@ -334,7 +333,8 @@ void PlaylistsView::setPlaylists(const QStringList &playlists)
     this->playlists=playlists;
     for (auto playlist : this->playlists)
     {
-        auto item = new QListWidgetItem(playlist);
+        auto item = new QListWidgetItem;
+        item->setText(playlist);
         item->setFlags(item->flags() | Qt::ItemIsEditable);
         list->addItem(item);
     }
@@ -349,7 +349,7 @@ void PlaylistsView::saveToPlaylist(const Bae::DB_LIST &tracks)
     {
         if(insertPlaylist(playlist))
         {
-            auto *item = new QListWidgetItem(playlist);
+            auto item = new QListWidgetItem;
             item->setFlags(item->flags() | Qt::ItemIsEditable);
             list->addItem(item);
         }
@@ -374,8 +374,8 @@ void PlaylistsView::addToPlaylist(const QString &playlist,const Bae::DB_LIST &tr
 void PlaylistsView::setPlaylistsMoods()
 {
 
-    auto moodsLayout = new QHBoxLayout();
-    QButtonGroup *moodGroup = new QButtonGroup(list);
+    auto moodsLayout = new QHBoxLayout;
+    auto moodGroup = new QButtonGroup(this->list);
     connect(moodGroup, static_cast<void(QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked), [this](const int &mood)
     {
         currentPlaylist = this->moods.at(mood);
@@ -391,7 +391,7 @@ void PlaylistsView::setPlaylistsMoods()
     //    moodsLayout->addStretch();
     for(int i=0; i<this->moods.size(); i++)
     {
-        auto  *colorTag = new QToolButton();
+        auto  *colorTag = new QToolButton(this->list);
         //colorTag->setIconSize(QSize(10,10));
         colorTag->setFixedSize(15,15);
         // colorTag->setAutoRaise(true);
@@ -402,10 +402,5 @@ void PlaylistsView::setPlaylistsMoods()
     //    moodsLayout->addStretch();
 
     moodWidget->setLayout(moodsLayout);
-
-
-
 }
 
-
-PlaylistsView::~PlaylistsView() {}

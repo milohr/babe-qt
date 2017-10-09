@@ -1,27 +1,22 @@
 #include "album.h"
 
 
-Album::Album(QWidget *parent) : QLabel(parent)
-{
+Album::Album(QWidget *parent) : QLabel(parent){}
 
-
-}
-
-
-void Album::createAlbum(const Bae::DB &info, const Bae::ALbumSizeHint &widgetSize, const uint &widgetRadius, const bool &isDraggable)
+void Album::createAlbum(const Bae::DB &info, const Bae::AlbumSizeHint &widgetSize, const uint &widgetRadius, const bool &isDraggable)
 {
     switch (widgetSize)
     {
-    case Bae::BIG_ALBUM:
-        this->size=Bae::getWidgetSizeHint(Bae::BIG_ALBUM_FACTOR,Bae::BIG_ALBUM);
+    case Bae::AlbumSizeHint::BIG_ALBUM:
+        this->size=Bae::getWidgetSizeHint(Bae::BIG_ALBUM_FACTOR,Bae::AlbumSizeHint::BIG_ALBUM);
         this->subSize=Bae::BIG_ALBUM_FACTOR_SUBWIDGET;
         break;
-    case Bae::MEDIUM_ALBUM:
-        this->size=Bae::getWidgetSizeHint(Bae::MEDIUM_ALBUM_FACTOR,Bae::MEDIUM_ALBUM);
+    case Bae::AlbumSizeHint::MEDIUM_ALBUM:
+        this->size=Bae::getWidgetSizeHint(Bae::MEDIUM_ALBUM_FACTOR,Bae::AlbumSizeHint::MEDIUM_ALBUM);
         this->subSize=Bae::MEDIUM_ALBUM_FACTOR_SUBWIDGET;
         break;
-    case Bae::SMALL_ALBUM:
-        this->size=Bae::getWidgetSizeHint(Bae::SMALL_ALBUM_FACTOR,Bae::SMALL_ALBUM);
+    case Bae::AlbumSizeHint::SMALL_ALBUM:
+        this->size=Bae::getWidgetSizeHint(Bae::SMALL_ALBUM_FACTOR,Bae::AlbumSizeHint::SMALL_ALBUM);
         this->subSize=Bae::SMALL_ALBUM_FACTOR_SUBWIDGET;
         break;
     }
@@ -31,28 +26,31 @@ void Album::createAlbum(const Bae::DB &info, const Bae::ALbumSizeHint &widgetSiz
     auto album = this->albumMap[Bae::DBCols::ALBUM];
     auto artwork = this->albumMap[Bae::DBCols::ARTWORK];
 
-    if(album.isEmpty())
+    auto albumtype = Bae::albumType(albumMap);
+
+    if(albumtype == Bae::DBTables::ARTISTS)
     {
         if(artwork.isEmpty() || artwork=="NULL")
             artwork=":Data/data/cover.svg";
-    }else
+
+    }else if(albumtype == Bae::DBTables::ALBUMS)
     {
         if(artwork.isEmpty() || artwork=="NULL")
             artwork = connection.getArtistArt(artist);
+
         if(artwork.isEmpty() || artwork=="NULL")
             artwork=":Data/data/cover.svg";
     }
 
-    this->setFixedSize(size,size);
+    this->setFixedSize(static_cast<int>(size),static_cast<int>(size));
     this->border_radius=widgetRadius;
     this->draggable=isDraggable;
-    this->imagePath=artwork;
     this->borderQColor = this->palette().color(QPalette::BrightText).name();
 
-    if (!imagePath.isEmpty()) this->putPixmap(imagePath);
-    else this->putDefaultPixmap();
+    this->putPixmap(artwork);
 
-    auto layout = new QHBoxLayout();
+
+    auto layout = new QHBoxLayout;
     widget = new QWidget(this);
     widget->setLayout(layout);
 
@@ -142,7 +140,7 @@ void Album::removeIt_action()
 }
 
 
-int Album::getSize()
+uint Album::getSize()
 {
     return this->size;
 }
@@ -181,14 +179,14 @@ void Album::restoreSaturation()
     if(!unsaturated.isNull())this->putPixmap(this->unsaturated);
 }
 
-void Album::setSize(const int &value)
+void Album::setSize(const uint &value)
 {
     this->size=value;
-    this->setFixedSize(size,size);
-    this->widget->setMinimumWidth(size-2);
-    this->widget->setGeometry(0,size-30,size,30);
+    this->setFixedSize(static_cast<int>(size),static_cast<int>(size));
+    this->widget->setMinimumWidth(static_cast<int>(size-2)>=0?static_cast<int>(size-2):0);
+    this->widget->setGeometry(0,static_cast<int>(size-30),static_cast<int>(size),30);
     this->playBtn->setIconSize(QSize(static_cast<int>(size*subSize),static_cast<int>(size*subSize)));
-    this->playBtn->setGeometry((size/2)-static_cast<int>((size*subSize)/2),(size/2)-static_cast<int>((size*subSize)/2),playBtn->iconSize().width(),playBtn->iconSize().width());
+    this->playBtn->setGeometry(static_cast<int>(size/2)-static_cast<int>((size*subSize)/2),static_cast<int>(size/2)-static_cast<int>((size*subSize)/2),playBtn->iconSize().width(),playBtn->iconSize().width());
 }
 
 void Album::paintEvent(QPaintEvent *event)
@@ -197,14 +195,14 @@ void Album::paintEvent(QPaintEvent *event)
 
     QBrush brush(Qt::yellow);
     if(!image.isNull())
-        brush.setTexture(image.scaled(size,size,Qt::KeepAspectRatio));
+        brush.setTexture(image.scaled(static_cast<int>(size),static_cast<int>(size),Qt::KeepAspectRatio));
 
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
     painter.setBrush(brush);
 
     if(!borderColor) painter.setPen(Qt::NoPen);
-    painter.drawRoundedRect(0,0, size, size, border_radius, border_radius);
+    painter.drawRoundedRect(0,0,static_cast<int>(size),static_cast<int>(size), border_radius, border_radius);
 }
 
 QPixmap Album::getPixmap()
@@ -229,10 +227,12 @@ void Album::putPixmap(const QPixmap &pix)
 
 void Album::putPixmap(const QString &path)
 {
-    if(!path.isEmpty()) this->image.load(path);
+    if(!path.isEmpty() && Bae::fileExists(path)) this->image.load(path);
     else this->image.load(":Data/data/cover.svg");
 
-    this->setPixmap(image);
+    if(!this->image.isNull())
+        this->setPixmap(image);
+    else putDefaultPixmap();
 }
 
 void Album::putDefaultPixmap()
@@ -336,7 +336,6 @@ void Album::performDrag()
     drag->setPixmap(image.scaled(size/2,size/2,Qt::KeepAspectRatio));
     if (drag->exec(Qt::MoveAction) == Qt::MoveAction)
         emit albumDragged();
-
 }
 
 void Album::enterEvent(QEvent *event)

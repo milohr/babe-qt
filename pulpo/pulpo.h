@@ -19,8 +19,12 @@
 #include <QWebEngineView>
 #include <QWebEnginePage>
 #include <QWebEngineSettings>
+#include <QSqlQuery>
 #include "../baeUtils.h"
 #include "pulpo/webengine.h"
+
+
+
 
 class Pulpo : public QObject
 {
@@ -89,6 +93,7 @@ private:
     QPixmap art;
     Bae::DB track;
     webEngine *page;
+
 public slots:
 
     void saveArt(const QByteArray &array, const QString &path);

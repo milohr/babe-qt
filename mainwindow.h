@@ -66,7 +66,7 @@ public:
 
     enum views
     {
-        COLLECTION,ALBUMS,ARTISTS,PLAYLISTS,RABBIT,INFO,SETTINGS,RESULTS
+        COLLECTION,ALBUMS,ARTISTS,PLAYLISTS,INFO,SETTINGS,RESULTS
     };
     enum playlistViews
     {
@@ -153,7 +153,7 @@ private slots:
     void settingsView();
 
     /*the view stacked actions*/
-    void setToolbarIconSize(const int &iconSize);
+    void setToolbarIconSize(const uint &iconSize);
 
     void on_fav_btn_clicked();
     void showControls(const bool &state);
@@ -192,8 +192,8 @@ private slots:
 private:
 
     Ui::MainWindow *ui;
-    int ALBUM_SIZE;
-    int iconSize = 22;
+    uint ALBUM_SIZE;
+    uint iconSize = 22;
 
     int playlistPos = RIGHT;
     int playlistSta = IN;

@@ -36,7 +36,7 @@ void ScrollText::start() {}
 
 void ScrollText::enterEvent(QEvent *event) {
     Q_UNUSED(event);
-    if (maxSize < this->sizeHint().width())
+    if (static_cast<int>(maxSize) < this->sizeHint().width())
         speed = 1;
     timer.start(30);
 
@@ -47,9 +47,11 @@ void ScrollText::leaveEvent(QEvent *event) {
     speed = 0;
     reset();
 }
-void ScrollText::setMaxSize(int size) {
-    this->setMaximumWidth(size);
-    maxSize = size;
+void ScrollText::setMaxSize(uint size)
+{
+    this->maxSize = size;
+    this->setMaximumWidth(static_cast<int>(maxSize));
+
 }
 
 void ScrollText::stop() {

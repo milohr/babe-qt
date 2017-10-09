@@ -83,33 +83,12 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent)
     this->hideColumn(static_cast<int>(Bae::DBCols::SOURCES_URL));
     this->hideColumn(static_cast<int>(Bae::DBCols::LYRICS));
 
-    fav1 = new QToolButton();
-    fav2 = new QToolButton();
-    fav3 = new QToolButton();
-    fav4 = new QToolButton();
-    fav5 = new QToolButton();
-    fav1->setAutoRaise(true);
-    fav1->setMaximumSize(16, 16);
-    fav2->setAutoRaise(true);
-    fav2->setMaximumSize(16, 16);
-    fav3->setAutoRaise(true);
-    fav3->setMaximumSize(16, 16);
-    fav4->setAutoRaise(true);
-    fav4->setMaximumSize(16, 16);
-    fav5->setAutoRaise(true);
-    fav5->setMaximumSize(16, 16);
-    fav1->setIcon(QIcon::fromTheme("rating-unrated"));
-    fav2->setIcon(QIcon::fromTheme("rating-unrated"));
-    fav3->setIcon(QIcon::fromTheme("rating-unrated"));
-    fav4->setIcon(QIcon::fromTheme("rating-unrated"));
-    fav5->setIcon(QIcon::fromTheme("rating-unrated"));
+
+    contextMenu = new QMenu(this);
 
     // this->horizontalHeaderItem(0);
     // this->horizontalHeader()->setHighlightSections(true);
 
-
-
-    contextMenu = new QMenu(this);
     auto babeIt = new QAction("Babe it \xe2\x99\xa1", contextMenu);
     contextMenu->addAction(babeIt);
 
@@ -117,7 +96,7 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent)
     contextMenu->addAction(queueIt);
 
     QAction *sendEntry = contextMenu->addAction("Send to phone...");
-    sendToMenu = new QMenu("...");
+    sendToMenu = new QMenu(contextMenu);
     sendEntry->setMenu(sendToMenu);
 
     auto infoIt = new QAction("Info + ", contextMenu);
@@ -147,37 +126,34 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent)
     connect(removeIt,&QAction::triggered, this, &BabeTable::removeIt_action);
 
 
-    auto gr = new QWidget();
-    auto ty = new QHBoxLayout();
-    gr->setLayout(ty);
+    auto starsWidget = new QWidget(contextMenu);
+    auto starsWidget_layout = new QHBoxLayout;
+    starsWidget->setLayout(starsWidget_layout);
 
-    QButtonGroup *bg = new QButtonGroup(contextMenu);
-    connect(bg, SIGNAL(buttonClicked(int)), this, SLOT(rateGroup(int)));
+    this->stars = new QButtonGroup(contextMenu);
+    connect(stars, SIGNAL(buttonClicked(int)), this, SLOT(rateGroup(int)));
 
-    bg->addButton(fav1, 1);
-    bg->addButton(fav2, 2);
-    bg->addButton(fav3, 3);
-    bg->addButton(fav4, 4);
-    bg->addButton(fav5, 5);
-    // connect(fav1,SIGNAL(enterEvent(QEvent)),this,hoverEvent());
-    ty->addWidget(fav1);
-    ty->addWidget(fav2);
-    ty->addWidget(fav3);
-    ty->addWidget(fav4);
-    ty->addWidget(fav5);
+    for(int i = 0; i<5; i++)
+    {
+        auto star = new QToolButton(starsWidget);
+        star->setAutoRaise(true);
+        star->setMaximumSize(16, 16);
+        star->setIcon(QIcon::fromTheme("rating-unrated"));
+        stars->addButton(star, i+1);
+        starsWidget_layout->addWidget(star);
+    }
 
+    QWidgetAction *starsAction = new QWidgetAction(contextMenu);
+    starsAction->setDefaultWidget(starsWidget);
+    contextMenu->addAction(starsAction);
 
-    QWidgetAction *chkBoxAction = new QWidgetAction(contextMenu);
-    chkBoxAction->setDefaultWidget(gr);
-
-    contextMenu->addAction(chkBoxAction);
-    auto moods = new QWidget();
-    auto moodsLayout = new QHBoxLayout();
+    auto moods = new QWidget(contextMenu);
+    auto moodsLayout = new QHBoxLayout;
     QButtonGroup *moodGroup = new QButtonGroup(contextMenu);
     connect(moodGroup, SIGNAL(buttonClicked(int)), this, SLOT(moodTrack(int)));
     for(int i=0; i<5; i++)
     {
-        auto  *colorTag = new QToolButton();
+        auto colorTag = new QToolButton(moods);
         //colorTag->setIconSize(QSize(10,10));
         colorTag->setFixedSize(15,15);
         // colorTag->setAutoRaise(true);
@@ -189,38 +165,38 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent)
 
     QWidgetAction *moodsAction = new QWidgetAction(contextMenu);
     moodsAction->setDefaultWidget(moods);
-
     contextMenu->addAction(moodsAction);
 
-
     QFont helvetica("Helvetica", 10);
-    addMusicTxt = new QLabel();
+
+    addMusicMsgWidget = new QWidget(this);
+    addMusicMsgWidget->setVisible(false);
+    auto addMusicMsg_layout = new QVBoxLayout;
+    addMusicMsgWidget->setLayout(addMusicMsg_layout);
+
+    addMusicTxt = new QLabel(addMusicMsgWidget);
     addMusicTxt->setObjectName("addMusicTxt");
     addMusicTxt->setStyleSheet("QLabel{background-color:transparent;}");
-    addMusicTxt->setText(addMusicMsg);
+    addMusicTxt->setText(this->addMusicMsg);
     addMusicTxt->setFont(helvetica);
     addMusicTxt->setWordWrap(true);
     addMusicTxt->setAlignment(Qt::AlignCenter);
 
-    auto effect = new QGraphicsOpacityEffect();
-    effect->setOpacity(0.5);
-    addMusicTxt->setGraphicsEffect(effect);
+    auto addMusicTxt_effect = new QGraphicsOpacityEffect(addMusicTxt);
+    addMusicTxt_effect->setOpacity(0.5);
+    addMusicTxt->setGraphicsEffect(addMusicTxt_effect);
     addMusicTxt->setAutoFillBackground(true);
 
-    auto effect2= new QGraphicsOpacityEffect();
-    effect2->setOpacity(0.5);
-
-
-    addMusicImg = new QLabel();
+    addMusicImg = new QLabel(addMusicMsgWidget);
     addMusicImg->setAlignment(Qt::AlignCenter);
     addMusicImg->setPixmap(QIcon::fromTheme(addMusicIcon).pixmap(48));
     addMusicImg->setEnabled(false);
-    addMusicImg->setGraphicsEffect(effect2);
 
-    auto addMusicMsg_layout = new QVBoxLayout();
-    addMusicMsgWidget = new QWidget(this);
-    addMusicMsgWidget->setVisible(false);
-    addMusicMsgWidget->setLayout(addMusicMsg_layout);
+    auto addMusicImg_effect= new QGraphicsOpacityEffect(addMusicImg);
+    addMusicImg_effect->setOpacity(0.5);
+    addMusicImg->setGraphicsEffect(addMusicImg_effect);
+
+
     addMusicMsg_layout->addStretch();
     addMusicMsg_layout->addWidget(addMusicImg);
     addMusicMsg_layout->addWidget(addMusicTxt);
@@ -228,15 +204,15 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent)
 
     auto addMusicTxt_layout = new QHBoxLayout(this);
     addMusicTxt_layout->addStretch();
-    addMusicTxt_layout->addWidget(addMusicMsgWidget); // center alignment
+    addMusicTxt_layout->addWidget(addMusicMsgWidget,Qt::AlignCenter); // center alignment
     addMusicTxt_layout->addStretch();
+
 
     connect(updater, SIGNAL(timeout()), this, SLOT(update()));
     updater->start(100);
 }
 
 
-BabeTable::~BabeTable() {  }
 
 
 void BabeTable::dropEvent(QDropEvent *event)
@@ -526,59 +502,14 @@ QString BabeTable::getStars(const int &value)
 
 }
 
-void BabeTable::setRating(int rate)
+void BabeTable::setRating(const int &rate)
 {
-    switch (rate)
-    {
+    for(int i =1; i<=rate; i++)
+        this->stars->button(i)->setIcon(QIcon::fromTheme("rating-unrated"));
 
-    case 0:
-        fav1->setIcon(QIcon::fromTheme("rating-unrated"));
-        fav2->setIcon(QIcon::fromTheme("rating-unrated"));
-        fav3->setIcon(QIcon::fromTheme("rating-unrated"));
-        fav4->setIcon(QIcon::fromTheme("rating-unrated"));
-        fav5->setIcon(QIcon::fromTheme("rating-unrated"));
-        break;
+    for(int i =1; i<=rate; i++)
+        this->stars->button(i)->setIcon(QIcon::fromTheme("rating"));
 
-    case 1:
-        fav1->setIcon(QIcon::fromTheme("rating"));
-        fav2->setIcon(QIcon::fromTheme("rating-unrated"));
-        fav3->setIcon(QIcon::fromTheme("rating-unrated"));
-        fav4->setIcon(QIcon::fromTheme("rating-unrated"));
-        fav5->setIcon(QIcon::fromTheme("rating-unrated"));
-        break;
-
-    case 2:
-        fav1->setIcon(QIcon::fromTheme("rating"));
-        fav2->setIcon(QIcon::fromTheme("rating"));
-        fav3->setIcon(QIcon::fromTheme("rating-unrated"));
-        fav4->setIcon(QIcon::fromTheme("rating-unrated"));
-        fav5->setIcon(QIcon::fromTheme("rating-unrated"));
-        break;
-
-    case 3:
-        fav1->setIcon(QIcon::fromTheme("rating"));
-        fav2->setIcon(QIcon::fromTheme("rating"));
-        fav3->setIcon(QIcon::fromTheme("rating"));
-        fav4->setIcon(QIcon::fromTheme("rating-unrated"));
-        fav5->setIcon(QIcon::fromTheme("rating-unrated"));
-        break;
-
-    case 4:
-        fav1->setIcon(QIcon::fromTheme("rating"));
-        fav2->setIcon(QIcon::fromTheme("rating"));
-        fav3->setIcon(QIcon::fromTheme("rating"));
-        fav4->setIcon(QIcon::fromTheme("rating"));
-        fav5->setIcon(QIcon::fromTheme("rating-unrated"));
-        break;
-
-    case 5:
-        fav1->setIcon(QIcon::fromTheme("rating"));
-        fav2->setIcon(QIcon::fromTheme("rating"));
-        fav3->setIcon(QIcon::fromTheme("rating"));
-        fav4->setIcon(QIcon::fromTheme("rating"));
-        fav5->setIcon(QIcon::fromTheme("rating"));
-        break;
-    }
 }
 
 void BabeTable::setTableOrder(int column, Bae::Order order)

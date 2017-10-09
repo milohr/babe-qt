@@ -21,6 +21,11 @@
 
 Playlist::Playlist() {}
 
+Playlist::~Playlist()
+{
+    delete this;
+}
+
 bool Playlist::isMusic(QString file)
 {
     QMimeDatabase mimeDatabase;

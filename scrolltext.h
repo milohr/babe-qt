@@ -19,7 +19,7 @@ class ScrollText : public QLabel
         int getSpeed();
         void start();
         void stop();
-        void setMaxSize(int size);
+        void setMaxSize(uint size);
 
     public slots: //Public Member Slots
         void setSpeed(int s);
@@ -36,7 +36,7 @@ class ScrollText : public QLabel
     private: //Data Members
         int px;
         int py;
-        int maxSize;
+        uint maxSize;
         QTimer timer;
         Qt::Alignment m_align;
         int speed;

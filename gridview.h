@@ -17,20 +17,24 @@ class GridView : public QListWidget
 
 public:
 
-    explicit GridView(QWidget *parent= nullptr);
+    explicit GridView(const double &factor, const Bae::AlbumSizeHint &deafultValue, QWidget *parent= nullptr);
     void addAlbum(const Bae::DB &albumMap);
     void flushGrid();
-    void setAlbumsSize(const int &value);
+    void setAlbumsSize(const uint &value);
+    void setAlbumsSpacing(const uint &space);
     QHash<Bae::DB,Album*> albumsMap;
     QList<QListWidgetItem*> itemsList;
+
 
 private:
 
     QAction *order;
-    int albumSize;
-    int albumSpacing = 25;
+    uint albumSize;
+    double albumFactor;
+    Bae::AlbumSizeHint defaultAlbumValue;
     bool ascending=true;
     bool hiddenLabels=false;
+    uint albumSpacing = 25;
 
     void adjustGrid();
     void setUpActions();

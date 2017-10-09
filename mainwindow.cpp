@@ -31,24 +31,24 @@ MainWindow::MainWindow(const QStringList &files, QWidget *parent) :
     this->setWindowIconText("Babe...");
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     this->defaultWindowFlags = this->windowFlags();
-    this->player = new QMediaPlayer();
+    this->player = new QMediaPlayer(this);
     //mpris = new Mpris(this);
 
     this->album_art = new Album(this);
     connect(album_art,&Album::playAlbum,this,&MainWindow::putAlbumOnPlay);
     connect(album_art,&Album::babeAlbum,this,&MainWindow::babeAlbum);
-    album_art->createAlbum(Bae::DB{{Bae::DBCols::ARTWORK,":Data/data/babe.png"}},Bae::BIG_ALBUM,0,false);
+    album_art->createAlbum(Bae::DB{{Bae::DBCols::ARTWORK,":Data/data/babe.png"}},Bae::AlbumSizeHint::BIG_ALBUM,0,false);
 
     this->ALBUM_SIZE = album_art->getSize();
 
-    album_art->setFixedSize(ALBUM_SIZE,ALBUM_SIZE);
-    album_art->setTitleGeometry(0,0,ALBUM_SIZE,static_cast<int>(ALBUM_SIZE*0.15));
+    album_art->setFixedSize(static_cast<int>(ALBUM_SIZE),static_cast<int>(ALBUM_SIZE));
+    album_art->setTitleGeometry(0,0,static_cast<int>(ALBUM_SIZE),static_cast<int>(ALBUM_SIZE*0.15));
     album_art->showTitle(false);
     album_art->showPlayBtn=false;
 
     ui->controls->installEventFilter(this);
 
-    this->setMinimumSize(ALBUM_SIZE*3,0);
+    this->setMinimumSize(static_cast<int>(ALBUM_SIZE)*3,0);
     this->defaultGeometry = (QStyle::alignedRect(
                                  Qt::LeftToRight,
                                  Qt::AlignCenter,
@@ -256,10 +256,10 @@ void MainWindow::setUpViews()
 
     mainListView = new QStackedWidget(this);
     mainListView->setFrameShape(QFrame::NoFrame);
-    mainListView->addWidget(mainList);
-    mainListView->addWidget(filterList);
+    mainListView->addWidget(this->mainList);
+    mainListView->addWidget(this->filterList);
 
-    onlineFetcher = new web_jgm90();
+//    onlineFetcher = new web_jgm90(this);
     resultsTable=new BabeTable(this);
     //    resultsTable->passStyle("QHeaderView::section { background-color:#575757; color:white; }");
     resultsTable->horizontalHeader()->setHighlightSections(true);
@@ -277,21 +277,8 @@ void MainWindow::setUpViews()
     connect(resultsTable,&BabeTable::saveToPlaylist,playlistTable,&PlaylistsView::saveToPlaylist);
 
 
-    rabbitTable = new RabbitView(this);
-    connect(rabbitTable,&RabbitView::playAlbum,this,&MainWindow::putAlbumOnPlay);
-    connect(rabbitTable->getTable(),&BabeTable::tableWidget_doubleClicked, [this] (Bae::DB_LIST list) { addToPlaylist(list,false,APPENDBOTTOM);});
-    connect(rabbitTable->getTable(),&BabeTable::queueIt_clicked,this,&MainWindow::addToQueue);
-    connect(rabbitTable->getTable(),&BabeTable::babeIt_clicked,this,&MainWindow::babeIt);
-    connect(rabbitTable->getTable(),&BabeTable::infoIt_clicked,this,&MainWindow::infoIt);
-    connect(rabbitTable->getTable(),&BabeTable::previewStarted,this,&MainWindow::pause);
-    connect(rabbitTable->getTable(),&BabeTable::previewFinished,this,&MainWindow::play);
-    connect(rabbitTable->getTable(),&BabeTable::playItNow,this,&MainWindow::playItNow);
-    connect(rabbitTable->getTable(),&BabeTable::appendIt, [this] (Bae::DB_LIST list) { addToPlaylist(list,false,APPENDAFTER);});
-    connect(rabbitTable->getTable(),&BabeTable::saveToPlaylist,playlistTable,&PlaylistsView::saveToPlaylist);
-
-
     albumsTable = new AlbumsView(false,this);
-    connect(albumsTable, &AlbumsView::populateFinished, [this]()
+    connect(albumsTable, &AlbumsView::populateFinished, []()
     {
         qDebug()<<"Finished populating albumsTable";
     });
@@ -348,7 +335,7 @@ void MainWindow::setUpViews()
         {
             feedRabbit();
             calibrateBtn_menu->actions().at(3)->setEnabled(true);
-            rabbitTable->flushSuggestions(RabbitView::SIMILAR);
+            rabbitTable->flushSuggestions(RabbitView::ALL);
             qDebug()<<"&InfoView::artistSimilarReady:"<<info.keys();
             rabbitTable->populateArtistSuggestion(info);
             QStringList query;
@@ -365,7 +352,9 @@ void MainWindow::setUpViews()
 
         if(this->current_song==track)
         {
-            auto searchResults = this->searchFor(tags);
+            QStringList query;
+            for (auto tag : tags) query << QString("tag:"+tag).trimmed();
+            auto searchResults = this->searchFor(query);
             if(!searchResults.isEmpty()) rabbitTable->populateGeneralSuggestion(searchResults);
         }
     });
@@ -414,7 +403,6 @@ void MainWindow::setUpViews()
     views->addWidget(albumsTable);
     views->addWidget(artistsTable);
     views->addWidget(playlistTable);
-    views->addWidget(rabbitTable);
     views->addWidget(infoTable);
     views->addWidget(settings_widget);
     views->addWidget(resultsTable);
@@ -423,9 +411,9 @@ void MainWindow::setUpViews()
 
 void MainWindow::setUpCollectionViewer()
 {
-    mainLayout = new QHBoxLayout();
+    mainLayout = new QHBoxLayout;
 
-    leftFrame_layout = new QGridLayout();
+    leftFrame_layout = new QGridLayout;
     leftFrame_layout->setContentsMargins(0,0,0,0);
     leftFrame_layout->setSpacing(0);
     leftFrame_layout->setMargin(0);
@@ -445,7 +433,7 @@ void MainWindow::setUpCollectionViewer()
 
     ui->viewsUtils->setContextMenuPolicy(Qt::ActionsContextMenu);
 
-    auto showText = new QAction("Hide text");
+    auto showText = new QAction("Hide text",this);
     ui->viewsUtils->addAction(showText);
     connect(showText,&QAction::triggered,[showText,this]()
     {
@@ -475,7 +463,7 @@ void MainWindow::setUpCollectionViewer()
     this->searchTimer ->setSingleShot(true);
     this->searchTimer ->setInterval(500);
     connect(this->searchTimer, &QTimer::timeout,this, &MainWindow::runSearch);
-    connect(this->ui->search, SIGNAL(textEdited(QString)), this->searchTimer, SLOT(start()));
+    connect(this->ui->search, SIGNAL(textChanged(QString)), this->searchTimer, SLOT(start()));
 
     ui->search->setClearButtonEnabled(true);
     ui->collectionUtils->setVisible(false);
@@ -499,21 +487,21 @@ void MainWindow::setUpCollectionViewer()
 void MainWindow::setUpPlaylist()
 {
 
-    auto *playlistWidget_layout = new QGridLayout();
+    auto *playlistWidget_layout = new QGridLayout;
     playlistWidget_layout->setContentsMargins(0,0,0,0);
     playlistWidget_layout->setSpacing(0);
 
     playlistWidget = new QWidget(this);
 
     playlistWidget->setLayout(playlistWidget_layout);
-    playlistWidget->setFixedWidth(ALBUM_SIZE);
+    playlistWidget->setFixedWidth(static_cast<int>(ALBUM_SIZE));
 
     //    ui->controls->setParent(album_art);
     //    ui->controls->setGeometry(0,0,ALBUM_SIZE,ALBUM_SIZE);
-    ui->controls->setMinimumSize(ALBUM_SIZE,ALBUM_SIZE);
-    ui->controls->setMaximumSize(ALBUM_SIZE,ALBUM_SIZE);
+    ui->controls->setMinimumSize(static_cast<int>(ALBUM_SIZE),static_cast<int>(ALBUM_SIZE));
+    ui->controls->setMaximumSize(static_cast<int>(ALBUM_SIZE),static_cast<int>(ALBUM_SIZE));
 
-    auto moveIt= new QAction("Move to left");
+    auto moveIt= new QAction("Move to left",this);
     moveIt->setShortcut(QKeySequence("Ctrl+m"));
     connect (moveIt, &QAction::triggered,[moveIt,this]()
     {
@@ -535,7 +523,7 @@ void MainWindow::setUpPlaylist()
     });
     ui->controls->addAction(moveIt);
 
-    auto popPanel = new QAction("Pop panel out");
+    auto popPanel = new QAction("Pop panel out",this);
     popPanel->setShortcut(QKeySequence("Ctrl+p"));
     connect (popPanel, &QAction::triggered,[popPanel,this]()
     {
@@ -554,7 +542,7 @@ void MainWindow::setUpPlaylist()
     });
     ui->controls->addAction(popPanel);
 
-    auto hideTimeLabels = new QAction("Hide time labels");
+    auto hideTimeLabels = new QAction("Hide time labels",this);
     connect (hideTimeLabels, &QAction::triggered,[hideTimeLabels,this]()
     {
         if(ui->time->isVisible()&&ui->duration->isVisible())
@@ -603,12 +591,12 @@ void MainWindow::setUpPlaylist()
     ui->calibrateBtn->setMenu(calibrateBtn_menu);
     ui->calibrateBtn->setPopupMode(QToolButton::InstantPopup);
 
-    auto refreshIt = new QAction("Calibrate...");
+    auto refreshIt = new QAction("Calibrate...",this);
     refreshIt->setToolTip("Clean & play Babe'd tracks");
     connect(refreshIt, &QAction::triggered, [this]() { calibrateMainList(); });
     calibrateBtn_menu->addAction(refreshIt);
 
-    auto clearIt = new QAction("Clear...");
+    auto clearIt = new QAction("Clear...",this);
     clearIt->setToolTip("Remove unselected tracks");
     connect(clearIt, &QAction::triggered, [this]()
     {
@@ -622,12 +610,12 @@ void MainWindow::setUpPlaylist()
 
     calibrateBtn_menu->addAction(clearIt);
 
-    auto cleanIt = new QAction("Clean...");
+    auto cleanIt = new QAction("Clean...",this);
     cleanIt->setToolTip("Remove repeated tracks");
     connect(cleanIt, &QAction::triggered, [this]() { mainList->removeRepeated(); /*this->removequeuedTracks();*/ });
     calibrateBtn_menu->addAction(cleanIt);
 
-    auto similarIt = new QAction("Append Similar...");
+    auto similarIt = new QAction("Append Similar...",this);
     connect(similarIt, &QAction::triggered, [this]()
     {
         auto results = searchFor(infoTable->getSimilarArtistTags());
@@ -649,7 +637,7 @@ void MainWindow::setUpPlaylist()
     });
     calibrateBtn_menu->addAction(similarIt);
 
-    auto open = new QAction("Open...");
+    auto open = new QAction("Open...",this);
     connect(open, &QAction::triggered,this,&MainWindow::on_open_btn_clicked);
     calibrateBtn_menu->addAction(open);
 
@@ -660,8 +648,6 @@ void MainWindow::setUpPlaylist()
     playlistWidget_layout->addWidget(seekBar,2,0);
     playlistWidget_layout->addWidget(ui->frame_5,3,0);
     playlistWidget_layout->addWidget(mainListView,4,0);
-    playlistWidget_layout->addWidget(ui->frame_6,5,0);
-    playlistWidget_layout->addWidget(ui->playlistUtils,6,0);
 
 }
 
@@ -691,7 +677,7 @@ void MainWindow::movePanel(const position &pos)
         rightFrame->setWindowTitle("Playlist");
         //        rightFrame->setFrameShape(QFrame::NoFrame);
         rightFrame->show();
-        rightFrame->setMinimumHeight(ALBUM_SIZE*2);
+        rightFrame->setMinimumHeight(static_cast<int>(ALBUM_SIZE)*2);
         rightFrame->window()->setFixedWidth(rightFrame->minimumSizeHint().width());
         rightFrame->window()->move(position.x()+this->size().width()-rightFrame->size().width(),this->pos().y());
         playlistSta=OUT;
@@ -724,22 +710,44 @@ void MainWindow::loadStyle()
 
 void MainWindow::setUpRightFrame()
 {
+    this->rabbitTable = new RabbitView(this);
+    this->rabbitTable->setVisible(false);
+    this->rabbitTable->setFixedWidth(static_cast<int>(ALBUM_SIZE));
+    this->playlistWidget->setFixedWidth(static_cast<int>(ALBUM_SIZE));
+    this->ui->rabbit_view->setChecked(false);
 
+    connect(rabbitTable,&RabbitView::playAlbum,this,&MainWindow::putAlbumOnPlay);
+    connect(rabbitTable->getTable(),&BabeTable::tableWidget_doubleClicked, [this] (Bae::DB_LIST list) { addToPlaylist(list,false,APPENDBOTTOM);});
+    connect(rabbitTable->getTable(),&BabeTable::queueIt_clicked,this,&MainWindow::addToQueue);
+    connect(rabbitTable->getTable(),&BabeTable::babeIt_clicked,this,&MainWindow::babeIt);
+    connect(rabbitTable->getTable(),&BabeTable::infoIt_clicked,this,&MainWindow::infoIt);
+    connect(rabbitTable->getTable(),&BabeTable::previewStarted,this,&MainWindow::pause);
+    connect(rabbitTable->getTable(),&BabeTable::previewFinished,this,&MainWindow::play);
+    connect(rabbitTable->getTable(),&BabeTable::playItNow,this,&MainWindow::playItNow);
+    connect(rabbitTable->getTable(),&BabeTable::appendIt, [this] (Bae::DB_LIST list) { addToPlaylist(list,false,APPENDAFTER);});
+    connect(rabbitTable->getTable(),&BabeTable::saveToPlaylist,playlistTable,&PlaylistsView::saveToPlaylist);
 
-    auto *rightFrame_layout = new QGridLayout();
+    this->ui->vLine->setVisible(false);
+    auto *rightFrame_layout = new QGridLayout;
     rightFrame_layout->setContentsMargins(0,0,0,0);
     rightFrame_layout->setSpacing(0);
 
     rightFrame = new QFrame(this);
+
     rightFrame->setObjectName("rightFrame");
     rightFrame->installEventFilter(this);
     rightFrame->setAcceptDrops(true);
     rightFrame->setLayout(rightFrame_layout);
     rightFrame->setFrameShadow(QFrame::Raised);
     rightFrame->setFrameShape(QFrame::StyledPanel);
-    rightFrame->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Expanding);
+    rightFrame->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Expanding);
     //    rightFrame->setMinimumHeight(ALBUM_SIZE*2);
-    rightFrame_layout->addWidget(playlistWidget,0,0);
+    rightFrame_layout->addWidget(this->rabbitTable,0,0);
+    rightFrame_layout->addWidget(this->ui->vLine,0,1);
+    rightFrame_layout->addWidget(this->playlistWidget,0,2);
+    rightFrame_layout->addWidget(ui->frame_6,1,0,1,3);
+    rightFrame_layout->addWidget(ui->playlistUtils,2,0,2,3);
+
     rightFrame->setFixedWidth(rightFrame->minimumSizeHint().width());
 
 }
@@ -966,6 +974,7 @@ bool MainWindow::eventFilter(QObject *object, QEvent *event)
             }
         }
     }
+
     return QMainWindow::eventFilter(object, event);
 }
 
@@ -1187,7 +1196,7 @@ void MainWindow::putPixmap(const QByteArray &array)
     else  album_art->putDefaultPixmap();
 }
 
-void MainWindow::setToolbarIconSize(const int &iconSize) //tofix
+void MainWindow::setToolbarIconSize(const uint &iconSize) //tofix
 {
 
     this->iconSize = iconSize;
@@ -1197,16 +1206,16 @@ void MainWindow::setToolbarIconSize(const int &iconSize) //tofix
     //            qobject_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
 
     for(auto obj: ui->playlistUtils->children())
-        if(qobject_cast<QToolButton *>(obj)!=NULL)
-            qobject_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
+        if(qobject_cast<QToolButton *>(obj)!=nullptr)
+            qobject_cast<QToolButton *>(obj)->setIconSize(QSize(static_cast<int>(iconSize),static_cast<int>(iconSize)));
 
     //    for(auto obj: ui->collectionUtils->children())
     //        if(qobject_cast<QToolButton *>(obj)!=NULL)
     //            qobject_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
 
     for(auto obj: ui->viewsUtils->children())
-        if(qobject_cast<QToolButton *>(obj)!=NULL)
-            qobject_cast<QToolButton *>(obj)->setIconSize(QSize(iconSize,iconSize));
+        if(qobject_cast<QToolButton *>(obj)!=nullptr)
+            qobject_cast<QToolButton *>(obj)->setIconSize(QSize(static_cast<int>(iconSize),static_cast<int>(iconSize)));
 
     //    for(auto obj: infoTable->infoUtils->children())
     //        if(qobject_cast<QToolButton *>(obj)!=NULL)
@@ -1269,12 +1278,29 @@ void MainWindow::playlistsView()
 
 void MainWindow::rabbitView()
 {
-    views->setCurrentIndex(RABBIT);
-    ui->rabbit_view->setChecked(true);
-    if(this->viewMode != FULLMODE) expand();
+    if(this->rabbitTable->isVisible())
+    {
+        this->rabbitTable->setVisible(false);
+        this->ui->rabbit_view->setChecked(false);
+        this->ui->vLine->setVisible(false);
 
+    }
+    else
+    {
+        this->rabbitTable->setVisible(true);
+        this->ui->rabbit_view->setChecked(true);
+        this->ui->vLine->setVisible(true);
 
-    prevIndex = views->currentIndex();
+    }
+
+    this->rightFrame->setFixedWidth(rightFrame->minimumSizeHint().width());
+
+    if(this->viewMode==PLAYLISTMODE)
+    {
+        this->setMaximumWidth(rightFrame->minimumSizeHint().width());
+        this->setMinimumWidth(rightFrame->minimumSizeHint().width());
+
+    }
 }
 
 void MainWindow::infoView()
@@ -1316,8 +1342,8 @@ void MainWindow::expand()
     {
         album_art->setSize(ALBUM_SIZE);
         //        this->seekBar->setMaximumWidth(ALBUM_SIZE);
-        ui->controls->setMaximumSize(ALBUM_SIZE,ALBUM_SIZE);
-        ui->controls->setMinimumSize(ALBUM_SIZE,ALBUM_SIZE);
+        ui->controls->setMaximumSize(static_cast<int>(ALBUM_SIZE),static_cast<int>(ALBUM_SIZE));
+        ui->controls->setMinimumSize(static_cast<int>(ALBUM_SIZE),static_cast<int>(ALBUM_SIZE));
 
     }
 
@@ -1337,9 +1363,9 @@ void MainWindow::expand()
 
     this->setMaximumSize(QWIDGETSIZE_MAX,QWIDGETSIZE_MAX);
     this->setMinimumHeight(0);
-    this->setMinimumSize(ALBUM_SIZE*3,0);
+    this->setMinimumSize(static_cast<int>(ALBUM_SIZE)*3,0);
 
-    QPropertyAnimation *animation = new QPropertyAnimation(this, "geometry");
+    QPropertyAnimation *animation = new QPropertyAnimation(this, "geometry",this);
     animation->setDuration(200);
     animation->setStartValue(this->geometry());
     animation->setEndValue(this->loadSettings("GEOMETRY","MAINWINDOW",this->geometry()).toRect());
@@ -1382,7 +1408,7 @@ void MainWindow::go_mini()
     //    rightFrame->layout()->spacing(0);
     //    this->setMinimumSize(ALBUM_SIZE/2,ALBUM_SIZE/2);
     this->setMaximumWidth(rightFrame->minimumSizeHint().width());
-    QPropertyAnimation *animation = new QPropertyAnimation(this, "maximumHeight");
+    QPropertyAnimation *animation = new QPropertyAnimation(this, "maximumHeight",this);
     animation->setDuration(200);
     animation->setStartValue(this->size().height());
     animation->setEndValue(ui->controls->height());
@@ -1414,7 +1440,6 @@ void MainWindow::go_playlistMode()
         case ALBUMS:  icon = ui->albums_view->icon().name(); break;
         case ARTISTS:  icon = ui->artists_view->icon().name(); break;
         case PLAYLISTS:  icon = ui->playlists_view->icon().name(); break;
-        case RABBIT:  icon = ui->rabbit_view->icon().name(); break;
         case INFO: icon = ui->info_view->icon().name(); break;
 
         case SETTINGS:  icon= ui->settings_view->icon().name(); break;
@@ -1432,7 +1457,7 @@ void MainWindow::go_playlistMode()
         //        album_art->borderColor=false;
         this->setMaximumWidth(rightFrame->minimumSizeHint().width());
         this->setMinimumWidth(rightFrame->minimumSizeHint().width());
-        QPropertyAnimation *animation = new QPropertyAnimation(this, "maximumWidth");
+        QPropertyAnimation *animation = new QPropertyAnimation(this, "maximumWidth",this);
         animation->setDuration(200);
         animation->setStartValue(this->size().width());
         animation->setEndValue(rightFrame->minimumSizeHint().width());
@@ -1530,9 +1555,9 @@ void MainWindow::appendFiles(const QStringList &paths,const appendPos &pos)
                 trackList<<url;
         }
 
-        auto tracks = new Playlist();
-        tracks->add(trackList);
-        addToPlaylist(tracks->getTracksData(),false,pos);
+        Playlist tracks;
+        tracks.add(trackList);
+        addToPlaylist(tracks.getTracksData(),false,pos);
     }
 }
 
@@ -1632,7 +1657,7 @@ void MainWindow::loadTrack()
 
         album_art->setTitle(current_song[Bae::DBCols::ARTIST],current_song[Bae::DBCols::ALBUM]);
 
-        //CHECK IF THE SONG IS BABED IT OR IT ISN'T
+        //CHECK IF THE SONG IS BABED IT
         if(isBabed(current_song)) babedIcon(true);
         else babedIcon(false);
 
@@ -1643,7 +1668,7 @@ void MainWindow::loadTrack()
         if(!this->isActiveWindow())
             nof.notifySong(current_song,QPixmap(current_artwork));
 
-        //        loadInfo(current_song);
+        //loadInfo(current_song);
 
         if(miniPlayback)
         {
@@ -2362,8 +2387,6 @@ void MainWindow::on_addAll_clicked()
         addToPlaylist(artistsTable->albumTable->getAllTableContent(),false,APPENDBOTTOM); break;
     case PLAYLISTS:
         addToPlaylist(playlistTable->table->getAllTableContent(),false,APPENDBOTTOM); break;
-    case RABBIT:
-        addToPlaylist(rabbitTable->getTable()->getAllTableContent(),false, APPENDBOTTOM); break;
     case RESULTS:
         addToPlaylist(resultsTable->getAllTableContent(),false, APPENDBOTTOM); break;
     }
@@ -2470,8 +2493,6 @@ void MainWindow::on_playAll_clicked()
         putOnPlay(artistsTable->albumTable->getAllTableContent()); break;
     case PLAYLISTS:
         putOnPlay(playlistTable->table->getAllTableContent()); break;
-    case RABBIT:
-        putOnPlay(rabbitTable->getTable()->getAllTableContent()); break;
     case RESULTS:
         putOnPlay(resultsTable->getAllTableContent()); break;
     }
@@ -2496,8 +2517,8 @@ void MainWindow::on_miniPlaybackBtn_clicked()
 
     }else
     {
-        ui->controls->setFixedHeight(ALBUM_SIZE);
-        album_art->setFixedHeight(ALBUM_SIZE);
+        ui->controls->setFixedHeight(static_cast<int>(ALBUM_SIZE));
+        album_art->setFixedHeight(static_cast<int>(ALBUM_SIZE));
         ui->miniPlaybackBtn->setIcon(QIcon::fromTheme("go-top"));
         miniPlayback=!miniPlayback;
         this->blurWidget(*album_art,15);
@@ -2514,7 +2535,7 @@ void MainWindow::on_miniPlaybackBtn_clicked()
 
 void MainWindow::blurWidget(Album &widget, const int &radius )
 {
-    QGraphicsBlurEffect* effect	= new QGraphicsBlurEffect();
+    QGraphicsBlurEffect* effect	= new QGraphicsBlurEffect(this);
 
     effect->setBlurRadius(radius);
 

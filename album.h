@@ -30,18 +30,18 @@ public:
     explicit Album(QWidget *parent = nullptr);
     ~Album(){}
     void changeArt();
-    void createAlbum(const Bae::DB &info, const Bae::ALbumSizeHint &widgetSize, const uint &widgetRadius=0, const bool &isDraggable=false);
+    void createAlbum(const Bae::DB &info, const Bae::AlbumSizeHint &widgetSize, const uint &widgetRadius=0, const bool &isDraggable=false);
     void setArtist(const QString &artistTitle);
     void setAlbum(const QString &albumTitle);
     void setTitle(const QString &artistTitle, const QString &albumTitle="");
     void setBGcolor(const QString &bgColor);
     void setUpMenu();
     void setTitleGeometry(const int &x, const int &y, const int &w, const int &h);
-    void setSize(const int &value);
+    void setSize(const uint &value);
     void saturatePixmap(const int &value);
     void restoreSaturation();
-    int getSize();
-    int size;
+    uint getSize();
+    uint size;
     double subSize;
     bool borderColor=false;
     bool visibleTitle=true;

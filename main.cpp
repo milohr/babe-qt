@@ -40,7 +40,8 @@ int main(int argc, char *argv[])
     a.setDesktopFileName("Babe");
     a.setApplicationVersion("0.5 Beta");
     MainWindow w(files);
-    w.show();
     w.start();
+    w.show();
+
     return a.exec();
 }

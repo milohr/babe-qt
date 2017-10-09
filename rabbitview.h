@@ -9,6 +9,7 @@
 #include <QStringList>
 #include <QFrame>
 #include <QSplitter>
+#include "gridview.h"
 
 #include "collectionDB.h"
 #include "album.h"
@@ -20,7 +21,7 @@ class RabbitView : public QWidget
 
 public:
 
-    explicit RabbitView(QWidget *parent = 0);   
+    explicit RabbitView(QWidget *parent = nullptr);
 
     enum suggestionsTables
     {
@@ -33,10 +34,9 @@ public:
 
 private:
 
-    int ALBUM_SIZE_MEDIUM = Bae::getWidgetSizeHint(Bae::MEDIUM_ALBUM_FACTOR,Bae::MEDIUM_ALBUM);
-    int ALBUM_SIZE_SMALL = Bae::getWidgetSizeHint(Bae::SMALL_ALBUM_FACTOR,Bae::SMALL_ALBUM);
+    uint ALBUM_SIZE_MEDIUM = Bae::getWidgetSizeHint(Bae::MEDIUM_ALBUM_FACTOR,Bae::AlbumSizeHint::MEDIUM_ALBUM);
 
-    QListWidget *artistSuggestion;
+    GridView *artistSuggestion;
     BabeTable *generalSuggestion;
 
 public slots:

@@ -14,8 +14,7 @@ using namespace std;
 
 
 
-namespace Bae
-{
+namespace Bae {
 
 enum SearchT
 {
@@ -40,7 +39,7 @@ static const QMap<Order,QString> OrderMap =
     {Order::ASC,"ASC"}
 };
 
-enum class DBTables : uint
+enum class DBTables : uint8_t
 {
 
     ALBUMS=0,
@@ -80,7 +79,7 @@ static const QMap<DBTables,QString> DBTablesMap =
 };
 
 
-enum class DBCols :uint
+enum class DBCols :uint8_t
 {
 
     URL=0,
@@ -164,11 +163,11 @@ static const DB TracksColsMap =
 };
 
 
-enum ALbumSizeHint {BIG_ALBUM=200,MEDIUM_ALBUM=120,SMALL_ALBUM=80};
+enum class AlbumSizeHint : uint {BIG_ALBUM=200,MEDIUM_ALBUM=120,SMALL_ALBUM=80};
 
-static const int MAX_BIG_ALBUM_SIZE=300;
-static const int MAX_MID_ALBUM_SIZE=200;
-static const int MAX_MIN_ALBUM_SIZE=100;
+static const uint MAX_BIG_ALBUM_SIZE=300;
+static const uint MAX_MID_ALBUM_SIZE=200;
+static const uint MAX_MIN_ALBUM_SIZE=100;
 
 static const double BIG_ALBUM_FACTOR = 0.039;
 static const double BIG_ALBUM_FACTOR_SUBWIDGET = 0.27;
@@ -179,24 +178,22 @@ static const double MEDIUM_ALBUM_FACTOR_SUBWIDGET = 0.4;
 static const double SMALL_ALBUM_FACTOR = 0.006;
 static const double SMALL_ALBUM_FACTOR_SUBWIDGET = 0.5;
 
-inline int getWidgetSizeHint(const double &factor, const ALbumSizeHint &deafultValue)
+inline uint getWidgetSizeHint(const double &factor, const AlbumSizeHint &deafultValue)
 {
-    int ALBUM_SIZE = deafultValue;
+    auto ALBUM_SIZE = static_cast<uint>(deafultValue);
     auto screenSize = QApplication::desktop()->availableGeometry().size();
-    int albumSizeHint =  static_cast<int>(sqrt((screenSize.height()*screenSize.width())*factor));
+    auto albumSizeHint =  static_cast<uint>(sqrt((screenSize.height()*screenSize.width())*factor));
     ALBUM_SIZE = albumSizeHint > ALBUM_SIZE? albumSizeHint : ALBUM_SIZE;
 
 
     switch(deafultValue)
     {
 
-    case BIG_ALBUM:  return ALBUM_SIZE > MAX_BIG_ALBUM_SIZE? MAX_BIG_ALBUM_SIZE : ALBUM_SIZE;
-    case MEDIUM_ALBUM:  return ALBUM_SIZE > MAX_MID_ALBUM_SIZE? MAX_MID_ALBUM_SIZE : ALBUM_SIZE;
-    case SMALL_ALBUM:  return ALBUM_SIZE > MAX_MIN_ALBUM_SIZE ? MAX_MIN_ALBUM_SIZE :ALBUM_SIZE;
-
+    case AlbumSizeHint::BIG_ALBUM:  return ALBUM_SIZE > MAX_BIG_ALBUM_SIZE? MAX_BIG_ALBUM_SIZE : ALBUM_SIZE;
+    case AlbumSizeHint::MEDIUM_ALBUM:  return ALBUM_SIZE > MAX_MID_ALBUM_SIZE? MAX_MID_ALBUM_SIZE : ALBUM_SIZE;
+    case AlbumSizeHint::SMALL_ALBUM:  return ALBUM_SIZE > MAX_MIN_ALBUM_SIZE ? MAX_MIN_ALBUM_SIZE :ALBUM_SIZE;
+    default: return MAX_MID_ALBUM_SIZE;
     }
-
-    return MAX_MID_ALBUM_SIZE;
 }
 
 inline QString transformTime(const qint64 &value)
@@ -343,7 +340,6 @@ inline Bae::DBTables albumType(const Bae::DB &albumMap)
         return Bae::DBTables::ALBUMS;
 
     return Bae::DBTables::NONE;
-}
-}
+}}
 
 #endif // UTILS_H

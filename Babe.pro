@@ -107,7 +107,8 @@ HEADERS  += mainwindow.h \
     pulpo/htmlparser.h \
     playlistform.h \
     pulpo/webengine.h \
-    gridview.h
+    gridview.h \
+    pulpo/pulpodeamon.h
 
 FORMS    += mainwindow.ui \
     settings.ui \
