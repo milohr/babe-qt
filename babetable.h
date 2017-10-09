@@ -101,7 +101,7 @@ private:
 
     QMediaPlayer *preview;
     int previewRow=-1;
-    Notify nof;
+    Notify *nof;
 
     int rRow=0;
     int rColumn=0;

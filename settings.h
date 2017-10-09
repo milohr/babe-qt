@@ -240,7 +240,7 @@ class settings : public QWidget
 
 public:
 
-    explicit settings(QWidget *parent = 0);
+    explicit settings(QWidget *parent = nullptr);
 
     bool checkCollection();
     void createCollectionDB();
@@ -281,7 +281,6 @@ public slots:
 
     void populateDB(const QString &path);
     void fetchArt();
-    void refreshWatchFiles();
     void handleDirectoryChanged_extension();
 
 

@@ -33,7 +33,7 @@ MainWindow::MainWindow(const QStringList &files, QWidget *parent) :
     this->defaultWindowFlags = this->windowFlags();
     this->player = new QMediaPlayer(this);
     //mpris = new Mpris(this);
-
+    this->nof = new Notify(this);
     this->album_art = new Album(this);
     connect(album_art,&Album::playAlbum,this,&MainWindow::putAlbumOnPlay);
     connect(album_art,&Album::babeAlbum,this,&MainWindow::babeAlbum);
@@ -46,7 +46,7 @@ MainWindow::MainWindow(const QStringList &files, QWidget *parent) :
     album_art->showTitle(false);
     album_art->showPlayBtn=false;
 
-    ui->controls->installEventFilter(this);
+
 
     this->setMinimumSize(static_cast<int>(ALBUM_SIZE)*3,0);
     this->defaultGeometry = (QStyle::alignedRect(
@@ -69,14 +69,17 @@ MainWindow::MainWindow(const QStringList &files, QWidget *parent) :
     this->setUpRightFrame();
     this->setUpCollectionViewer();
 
+    seekBar->installEventFilter(this);
+    ui->controls->installEventFilter(this);
+
     settings_widget->setToolbarIconSize(this->loadSettings("TOOLBAR","MAINWINDOW",QVariant(16)).toInt());
 
-    connect(&nof,&Notify::babeSong,[this](const Bae::DB &track)
+    connect(nof,&Notify::babeSong,[this](const Bae::DB &track)
     {
         if(this->babeTrack(track))
             this->babedIcon(this->isBabed(track));
     });
-    connect(&nof,&Notify::skipSong,this,&MainWindow::next);
+    connect(nof,&Notify::skipSong,this,&MainWindow::next);
     connect(updater, &QTimer::timeout, this, &MainWindow::update);
 
     if(!files.isEmpty())
@@ -259,7 +262,7 @@ void MainWindow::setUpViews()
     mainListView->addWidget(this->mainList);
     mainListView->addWidget(this->filterList);
 
-//    onlineFetcher = new web_jgm90(this);
+    //    onlineFetcher = new web_jgm90(this);
     resultsTable=new BabeTable(this);
     //    resultsTable->passStyle("QHeaderView::section { background-color:#575757; color:white; }");
     resultsTable->horizontalHeader()->setHighlightSections(true);
@@ -503,7 +506,7 @@ void MainWindow::setUpPlaylist()
 
     auto moveIt= new QAction("Move to left",this);
     moveIt->setShortcut(QKeySequence("Ctrl+m"));
-    connect (moveIt, &QAction::triggered,[moveIt,this]()
+    connect(moveIt, &QAction::triggered,[moveIt,this]()
     {
 
         if(playlistSta==OUT) emit ui->controls->actions().at(1)->triggered();
@@ -567,7 +570,6 @@ void MainWindow::setUpPlaylist()
     ui->miniPlaybackBtn->setVisible(false);
 
     seekBar = new QSlider(this);
-    seekBar->installEventFilter(this);
 
     connect(seekBar,&QSlider::sliderMoved,this,&MainWindow::on_seekBar_sliderMoved);
 
@@ -1066,7 +1068,7 @@ void MainWindow::refreshTables(const Bae::DBTables &reset) //tofix
         break;
     }
 
-    nof.notify("Loading collection","this might take some time depending on your colleciton size");
+    nof->notify("Loading collection","this might take some time depending on your colleciton size");
 
     QSqlQuery query;
     query.prepare(QString("SELECT * FROM %1 ORDER BY  %2").arg(Bae::DBTablesMap[Bae::DBTables::TRACKS],Bae::DBColsMap[Bae::DBCols::ARTIST]));
@@ -1666,7 +1668,7 @@ void MainWindow::loadTrack()
         loadCover(current_song[Bae::DBCols::ARTIST],current_song[Bae::DBCols::ALBUM],current_song[Bae::DBCols::TITLE]);
 
         if(!this->isActiveWindow())
-            nof.notifySong(current_song,QPixmap(current_artwork));
+            nof->notifySong(current_song,QPixmap(current_artwork));
 
         //loadInfo(current_song);
 
@@ -1773,7 +1775,7 @@ void MainWindow::addToQueue(const Bae::DB_LIST &tracks)
 
     mainList->scrollToItem(mainList->getItem(0,Bae::DBCols::TITLE),QAbstractItemView::PositionAtTop);
 
-    nof.notify("Song added to Queue",queuedList.join("\n"));
+    nof->notify("Song added to Queue",queuedList.join("\n"));
 
 }
 
@@ -2021,7 +2023,7 @@ bool MainWindow::unbabeIt(const Bae::DB &track)
 {
     if(connection.babeTrack(track[Bae::DBCols::URL],0))
     {
-        nof.notify("Song unBabe'd it",track[Bae::DBCols::TITLE]+" by "+track[Bae::DBCols::ARTIST]);
+        nof->notify("Song unBabe'd it",track[Bae::DBCols::TITLE]+" by "+track[Bae::DBCols::ARTIST]);
         return  true;
     } else return false;
 
@@ -2043,7 +2045,7 @@ bool MainWindow::babeTrack(const Bae::DB &track)
         {
             if(this->connection.babeTrack(url,true))
             {
-                nof.notify("Song Babe'd it",track[Bae::DBCols::TITLE]+" by "+track[Bae::DBCols::ARTIST]);
+                nof->notify("Song Babe'd it",track[Bae::DBCols::TITLE]+" by "+track[Bae::DBCols::ARTIST]);
                 addToPlaylist({track},true,APPENDBOTTOM);
                 return true;
             } else return false;

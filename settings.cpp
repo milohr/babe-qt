@@ -20,7 +20,8 @@
 #include "ui_settings.h"
 
 
-settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
+settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
+{
     ui->setupUi(this);
     // QFrame frame = new QFrame();
 
@@ -90,7 +91,10 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings) {
             ui->progressBar->show();
         }else
         {
-            this->refreshWatchFiles();
+            this->dirs.clear();
+            this->collectionWatcher();
+            this->watcher->removePaths(watcher->directories());
+
         }
     });
 
@@ -171,8 +175,9 @@ void settings::on_remove_clicked()
             collectionPaths.removeAll(pathToRemove);
 
             refreshCollectionPaths();
-            this->refreshWatchFiles();
-            ui->remove->setEnabled(false);
+            this->dirs.clear();
+            this->collectionWatcher();
+            this->watcher->removePaths(watcher->directories());            ui->remove->setEnabled(false);
             emit refreshTables(Bae::DBTables::ALL);
         }
     }
@@ -183,48 +188,7 @@ void settings::refreshCollectionPaths() {
     ui->collectionPath->addItems(collectionPaths);
 }
 
-void settings::refreshWatchFiles()
-{
-    qDebug()<<"refreshing watched files";
 
-    dirs.clear();
-    auto queryTxt = QString("SELECT %1 FROM %2").arg(Bae::DBColsMap[Bae::DBCols::URL],Bae::DBTablesMap[Bae::DBTables::TRACKS]);
-    QSqlQuery query = collection_db.getQuery(queryTxt);
-
-    while (query.next())
-    {
-        if(!query.value(Bae::DBColsMap[Bae::DBCols::URL]).toString().contains(Bae::YoutubeCachePath))
-        {
-            if (!dirs.contains(QFileInfo(query.value(Bae::DBColsMap[Bae::DBCols::URL]).toString()).dir().path())&&QFileInfo(query.value(Bae::DBColsMap[Bae::DBCols::URL]).toString()).exists())
-            {
-                QString dir =QFileInfo(query.value(Bae::DBColsMap[Bae::DBCols::URL]).toString()).dir().path();
-
-                dirs << dir;
-                QDirIterator it(dir,QDir::Dirs | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
-
-                while (it.hasNext())
-                {
-                    QString subDir = it.next();
-                    subDir=QFileInfo(subDir).path();
-                    if(QFileInfo(subDir).isDir()&&QFileInfo(subDir).exists())
-                    {
-                        //QDir dir = new QDir(url.path());
-                        if(!dirs.contains(subDir))
-                            dirs <<subDir;
-                    }
-                }
-            }
-        }
-    }
-
-    /*for(auto path:files) qDebug() << "refreshed watcher -file:"<< path;
-    for(auto path:dirs) qDebug() << "refreshed watcher -dir:"<< path;*/
-    watcher->removePaths(watcher->directories());
-    // watcher->removePaths(watcher->files());
-
-    addToWatcher(dirs);
-
-}
 
 
 void settings::on_toolbarIconSize_activated(const QString &arg1) {
@@ -334,31 +298,32 @@ void settings::addToWatcher(QStringList paths)
 
 void settings::collectionWatcher()
 {
-    QSqlQuery query = collection_db.getQuery("SELECT url FROM tracks");
+    auto queryTxt = QString("SELECT %1 FROM %2").arg(Bae::DBColsMap[Bae::DBCols::URL],Bae::DBTablesMap[Bae::DBTables::TRACKS]);
+    QSqlQuery query = collection_db.getQuery(queryTxt);
     while (query.next())
     {
         QString location = query.value(Bae::DBColsMap[Bae::DBCols::URL]).toString();
         if(!location.startsWith(Bae::YoutubeCachePath,Qt::CaseInsensitive)) //exclude the youtube cache folder
         {
-            if (!dirs.contains(QFileInfo(location).dir().path()) && Bae::fileExists(location)) //check if parent dir isn't already in list and it exists
+            if (!this->dirs.contains(QFileInfo(location).dir().path()) && Bae::fileExists(location)) //check if parent dir isn't already in list and it exists
             {
                 QString dir = QFileInfo(location).dir().path();
-                dirs << dir;
+                this->dirs << dir;
 
                 QDirIterator it(dir, QDir::Dirs | QDir::NoDotAndDotDot, QDirIterator::Subdirectories); // get all the subdirectories to watch
                 while (it.hasNext())
                 {
                     QString subDir = QFileInfo(it.next()).path();
 
-                    if(QFileInfo(subDir).isDir() && !dirs.contains(subDir))
-                        dirs <<subDir;
+                    if(QFileInfo(subDir).isDir() && !this->dirs.contains(subDir) && Bae::fileExists(subDir))
+                        this->dirs <<subDir;
                 }
 
             }
         }
     }
 
-    addToWatcher(dirs);
+    addToWatcher(this->dirs);
 }
 
 void settings::handleDirectoryChanged(const QString &dir)

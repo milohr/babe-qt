@@ -36,7 +36,6 @@ void Notify::notify(  const QString &title, const QString &body)
     //connect(notification, SIGNAL(ac), this, SLOT(notify()));
 
     notification->sendEvent();
-
 }
 
 void Notify::notifySong(const Bae::DB &trackMap,  const QPixmap &pix)

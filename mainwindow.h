@@ -207,7 +207,7 @@ private:
     int prevIndex;
 
     Qt::WindowFlags defaultWindowFlags;
-    Notify nof;
+    Notify *nof;
     Mpris *mpris;
 
     QWidget *mainWidget;
