@@ -46,9 +46,7 @@ MainWindow::MainWindow(const QStringList &files, QWidget *parent) :
     album_art->showTitle(false);
     album_art->showPlayBtn=false;
 
-
-
-    this->setMinimumSize(static_cast<int>(ALBUM_SIZE)*3,0);
+    this->setMinimumSize(this->minimumSizeHint().width(),0);
     this->defaultGeometry = (QStyle::alignedRect(
                                  Qt::LeftToRight,
                                  Qt::AlignCenter,
@@ -1280,6 +1278,8 @@ void MainWindow::playlistsView()
 
 void MainWindow::rabbitView()
 {
+    this->setMinimumSize(this->minimumSizeHint().width(),0);
+
     if(this->rabbitTable->isVisible())
     {
         this->rabbitTable->setVisible(false);
@@ -1296,12 +1296,12 @@ void MainWindow::rabbitView()
     }
 
     this->rightFrame->setFixedWidth(rightFrame->minimumSizeHint().width());
+//    this->setMinimumSize(this->minimumSizeHint().width(),0);
 
     if(this->viewMode==PLAYLISTMODE)
     {
         this->setMaximumWidth(rightFrame->minimumSizeHint().width());
         this->setMinimumWidth(rightFrame->minimumSizeHint().width());
-
     }
 }
 
@@ -1337,6 +1337,8 @@ void MainWindow::settingsView()
 
 void MainWindow::expand()
 {
+
+    this->setMinimumSize(this->minimumSizeHint().width(),0);
 
     this->viewMode=FULLMODE;
 
@@ -1383,6 +1385,7 @@ void MainWindow::expand()
 
 void MainWindow::go_mini()
 {
+    this->setMinimumSize(this->minimumSizeHint().width(),0);
 
     this->viewMode=MINIMODE;
 
@@ -1426,11 +1429,13 @@ void MainWindow::go_mini()
     ui->hide_sidebar_btn->setToolTip("Expand");
 
 
+
 }
 
 void MainWindow::go_playlistMode()
 {
 
+     this->setMinimumSize(this->minimumSizeHint().width(),0);
     if(playlistSta!=OUT)
     {
         this->saveSettings("GEOMETRY",this->geometry(),"MAINWINDOW");
