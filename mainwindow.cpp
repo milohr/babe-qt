@@ -124,6 +124,7 @@ void MainWindow::start()
     else settingsView();
 
     updater->start(100);
+
 }
 
 
@@ -479,8 +480,8 @@ void MainWindow::setUpCollectionViewer()
     mainLayout->addWidget(rightFrame);
     mainLayout->setContentsMargins(0,0,0,0);
 
-    mainWidget= new QWidget(this);
-    mainWidget->setLayout(mainLayout);
+    this->mainWidget= new QWidget(this);
+    this->mainWidget->setLayout(mainLayout);
 
     this->setCentralWidget(mainWidget);
 }
@@ -1278,7 +1279,6 @@ void MainWindow::playlistsView()
 
 void MainWindow::rabbitView()
 {
-    this->setMinimumSize(this->minimumSizeHint().width(),0);
 
     if(this->rabbitTable->isVisible())
     {
@@ -1295,14 +1295,17 @@ void MainWindow::rabbitView()
 
     }
 
-    this->rightFrame->setFixedWidth(rightFrame->minimumSizeHint().width());
-//    this->setMinimumSize(this->minimumSizeHint().width(),0);
+    //    this->setMinimumSize(this->minimumSizeHint().width(),0);
 
     if(this->viewMode==PLAYLISTMODE)
     {
         this->setMaximumWidth(rightFrame->minimumSizeHint().width());
         this->setMinimumWidth(rightFrame->minimumSizeHint().width());
-    }
+    }else
+
+        this->setMinimumSize(this->rightFrame->minimumSizeHint().width()+this->leftFrame->minimumSizeHint().width(),0);
+    this->rightFrame->setFixedWidth(rightFrame->minimumSizeHint().width());
+
 }
 
 void MainWindow::infoView()
@@ -1367,7 +1370,7 @@ void MainWindow::expand()
 
     this->setMaximumSize(QWIDGETSIZE_MAX,QWIDGETSIZE_MAX);
     this->setMinimumHeight(0);
-    this->setMinimumSize(static_cast<int>(ALBUM_SIZE)*3,0);
+    this->setMinimumSize(this->minimumSizeHint().width(),0);
 
     QPropertyAnimation *animation = new QPropertyAnimation(this, "geometry",this);
     animation->setDuration(200);
@@ -1435,7 +1438,7 @@ void MainWindow::go_mini()
 void MainWindow::go_playlistMode()
 {
 
-     this->setMinimumSize(this->minimumSizeHint().width(),0);
+    this->setMinimumSize(this->minimumSizeHint().width(),0);
     if(playlistSta!=OUT)
     {
         this->saveSettings("GEOMETRY",this->geometry(),"MAINWINDOW");
