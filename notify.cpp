@@ -22,26 +22,26 @@
 
 Notify::Notify(QObject *parent) : QObject(parent)
 {
-    this->notification = new KNotification(QStringLiteral("Notify"),KNotification::CloseOnTimeout, this);
+
 }
 
-void Notify::notify(  const QString &title, const QString &body)
+void Notify::notify(const QString &title, const QString &body)
 {
-
+    auto notification = new KNotification(QStringLiteral("Notify"),KNotification::CloseOnTimeout, this);
     // notification->setComponentName(QStringLiteral("Babe"));
-    this->notification->setTitle(QStringLiteral("%1").arg(title));
-    this->notification->setText(QStringLiteral("%1").arg(body));
-    this->notification->sendEvent();
+    notification->setTitle(QStringLiteral("%1").arg(title));
+    notification->setText(QStringLiteral("%1").arg(body));
+    notification->sendEvent();
 }
 
 void Notify::notifySong(const Bae::DB &trackMap,  const QPixmap &pix)
 {
     this->track = trackMap;
-
+    auto notification = new KNotification(QStringLiteral("Notify"),KNotification::CloseOnTimeout, this);
     // notification->setComponentName(QStringLiteral("Babe"));
-    this->notification->setTitle(QStringLiteral("%1").arg(track[Bae::DBCols::TITLE]));
-    this->notification->setText(QStringLiteral("%1\n%2").arg(track[Bae::DBCols::ARTIST],track[Bae::DBCols::ALBUM]));
-    if(!pix.isNull()) this->notification->setPixmap(pix);
+    notification->setTitle(QStringLiteral("%1").arg(track[Bae::DBCols::TITLE]));
+    notification->setText(QStringLiteral("%1\n%2").arg(track[Bae::DBCols::ARTIST],track[Bae::DBCols::ALBUM]));
+    if(!pix.isNull()) notification->setPixmap(pix);
     QStringList actions;
 
     if(track[Bae::DBCols::BABE].toInt()==1) actions<<i18n("Un-Babe it  \xe2\x99\xa1");
@@ -49,10 +49,10 @@ void Notify::notifySong(const Bae::DB &trackMap,  const QPixmap &pix)
 
     actions<<i18n("Skip");
 
-    this->notification->setActions(actions);
-    connect(this->notification, SIGNAL(activated(uint)), SLOT(actions(uint)));
+    notification->setActions(actions);
+    connect(notification, SIGNAL(activated(uint)), SLOT(actions(uint)));
 
-    this->notification->sendEvent();
+    notification->sendEvent();
 
 }
 

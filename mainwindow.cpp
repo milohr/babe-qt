@@ -1145,37 +1145,23 @@ void MainWindow::leaveEvent(QEvent *event)
 
 void MainWindow::showControls(const bool &state)
 {
-
     if(state)
-
     {
         if(!ui->controls->isVisible())
         {
 
-
-
             if(!miniPlayback) this->blurWidget(*album_art,15);
             else this->blurWidget(*album_art,28);
-
             ui->controls->setVisible(true);
-
         }
     }else
     {
         if(ui->controls->isVisible() && !miniPlayback)
         {
             this->blurWidget(*album_art,0);
-
-
             ui->controls->setVisible(false);
-
-
-
         }
     }
-
-
-
 }
 
 void MainWindow::dummy() { qDebug()<<"TEST on DUMMYT"; }

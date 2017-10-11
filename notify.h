@@ -23,7 +23,6 @@ public:
 
 private:
   Bae::DB track;
-  KNotification *notification;
    // NotifyNotification *notify;
 
 
