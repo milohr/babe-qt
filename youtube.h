@@ -28,7 +28,7 @@ public:
         TITLE,ARTIST,ALBUM,COMMENT,ID
     };
 
-    explicit YouTube(QObject *parent = 0);
+    explicit YouTube(QObject *parent = nullptr);
     void fetch(QStringList files);
     ~YouTube();
     void searchPendingFiles();
@@ -43,7 +43,7 @@ private slots:
 
 private:
 
-    Notify nof;
+    Notify *nof;
     QMap<QString,QString> tracks;
     const  QString ydl="youtube-dl -f m4a --youtube-skip-dash-manifest -o \"$$$.%(ext)s\"";
     const QString cachePath=Bae::YoutubeCachePath;

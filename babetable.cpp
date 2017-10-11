@@ -438,7 +438,7 @@ void BabeTable::addRowAt(const int &row, const Bae::DB &map)
 
 void BabeTable::removeMissing(const QString &url)
 {
-    nof->notifyUrgent("Removing missing file...",url);
+    nof->notify("Removing missing file...",url);
 
     auto parentDir = QFileInfo(QFileInfo(url)).dir().path();
 
@@ -943,7 +943,7 @@ void BabeTable::sendIt_action(QAction *device)
                 [=](int exitCode, QProcess::ExitStatus exitStatus)
         {
             qDebug()<<"processFinished_totally"<<exitCode<<exitStatus;
-            nof->notifyUrgent("Song sent to " + deviceName,title +" by "+ artist);
+            nof->notify("Song sent to " + deviceName,title +" by "+ artist);
 
         });
 

@@ -54,7 +54,7 @@ private:
     QFrame *frame;
     QWidget *moodWidget;
     CollectionDB connection;
-    Notify nof;
+    Notify *nof;
     QAction *removeFromPlaylist;
 
 

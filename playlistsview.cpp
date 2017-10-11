@@ -22,6 +22,7 @@
 PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
 {
 
+    this->nof = new Notify(this);
     layout = new QGridLayout;
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
@@ -38,7 +39,7 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
             SLOT(playlistName(QListWidgetItem *)));
     connect(this,&PlaylistsView::addedToPlaylist,[this](const Bae::DB_LIST &tracks, const QString &playlist)
     {
-        nof.notify(playlist, QString ("%1 Track%2 added to %3").arg(QString::number(tracks.size()),tracks.size()>1?"s":"",playlist));
+        nof->notify(playlist, QString ("%1 Track%2 added to %3").arg(QString::number(tracks.size()),tracks.size()>1?"s":"",playlist));
     });
     //    list->setFixedWidth(160);
     list->setAlternatingRowColors(true);

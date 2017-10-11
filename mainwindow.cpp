@@ -1301,9 +1301,9 @@ void MainWindow::rabbitView()
     {
         this->setMaximumWidth(rightFrame->minimumSizeHint().width());
         this->setMinimumWidth(rightFrame->minimumSizeHint().width());
-    }else
 
-        this->setMinimumSize(this->rightFrame->minimumSizeHint().width()+this->leftFrame->minimumSizeHint().width(),0);
+    }else this->setMinimumSize(this->rightFrame->minimumSizeHint().width()+this->leftFrame->minimumSizeHint().width(),0);
+
     this->rightFrame->setFixedWidth(rightFrame->minimumSizeHint().width());
 
 }

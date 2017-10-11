@@ -4,6 +4,8 @@
 AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
     QWidget(parent), extraList(extraList)
 {
+
+
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     auto layout = new QGridLayout;
     layout->setMargin(0);
@@ -115,18 +117,18 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
 
     }
 
-    auto spacer = new QWidget(this);
-    spacer->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
-    spacer->setFixedHeight(15);
-    spacer->setAutoFillBackground(true);
-    spacer->setBackgroundRole(this->grid->backgroundRole());
-    spacer->setStyleSheet("QWidget{background-color:transparent;");
+//    auto spacer = new QWidget(this);
+//    spacer->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
+//    spacer->setFixedHeight(15);
+//    spacer->setAutoFillBackground(false);
+//    spacer->setPalette(this->grid->palette());
+    //spacer->setStyleSheet("QWidget{background-color:transparent;");
 
     auto *splitter = new QSplitter(parent);
     splitter->setChildrenCollapsible(false);
     splitter->setOrientation(Qt::Vertical);
 
-    splitter->addWidget(spacer);
+//    splitter->addWidget(spacer);
     splitter->addWidget(this->grid);
     splitter->addWidget(this->line_h);
     splitter->addWidget(this->albumBox_frame);
@@ -135,9 +137,9 @@ AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
 
     albumBox_frame->hide(); line_h->hide();
 
-    splitter->setSizes({0,0,0,0});
-    splitter->setStretchFactor(1, 1);
-    splitter->setStretchFactor(3, 0);
+    splitter->setSizes({0,0,0});
+    splitter->setStretchFactor(0, 1);
+    splitter->setStretchFactor(2, 0);
 
     this->setLayout(layout);
 }

@@ -215,9 +215,6 @@ public slots:
         emit finished();
     }
 
-
-
-
 signals:
     void trackReady(Bae::DB track);
     void artworkReady(Bae::DB album);

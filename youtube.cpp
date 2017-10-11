@@ -22,6 +22,7 @@
 
 YouTube::YouTube(QObject *parent) : QObject(parent)
 {
+    this->nof = new Notify(this);
 
     /*    ui->setupUi(this);
     ui->label->hide();
@@ -44,11 +45,8 @@ void YouTube::searchPendingFiles()
 
 }
 
-
-
 void YouTube::fetch(QStringList files)
 {
-
     for(auto file: files)
     {
         qDebug()<<file;
@@ -111,20 +109,14 @@ void YouTube::fetch(QStringList files)
 
             });
 
-            nof.notify("Song received!", infoMap[TITLE]+ " - "+ infoMap[ARTIST]+".\nWait a sec while the track is added to your collection :)");
+            nof->notify("Song received!", infoMap[TITLE]+ " - "+ infoMap[ARTIST]+".\nWait a sec while the track is added to your collection :)");
             auto a = ydl;
 
             a = a.replace("$$$",infoMap[COMMENT])+" "+infoMap[ID];
             qDebug()<<a;
             process->start(a);
-
         }
-
-
     }
-
-
-
 }
 
 void YouTube::processFinished_totally(const int &state,const QMap<int,QString> &info,const QProcess::ExitStatus &exitStatus)

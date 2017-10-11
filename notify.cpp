@@ -20,35 +20,28 @@
 #include "babetable.h"
 
 
-Notify::Notify(QObject *parent) : QObject(parent){}
+Notify::Notify(QObject *parent) : QObject(parent)
+{
+    this->notification = new KNotification(QStringLiteral("Notify"),KNotification::CloseOnTimeout, this);
+}
 
 void Notify::notify(  const QString &title, const QString &body)
 {
-    KNotification *notification = new KNotification(QStringLiteral("Notify"),
-                                                    KNotification::CloseOnTimeout, this);
 
     // notification->setComponentName(QStringLiteral("Babe"));
-    notification->setTitle(QStringLiteral("%1").arg(title));
-    notification->setText(QStringLiteral("%1").arg(body));
-//    QPixmap babeIcon;
-//    babeIcon.load(":Data/data/128-apps-babe.svg");
-//    notification->setPixmap(babeIcon);
-    //connect(notification, SIGNAL(ac), this, SLOT(notify()));
-
-    notification->sendEvent();
+    this->notification->setTitle(QStringLiteral("%1").arg(title));
+    this->notification->setText(QStringLiteral("%1").arg(body));
+    this->notification->sendEvent();
 }
 
 void Notify::notifySong(const Bae::DB &trackMap,  const QPixmap &pix)
 {
     this->track = trackMap;
 
-    KNotification *notification = new KNotification(QStringLiteral("Playing"),
-                                                    KNotification::CloseOnTimeout, this);
-
     // notification->setComponentName(QStringLiteral("Babe"));
-    notification->setTitle(QStringLiteral("%1").arg(track[Bae::DBCols::TITLE]));
-    notification->setText(QStringLiteral("%1\n%2").arg(track[Bae::DBCols::ARTIST],track[Bae::DBCols::ALBUM]));
-    if(!pix.isNull()) notification->setPixmap(pix);
+    this->notification->setTitle(QStringLiteral("%1").arg(track[Bae::DBCols::TITLE]));
+    this->notification->setText(QStringLiteral("%1\n%2").arg(track[Bae::DBCols::ARTIST],track[Bae::DBCols::ALBUM]));
+    if(!pix.isNull()) this->notification->setPixmap(pix);
     QStringList actions;
 
     if(track[Bae::DBCols::BABE].toInt()==1) actions<<i18n("Un-Babe it  \xe2\x99\xa1");
@@ -56,26 +49,10 @@ void Notify::notifySong(const Bae::DB &trackMap,  const QPixmap &pix)
 
     actions<<i18n("Skip");
 
-     notification->setActions(actions);
+    this->notification->setActions(actions);
+    connect(this->notification, SIGNAL(activated(uint)), SLOT(actions(uint)));
 
-
-
-    connect(notification, SIGNAL(activated(uint)), SLOT(actions(uint)));
-
-    notification->sendEvent();
-
-}
-
-void Notify::notifyUrgent(  const QString &title, const QString &body)
-{
-    KNotification *notification = new KNotification(QStringLiteral("Urgent"),
-                                                    KNotification::CloseOnTimeout, this);
-
-    // notification->setComponentName(QStringLiteral("Babe"));
-    notification->setTitle(QStringLiteral("%1").arg(title));
-    notification->setText(QStringLiteral("%1").arg(body));
-
-    notification->sendEvent();
+    this->notification->sendEvent();
 
 }
 

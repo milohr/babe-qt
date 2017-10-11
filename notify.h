@@ -17,13 +17,13 @@ class Notify : public QObject
     Q_OBJECT
 
 public:
-    explicit Notify(QObject *parent = 0);
+    explicit Notify(QObject *parent = nullptr);
     void notifySong(const Bae::DB &, const QPixmap &pix);
     void notify(const QString &title, const QString &body);
-    void notifyUrgent(const QString &title, const QString &body);
 
 private:
   Bae::DB track;
+  KNotification *notification;
    // NotifyNotification *notify;
 
 

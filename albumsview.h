@@ -147,7 +147,6 @@ public:
 private:
 
     AlbumLoader albumLoader;
-    Notify nof;
     int albumSize;
     bool extraList=false;
 
