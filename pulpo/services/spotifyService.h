@@ -9,13 +9,16 @@ class spotify : public Pulpo
 {
     Q_OBJECT
 
+
+
+
 private:
-
     QString API = "https://api.spotify.com/v1/search?q=";
-
     Bae::DB track;
 
 public:
+
+    static const QString auth;
 
     enum Ontology
     {

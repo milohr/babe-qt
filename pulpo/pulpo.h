@@ -85,7 +85,7 @@ public:
 
     bool fetchTrackInfo(const TrackInfo &infoType = AllTrackInfo, const LyricServices &lyricService = AllLyricServices, const InfoServices &services = AllInfoServices );
 
-    QByteArray startConnection(const QString &url);
+    QByteArray startConnection(const QString &url, const QString &auth="");
 
 
 private:

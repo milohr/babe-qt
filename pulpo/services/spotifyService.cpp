@@ -1,5 +1,7 @@
 #include "spotifyService.h"
 
+const QString spotify::auth = "Bearer BQDw6mqFaM-R9jGPH3fA-p7kPkaZ0QI7xl1HPTC59mr5_wzI_csQAwCbUtpgAfM0LeW7eukcaWMJ9kOHipSxMVkU7glO2H-fVLmT6VwKCfhfmMlW_tnqtUcha_8l9-5d8w5XKg";
+
 
 spotify::spotify(const Bae::DB &song)
     : track(song) {}
@@ -62,7 +64,7 @@ bool spotify::parseSpotifyAlbum(const QByteArray &array, const AlbumInfo &infoTy
 {
     QJsonParseError jsonParseError;
     QJsonDocument jsonResponse = QJsonDocument::fromJson(static_cast<QString>(array).toUtf8(), &jsonParseError);
-
+    qDebug()<<array;
 
     if (jsonParseError.error != QJsonParseError::NoError)
     {

@@ -1664,7 +1664,7 @@ void MainWindow::loadTrack()
         if(!this->isActiveWindow())
             nof->notifySong(current_song,QPixmap(current_artwork));
 
-        //loadInfo(current_song);
+        loadInfo(current_song);
 
         if(miniPlayback)
         {

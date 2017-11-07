@@ -369,13 +369,16 @@ QVariant Pulpo::getStaticTrackInfo(const TrackInfo &infoType)
     return QVariant();
 }
 
-QByteArray Pulpo::startConnection(const QString &url)
+QByteArray Pulpo::startConnection(const QString &url, const QString &auth)
 {
     if(!url.isEmpty())
     {
         QUrl mURL(url);
         QNetworkAccessManager manager;
         QNetworkRequest request (mURL);
+
+        if(auth.isEmpty()) request.setRawHeader("Authorization", spotify::auth.toLocal8Bit());
+
         QNetworkReply *reply =  manager.get(request);
         QEventLoop loop;
         connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
