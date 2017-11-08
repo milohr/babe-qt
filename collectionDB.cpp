@@ -876,7 +876,6 @@ bool CollectionDB::checkQuery(QString queryTxt)
 
 void CollectionDB::insertArtwork(const Bae::DB &track)
 {
-
     auto artist = track[Bae::DBCols::ARTIST];
     auto album =track[Bae::DBCols::ALBUM];
     auto path = track[Bae::DBCols::ARTWORK];

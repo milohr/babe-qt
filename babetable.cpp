@@ -207,9 +207,12 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent)
     addMusicTxt_layout->addWidget(addMusicMsgWidget,Qt::AlignCenter); // center alignment
     addMusicTxt_layout->addStretch();
 
-
+    auto *updater = new QTimer(this);
+    updater->setSingleShot(true);
     connect(updater, SIGNAL(timeout()), this, SLOT(update()));
-    updater->start(100);
+    updater->setInterval(500);
+    updater->start();
+
 }
 
 
@@ -298,9 +301,7 @@ void BabeTable::update()
     }else addMusicMsgWidget->setVisible(true);
 
     if(preview->state() == QMediaPlayer::StoppedState && previewRow!=-1)
-
     {
-
         this->getItem(this->previewRow,Bae::DBCols::TITLE)->setIcon(QIcon::fromTheme(""));
         emit previewFinished();
         previewRow=-1;

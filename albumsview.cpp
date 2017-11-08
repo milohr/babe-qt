@@ -1,7 +1,7 @@
 #include "albumsview.h"
 
 
-AlbumsView::AlbumsView(bool extraList, QWidget *parent) :
+AlbumsView::AlbumsView(const bool &extraList, QWidget *parent) :
     QWidget(parent), extraList(extraList)
 {
 

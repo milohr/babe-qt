@@ -53,7 +53,7 @@ public:
 
     enum class INFO : uint8_t
     {
-       ALBUM,ARTIST,ARTWORK,WIKI,ALBUM_TRACKS,TAGS,SIMILAR,LYRICS,TRACK,TITLE,ALL,NONE
+        ALBUM,ARTIST,ARTWORK,WIKI,ALBUM_TRACKS,TAGS,SIMILAR,LYRICS,TRACK,TITLE,ALL,NONE
     };
 
     typedef QMap<INFO, QVariant> RES; /* response type*/
@@ -64,62 +64,43 @@ public:
 
     /* NEW INTRODUCED STUFF */
 
-    void registerServices(const QList<SERVICES> &services);
-    void setInfo(const ONTOLOGY ontology = ONTOLOGY::ALL, const INFO info = INFO::ALL);
-
-    /* OLD STUFF TO REVIEW */
-
-    enum ResponseType
-    {
-        XML,JSON
-    };
-
     void feed(const Bae::DB &song);
 
-    QVariant getStaticAlbumInfo(const INFO &infoType);
-    QVariant getStaticArtistInfo(const INFO &infoType);
-    QVariant getStaticTrackInfo(const INFO &infoType);
+    QByteArray startConnection(const QString &url, const QString &auth = "");
 
-    QByteArray startConnection(const QString &url, const QString &auth="");
-
+    void registerServices(const QList<SERVICES> &services);
+    void setInfo(const INFO info = INFO::ALL);
+    void setOntology(const ONTOLOGY ontology = ONTOLOGY::ALL);
+    void setFallback(const bool &state);
 
 private:
-
-    QPixmap art;
-    Bae::DB track;
-    webEngine *page;
+    bool initServices();
+    bool fallback = false;
     QList<SERVICES> registeredServices = {SERVICES::ALL};
+    //    webEngine *page;
+
+protected:
+    QByteArray array;
+    Bae::DB track;
     INFO info = INFO::ALL;
     ONTOLOGY ontology = ONTOLOGY::ALL;
 
-    bool initServices();
+    /* to be override */
 
-public slots:
+    bool setUpService(const Pulpo::ONTOLOGY &ontology, const Pulpo::INFO &info);
 
+    bool parseArray();
+
+    bool parseArtist();
+    bool parseAlbum();
+    bool parseTrack();
+
+public slots:    
     void saveArt(const QByteArray &array, const QString &path);
-    void dummy();
 
 signals:
-
     void infoReady(const Bae::DB &track, const Pulpo::RES &response);
-
-    void albumArtReady(const QByteArray &art);
-    void albumWikiReady(const QString &wiki,const Bae::DB &track);
-    void albumTracksReady(const QStringList &tracks,const Bae::DB &track);
-    void albumTagsReady(const QStringList &tags,const Bae::DB &track);
-
-    void artistArtReady(const QByteArray &art);
-    void artistWikiReady(const QString &wiki,const Bae::DB &track);
-    void artistSimilarReady(const QMap<QString,QByteArray> &similar,const Bae::DB &track);
-    void artistTagsReady(const QStringList &tags,const Bae::DB &track);
-
-    void trackLyricsReady(const QString &lyric,const Bae::DB &track);
-    void trackLyricsUrlReady(const QUrl &url,const Bae::DB &track);
-    void trackWikiReady(const QString &wiki,const Bae::DB &track);
-    void trackAlbumReady(const QString &album,const Bae::DB &track);
-    void trackPositionReady(const int &position,const Bae::DB &track);
-    void trackTagsReady(const QStringList &tags,const Bae::DB &track);
-
+    void arrayReady(const QByteArray &array);
     void artSaved(const Bae::DB &track);
 };
 

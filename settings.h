@@ -107,125 +107,124 @@ public slots:
                             {Bae::DBCols::GENRE,genre},
                             {Bae::DBCols::SOURCES_URL,sourceUrl},
                             {Bae::DBCols::BABE, url.startsWith(Bae::YoutubeCachePath)?"1":"0"},
-                            {Bae::DBCols::RELEASE_DATE,QString::number(year)}
-                        };
+                                {Bae::DBCols::RELEASE_DATE,QString::number(year)}
+                            };
 
-                        emit trackReady(trackMap);
-                        while(this->wait){t.msleep(100);}
-                        this->wait=!this->wait;
+                            emit trackReady(trackMap);
+                            while(this->wait){t.msleep(100);}
+                            this->wait=!this->wait;
 
-                    }
+                        }
 
-                }else break;
+                    }else break;
+                }
             }
+            t.msleep(100);
+            emit finished();
         }
-        t.msleep(100);
-        emit finished();
-    }
 
-signals:
-    void trackReady(Bae::DB track);  
-    void finished();
-    void collectionSize(int size);
+        signals:
+        void trackReady(Bae::DB track);
+        void finished();
+        void collectionSize(int size);
 
-private:
-    QThread t;
-    CollectionDB connection;
-    bool go=true;
-    bool wait=true;
+        private:
+        QThread t;
+        CollectionDB connection;
+        bool go=true;
+        bool wait=true;
 
-};
-
-
-class settings : public QWidget
-{
-    Q_OBJECT
-
-public:
-
-    explicit settings(QWidget *parent = nullptr);
-
-    bool checkCollection();
-    void createCollectionDB();
-
-    int getToolbarIconSize()  {return iconSize;}
-    void setToolbarIconSize(const int &iconSize);
-
-    void setSettings(QStringList setting);
-    void readSettings();
-    void removeSettings(QStringList setting);
-    void refreshCollectionPaths();
-    void collectionWatcher();
-    void addToWatcher(QStringList paths);
-    QStringList getCollectionPath() {return collectionPaths;}
-    CollectionDB collection_db;
-    bool youtubeTrackDone=false;
-
-    enum iconSizes
-    {
-        s16,s22,s24
     };
-    //enum albums { ALBUM_TITLE, ARTIST, ART};
-    // enum artists { ARTIST_TITLE, ART};
-
-private slots:
-
-    void on_open_clicked();
-    void on_toolbarIconSize_activated(const QString &arg1);
-    void on_pushButton_clicked();
-    void handleDirectoryChanged(const QString &dir);
-    void on_collectionPath_clicked(const QModelIndex &index);
-    void on_remove_clicked();
-
-    void on_debugBtn_clicked();
-    void on_checkBox_stateChanged(int arg1);
-
-public slots:
-
-    void populateDB(const QString &path);
-    void fetchArt();
-    void handleDirectoryChanged_extension();
 
 
-private:
-    Ui::settings *ui;
-    TrackSaver trackSaver;
-    Deamon::Brain brainDeamon;
-    QTimer *brainTimer;
+    class settings : public QWidget
+    {
+        Q_OBJECT
 
-    bool busy =false;
+    public:
 
-    const QString notifyDir= Bae::NotifyDir;
-    const QString collectionDBName = "collection.db";
-    const QString settingsName = "settings.conf";
+        explicit settings(QWidget *parent = nullptr);
+        ~settings();
+        bool checkCollection();
+        void createCollectionDB();
 
-    Notify nof;
-    YouTube *ytFetch;
+        int getToolbarIconSize()  {return iconSize;}
+        void setToolbarIconSize(const int &iconSize);
 
-    int iconSize = 16;
-    QStringList collectionPaths={};
-    QLabel *artFetcherNotice;
-    QMovie *movie;
-    QString pathToRemove;
-    // QFileSystemWatcher watcher;
-    //QThread* thread;
-    About *about_ui;
-    QStringList files;
-    QStringList dirs;
-    QFileSystemWatcher *watcher;
-    QFileSystemWatcher *extensionWatcher;
-    QTimer *cacheTimer;
+        void setSettings(QStringList setting);
+        void readSettings();
+        void removeSettings(QStringList setting);
+        void refreshCollectionPaths();
+        void collectionWatcher();
+        void addToWatcher(QStringList paths);
+        QStringList getCollectionPath() {return collectionPaths;}
+        CollectionDB collection_db;
+        bool youtubeTrackDone=false;
 
-signals:
+        enum iconSizes
+        {
+            s16,s22,s24
+        };
+        //enum albums { ALBUM_TITLE, ARTIST, ART};
+        // enum artists { ARTIST_TITLE, ART};
 
-    void toolbarIconSizeChanged(int newSize);
-    void collectionPathChanged(QString newPath);
-    void collectionDBFinishedAdding();
-    void refreshTables(const Bae::DBTables &reset);
-    void finishedTracksInsertion();
-    void getArtwork();
-    void albumArtReady(const Bae::DB &albumMap);
+    private slots:
 
-};
+        void on_open_clicked();
+        void on_toolbarIconSize_activated(const QString &arg1);
+        void on_pushButton_clicked();
+        void handleDirectoryChanged(const QString &dir);
+        void on_collectionPath_clicked(const QModelIndex &index);
+        void on_remove_clicked();
+
+        void on_debugBtn_clicked();
+        void on_checkBox_stateChanged(int arg1);
+
+    public slots:
+
+        void populateDB(const QString &path);
+        void fetchArt();
+        void handleDirectoryChanged_extension();
+
+
+    private:
+        Ui::settings *ui;
+        TrackSaver trackSaver;
+        Deamon::Brain brainDeamon;
+
+        bool busy =false;
+
+        const QString notifyDir= Bae::NotifyDir;
+        const QString collectionDBName = "collection.db";
+        const QString settingsName = "settings.conf";
+
+        Notify nof;
+        YouTube *ytFetch;
+
+        int iconSize = 16;
+        QStringList collectionPaths={};
+        QLabel *artFetcherNotice;
+        QMovie *movie;
+        QString pathToRemove;
+        // QFileSystemWatcher watcher;
+        //QThread* thread;
+        About *about_ui;
+        QStringList files;
+        QStringList dirs;
+        QFileSystemWatcher *watcher;
+        QFileSystemWatcher *extensionWatcher;
+        QTimer *cacheTimer;
+
+    signals:
+
+        void toolbarIconSizeChanged(int newSize);
+        void collectionPathChanged(QString newPath);
+        void collectionDBFinishedAdding();
+        void refreshTables(const Bae::DBTables &reset);
+        void finishedTracksInsertion();
+        void getArtwork();
+        void albumArtReady(const Bae::DB &albumMap);
+
+    };
 
 #endif // SETTINGS_H

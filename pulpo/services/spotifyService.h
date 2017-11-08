@@ -9,28 +9,20 @@ class spotify : public Pulpo
 {
     Q_OBJECT
 
-
-
-
 private:
-    QString API = "https://api.spotify.com/v1/search?q=";
-    Bae::DB track;
-    QByteArray array;
+    const QString API = "https://api.spotify.com/v1/search?q=";
+    const QString CLIENT_ID = "a49552c9276745f5b4752250c2d84367";
+    const QString CLIENT_SECRET = "b3f1562559f3405dbcde4a435f50089a";
 
 public:
-
-    static const QString auth;
-
     explicit spotify(const Bae::DB &song);
+    virtual bool setUpService(const Pulpo::ONTOLOGY &ontology, const Pulpo::INFO &infoType);
+    virtual bool parseArray();
 
-    bool setUpService(const Pulpo::ONTOLOGY &type);
-
-    bool parseArtist(const Pulpo::INFO &infoType);
-    bool parseAlbum(const Pulpo::INFO &infoType);
-    bool parseTrack(const  Pulpo::INFO &infoType);
-
-    QVariant getTrackInfo(const INFO &infoType);
-
+protected:
+    virtual bool parseArtist();
+    virtual bool parseAlbum();
+    virtual bool parseTrack();
 };
 
 #endif // SPOTIFY_H

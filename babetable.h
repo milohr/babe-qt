@@ -95,7 +95,9 @@ private:
 class BabeTable : public QTableWidget
 {
     Q_OBJECT
+
 private:
+
     TrackLoader trackLoader;
     CollectionDB connection;
 
@@ -108,11 +110,11 @@ private:
     bool rowColoring=false;
     bool rowDragging=false;
     bool rowPreview=true;
+
     QMenu *contextMenu;
     QMenu* sendToMenu;
-    QMenu* moodMenu;
+
     QMap<QString,QString> devices;
-    QTimer *updater = new QTimer(this);
     QButtonGroup *stars;
 
     QWidget *addMusicMsgWidget;
@@ -120,6 +122,9 @@ private:
     QLabel *addMusicImg;
     QString addMusicMsg = "oops...\n";
     QString addMusicIcon= "face-sleeping";
+
+     const QStringList colors = Bae::MoodColors;
+
 public:
 
     explicit BabeTable(QWidget *parent = nullptr);
@@ -129,7 +134,6 @@ public:
         BABEIT, QUEUEIT, INFOIT, EDITIT, SAVETO, REMOVEIT, RATEIT, MOODIT, SENDIT, ADDTO
     };
 
-    QStringList colors = Bae::MoodColors;
     void insertTrack(const Bae::DB &track);
     void populateTableView(const Bae::DB_LIST &mapList);
     void populateTableView(QSqlQuery &indication);
@@ -165,7 +169,6 @@ public:
 
 
 protected:
-
     virtual void enterEvent(QEvent *event);
     virtual void leaveEvent(QEvent *event);
     virtual void dropEvent(QDropEvent *event);
@@ -193,9 +196,6 @@ public slots:
     void itemEdited(const Bae::DB &map);
     void flushTable();
     void colorizeRow(const QList<int> &rows, const QString &color, const bool &dark=false);
-
-
-
 
 signals:
 

@@ -23,8 +23,6 @@ public:
 
 private:
   Bae::DB track;
-   // NotifyNotification *notify;
-
 
 signals:
     void babeSong(const Bae::DB &track);

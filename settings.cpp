@@ -35,9 +35,6 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
     ui->ytLineEdit->setText(Bae::ExtensionFetchingPath);
     ui->frame_4->setEnabled(false);
 
-
-
-
     if(!Bae::fileExists(notifyDir+"/Babe.notifyrc"))
     {
         qDebug()<<"The Knotify file does not exists, going to create it";
@@ -64,6 +61,17 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
     if (!youtubeCache_dir.exists())
         youtubeCache_dir.mkpath(".");
 
+    connect(&this->brainDeamon, &Deamon::Brain::artworkReady, [this] (Bae::DB albumMap)
+    {
+        emit this->albumArtReady(albumMap);
+    });
+
+    connect(&this->brainDeamon, &Deamon::Brain::finished, [this]()
+    {
+        this->movie->stop();
+        ui->label->hide();
+        this->ui->sourcesFrame->setEnabled(true);
+    });
 
     connect(this->ui->pulpoBrainz_spinBox, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](const int &value)
     {
@@ -102,12 +110,9 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
         ui->progressBar->hide();
         ui->progressBar->setValue(0);
 
-
-
         collectionWatcher();
         emit refreshTables(Bae::DBTables::TRACKS);
-        if(!brainDeamon.isRunning()) brainDeamon.start();
-        // emit getArtwork();
+        emit getArtwork();
     });
 
     connect(&trackSaver,&TrackSaver::trackReady,&collection_db, &CollectionDB::addTrack);
@@ -141,6 +146,12 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
 
     connect(watcher, SIGNAL(directoryChanged(QString)), this,
             SLOT(handleDirectoryChanged(QString)));
+}
+
+settings::~settings()
+{
+    //    delete trackSaver;
+    //    delete this->brainDeamon;
 }
 
 
@@ -411,13 +422,10 @@ void settings::populateDB(const QString &path)
 
 void settings::fetchArt()
 {
-
-    //    this->trackSaver.requestArtwork();
-    //    nof.notify("Fetching art","this might take some time depending on your collection size and internet connection speed...");
-    //    ui->label->show();
-    //    movie->start();
-
-
+    this->brainDeamon.start();
+    nof.notify("Fetching art","this might take some time depending on your collection size and internet connection speed...");
+    ui->label->show();
+    movie->start();
 }
 
 void settings::on_pushButton_clicked()

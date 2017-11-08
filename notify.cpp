@@ -20,10 +20,7 @@
 #include "babetable.h"
 
 
-Notify::Notify(QObject *parent) : QObject(parent)
-{
-
-}
+Notify::Notify(QObject *parent) : QObject(parent) {}
 
 void Notify::notify(const QString &title, const QString &body)
 {

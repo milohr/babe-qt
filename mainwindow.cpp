@@ -261,7 +261,6 @@ void MainWindow::setUpViews()
     mainListView->addWidget(this->mainList);
     mainListView->addWidget(this->filterList);
 
-    //    onlineFetcher = new web_jgm90(this);
     resultsTable=new BabeTable(this);
     //    resultsTable->passStyle("QHeaderView::section { background-color:#575757; color:white; }");
     resultsTable->horizontalHeader()->setHighlightSections(true);
@@ -328,29 +327,27 @@ void MainWindow::setUpViews()
     connect(infoTable,&InfoView::tagsBtnClicked,[this](QStringList queries) { this->ui->search->setText(queries.join(",")); });
     connect(infoTable,&InfoView::tagClicked,[this](QString query) { this->ui->search->setText(query);});
     connect(infoTable,&InfoView::similarArtistTagClicked,[this](QString query) { this->ui->search->setText(query);});
-    connect(infoTable,&InfoView::artistSimilarReady, [this] (QMap<QString,QByteArray> info,const Bae::DB &track)
-    {
-        for (auto tag : info.keys())
-            this->connection.tagsArtist(track[Bae::DBCols::ARTIST],tag);
+//    connect(infoTable,&InfoView::artistSimilarReady, [this] (QMap<QString,QByteArray> info,const Bae::DB &track)
+//    {
 
-        if(this->current_song==track)
-        {
-            feedRabbit();
-            calibrateBtn_menu->actions().at(3)->setEnabled(true);
-            rabbitTable->flushSuggestions(RabbitView::ALL);
-            qDebug()<<"&InfoView::artistSimilarReady:"<<info.keys();
-            rabbitTable->populateArtistSuggestion(info);
-            QStringList query;
-            for (auto tag : info.keys()) query << QString("artist:"+tag).trimmed();
-            auto searchResults = this->searchFor(query);
-            if(!searchResults.isEmpty()) rabbitTable->populateGeneralSuggestion(searchResults);
-        }
-    });
+
+//        if(this->current_song==track)
+//        {
+//            feedRabbit();
+//            calibrateBtn_menu->actions().at(3)->setEnabled(true);
+//            rabbitTable->flushSuggestions(RabbitView::ALL);
+//            qDebug()<<"&InfoView::artistSimilarReady:"<<info.keys();
+//            rabbitTable->populateArtistSuggestion(info);
+//            QStringList query;
+//            for (auto tag : info.keys()) query << QString("artist:"+tag).trimmed();
+//            auto searchResults = this->searchFor(query);
+//            if(!searchResults.isEmpty()) rabbitTable->populateGeneralSuggestion(searchResults);
+//        }
+//    });
 
     connect(infoTable,&InfoView::albumTagsReady, [this] (const QStringList &tags,const Bae::DB &track)
     {
-        for(auto tag : tags)
-            this->connection.tagsAlbum(track[Bae::DBCols::ALBUM],track[Bae::DBCols::ARTIST],tag);
+
 
         if(this->current_song==track)
         {
@@ -366,10 +363,6 @@ void MainWindow::setUpViews()
         this->connection.lyricsTrack(track[Bae::DBCols::URL],lyrics);
     });
 
-    connect(infoTable,&InfoView::albumWikiReady, [this] (const  QString &wiki,const Bae::DB &track)
-    {
-        this->connection.wikiAlbum(track[Bae::DBCols::ALBUM],track[Bae::DBCols::ARTIST],wiki);
-    });
 
     connect(infoTable,&InfoView::artistWikiReady, [this] (const  QString &wiki,const Bae::DB &track)
     {
@@ -462,8 +455,8 @@ void MainWindow::setUpCollectionViewer()
 
 
     this->searchTimer = new QTimer(this);
-    this->searchTimer ->setSingleShot(true);
-    this->searchTimer ->setInterval(500);
+    this->searchTimer->setSingleShot(true);
+    this->searchTimer->setInterval(500);
     connect(this->searchTimer, &QTimer::timeout,this, &MainWindow::runSearch);
     connect(this->ui->search, SIGNAL(textChanged(QString)), this->searchTimer, SLOT(start()));
 
@@ -1001,18 +994,6 @@ void MainWindow::closeEvent(QCloseEvent* event)
 
 void MainWindow::resizeEvent(QResizeEvent* event)
 {
-
-
-    //    if(views->currentIndex()==ALBUMS)
-    //    {
-    //        auto scrollSize = albumsTable->grid->verticalScrollBar()->size().width()+1;
-    //        auto gridSize = albumsTable->grid->size().width()-scrollSize;
-    //        auto amount = (gridSize/(albumsTable->getAlbumSize()+25));
-    //        auto leftSpace = gridSize-amount*albumsTable->getAlbumSize();
-    //        if(albumsTable->grid->isVisibleTo(this)) albumsTable->grid->setGridSize(QSize(albumsTable->getAlbumSize()+(leftSpace/amount),albumsTable->getAlbumSize()+25));
-    //        qDebug()<<"gridSize:"<<gridSize<<"amount:"<<amount<<"left space: "<<leftSpace<<"scroll width:"<<scrollSize;
-    //    }
-
     //    if(this->viewMode==MINIMODE)
     //    {
 
@@ -1648,7 +1629,7 @@ void MainWindow::loadTrack()
     if(Bae::fileExists(current_song[Bae::DBCols::URL]))
     {
         player->setMedia(QUrl::fromLocalFile(current_song[Bae::DBCols::URL]));
-        wasPlaying = true;
+
         this->play();
 
         album_art->setTitle(current_song[Bae::DBCols::ARTIST],current_song[Bae::DBCols::ALBUM]);
@@ -1903,31 +1884,22 @@ void MainWindow::on_play_btn_clicked()
     if(mainList->rowCount() > 0 || !current_song.isEmpty())
     {
         if(player->state() == QMediaPlayer::PlayingState) this->pause();
-        else
-        {
-            wasPlaying = true;
-            this->play();
-        }
+        else this->play();
+
     }
 }
 
 void MainWindow::play()
 {
-    if(wasPlaying)
-    {
-        player->play();
+      player->play();
         ui->play_btn->setIcon(QIcon::fromTheme("media-playback-pause"));
         this->setWindowTitle(current_song[Bae::DBCols::TITLE]+" \xe2\x99\xa1 "+current_song[Bae::DBCols::ARTIST]);
-    }
-
 }
 
 void MainWindow::pause()
 {
-    wasPlaying = player->state() == QMediaPlayer::PlayingState? true : false;
     player->pause();
     ui->play_btn->setIcon(QIcon::fromTheme("media-playback-start"));
-
 }
 
 void MainWindow::stop()

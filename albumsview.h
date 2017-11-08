@@ -126,28 +126,24 @@ class AlbumsView : public QWidget
 
 public:
 
-    explicit AlbumsView(bool extraList=false, QWidget *parent = nullptr);
+    explicit AlbumsView(const bool &extraList=false, QWidget *parent = nullptr);
 
     void populateAlbumsView(const Bae::DBTables &type, QSqlQuery &query);
     void addAlbum(const Bae::DB &albumMap);
     void populateExtraList(const QStringList &albums);
     void flushView();
-    int getAlbumSize() { return this->albumSize; }
     void hide_all(bool state);
 
     void filter(const Bae::DB_LIST &filter, const Bae::DBCols &type);
-    QSlider *slider;
 
     QFrame *utilsFrame;
     BabeTable *albumTable;
     GridView *grid;
     QToolButton *expandBtn;
 
-
 private:
 
     AlbumLoader albumLoader;
-    int albumSize;
     bool extraList=false;
 
     QWidget *albumBox_frame;
@@ -178,9 +174,5 @@ signals:
     void expandTo(const QString &artist);
     void createdAlbum(Album *album);
 };
-
-
-
-
 
 #endif // ALBUMSVIEW_H

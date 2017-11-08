@@ -25,7 +25,7 @@
 Pulpo::Pulpo(const Bae::DB &song,QObject *parent)
     : QObject(parent), track(song)
 {
-    this->page = new webEngine(this);
+//    this->page = new webEngine(this);
 }
 
 Pulpo::Pulpo(QObject *parent): QObject(parent) {}
@@ -49,11 +49,21 @@ void Pulpo::registerServices(const QList<Pulpo::SERVICES> &services)
 
     \sa scroller()
 */
-void Pulpo::setInfo(const Pulpo::ONTOLOGY ontology, const Pulpo::INFO info)
+void Pulpo::setInfo(const Pulpo::INFO info)
 {
-    this->ontology = ontology;
     this->info = info;
 }
+
+void Pulpo::setOntology(const Pulpo::ONTOLOGY ontology)
+{
+    this->ontology = ontology;
+}
+
+void Pulpo::setFallback(const bool &state)
+{
+    this->fallback=state;
+}
+
 
 bool Pulpo::initServices()
 {
@@ -72,8 +82,10 @@ bool Pulpo::initServices()
                 emit this->infoReady(track, response);
             });
 
-            if( lastfm.setUpService(this->ontology) )
-                lastfm.parseArray(this->info);
+            if( lastfm.setUpService(this->ontology,this->info) )
+            {
+                if(fallback) return true;
+            }
 
             else qDebug()<<"error settingUp lastfm service";
 
@@ -81,7 +93,18 @@ bool Pulpo::initServices()
         }
         case SERVICES::Spotify:
         {
-            // spotify spotify(this->track);
+             spotify spotify(this->track);
+
+             connect(&spotify, &spotify::infoReady, [this] (const Bae::DB &track, const Pulpo::RES &response)
+             {
+                 emit this->infoReady(track, response);
+             });
+
+             if( spotify.setUpService(this->ontology,this->info) )
+             {
+                 if(fallback) return true;
+             }
+             else qDebug()<<"error settingUp spotify service";
 
             break;
         }
@@ -394,61 +417,61 @@ bool Pulpo::initServices()
 //}
 
 
-QVariant Pulpo::getStaticAlbumInfo(const INFO &infoType)
-{
-    return QVariant ();
-}
+//QVariant Pulpo::getStaticAlbumInfo(const INFO &infoType)
+//{
+//    return QVariant ();
+//}
 
-QVariant Pulpo::getStaticArtistInfo(const INFO &infoType)
-{
-    return QVariant ();
+//QVariant Pulpo::getStaticArtistInfo(const INFO &infoType)
+//{
+//    return QVariant ();
 
-}
+//}
 
-QVariant Pulpo::getStaticTrackInfo(const INFO &infoType)
-{
-    //    QByteArray array;
+//QVariant Pulpo::getStaticTrackInfo(const INFO &infoType)
+//{
+//    //    QByteArray array;
 
-    //    if(infoType == TrackAlbum)
-    //    {
-    //        lastfm lastfm(this->track);
-    //        array = startConnection(lastfm.setUpService(lastfm::TRACK));
-    //        auto title =lastfm.getTrackInfo(array,infoType).toString();
+//    //    if(infoType == TrackAlbum)
+//    //    {
+//    //        lastfm lastfm(this->track);
+//    //        array = startConnection(lastfm.setUpService(lastfm::TRACK));
+//    //        auto title =lastfm.getTrackInfo(array,infoType).toString();
 
-    //        if(!title.isEmpty()) return title;
-    //        else
-    //        {
-    //            spotify spotify(this->track);
-    //            array = startConnection(spotify.setUpService(spotify::TRACK));
-    //            return title =spotify.getTrackInfo(array,infoType).toString();
+//    //        if(!title.isEmpty()) return title;
+//    //        else
+//    //        {
+//    //            spotify spotify(this->track);
+//    //            array = startConnection(spotify.setUpService(spotify::TRACK));
+//    //            return title =spotify.getTrackInfo(array,infoType).toString();
 
-    //        }
-    //    }
-    //    if(infoType ==TrackLyrics)
-    //    {
-    //    }
+//    //        }
+//    //    }
+//    //    if(infoType ==TrackLyrics)
+//    //    {
+//    //    }
 
-    //    if(infoType ==TrackPosition)
-    //    {
-    //        lastfm lastfm(this->track);
-    //        array = startConnection(lastfm.setUpService(lastfm::TRACK));
-    //        auto position =lastfm.getTrackInfo(array,infoType).toInt();
+//    //    if(infoType ==TrackPosition)
+//    //    {
+//    //        lastfm lastfm(this->track);
+//    //        array = startConnection(lastfm.setUpService(lastfm::TRACK));
+//    //        auto position =lastfm.getTrackInfo(array,infoType).toInt();
 
-    //        if(position>0) return position;
-    //        else
-    //        {
-    //            spotify spotify(this->track);
-    //            array = startConnection(spotify.setUpService(spotify::TRACK));
-    //            return position =spotify.getTrackInfo(array,infoType).toInt();
+//    //        if(position>0) return position;
+//    //        else
+//    //        {
+//    //            spotify spotify(this->track);
+//    //            array = startConnection(spotify.setUpService(spotify::TRACK));
+//    //            return position =spotify.getTrackInfo(array,infoType).toInt();
 
-    //        }
-    //    }
-    //    if(infoType ==TrackWiki)
-    //    {
-    //    }
+//    //        }
+//    //    }
+//    //    if(infoType ==TrackWiki)
+//    //    {
+//    //    }
 
-    return QVariant();
-}
+//    return QVariant();
+//}
 
 QByteArray Pulpo::startConnection(const QString &url, const QString &auth)
 {
@@ -477,14 +500,12 @@ QByteArray Pulpo::startConnection(const QString &url, const QString &auth)
 }
 
 
-
-
-void Pulpo::dummy() { qDebug() << "QQQQQQQQQQQQQQQQQQQQ on DUMMYT"; }
-
 void Pulpo::saveArt(const QByteArray &array, const QString &path)
 {
     if(!array.isNull()&&!array.isEmpty())
     {
+       // qDebug()<<"tryna save array: "<< array;
+
         QImage img;
         img.loadFromData(array);
         QString name = !this->track[Bae::DBCols::ALBUM].isEmpty()? this->track[Bae::DBCols::ARTIST] + "_" + this->track[Bae::DBCols::ALBUM] : this->track[Bae::DBCols::ARTIST];
@@ -494,8 +515,7 @@ void Pulpo::saveArt(const QByteArray &array, const QString &path)
         if (img.save(path + name + ".jpg", format.toLatin1(), 100))
             this->track.insert(Bae::DBCols::ARTWORK,path + name + ".jpg");
         else  qDebug() << "couldn't save artwork";
-    }
+    }else qDebug()<<"array is empty";
 
     emit artSaved(this->track);
-
 }

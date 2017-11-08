@@ -259,7 +259,7 @@ void InfoView::on_searchBtn_clicked()
 
 
 void InfoView::getTrackInfo(const bool &album, const bool &artist, const bool &lyrics, const bool &tags)
-{
+{/*
 
     if(!this->track.isEmpty())
     {
@@ -308,7 +308,7 @@ void InfoView::getTrackInfo(const bool &album, const bool &artist, const bool &l
         {
             this->setArtistArt(array);
         });
-
+*/
 
 //        if(album)
 //            info.fetchAlbumInfo(Pulpo::AllAlbumInfo,Pulpo::LastFm);
@@ -323,7 +323,7 @@ void InfoView::getTrackInfo(const bool &album, const bool &artist, const bool &l
 //        if(!this->track.isEmpty() && lyrics)
 //            info.fetchTrackInfo(Pulpo::NoneTrackInfo,Pulpo::LyricWikia,Pulpo::NoneInfoService);
 
-    }
+    //}
 }
 
 void InfoView::clearInfoViews()

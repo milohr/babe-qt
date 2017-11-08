@@ -42,50 +42,50 @@ void genius::parseLyrics(const QByteArray &array)
 
 void genius::parseAlbumArt(const QByteArray &array)
 {
-    htmlParser parser;
-    parser.setHtml(array);
+//    htmlParser parser;
+//    parser.setHtml(array);
 
-    connect(&parser, &htmlParser::finishedParsingTags,[&parser, this] (const QStringList &tags)
-    {
-        if(!tags.isEmpty())
-        {
-            extractAlbumArt(parser.extractProp(tags.first(),"ng-href="));
-        }
-    });
+//    connect(&parser, &htmlParser::finishedParsingTags,[&parser, this] (const QStringList &tags)
+//    {
+//        if(!tags.isEmpty())
+//        {
+//            extractAlbumArt(parser.extractProp(tags.first(),"ng-href="));
+//        }
+//    });
 
-    parser.parseTag("li", "class=\"search_result\"");
-}
+//    parser.parseTag("li", "class=\"search_result\"");
+//}
 
 
-void genius::extractAlbumArt(const QString &url)
-{
+//void genius::extractAlbumArt(const QString &url)
+//{
 
-    QNetworkAccessManager manager;
-    QNetworkRequest request ((QUrl(url)));
-    QNetworkReply *reply =  manager.get(request);
-    QEventLoop loop;
-    connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
-    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), &loop,
-            SLOT(quit()));
+//    QNetworkAccessManager manager;
+//    QNetworkRequest request ((QUrl(url)));
+//    QNetworkReply *reply =  manager.get(request);
+//    QEventLoop loop;
+//    connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+//    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), &loop,
+//            SLOT(quit()));
 
-    loop.exec();
+//    loop.exec();
 
-    QByteArray array(reply->readAll());
-    delete reply;
+//    QByteArray array(reply->readAll());
+//    delete reply;
 
-    htmlParser parser;
-    parser.setHtml(array);
-    qDebug()<<"Artwork now";
+//    htmlParser parser;
+//    parser.setHtml(array);
+//    qDebug()<<"Artwork now";
 
-    connect(&parser, &htmlParser::finishedParsingTags,[this] (const QStringList &list)
-    {
-        if(!list.isEmpty())
-        {
-            htmlParser parser;
-            emit albumArtReady(Pulpo::startConnection(parser.extractProp(list.first(),"src=")));
-        }
-    });
- parser.parseTag("img", "class=\"cover_art-image\"");
+//    connect(&parser, &htmlParser::finishedParsingTags,[this] (const QStringList &list)
+//    {
+//        if(!list.isEmpty())
+//        {
+//            htmlParser parser;
+//            emit albumArtReady(Pulpo::startConnection(parser.extractProp(list.first(),"src=")));
+//        }
+//    });
+// parser.parseTag("img", "class=\"cover_art-image\"");
 
 }
 
@@ -93,8 +93,8 @@ void genius::extractAlbumArt(const QString &url)
 void genius::extractLyrics(const QString &url)
 {
 
-    qDebug()<<"extractLyrics"<<url;
-    emit trackLyricsReady(url,this->track);
+/*    qDebug()<<"extractLyrics"<<url;
+    emit trackLyricsReady(url,this->track)*/;
 
 //    QNetworkAccessManager manager;
 //    QNetworkRequest request ((QUrl(url)));

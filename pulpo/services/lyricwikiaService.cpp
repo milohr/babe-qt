@@ -97,6 +97,6 @@ void lyricWikia::extractLyrics(const QByteArray &array)
         text= "<div align='center'>"+text+"</div>";
     }
 
-    emit trackLyricsReady(text,this->track);
+    emit this->infoReady(this->track, {{INFO::LYRICS, text}});
 
 }

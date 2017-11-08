@@ -13,26 +13,15 @@ private:
     const QString API = "http://ws.audioscrobbler.com/2.0/";
     const QString KEY = "&api_key=ba6f0bd3c887da9101c10a50cf2af133";
 
-    QByteArray array;
-
-    Pulpo::ONTOLOGY ontology = Pulpo::ONTOLOGY::NONE;
-
-    Bae::DB track;
-
-    bool parseArtist(const Pulpo::INFO &infoType = Pulpo::INFO::ALL);
-    bool parseAlbum(const Pulpo::INFO &infoType = Pulpo::INFO::ALL);
-    bool parseTrack(const Pulpo::INFO &infoType = Pulpo::INFO::ALL);
-
-
 public:
-
     explicit lastfm(const Bae::DB &song);
+    virtual bool setUpService(const Pulpo::ONTOLOGY &ontology, const Pulpo::INFO &info);
+    virtual bool parseArray();
 
-    bool setUpService(const Pulpo::ONTOLOGY &type);
-
-    bool parseArray(const INFO &infoType = INFO::ALL);
-
-    QVariant getTrackInfo(const QByteArray &array, const INFO &infoType);
+protected:
+    virtual bool parseArtist();
+    virtual bool parseAlbum();
+    virtual bool parseTrack();
 };
 
 #endif // LASTFM_H

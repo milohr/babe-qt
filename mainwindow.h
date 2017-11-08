@@ -230,16 +230,14 @@ private:
     BabeTable *filterList;
     BabeTable *collectionTable;
     BabeTable *resultsTable;
-    QThread *albumsThread;
-    AlbumsView* albumsTable;
-    QThread* artistsThread;
 
+    AlbumsView* albumsTable;
     AlbumsView* artistsTable;
+
     PlaylistsView *playlistTable;
     InfoView *infoTable;
     settings *settings_widget;
     RabbitView *rabbitTable;
-    web_jgm90 *onlineFetcher;
 
     void keepOnTop(bool state);
 
@@ -291,10 +289,8 @@ private:
     int  shuffle_state = REGULAR;
 
     bool repeat = false;
-    bool muted = false;
     bool shuffle = false;
     bool stopped = false;
-    bool wasPlaying = true;
     bool miniPlayback =false;
 
 signals:
@@ -302,8 +298,6 @@ signals:
     void collectionChecked(const Bae::DBTables &reset);
     void fetchCover(const Bae::DB &song);
     void finishRefresh();
-    void operate();
-
 };
 
 

@@ -28,12 +28,12 @@ TagInfo::TagInfo(QString file)
 
 void TagInfo::writeData()
 {
-    Pulpo info({{Bae::DBCols::TITLE,this->getTitle()},{Bae::DBCols::ARTIST,this->getArtist()},{Bae::DBCols::ALBUM,this->getAlbum()}});
-    QString newTitle = info.getStaticTrackInfo(Pulpo::INFO::ALBUM).toString();
-    int trackPosition = info.getStaticTrackInfo(Pulpo::INFO::TRACK).toInt();
+//    Pulpo info({{Bae::DBCols::TITLE,this->getTitle()},{Bae::DBCols::ARTIST,this->getArtist()},{Bae::DBCols::ALBUM,this->getAlbum()}});
+//    QString newTitle = info.getStaticTrackInfo(Pulpo::INFO::ALBUM).toString();
+//    int trackPosition = info.getStaticTrackInfo(Pulpo::INFO::TRACK).toInt();
 
-    this->setTrack(trackPosition);
-    this->setAlbum(newTitle.isEmpty()?this->getTitle():newTitle);
+//    this->setTrack(trackPosition);
+//    this->setAlbum(newTitle.isEmpty()?this->getTitle():newTitle);
 }
 
 QString TagInfo::getAlbum()
