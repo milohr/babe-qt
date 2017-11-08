@@ -8,7 +8,7 @@ spotify::spotify(const Bae::DB &song)
 
 
 
-QString spotify::setUpService(const spotify::Ontology &type)
+bool spotify::setUpService(const ONTOLOGY &type)
 {
     QString url = this->API;
 
@@ -23,14 +23,14 @@ QString spotify::setUpService(const spotify::Ontology &type)
 
     switch(type)
     {
-    case ARTIST:
+    case ONTOLOGY::ARTIST:
 
         url.append("artist:");
         url.append(encodedArtist.toString());
         url.append("&type=artist");
         break;
 
-    case ALBUM:
+    case ONTOLOGY::ALBUM:
 
         url.append("album:");
         url.append(encodedAlbum.toString());
@@ -39,7 +39,7 @@ QString spotify::setUpService(const spotify::Ontology &type)
         url.append("&type=album");
         break;
 
-    case TRACK:
+    case ONTOLOGY::TRACK:
 
         url.append("track:");
         url.append(encodedTrack.toString());
@@ -52,15 +52,18 @@ QString spotify::setUpService(const spotify::Ontology &type)
     }
     qDebug()<<"setUpService Spotify["<<url<<"]";
 
-    return url;
+    this->array = this->startConnection(url,this->auth);
+
+    return this->array.isEmpty();
+
 }
 
-bool spotify::parseSpotifyArtist(const QByteArray &array, const Pulpo::ArtistInfo &infoType)
+bool spotify::parseArtist(const Pulpo::INFO &infoType)
 {
     return false;
 }
 
-bool spotify::parseSpotifyAlbum(const QByteArray &array, const AlbumInfo &infoType)
+bool spotify::parseAlbum(const Pulpo::INFO  &infoType)
 {
     QJsonParseError jsonParseError;
     QJsonDocument jsonResponse = QJsonDocument::fromJson(static_cast<QString>(array).toUtf8(), &jsonParseError);
@@ -91,12 +94,12 @@ bool spotify::parseSpotifyAlbum(const QByteArray &array, const AlbumInfo &infoTy
 
                 if(!items.isEmpty())
                 {
-                    if(infoType == AlbumArt || infoType == AllAlbumInfo)
+                    if(infoType == INFO::ARTWORK || infoType == INFO::ALL)
                     {
                         auto albumArt =items.at(0).toMap().value("images").toList().at(0).toMap().value("url").toString();
                         emit albumArtReady(startConnection(albumArt));
                         qDebug()<<"parseSpotifyAlbum ["<< albumArt<<"]";
-                        if(infoType == AlbumArt ) return true;
+                        if(infoType == INFO::ARTWORK ) return true;
 
                     }
 
@@ -109,7 +112,7 @@ bool spotify::parseSpotifyAlbum(const QByteArray &array, const AlbumInfo &infoTy
     return true;
 }
 
-bool spotify::parseSpotifyTrack(const QByteArray &array, const TrackInfo &infoType)
+bool spotify::parseTrack(const Pulpo::INFO  &infoType)
 {
     QJsonParseError jsonParseError;
     QJsonDocument jsonResponse = QJsonDocument::fromJson(static_cast<QString>(array).toUtf8(), &jsonParseError);
@@ -139,21 +142,21 @@ bool spotify::parseSpotifyTrack(const QByteArray &array, const TrackInfo &infoTy
 
                 if(!items.isEmpty())
                 {
-                    if(infoType == TrackAlbum || infoType == AllTrackInfo)
+                    if(infoType == INFO::ALBUM || infoType == INFO::ALL)
                     {
                         auto trackAlbum =items.first().toMap().value("album").toMap().value("name").toString();
 
                         emit trackAlbumReady(trackAlbum,this->track);
-                        if(infoType == TrackAlbum ) return true;
+                        if(infoType == INFO::ALBUM ) return true;
 
                     }
 
-                    if(infoType == TrackPosition  || infoType == AllTrackInfo)
+                    if(infoType == INFO::TRACK  || infoType == INFO::ALL)
                     {
                         auto trackPosition = items.first().toMap().value("track_number").toInt();
 
                         emit trackPositionReady(trackPosition,this->track);
-                        if(infoType == TrackPosition ) return true;
+                        if(infoType == INFO::TRACK ) return true;
                     }
 
                 } else return false;
@@ -164,7 +167,7 @@ bool spotify::parseSpotifyTrack(const QByteArray &array, const TrackInfo &infoTy
     return true;
 }
 
-QVariant spotify::getTrackInfo(const QByteArray &array, const Pulpo::TrackInfo &infoType)
+QVariant spotify::getTrackInfo(const Pulpo::INFO &infoType)
 {
     QJsonParseError jsonParseError;
     QJsonDocument jsonResponse = QJsonDocument::fromJson(static_cast<QString>(array).toUtf8(), &jsonParseError);
@@ -194,13 +197,13 @@ QVariant spotify::getTrackInfo(const QByteArray &array, const Pulpo::TrackInfo &
 
                 if(!items.isEmpty())
                 {
-                    if(infoType == TrackAlbum || infoType == AllTrackInfo)
+                    if(infoType == INFO::ALBUM || infoType == INFO::ALL)
                     {
                         auto trackAlbum =items.first().toMap().value("album").toMap().value("name").toString();
                         return QVariant(trackAlbum);
                     }
 
-                    if(infoType == TrackPosition  || infoType == AllTrackInfo)
+                    if(infoType == INFO::TRACK  || infoType == INFO::ALL)
                     {
                         auto trackPosition = items.first().toMap().value("track_number").toInt();
                         return QVariant(trackPosition);

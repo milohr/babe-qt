@@ -310,18 +310,18 @@ void InfoView::getTrackInfo(const bool &album, const bool &artist, const bool &l
         });
 
 
-        if(album)
-            info.fetchAlbumInfo(Pulpo::AllAlbumInfo,Pulpo::LastFm);
-        else if(tags) info.fetchAlbumInfo(Pulpo::AlbumTags,Pulpo::LastFm);
+//        if(album)
+//            info.fetchAlbumInfo(Pulpo::AllAlbumInfo,Pulpo::LastFm);
+//        else if(tags) info.fetchAlbumInfo(Pulpo::AlbumTags,Pulpo::LastFm);
 
 
-        if(artist)
-            info.fetchArtistInfo(Pulpo::AllArtistInfo,Pulpo::LastFm);
-        else if(tags)  info.fetchArtistInfo(Pulpo::ArtistSimilar,Pulpo::LastFm);
+//        if(artist)
+//            info.fetchArtistInfo(Pulpo::AllArtistInfo,Pulpo::LastFm);
+//        else if(tags)  info.fetchArtistInfo(Pulpo::ArtistSimilar,Pulpo::LastFm);
 
 
-        if(!this->track.isEmpty() && lyrics)
-            info.fetchTrackInfo(Pulpo::NoneTrackInfo,Pulpo::LyricWikia,Pulpo::NoneInfoService);
+//        if(!this->track.isEmpty() && lyrics)
+//            info.fetchTrackInfo(Pulpo::NoneTrackInfo,Pulpo::LyricWikia,Pulpo::NoneInfoService);
 
     }
 }

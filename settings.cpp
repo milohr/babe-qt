@@ -23,6 +23,7 @@
 settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
 {
     ui->setupUi(this);
+
     // QFrame frame = new QFrame();
 
     // collectionDBPath=QDir().absolutePath()+collectionDBPath;
@@ -33,6 +34,8 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
 
     ui->ytLineEdit->setText(Bae::ExtensionFetchingPath);
     ui->frame_4->setEnabled(false);
+
+
 
 
     if(!Bae::fileExists(notifyDir+"/Babe.notifyrc"))
@@ -61,17 +64,11 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
     if (!youtubeCache_dir.exists())
         youtubeCache_dir.mkpath(".");
 
-    connect(&trackSaver, &TrackSaver::artworkReady,[this](Bae::DB albumMap)
-    {
-        emit albumArtReady(albumMap);
-    });
 
-    connect(&trackSaver, &TrackSaver::finishedFetchingArtwork,[this]()
+    connect(this->ui->pulpoBrainz_spinBox, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](const int &value)
     {
-        movie->stop();
-        ui->label->hide();
-        this->ui->sourcesFrame->setEnabled(true);
-
+        qDebug()<<"interval changed to:"<<value;
+        this->brainDeamon.setInterval(static_cast<uint>(value));
     });
 
     connect(this, &settings::getArtwork, this, &settings::fetchArt);
@@ -105,9 +102,12 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
         ui->progressBar->hide();
         ui->progressBar->setValue(0);
 
+
+
         collectionWatcher();
         emit refreshTables(Bae::DBTables::TRACKS);
-        emit getArtwork();
+        if(!brainDeamon.isRunning()) brainDeamon.start();
+        // emit getArtwork();
     });
 
     connect(&trackSaver,&TrackSaver::trackReady,&collection_db, &CollectionDB::addTrack);
@@ -381,6 +381,7 @@ bool settings::checkCollection()
 
         collection_db.setUpCollection(Bae::CollectionDBPath + collectionDBName);
         collectionWatcher();
+        this->brainDeamon.start();
         return true;
     } else return false;
 }
@@ -411,10 +412,10 @@ void settings::populateDB(const QString &path)
 void settings::fetchArt()
 {
 
-    this->trackSaver.requestArtwork();
-    nof.notify("Fetching art","this might take some time depending on your collection size and internet connection speed...");
-    ui->label->show();
-    movie->start();
+    //    this->trackSaver.requestArtwork();
+    //    nof.notify("Fetching art","this might take some time depending on your collection size and internet connection speed...");
+    //    ui->label->show();
+    //    movie->start();
 
 
 }

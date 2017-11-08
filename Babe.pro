@@ -108,7 +108,8 @@ HEADERS  += mainwindow.h \
     playlistform.h \
     pulpo/webengine.h \
     gridview.h \
-    pulpo/pulpodeamon.h
+    pulpo/pulpodeamon.h \
+    brain.h
 
 FORMS    += mainwindow.ui \
     settings.ui \

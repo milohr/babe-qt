@@ -423,21 +423,21 @@ Bae::DB_LIST CollectionDB::getTrackData(QSqlQuery &query)
         while(query.next())
             mapList << Bae::DB
             {
-                {Bae::DBCols::TRACK, query.value(Bae::DBColsMap[Bae::DBCols::TRACK]).toString()},
-                {Bae::DBCols::TITLE, query.value(Bae::DBColsMap[Bae::DBCols::TITLE]).toString()},
-                {Bae::DBCols::ARTIST, query.value(Bae::DBColsMap[Bae::DBCols::ARTIST]).toString()},
-                {Bae::DBCols::ALBUM, query.value(Bae::DBColsMap[Bae::DBCols::ALBUM]).toString()},
-                {Bae::DBCols::DURATION, query.value(Bae::DBColsMap[Bae::DBCols::DURATION]).toString()},
-                {Bae::DBCols::GENRE, query.value(Bae::DBColsMap[Bae::DBCols::GENRE]).toString()},
-                {Bae::DBCols::URL, query.value(Bae::DBColsMap[Bae::DBCols::URL]).toString()},
-                {Bae::DBCols::STARS, query.value(Bae::DBColsMap[Bae::DBCols::STARS]).toString()},
-                {Bae::DBCols::BABE, query.value(Bae::DBColsMap[Bae::DBCols::BABE]).toString()},
-                {Bae::DBCols::ART, query.value(Bae::DBColsMap[Bae::DBCols::ART]).toString()},
-                {Bae::DBCols::PLAYED, query.value(Bae::DBColsMap[Bae::DBCols::PLAYED]).toString()},
-                {Bae::DBCols::ADD_DATE, query.value(Bae::DBColsMap[Bae::DBCols::ADD_DATE]).toString()},
-                {Bae::DBCols::RELEASE_DATE, query.value(Bae::DBColsMap[Bae::DBCols::RELEASE_DATE]).toString()},
-                {Bae::DBCols::LYRICS, query.value(Bae::DBColsMap[Bae::DBCols::LYRICS]).toString()},
-                {Bae::DBCols::SOURCES_URL, query.value(Bae::DBColsMap[Bae::DBCols::SOURCES_URL]).toString()}
+                {Bae::DBCols::TRACK, query.value(Bae::DBColsMap[Bae::DBCols::TRACK]).isValid() ? query.value(Bae::DBColsMap[Bae::DBCols::TRACK]).toString() : QString()},
+                {Bae::DBCols::TITLE, query.value(Bae::DBColsMap[Bae::DBCols::TITLE]).isValid() ? query.value(Bae::DBColsMap[Bae::DBCols::TITLE]).toString() : QString()},
+                {Bae::DBCols::ARTIST, query.value(Bae::DBColsMap[Bae::DBCols::ARTIST]).isValid() ? query.value(Bae::DBColsMap[Bae::DBCols::ARTIST]).toString(): QString()},
+                {Bae::DBCols::ALBUM,  query.value(Bae::DBColsMap[Bae::DBCols::ALBUM]).isValid() ? query.value(Bae::DBColsMap[Bae::DBCols::ALBUM]).toString() : QString()},
+                {Bae::DBCols::DURATION,  query.value(Bae::DBColsMap[Bae::DBCols::DURATION]).isValid() ? query.value(Bae::DBColsMap[Bae::DBCols::DURATION]).toString(): QString()},
+                {Bae::DBCols::GENRE, query.value(Bae::DBColsMap[Bae::DBCols::GENRE]).isValid() ? query.value(Bae::DBColsMap[Bae::DBCols::GENRE]).toString(): QString()},
+                {Bae::DBCols::URL, query.value(Bae::DBColsMap[Bae::DBCols::URL]).isValid() ? query.value(Bae::DBColsMap[Bae::DBCols::URL]).toString() : QString()},
+                {Bae::DBCols::STARS, query.value(Bae::DBColsMap[Bae::DBCols::STARS]).isValid() ?query.value(Bae::DBColsMap[Bae::DBCols::STARS]).toString(): QString()},
+                {Bae::DBCols::BABE,query.value(Bae::DBColsMap[Bae::DBCols::BABE]).isValid() ? query.value(Bae::DBColsMap[Bae::DBCols::BABE]).toString() : QString()},
+                {Bae::DBCols::ART,query.value(Bae::DBColsMap[Bae::DBCols::ART]).isValid() ? query.value(Bae::DBColsMap[Bae::DBCols::ART]).toString() : QString()},
+                {Bae::DBCols::PLAYED, query.value(Bae::DBColsMap[Bae::DBCols::PLAYED]).isValid() ? query.value(Bae::DBColsMap[Bae::DBCols::PLAYED]).toString() : QString()},
+                {Bae::DBCols::ADD_DATE, query.value(Bae::DBColsMap[Bae::DBCols::ADD_DATE]).isValid() ? query.value(Bae::DBColsMap[Bae::DBCols::ADD_DATE]).toString() : QString()},
+                {Bae::DBCols::RELEASE_DATE, query.value(Bae::DBColsMap[Bae::DBCols::RELEASE_DATE]).isValid() ? query.value(Bae::DBColsMap[Bae::DBCols::RELEASE_DATE]).toString() : QString()},
+                {Bae::DBCols::LYRICS, query.value(Bae::DBColsMap[Bae::DBCols::LYRICS]).isValid() ? query.value(Bae::DBColsMap[Bae::DBCols::LYRICS]).toString(): QString()},
+                {Bae::DBCols::SOURCES_URL, query.value(Bae::DBColsMap[Bae::DBCols::SOURCES_URL]).isValid() ? query.value(Bae::DBColsMap[Bae::DBCols::SOURCES_URL]).toString() : QString()}
             };
 
 return mapList;

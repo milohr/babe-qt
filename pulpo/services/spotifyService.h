@@ -15,25 +15,21 @@ class spotify : public Pulpo
 private:
     QString API = "https://api.spotify.com/v1/search?q=";
     Bae::DB track;
+    QByteArray array;
 
 public:
 
     static const QString auth;
 
-    enum Ontology
-    {
-        ARTIST,ALBUM,TRACK
-    };
-
     explicit spotify(const Bae::DB &song);
 
-    QString setUpService(const spotify::Ontology &type);
+    bool setUpService(const Pulpo::ONTOLOGY &type);
 
-    bool parseSpotifyArtist(const QByteArray &array, const Pulpo::ArtistInfo &infoType);
-    bool parseSpotifyAlbum(const QByteArray &array, const Pulpo::AlbumInfo &infoType);
-    bool parseSpotifyTrack(const QByteArray &array,const  Pulpo::TrackInfo &infoType);
+    bool parseArtist(const Pulpo::INFO &infoType);
+    bool parseAlbum(const Pulpo::INFO &infoType);
+    bool parseTrack(const  Pulpo::INFO &infoType);
 
-    QVariant getTrackInfo(const QByteArray &array, const Pulpo::TrackInfo &infoType);
+    QVariant getTrackInfo(const INFO &infoType);
 
 };
 

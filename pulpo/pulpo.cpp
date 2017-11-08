@@ -23,348 +23,429 @@
 #include "pulpo/services/geniusService.h"
 
 Pulpo::Pulpo(const Bae::DB &song,QObject *parent)
-    : QObject(parent), track(song) {
-
-    page = new webEngine(this);
+    : QObject(parent), track(song)
+{
+    this->page = new webEngine(this);
 }
 
-
-Pulpo::Pulpo(QObject *parent){}
+Pulpo::Pulpo(QObject *parent): QObject(parent) {}
 
 Pulpo::~Pulpo() {}
 
 void Pulpo::feed(const Bae::DB &song)
 {
     this->track=song;
+    this->initServices();
+
 }
 
-bool Pulpo::fetchArtistInfo(const ArtistInfo &infoType, const InfoServices &service)
+void Pulpo::registerServices(const QList<Pulpo::SERVICES> &services)
 {
-    if(Bae::albumType(this->track)==Bae::DBTables::ARTISTS)
-    {
-        QByteArray array;
-
-        lastfm lastfm(this->track);
-        connect(&lastfm,&lastfm::artistArtReady,[this] (const QByteArray &array) { emit Pulpo::artistArtReady(array);});
-        connect(&lastfm,&lastfm::artistWikiReady,[this] (const QString &wiki,const Bae::DB track)
-        {
-            qDebug() <<"got the artist wiki";
-            emit Pulpo::artistWikiReady(wiki,track);
-        });
-
-        connect(&lastfm,&lastfm::artistSimilarReady,[this] (const QMap<QString,QByteArray> &similar,const Bae::DB track)
-        {
-            emit Pulpo::artistSimilarReady(similar,track);
-        });
-
-        connect(&lastfm,&lastfm::artistTagsReady,[this] (const QStringList &tags,const Bae::DB track)
-        {
-            emit Pulpo::artistTagsReady(tags,track);
-        });
-
-        spotify spotify(this->track);
-        connect(&spotify,&spotify::artistArtReady,[this] (QByteArray array) { emit Pulpo::artistArtReady(array);});
-        connect(&spotify,&spotify::artistWikiReady,[this] (const QString &wiki,const Bae::DB &track)
-        {
-            emit Pulpo::artistWikiReady(wiki,track);
-        });
-        connect(&spotify,&spotify::artistSimilarReady,[this] (const QMap<QString,QByteArray> &similar,const Bae::DB &track)
-        {
-            emit Pulpo::artistSimilarReady(similar,track);
-        });
-        connect(&spotify,&spotify::artistTagsReady,[this] (const QStringList &tags,const Bae::DB &track)
-        {
-            emit Pulpo::artistTagsReady(tags,track);
-        });
-
-
-        /**************************************/
-
-        switch(service)
-        {
-        case LastFm:
-
-            array = startConnection(lastfm.setUpService(lastfm::ARTIST));
-            if(!array.isEmpty())
-            {
-                if(lastfm.parseLastFmArtist(array, infoType)) return true;
-                else return false;
-
-            }else return false;
-
-        case Spotify:
-
-            array = startConnection(spotify.setUpService(spotify::ARTIST));
-            if(!array.isEmpty())
-            {
-                if(spotify.parseSpotifyArtist(array, infoType)) return true;
-                else return false;
-
-            }else return false;
-
-
-        case iTunes: break;
-        case infoCRAWL: break;
-        case AllInfoServices: break;
-        case GeniusInfo: break;
-        case NoneInfoService: break;
-        }
-
-    }else return false;
-
-    return false;
+    this->registeredServices = services;
 }
 
+/*!
+    Returns \c true if a QScroller object was already created for \a target; \c false otherwise.
 
-
-bool Pulpo::fetchAlbumInfo(const AlbumInfo &infoType, const InfoServices &service)
+    \sa scroller()
+*/
+void Pulpo::setInfo(const Pulpo::ONTOLOGY ontology, const Pulpo::INFO info)
 {
-    //qDebug()<<"fetchAlbumInfo["<<this->title<<this->artist<<this->album<<"]";
-
-
-    if(Bae::albumType(this->track)==Bae::DBTables::ALBUMS)
-    {
-        QByteArray array;
-        lastfm lastfm(this->track);
-
-        connect(&lastfm,&lastfm::albumArtReady,[this, infoType] (QByteArray array)
-        {
-            if((array.isEmpty() || array.isNull()))
-            {
-                this->fetchAlbumInfo(infoType,Spotify);
-            }else
-            {
-                emit Pulpo::albumArtReady(array);
-            }
-
-        });
-
-        connect(&lastfm,&lastfm::albumWikiReady,[this] (const QString &wiki, const Bae::DB track) { emit Pulpo::albumWikiReady(wiki,track);});
-        connect(&lastfm,&lastfm::albumTagsReady,[this] (const QStringList &tags,const Bae::DB track) { emit Pulpo::albumTagsReady(tags,track);});
-
-        spotify spotify(this->track);
-        connect(&spotify,&spotify::albumArtReady,[&] (QByteArray array)
-        {
-            if((array.isEmpty() || array.isNull()))
-            {
-                this->fetchAlbumInfo(infoType,GeniusInfo);
-            }else
-            {
-                emit Pulpo::albumArtReady(array);
-            }
-        });
-        connect(&spotify,&spotify::albumWikiReady,[this] (const QString &wiki,const Bae::DB track) { emit Pulpo::albumWikiReady(wiki,track);});
-        connect(&spotify,&spotify::albumTagsReady,[this] (const QStringList &tags,const Bae::DB track) { emit Pulpo::albumTagsReady(tags,track);});
-
-        genius genius(this->track);
-        connect(&genius,&genius::albumArtReady,[this] (QByteArray array) { emit Pulpo::albumArtReady(array); });
-
-
-        switch(service)
-        {
-        case LastFm:
-
-            array = startConnection(lastfm.setUpService(lastfm::ALBUM));
-
-            if(!array.isEmpty())
-            {
-                if(lastfm.parseLastFmAlbum(array, infoType)) return true;
-                else return false;
-
-            }else return false;
-
-        case Spotify:
-
-            array = startConnection(spotify.setUpService(spotify::ALBUM));
-            if(!array.isEmpty())
-            {
-                if(spotify.parseSpotifyAlbum(array, infoType)) return true;
-                else return false;
-
-            }else return false;
-
-            //        case GeniusInfo:
-            //            array = startConnection(genius.setUpService());
-            //            if(!array.isEmpty())
-            //            {
-            //                genius.parseAlbumArt(array);
-            //                return true;
-
-
-            //            }else return false;
-            //            break;
-
-
-
-        case iTunes: break;
-        case infoCRAWL: break;
-        case AllInfoServices: break;
-        case NoneInfoService: break;
-
-        }
-
-
-    }else return false;
-
-    return false;
+    this->ontology = ontology;
+    this->info = info;
 }
 
-bool Pulpo::fetchTrackInfo(const Pulpo::TrackInfo &infoType, const Pulpo::LyricServices &lyricService, const Pulpo::InfoServices &service)
+bool Pulpo::initServices()
 {
-    QByteArray array;
+    if(this->registeredServices.isEmpty()) return false;
 
-    lastfm lastfm(this->track);
-    connect(&lastfm,&lastfm::trackWikiReady,[this] (const QString &wiki,const Bae::DB track) { emit Pulpo::trackWikiReady(wiki,track);});
-    connect(&lastfm,&lastfm::trackTagsReady,[this] (const QStringList &tags,const Bae::DB track) { emit Pulpo::trackTagsReady(tags,track);});
-    connect(&lastfm,&lastfm::trackAlbumReady,[this] (const QString &album,const Bae::DB track) { emit Pulpo::trackAlbumReady(album,track);});
-    connect(&lastfm,&lastfm::trackPositionReady,[this] (const int &position,const Bae::DB track) { emit Pulpo::trackPositionReady(position,track);});
+    if(this->track.isEmpty()) return false;
 
-    spotify spotify(this->track);
-    connect(&spotify,&spotify::trackWikiReady,[this] (const QString &wiki,const Bae::DB track) { emit Pulpo::albumWikiReady(wiki,track);});
-    connect(&spotify,&spotify::trackTagsReady,[this] (const QStringList &tags,const Bae::DB track) { emit Pulpo::albumTagsReady(tags,track);});
-
-    lyricWikia lyricWikia(this->track);
-    connect(&lyricWikia,&lyricWikia::trackLyricsReady,[this] (const QString &lyric,const Bae::DB track)
-    {
-        if(!lyric.isEmpty()) emit Pulpo::trackLyricsReady(lyric,track);
-        else fetchTrackInfo(Pulpo::NoneTrackInfo,Pulpo::Genius,Pulpo::NoneInfoService);
-    });
-
-
-
-    if(!this->track[Bae::DBCols::ARTIST].isEmpty() && !this->track[Bae::DBCols::ALBUM].isEmpty() && service!= Pulpo::NoneInfoService)
-    {
-        switch(service)
+    for(auto service : this->registeredServices)
+        switch (service)
         {
-        case LastFm:
-
-            array = startConnection(lastfm.setUpService(lastfm::TRACK));
-
-            if(!array.isEmpty())
-            {
-                if(lastfm.parseLastFmTrack(array, infoType)) return true;
-                else return false;
-
-            }else return false;
-
-        case Spotify:
-
-            array = startConnection(spotify.setUpService(spotify::ARTIST));
-            if(!array.isEmpty())
-            {
-                if(spotify.parseSpotifyTrack(array, infoType)) return true;
-                else return false;
-
-            }else return false;
-
-
-        case iTunes: break;
-        case infoCRAWL: break;
-        case GeniusInfo: break;
-        case AllInfoServices: break;
-        case NoneInfoService: break;
-
-        }
-
-
-    }
-
-    if(!this->track[Bae::DBCols::TITLE].isEmpty() && !this->track[Bae::DBCols::ARTIST].isEmpty() && lyricService!=Pulpo::NoneLyricService)
-    {
-        switch(lyricService)
+        case SERVICES::LastFm:
         {
-        case WikiLyrics: break;
-        case LyricWikia:
-            array = startConnection(lyricWikia.setUpService());
-            if(!array.isEmpty())
+            lastfm lastfm(this->track);
+            connect(&lastfm, &lastfm::infoReady, [this] (const Bae::DB &track, const Pulpo::RES &response)
             {
-                if(lyricWikia.parseLyrics(array)) return true;
-                else return false;
+                emit this->infoReady(track, response);
+            });
 
-            }else return false;
+            if( lastfm.setUpService(this->ontology) )
+                lastfm.parseArray(this->info);
+
+            else qDebug()<<"error settingUp lastfm service";
+
             break;
-        case Lyrics: break;
-        case Genius:
+        }
+        case SERVICES::Spotify:
         {
+            // spotify spotify(this->track);
 
-            auto geniusURL = QUrl(genius::setUpService(this->track));
-            emit Pulpo::trackLyricsUrlReady(geniusURL,track);
-            //            if(geniusURL.isValid())
-            //            {
-            //                connect(page,&webEngine::htmlReady,[this]( QString const &html)
-            //                {
-            //                   genius genius(this->track);
-
-            //                   genius.parseLyrics(html.toLocal8Bit());
-            //                });
-
-            //                page->load(geniusURL);
-
-            //            }
-            //            break;
+            break;
         }
-        case lyricCRAWL: break;
-        case AllLyricServices: break;
-        case NoneLyricService: break;
+        case SERVICES::Genius:
+        {
+            break;
         }
-    }else return false;
+        case SERVICES::MusicBrainz:
+        {
+            break;
+        }
+        case SERVICES::iTunes:
+        {
+            break;
+        }
+        case SERVICES::WikiLyrics:
+        {
+            break;
+        }
+        case SERVICES::LyricWikia:
+        {
+            break;
+        }
+        case SERVICES::Wikipedia:
+        {
+            break;
+        }
+        case SERVICES::ALL:
+        {
+            break;
+        }
+        case SERVICES::NONE:
+        {
+            break;
+        }
+
+        }
+
+
+    //    if(Bae::albumType(this->track)==Bae::DBTables::ALBUMS)
+    //    {
+    //        QByteArray array;
+    //        lastfm lastfm(this->track);
+
+    //        connect(&lastfm,&lastfm::albumArtReady,[this, infoType] (QByteArray array)
+    //        {
+    //            if((array.isEmpty() || array.isNull()))
+    //            {
+    //                this->fetchAlbumInfo(infoType,Spotify);
+    //            }else
+    //            {
+    //                emit Pulpo::albumArtReady(array);
+    //            }
+
+    //        });
+
+    //        connect(&lastfm,&lastfm::albumWikiReady,[this] (const QString &wiki, const Bae::DB track) { emit Pulpo::albumWikiReady(wiki,track);});
+    //        connect(&lastfm,&lastfm::albumTagsReady,[this] (const QStringList &tags,const Bae::DB track) { emit Pulpo::albumTagsReady(tags,track);});
+
+    //        spotify spotify(this->track);
+    //        connect(&spotify,&spotify::albumArtReady,[&] (QByteArray array)
+    //        {
+    //            if((array.isEmpty() || array.isNull()))
+    //            {
+    //                this->fetchAlbumInfo(infoType,GeniusInfo);
+    //            }else
+    //            {
+    //                emit Pulpo::albumArtReady(array);
+    //            }
+    //        });
+    //        connect(&spotify,&spotify::albumWikiReady,[this] (const QString &wiki,const Bae::DB track) { emit Pulpo::albumWikiReady(wiki,track);});
+    //        connect(&spotify,&spotify::albumTagsReady,[this] (const QStringList &tags,const Bae::DB track) { emit Pulpo::albumTagsReady(tags,track);});
+
+    //        genius genius(this->track);
+    //        connect(&genius,&genius::albumArtReady,[this] (QByteArray array) { emit Pulpo::albumArtReady(array); });
+
+
+    //        switch(service)
+    //        {
+    //        case LastFm:
+
+    //            array = startConnection(lastfm.setUpService(lastfm::ALBUM));
+
+    //            if(!array.isEmpty())
+    //            {
+    //                    if(lastfm.parseLastFmAlbum(array, infoType)) return true;
+    //                else return false;
+
+    //            }else return false;
+
+    //        case Spotify:
+
+    //            array = startConnection(spotify.setUpService(spotify::ALBUM));
+    //            if(!array.isEmpty())
+    //            {
+    //                if(spotify.parseSpotifyAlbum(array, infoType)) return true;
+    //                else return false;
+
+    //            }else return false;
+
+    //            //        case GeniusInfo:
+    //            //            array = startConnection(genius.setUpService());
+    //            //            if(!array.isEmpty())
+    //            //            {
+    //            //                genius.parseAlbumArt(array);
+    //            //                return true;
+
+
+    //            //            }else return false;
+    //            //            break;
+
+
+
+    //        case iTunes: break;
+    //        case infoCRAWL: break;
+    //        case AllInfoServices: break;
+    //        case NoneInfoService: break;
+
+    //        }
+
+
+    //    }else return false;
 
     return false;
 }
 
 
-QVariant Pulpo::getStaticAlbumInfo(const AlbumInfo &infoType)
+
+
+//bool Pulpo::fetchArtistInfo(const INFO &infoType)
+//{
+//        if(Bae::albumType(this->track)==Bae::DBTables::ARTISTS)
+//        {
+//            QByteArray array;
+
+//            lastfm lastfm(this->track);
+//            connect(&lastfm,&lastfm::artistArtReady,[this] (const QByteArray &array) { emit Pulpo::artistArtReady(array);});
+//            connect(&lastfm,&lastfm::artistWikiReady,[this] (const QString &wiki,const Bae::DB track)
+//            {
+//                qDebug() <<"got the artist wiki";
+//                emit Pulpo::artistWikiReady(wiki,track);
+//            });
+
+//            connect(&lastfm,&lastfm::artistSimilarReady,[this] (const QMap<QString,QByteArray> &similar,const Bae::DB track)
+//            {
+//                emit Pulpo::artistSimilarReady(similar,track);
+//            });
+
+//            connect(&lastfm,&lastfm::artistTagsReady,[this] (const QStringList &tags,const Bae::DB track)
+//            {
+//                emit Pulpo::artistTagsReady(tags,track);
+//            });
+
+//            spotify spotify(this->track);
+//            connect(&spotify,&spotify::artistArtReady,[this] (QByteArray array) { emit Pulpo::artistArtReady(array);});
+//            connect(&spotify,&spotify::artistWikiReady,[this] (const QString &wiki,const Bae::DB &track)
+//            {
+//                emit Pulpo::artistWikiReady(wiki,track);
+//            });
+//            connect(&spotify,&spotify::artistSimilarReady,[this] (const QMap<QString,QByteArray> &similar,const Bae::DB &track)
+//            {
+//                emit Pulpo::artistSimilarReady(similar,track);
+//            });
+//            connect(&spotify,&spotify::artistTagsReady,[this] (const QStringList &tags,const Bae::DB &track)
+//            {
+//                emit Pulpo::artistTagsReady(tags,track);
+//            });
+
+
+//            /**************************************/
+
+//            switch(service)
+//            {
+//            case LastFm:
+
+//                array = startConnection(lastfm.setUpService(lastfm::ARTIST));
+//                if(!array.isEmpty())
+//                {
+//                    if(lastfm.parseLastFmArtist(array, infoType)) return true;
+//                    else return false;
+
+//                }else return false;
+
+//            case Spotify:
+
+//                array = startConnection(spotify.setUpService(spotify::ARTIST));
+//                if(!array.isEmpty())
+//                {
+//                    if(spotify.parseSpotifyArtist(array, infoType)) return true;
+//                    else return false;
+
+//                }else return false;
+
+
+//            case iTunes: break;
+//            case infoCRAWL: break;
+//            case AllInfoServices: break;
+//            case GeniusInfo: break;
+//            case NoneInfoService: break;
+//            }
+
+//        }else return false;
+
+//    return false;
+//}
+
+
+
+//bool Pulpo::fetchTrackInfo(const INFO &infoType)
+//{
+//    QByteArray array;
+
+//    lastfm lastfm(this->track);
+//    connect(&lastfm,&lastfm::trackWikiReady,[this] (const QString &wiki,const Bae::DB track) { emit Pulpo::trackWikiReady(wiki,track);});
+//    connect(&lastfm,&lastfm::trackTagsReady,[this] (const QStringList &tags,const Bae::DB track) { emit Pulpo::trackTagsReady(tags,track);});
+//    connect(&lastfm,&lastfm::trackAlbumReady,[this] (const QString &album,const Bae::DB track) { emit Pulpo::trackAlbumReady(album,track);});
+//    connect(&lastfm,&lastfm::trackPositionReady,[this] (const int &position,const Bae::DB track) { emit Pulpo::trackPositionReady(position,track);});
+
+//    spotify spotify(this->track);
+//    connect(&spotify,&spotify::trackWikiReady,[this] (const QString &wiki,const Bae::DB track) { emit Pulpo::albumWikiReady(wiki,track);});
+//    connect(&spotify,&spotify::trackTagsReady,[this] (const QStringList &tags,const Bae::DB track) { emit Pulpo::albumTagsReady(tags,track);});
+
+//    lyricWikia lyricWikia(this->track);
+//    connect(&lyricWikia,&lyricWikia::trackLyricsReady,[this] (const QString &lyric,const Bae::DB track)
+//    {
+//        if(!lyric.isEmpty()) emit Pulpo::trackLyricsReady(lyric,track);
+//        else fetchTrackInfo(Pulpo::NoneTrackInfo,Pulpo::Genius,Pulpo::NoneInfoService);
+//    });
+
+
+
+//    if(!this->track[Bae::DBCols::ARTIST].isEmpty() && !this->track[Bae::DBCols::ALBUM].isEmpty() && service!= Pulpo::NoneInfoService)
+//    {
+//        switch(service)
+//        {
+//        case LastFm:
+
+//            array = startConnection(lastfm.setUpService(lastfm::TRACK));
+
+//            if(!array.isEmpty())
+//            {
+//                if(lastfm.parseLastFmTrack(array, infoType)) return true;
+//                else return false;
+
+//            }else return false;
+
+//        case Spotify:
+
+//            array = startConnection(spotify.setUpService(spotify::ARTIST));
+//            if(!array.isEmpty())
+//            {
+//                if(spotify.parseSpotifyTrack(array, infoType)) return true;
+//                else return false;
+
+//            }else return false;
+
+
+//        case iTunes: break;
+//        case infoCRAWL: break;
+//        case GeniusInfo: break;
+//        case AllInfoServices: break;
+//        case NoneInfoService: break;
+
+//        }
+
+
+//    }
+
+//    if(!this->track[Bae::DBCols::TITLE].isEmpty() && !this->track[Bae::DBCols::ARTIST].isEmpty() && lyricService!=Pulpo::NoneLyricService)
+//    {
+//        switch(lyricService)
+//        {
+//        case WikiLyrics: break;
+//        case LyricWikia:
+//            array = startConnection(lyricWikia.setUpService());
+//            if(!array.isEmpty())
+//            {
+//                if(lyricWikia.parseLyrics(array)) return true;
+//                else return false;
+
+//            }else return false;
+//            break;
+//        case Lyrics: break;
+//        case Genius:
+//        {
+
+//            auto geniusURL = QUrl(genius::setUpService(this->track));
+//            emit Pulpo::trackLyricsUrlReady(geniusURL,track);
+//            //            if(geniusURL.isValid())
+//            //            {
+//            //                connect(page,&webEngine::htmlReady,[this]( QString const &html)
+//            //                {
+//            //                   genius genius(this->track);
+
+//            //                   genius.parseLyrics(html.toLocal8Bit());
+//            //                });
+
+//            //                page->load(geniusURL);
+
+//            //            }
+//            //            break;
+//        }
+//        case lyricCRAWL: break;
+//        case AllLyricServices: break;
+//        case NoneLyricService: break;
+//        }
+//    }else return false;
+
+//    return false;
+//}
+
+
+QVariant Pulpo::getStaticAlbumInfo(const INFO &infoType)
 {
     return QVariant ();
 }
 
-QVariant Pulpo::getStaticArtistInfo(const ArtistInfo &infoType)
+QVariant Pulpo::getStaticArtistInfo(const INFO &infoType)
 {
     return QVariant ();
 
 }
 
-QVariant Pulpo::getStaticTrackInfo(const TrackInfo &infoType)
+QVariant Pulpo::getStaticTrackInfo(const INFO &infoType)
 {
-    QByteArray array;
+    //    QByteArray array;
 
-    if(infoType == TrackAlbum)
-    {
-        lastfm lastfm(this->track);
-        array = startConnection(lastfm.setUpService(lastfm::TRACK));
-        auto title =lastfm.getTrackInfo(array,infoType).toString();
+    //    if(infoType == TrackAlbum)
+    //    {
+    //        lastfm lastfm(this->track);
+    //        array = startConnection(lastfm.setUpService(lastfm::TRACK));
+    //        auto title =lastfm.getTrackInfo(array,infoType).toString();
 
-        if(!title.isEmpty()) return title;
-        else
-        {
-            spotify spotify(this->track);
-            array = startConnection(spotify.setUpService(spotify::TRACK));
-            return title =spotify.getTrackInfo(array,infoType).toString();
+    //        if(!title.isEmpty()) return title;
+    //        else
+    //        {
+    //            spotify spotify(this->track);
+    //            array = startConnection(spotify.setUpService(spotify::TRACK));
+    //            return title =spotify.getTrackInfo(array,infoType).toString();
 
-        }
-    }
-    if(infoType ==TrackLyrics)
-    {
-    }
+    //        }
+    //    }
+    //    if(infoType ==TrackLyrics)
+    //    {
+    //    }
 
-    if(infoType ==TrackPosition)
-    {
-        lastfm lastfm(this->track);
-        array = startConnection(lastfm.setUpService(lastfm::TRACK));
-        auto position =lastfm.getTrackInfo(array,infoType).toInt();
+    //    if(infoType ==TrackPosition)
+    //    {
+    //        lastfm lastfm(this->track);
+    //        array = startConnection(lastfm.setUpService(lastfm::TRACK));
+    //        auto position =lastfm.getTrackInfo(array,infoType).toInt();
 
-        if(position>0) return position;
-        else
-        {
-            spotify spotify(this->track);
-            array = startConnection(spotify.setUpService(spotify::TRACK));
-            return position =spotify.getTrackInfo(array,infoType).toInt();
+    //        if(position>0) return position;
+    //        else
+    //        {
+    //            spotify spotify(this->track);
+    //            array = startConnection(spotify.setUpService(spotify::TRACK));
+    //            return position =spotify.getTrackInfo(array,infoType).toInt();
 
-        }
-    }
-    if(infoType ==TrackWiki)
-    {
-    }
+    //        }
+    //    }
+    //    if(infoType ==TrackWiki)
+    //    {
+    //    }
 
     return QVariant();
 }
@@ -377,7 +458,7 @@ QByteArray Pulpo::startConnection(const QString &url, const QString &auth)
         QNetworkAccessManager manager;
         QNetworkRequest request (mURL);
 
-        if(auth.isEmpty()) request.setRawHeader("Authorization", spotify::auth.toLocal8Bit());
+        if(!auth.isEmpty()) request.setRawHeader("Authorization", auth.toLocal8Bit());
 
         QNetworkReply *reply =  manager.get(request);
         QEventLoop loop;
@@ -388,8 +469,11 @@ QByteArray Pulpo::startConnection(const QString &url, const QString &auth)
         loop.exec();
 
         reply->deleteLater();
+        if(reply->error()) qDebug()<<reply->error();
         return reply->readAll();
-    }else return QByteArray();
+    }
+
+    return QByteArray();
 }
 
 

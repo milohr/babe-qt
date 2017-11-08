@@ -32,58 +32,53 @@ class Pulpo : public QObject
 
 public:
 
-    explicit Pulpo(const Bae::DB &song, QObject *parent = 0);
-    explicit Pulpo(QObject *parent = 0);
+    enum class SERVICES : uint8_t
+    {
+        LastFm = 0,
+        Spotify = 1,
+        iTunes = 2,
+        MusicBrainz = 3,
+        Genius = 4,
+        LyricWikia = 5,
+        Wikipedia = 6,
+        WikiLyrics = 7,
+        ALL = 8,
+        NONE = 9
+    };
+
+    enum class ONTOLOGY : uint8_t
+    {
+        ARTIST,ALBUM,TRACK,GENRE,ALL,NONE
+    };
+
+    enum class INFO : uint8_t
+    {
+       ALBUM,ARTIST,ARTWORK,WIKI,ALBUM_TRACKS,TAGS,SIMILAR,LYRICS,TRACK,TITLE,ALL,NONE
+    };
+
+    typedef QMap<INFO, QVariant> RES; /* response type*/
+
+    explicit Pulpo(const Bae::DB &song, QObject *parent = nullptr);
+    explicit Pulpo(QObject *parent = nullptr);
     ~Pulpo();
 
-    enum Ontology
-    {
-        ARTIST,ALBUM,TRACK,GENRE
-    };
+    /* NEW INTRODUCED STUFF */
 
-    enum InfoServices
-    {
-        LastFm,Spotify,iTunes,GeniusInfo,AllInfoServices, infoCRAWL, NoneInfoService
-    };
+    void registerServices(const QList<SERVICES> &services);
+    void setInfo(const ONTOLOGY ontology = ONTOLOGY::ALL, const INFO info = INFO::ALL);
 
-    enum LyricServices
-    {
-        LyricWikia,WikiLyrics,Lyrics, Genius,AllLyricServices, lyricCRAWL, NoneLyricService
-    };
-
-    enum ArtistInfo
-    {
-        ArtistArt,ArtistWiki,ArtistSimilar,ArtistTags,AllArtistInfo,NoneArtistInfo
-    };
-
-    enum AlbumInfo
-    {
-        AlbumArt,AlbumWiki,AlbumTracks,AlbumTags,AllAlbumInfo,NoneAlbumInfo
-    };
-
-    enum TrackInfo
-    {
-        TrackLyrics,TrackAlbum,TrackPosition, TrackWiki,TrackTags,AllTrackInfo,NoneTrackInfo
-    };
+    /* OLD STUFF TO REVIEW */
 
     enum ResponseType
     {
         XML,JSON
     };
 
-
-
     void feed(const Bae::DB &song);
-    QVariant getStaticAlbumInfo(const AlbumInfo &infoType);
-    QVariant getStaticArtistInfo(const ArtistInfo &infoType);
-    QVariant getStaticTrackInfo(const TrackInfo &infoType);
 
-
-    bool fetchArtistInfo(const ArtistInfo &infoType = AllArtistInfo, const InfoServices &service = AllInfoServices);
-
-    bool fetchAlbumInfo(const AlbumInfo &infoType = AllAlbumInfo, const InfoServices &service = AllInfoServices );
-
-    bool fetchTrackInfo(const TrackInfo &infoType = AllTrackInfo, const LyricServices &lyricService = AllLyricServices, const InfoServices &services = AllInfoServices );
+    QVariant getStaticAlbumInfo(const INFO &infoType);
+    QVariant getStaticArtistInfo(const INFO &infoType);
+    QVariant getStaticTrackInfo(const INFO &infoType);
 
     QByteArray startConnection(const QString &url, const QString &auth="");
 
@@ -93,6 +88,11 @@ private:
     QPixmap art;
     Bae::DB track;
     webEngine *page;
+    QList<SERVICES> registeredServices = {SERVICES::ALL};
+    INFO info = INFO::ALL;
+    ONTOLOGY ontology = ONTOLOGY::ALL;
+
+    bool initServices();
 
 public slots:
 
@@ -100,6 +100,8 @@ public slots:
     void dummy();
 
 signals:
+
+    void infoReady(const Bae::DB &track, const Pulpo::RES &response);
 
     void albumArtReady(const QByteArray &art);
     void albumWikiReady(const QString &wiki,const Bae::DB &track);

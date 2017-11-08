@@ -1169,12 +1169,12 @@ void MainWindow::dummy() { qDebug()<<"TEST on DUMMYT"; }
 void MainWindow::setCoverArt(const Bae::DB &song)
 {
     //    qDebug()<<"Trying to retieve the cover art from Pulpo for"<< title << artist << album;
-    Pulpo coverArt(song);
-    connect(&coverArt,&Pulpo::albumArtReady,this,&MainWindow::putPixmap);
-    if (coverArt.fetchAlbumInfo(Pulpo::AlbumArt,Pulpo::LastFm)) qDebug()<<"using lastfm";
-    else if(coverArt.fetchAlbumInfo(Pulpo::AlbumArt,Pulpo::Spotify)) qDebug()<<"using spotify";
-    else if(coverArt.fetchAlbumInfo(Pulpo::AlbumArt,Pulpo::GeniusInfo)) qDebug()<<"using genius";
-    else coverArt.albumArtReady(QByteArray());
+//    Pulpo coverArt(song);
+//    connect(&coverArt,&Pulpo::albumArtReady,this,&MainWindow::putPixmap);
+//    if (coverArt.fetchAlbumInfo(Pulpo::AlbumArt,Pulpo::LastFm)) qDebug()<<"using lastfm";
+//    else if(coverArt.fetchAlbumInfo(Pulpo::AlbumArt,Pulpo::Spotify)) qDebug()<<"using spotify";
+//    else if(coverArt.fetchAlbumInfo(Pulpo::AlbumArt,Pulpo::GeniusInfo)) qDebug()<<"using genius";
+//    else coverArt.albumArtReady(QByteArray());
 }
 
 void MainWindow::putPixmap(const QByteArray &array)
