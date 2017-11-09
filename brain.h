@@ -191,7 +191,6 @@ public slots:
                 }
                 case Pulpo::INFO::ARTWORK:
                 {
-                    qDebug()<<response[Pulpo::INFO::ARTWORK].toByteArray();
                     connect(&connection, &CollectionDB::artworkInserted,[this](const Bae::DB &albumMap)
                     {
                         emit this->artworkReady(albumMap);

@@ -72,12 +72,10 @@ public slots:
         if(tracks.size()>0)
         {
             for(auto trackMap : tracks)
-            {   if(go)
-                {
-                    emit trackReady(trackMap);
-                }else break;
-            }
+                if(go) emit trackReady(trackMap);
+                else break;
         }
+
         emit finished();
     }
 
@@ -123,7 +121,7 @@ private:
     QString addMusicMsg = "oops...\n";
     QString addMusicIcon= "face-sleeping";
 
-     const QStringList colors = Bae::MoodColors;
+    const QStringList colors = Bae::MoodColors;
 
 public:
 

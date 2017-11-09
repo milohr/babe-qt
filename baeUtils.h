@@ -12,8 +12,6 @@
 #include <cmath>
 using namespace std;
 
-
-
 namespace Bae {
 
 enum SearchT
@@ -41,7 +39,6 @@ static const QMap<Order,QString> OrderMap =
 
 enum class DBTables : uint8_t
 {
-
     ALBUMS=0,
     ARTISTS=1,
     MOODS=2,
@@ -78,10 +75,8 @@ static const QMap<DBTables,QString> DBTablesMap =
 
 };
 
-
 enum class DBCols :uint8_t
 {
-
     URL=0,
     SOURCES_URL=1,
     TRACK=2,
