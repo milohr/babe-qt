@@ -22,8 +22,6 @@ class Brain : public QObject
     Q_OBJECT
 
 public:
-
-
     Brain() : QObject ()
     {
         this->moveToThread(&t);
@@ -134,12 +132,10 @@ public slots:
         });
 
         pulpo.setOntology(Pulpo::ONTOLOGY::ALBUM);
-        pulpo.registerServices({Pulpo::SERVICES::LastFm, Pulpo::SERVICES::Spotify});
-
+        pulpo.registerServices({Pulpo::SERVICES::LastFm,Pulpo::SERVICES::Spotify});
 
         /* get all albums missing information */
         //select album, artist from albums where  album  not in (select album from albums_tags) and artist  not in (select  artist from albums_tags)
-
 
         qDebug()<<"getting missing tags";
         auto queryTxt =  QString("SELECT %1, %2 FROM %3 WHERE %1 NOT IN ( SELECT %1 FROM %4 ) AND %2 NOT IN ( SELECT %2 FROM %4 )").arg(Bae::DBColsMap[Bae::DBCols::ALBUM],
@@ -158,10 +154,9 @@ public slots:
 
         query.prepare(queryTxt);
         pulpo.setInfo(Pulpo::INFO::ARTWORK);
-        pulpo.setFallback(true);
         for(auto track : connection.getTrackData(query))
         {
-            pulpo.feed(track);
+            pulpo.feed(track, false);
             if(!go) return;
         }
 
@@ -170,7 +165,6 @@ public slots:
                 Bae::DBColsMap[Bae::DBCols::ARTIST],Bae::DBTablesMap[Bae::DBTables::ALBUMS],Bae::DBColsMap[Bae::DBCols::WIKI]);
         query.prepare(queryTxt);
         pulpo.setInfo(Pulpo::INFO::WIKI);
-        pulpo.setFallback(false);
         for(auto track : connection.getTrackData(query))
         {
             pulpo.feed(track);
@@ -197,13 +191,13 @@ public slots:
                 }
                 case Pulpo::INFO::ARTWORK:
                 {
+                    qDebug()<<response[Pulpo::INFO::ARTWORK].toByteArray();
                     connect(&connection, &CollectionDB::artworkInserted,[this](const Bae::DB &albumMap)
                     {
                         emit this->artworkReady(albumMap);
                     });
-
-                    pulpo.saveArt(response[Pulpo::INFO::ARTWORK].toByteArray(),Bae::CachePath);
                     connect(&pulpo, &Pulpo::artSaved, &connection, &CollectionDB::insertArtwork);
+                    pulpo.saveArt(response[Pulpo::INFO::ARTWORK].toByteArray(),Bae::CachePath);
 
                     break;
                 }
@@ -223,8 +217,7 @@ public slots:
         });
 
         pulpo.setOntology(Pulpo::ONTOLOGY::ARTIST);
-        pulpo.registerServices({Pulpo::SERVICES::LastFm, Pulpo::SERVICES::Spotify});
-
+        pulpo.registerServices({Pulpo::SERVICES::LastFm,Pulpo::SERVICES::Spotify});
 
         /* get all albums missing information */
         //select artist from artists where  artist  not in (select album from albums_tags)
@@ -245,10 +238,9 @@ public slots:
 
         query.prepare(queryTxt);
         pulpo.setInfo(Pulpo::INFO::ARTWORK);
-        pulpo.setFallback(true);
         for(auto track : connection.getTrackData(query))
         {
-            pulpo.feed(track);
+            pulpo.feed(track,false);
             if(!go) return;
         }
 
@@ -257,7 +249,6 @@ public slots:
                 Bae::DBTablesMap[Bae::DBTables::ARTISTS],Bae::DBColsMap[Bae::DBCols::WIKI]);
         query.prepare(queryTxt);
         pulpo.setInfo(Pulpo::INFO::WIKI);
-        pulpo.setFallback(false);
         for(auto track : connection.getTrackData(query))
         {
             pulpo.feed(track);

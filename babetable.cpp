@@ -208,10 +208,8 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent)
     addMusicTxt_layout->addStretch();
 
     auto *updater = new QTimer(this);
-    updater->setSingleShot(true);
     connect(updater, SIGNAL(timeout()), this, SLOT(update()));
-    updater->setInterval(500);
-    updater->start();
+    updater->start(500);
 
 }
 

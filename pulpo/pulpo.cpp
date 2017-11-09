@@ -25,16 +25,17 @@
 Pulpo::Pulpo(const Bae::DB &song,QObject *parent)
     : QObject(parent), track(song)
 {
-//    this->page = new webEngine(this);
+    //    this->page = new webEngine(this);
 }
 
 Pulpo::Pulpo(QObject *parent): QObject(parent) {}
 
 Pulpo::~Pulpo() {}
 
-void Pulpo::feed(const Bae::DB &song)
+void Pulpo::feed(const Bae::DB &song, const bool &recursive)
 {
-    this->track=song;
+    this->track = song;
+    this->recursive = recursive;
     this->initServices();
 
 }
@@ -44,67 +45,55 @@ void Pulpo::registerServices(const QList<Pulpo::SERVICES> &services)
     this->registeredServices = services;
 }
 
-/*!
-    Returns \c true if a QScroller object was already created for \a target; \c false otherwise.
-
-    \sa scroller()
-*/
-void Pulpo::setInfo(const Pulpo::INFO info)
+void Pulpo::setInfo(const Pulpo::INFO &info)
 {
     this->info = info;
 }
 
-void Pulpo::setOntology(const Pulpo::ONTOLOGY ontology)
+void Pulpo::setOntology(const Pulpo::ONTOLOGY &ontology)
 {
     this->ontology = ontology;
 }
 
-void Pulpo::setFallback(const bool &state)
+void Pulpo::setRecursive(const bool &state)
 {
-    this->fallback=state;
+    this->recursive=state;
 }
 
 
 bool Pulpo::initServices()
 {
     if(this->registeredServices.isEmpty()) return false;
-
     if(this->track.isEmpty()) return false;
 
     for(auto service : this->registeredServices)
+
         switch (service)
         {
         case SERVICES::LastFm:
         {
             lastfm lastfm(this->track);
-            connect(&lastfm, &lastfm::infoReady, [this] (const Bae::DB &track, const Pulpo::RES &response)
-            {
-                emit this->infoReady(track, response);
-            });
+            connect(&lastfm, &lastfm::infoReady, this, &Pulpo::passSignal);
 
-            if( lastfm.setUpService(this->ontology,this->info) )
+            if(lastfm.setUpService(this->ontology,this->info))
             {
-                if(fallback) return true;
-            }
+                if(!recursive) return true;
 
-            else qDebug()<<"error settingUp lastfm service";
+            }else qDebug()<<"error settingUp lastfm service";
+
 
             break;
         }
         case SERVICES::Spotify:
         {
-             spotify spotify(this->track);
+            spotify spotify(this->track);
+            connect(&spotify, &spotify::infoReady, this, &Pulpo::passSignal);
 
-             connect(&spotify, &spotify::infoReady, [this] (const Bae::DB &track, const Pulpo::RES &response)
-             {
-                 emit this->infoReady(track, response);
-             });
+            if(spotify.setUpService(this->ontology,this->info))
+            {
+                if(!recursive) return true;
 
-             if( spotify.setUpService(this->ontology,this->info) )
-             {
-                 if(fallback) return true;
-             }
-             else qDebug()<<"error settingUp spotify service";
+            }else qDebug()<<"error settingUp sotify service";
 
             break;
         }
@@ -142,93 +131,12 @@ bool Pulpo::initServices()
         }
 
         }
-
-
-    //    if(Bae::albumType(this->track)==Bae::DBTables::ALBUMS)
-    //    {
-    //        QByteArray array;
-    //        lastfm lastfm(this->track);
-
-    //        connect(&lastfm,&lastfm::albumArtReady,[this, infoType] (QByteArray array)
-    //        {
-    //            if((array.isEmpty() || array.isNull()))
-    //            {
-    //                this->fetchAlbumInfo(infoType,Spotify);
-    //            }else
-    //            {
-    //                emit Pulpo::albumArtReady(array);
-    //            }
-
-    //        });
-
-    //        connect(&lastfm,&lastfm::albumWikiReady,[this] (const QString &wiki, const Bae::DB track) { emit Pulpo::albumWikiReady(wiki,track);});
-    //        connect(&lastfm,&lastfm::albumTagsReady,[this] (const QStringList &tags,const Bae::DB track) { emit Pulpo::albumTagsReady(tags,track);});
-
-    //        spotify spotify(this->track);
-    //        connect(&spotify,&spotify::albumArtReady,[&] (QByteArray array)
-    //        {
-    //            if((array.isEmpty() || array.isNull()))
-    //            {
-    //                this->fetchAlbumInfo(infoType,GeniusInfo);
-    //            }else
-    //            {
-    //                emit Pulpo::albumArtReady(array);
-    //            }
-    //        });
-    //        connect(&spotify,&spotify::albumWikiReady,[this] (const QString &wiki,const Bae::DB track) { emit Pulpo::albumWikiReady(wiki,track);});
-    //        connect(&spotify,&spotify::albumTagsReady,[this] (const QStringList &tags,const Bae::DB track) { emit Pulpo::albumTagsReady(tags,track);});
-
-    //        genius genius(this->track);
-    //        connect(&genius,&genius::albumArtReady,[this] (QByteArray array) { emit Pulpo::albumArtReady(array); });
-
-
-    //        switch(service)
-    //        {
-    //        case LastFm:
-
-    //            array = startConnection(lastfm.setUpService(lastfm::ALBUM));
-
-    //            if(!array.isEmpty())
-    //            {
-    //                    if(lastfm.parseLastFmAlbum(array, infoType)) return true;
-    //                else return false;
-
-    //            }else return false;
-
-    //        case Spotify:
-
-    //            array = startConnection(spotify.setUpService(spotify::ALBUM));
-    //            if(!array.isEmpty())
-    //            {
-    //                if(spotify.parseSpotifyAlbum(array, infoType)) return true;
-    //                else return false;
-
-    //            }else return false;
-
-    //            //        case GeniusInfo:
-    //            //            array = startConnection(genius.setUpService());
-    //            //            if(!array.isEmpty())
-    //            //            {
-    //            //                genius.parseAlbumArt(array);
-    //            //                return true;
-
-
-    //            //            }else return false;
-    //            //            break;
-
-
-
-    //        case iTunes: break;
-    //        case infoCRAWL: break;
-    //        case AllInfoServices: break;
-    //        case NoneInfoService: break;
-
-    //        }
-
-
-    //    }else return false;
-
     return false;
+}
+
+void Pulpo::passSignal(const Bae::DB &track, const Pulpo::RES &response)
+{
+    emit this->infoReady(track, response);
 }
 
 
@@ -504,7 +412,7 @@ void Pulpo::saveArt(const QByteArray &array, const QString &path)
 {
     if(!array.isNull()&&!array.isEmpty())
     {
-       // qDebug()<<"tryna save array: "<< array;
+        // qDebug()<<"tryna save array: "<< array;
 
         QImage img;
         img.loadFromData(array);

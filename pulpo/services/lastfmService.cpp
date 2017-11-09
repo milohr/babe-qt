@@ -3,13 +3,19 @@
 lastfm::lastfm(const Bae::DB &song)
 {
     this->track = song;
+    this->availableInfo.insert(ONTOLOGY::ALBUM, {INFO::ARTWORK, INFO::WIKI, INFO::TAGS});
+    this->availableInfo.insert(ONTOLOGY::ARTIST, {INFO::ARTWORK, INFO::WIKI, INFO::TAGS, INFO::SIMILAR});
+    this->availableInfo.insert(ONTOLOGY::TRACK, {});
+
 }
 
 bool lastfm::setUpService(const Pulpo::ONTOLOGY &ontology, const Pulpo::INFO &info)
 {
-    //    qDebug()<<"Setting up lastfm service";
     this->ontology = ontology;
     this->info= info;
+
+    if(!this->availableInfo[this->ontology].contains(this->info))
+        return false;
 
     auto url = this->API;
 
@@ -52,7 +58,7 @@ bool lastfm::setUpService(const Pulpo::ONTOLOGY &ontology, const Pulpo::INFO &in
     default: return false;
     }
 
-    //    qDebug()<< "lastfm url: "<< url;
+    qDebug()<< "[lastfm service]: "<< url;
 
     this->array = this->startConnection(url);
     if(this->array.isEmpty()) return false;
@@ -62,20 +68,16 @@ bool lastfm::setUpService(const Pulpo::ONTOLOGY &ontology, const Pulpo::INFO &in
 
 bool lastfm::parseArray()
 {
-
     if(this->ontology != Pulpo::ONTOLOGY::NONE)
-    {
         switch(this->ontology)
         {
-        case Pulpo::ONTOLOGY::ALBUM: this->parseAlbum(); break;
-        case Pulpo::ONTOLOGY::ARTIST: this->parseArtist(); break;
-        case Pulpo::ONTOLOGY::TRACK: this->parseTrack(); break;
+        case Pulpo::ONTOLOGY::ALBUM: return this->parseAlbum();
+        case Pulpo::ONTOLOGY::ARTIST: return this->parseArtist();
+        case Pulpo::ONTOLOGY::TRACK: return this->parseTrack();
         default: return false;
         }
-    }
 
-    return true;
-
+    return false;
 }
 
 bool lastfm::parseArtist()
@@ -111,7 +113,7 @@ bool lastfm::parseArtist()
                     if (imgSize == "extralarge" && n.isElement())
                     {
                         auto artistArt_url = n.toElement().text();
-                        //qDebug()<<"Fetching ArtistArt LastFm["<<artistArt_url<<"]";
+                        qDebug()<<"Fetching ArtistArt LastFm["<<artistArt_url<<"]";
                         emit this->infoReady(this->track,{{INFO::ARTWORK, startConnection(artistArt_url)}});
 
                         if(this->info == INFO::ARTWORK) return true;
@@ -209,16 +211,12 @@ bool lastfm::parseAlbum()
     QDomDocument doc;
 
     if (!doc.setContent(xmlData))
-    {
-        qDebug() << "The XML obtained from last.fm is invalid.";
         return false;
-    }
 
+    if (doc.documentElement().toElement().attributes().namedItem("status").nodeValue()!="ok")
+        return false;
 
-    if (doc.documentElement().toElement().attributes().namedItem("status").nodeValue()!="ok") return false;
-
-
-    const QDomNodeList nodeList = doc.documentElement().namedItem("album").childNodes();
+    const auto nodeList = doc.documentElement().namedItem("album").childNodes();
 
     for (int i = 0; i < nodeList.count(); i++)
     {
@@ -229,7 +227,6 @@ bool lastfm::parseAlbum()
             //Here retrieve the artist image
             if(this->info == INFO::ARTWORK || this->info == INFO::ALL)
             {
-                ////qDebug()<<"lastfm[AlbumArt]";
                 if(n.nodeName() == "image" && n.hasAttributes())
                 {
                     auto imgSize = n.attributes().namedItem("size").nodeValue();
@@ -237,7 +234,6 @@ bool lastfm::parseAlbum()
                     if (imgSize == "extralarge" && n.isElement())
                     {
                         auto albumArt_url = n.toElement().text();
-                        //qDebug()<<"Fetching AlbumArt LastFm[]";
                         emit this->infoReady(this->track,{{INFO::ARTWORK,startConnection(albumArt_url)}});
 
                         if(this->info == INFO::ARTWORK) return true;

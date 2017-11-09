@@ -4,12 +4,18 @@
 spotify::spotify(const Bae::DB &song)
 {
     this->track = song;
+    this->availableInfo.insert(ONTOLOGY::ALBUM, {INFO::ARTWORK});
+    this->availableInfo.insert(ONTOLOGY::ARTIST, {});
+    this->availableInfo.insert(ONTOLOGY::TRACK, {});
 }
 
 bool spotify::setUpService(const ONTOLOGY &ontology, const Pulpo::INFO &info)
 {
     this->ontology = ontology;
     this->info= info;
+
+    if(!this->availableInfo[this->ontology].contains(this->info))
+        return false;
 
     auto url = this->API;
 
@@ -18,13 +24,13 @@ bool spotify::setUpService(const ONTOLOGY &ontology, const Pulpo::INFO &info)
 
     switch(this->ontology)
     {
-    case ONTOLOGY::ARTIST:
-    {
-        url.append("artist:");
-        url.append(encodedArtist.toString());
-        url.append("&type=artist");
-        break;
-    }
+    //    case ONTOLOGY::ARTIST:
+    //    {
+    //        url.append("artist:");
+    //        url.append(encodedArtist.toString());
+    //        url.append("&type=artist");
+    //        break;
+    //    }
 
     case ONTOLOGY::ALBUM:
     {
@@ -56,14 +62,12 @@ bool spotify::setUpService(const ONTOLOGY &ontology, const Pulpo::INFO &info)
     default: return false;
     }
 
-    qDebug()<<"setUpService Spotify["<<url<<"]";
-
     auto credentials = this->CLIENT_ID+":"+this->CLIENT_SECRET;
     auto auth = credentials.toLocal8Bit().toBase64();
     QString header = "Basic " + auth;
 
-
     auto request = QNetworkRequest(QUrl("https://accounts.spotify.com/api/token"));
+    request.setHeader(QNetworkRequest::ContentTypeHeader,"application/x-www-form-urlencoded");
     request.setRawHeader("Authorization", header.toLocal8Bit());
 
     QNetworkAccessManager manager;
@@ -78,13 +82,19 @@ bool spotify::setUpService(const ONTOLOGY &ontology, const Pulpo::INFO &info)
 
     reply->deleteLater();
 
-    if(reply->error()) qDebug()<<reply->error();
+    if(reply->error())
+    {
+        qDebug()<<reply->error();
+        return false;
+    }
+
     auto response  = reply->readAll();
     auto data = QJsonDocument::fromJson(response).object().toVariantMap();
     auto token = data["access_token"].toString();
 
-    this->array = this->startConnection(url, "Bearer "+token);
+    qDebug()<< "[spotify service]: "<< url;
 
+    this->array = this->startConnection(url, "Bearer "+token);
     if(this->array.isEmpty()) return false;
 
     return this->parseArray();
@@ -93,17 +103,15 @@ bool spotify::setUpService(const ONTOLOGY &ontology, const Pulpo::INFO &info)
 bool spotify::parseArray()
 {
     if(this->ontology != Pulpo::ONTOLOGY::NONE)
-    {
         switch(this->ontology)
         {
-        case Pulpo::ONTOLOGY::ALBUM: this->parseAlbum(); break;
-        case Pulpo::ONTOLOGY::ARTIST: this->parseArtist(); break;
-        case Pulpo::ONTOLOGY::TRACK: this->parseTrack(); break;
+        case Pulpo::ONTOLOGY::ALBUM: return this->parseAlbum();
+            //        case Pulpo::ONTOLOGY::ARTIST: return this->parseArtist();
+        case Pulpo::ONTOLOGY::TRACK:return this->parseTrack();
         default: return false;
         }
-    }
 
-    return true;
+    return false;
 }
 
 bool spotify::parseArtist()
@@ -117,43 +125,29 @@ bool spotify::parseAlbum()
     QJsonDocument jsonResponse = QJsonDocument::fromJson(static_cast<QString>(array).toUtf8(), &jsonParseError);
 
     if (jsonParseError.error != QJsonParseError::NoError)
-    {
-        qDebug() << "Error happened:" << jsonParseError.errorString();
         return false;
 
-    }else
+    if (!jsonResponse.isObject()) return false;
+
+    QJsonObject mainJsonObject(jsonResponse.object());
+    auto data = mainJsonObject.toVariantMap();
+    auto itemMap = data.value("albums").toMap().value("items");
+
+    if(itemMap.isNull()) return false;
+    QList<QVariant> items = itemMap.toList();
+
+    if(items.isEmpty())  return false;
+
+    if(this->info == INFO::ARTWORK || this->info == INFO::ALL)
     {
-        if (!jsonResponse.isObject())
-        {
-            qDebug() << "The json data is not an object";
-            return false;
-
-        }else
-        {
-            QJsonObject mainJsonObject(jsonResponse.object());
-            auto data = mainJsonObject.toVariantMap();
-            auto itemMap = data.value("albums").toMap().value("items");
-
-            if(!itemMap.isNull())
-            {
-
-                QList<QVariant> items = itemMap.toList();
-
-                if(!items.isEmpty())
-                {
-                    if(this->info == INFO::ARTWORK || this->info == INFO::ALL)
-                    {
-                        auto albumArt =items.first().toMap().value("images").toList().first().toMap().value("url").toString();
-                        emit this->infoReady(this->track,{{INFO::ARTWORK, startConnection(albumArt)}} );
-                        qDebug()<<"parseSpotifyAlbum ["<< albumArt<<"]";
-                        if(this->info == INFO::ARTWORK ) return true;
-                    }
-
-                } else return false;
-
-            }else { qDebug()<<"map is null"; return false; }
-        }
+        auto albumArt =items.first().toMap().value("images").toList().first().toMap().value("url").toString();
+        emit this->infoReady(this->track,{{INFO::ARTWORK, startConnection(albumArt)}} );
+        qDebug()<<"parseSpotifyAlbum ["<< albumArt<<"]";
+        if(this->info == INFO::ARTWORK ) return true;
     }
+
+
+
     return true;
 }
 
@@ -161,7 +155,6 @@ bool spotify::parseTrack()
 {
     QJsonParseError jsonParseError;
     QJsonDocument jsonResponse = QJsonDocument::fromJson(static_cast<QString>(array).toUtf8(), &jsonParseError);
-
 
     if (jsonParseError.error != QJsonParseError::NoError)
     {
