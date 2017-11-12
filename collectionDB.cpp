@@ -243,10 +243,10 @@ void CollectionDB::addTrack(const Bae::DB &track)
                               {Bae::DBColsMap[Bae::DBCols::ADD_DATE],QDateTime::currentDateTime()},
                               {Bae::DBColsMap[Bae::DBCols::LYRICS],""},
                               {Bae::DBColsMap[Bae::DBCols::GENRE],genre},
-                              {Bae::DBColsMap[Bae::DBCols::ART],""}};
+                              {Bae::DBColsMap[Bae::DBCols::ART],""},
+                             {Bae::DBColsMap[Bae::DBCols::WIKI],""}};
 
         this->insert(Bae::DBTablesMap[Bae::DBTables::TRACKS],trackMap);
-
     }
 
     emit trackInserted();
@@ -299,8 +299,18 @@ bool CollectionDB::lyricsTrack(const QString &path, const QString &value)
     return false;
 }
 
-bool CollectionDB::tagsTrack(const QString &path, const QString &value)
+bool CollectionDB::tagsTrack(const Bae::DB &track, const QString &value, const QString &context)
 {
+    auto url = track[Bae::DBCols::URL];
+
+    QVariantMap tagMap {{Bae::DBColsMap[Bae::DBCols::TAG],value},{Bae::DBColsMap[Bae::DBCols::CONTEXT],context}};
+
+    QVariantMap trackTagMap {{Bae::DBColsMap[Bae::DBCols::TAG],value},
+                              {Bae::DBColsMap[Bae::DBCols::URL],url}};
+
+    if(this->insert(Bae::DBTablesMap[Bae::DBTables::TAGS],tagMap) && this->insert(Bae::DBTablesMap[Bae::DBTables::TRACKS_TAGS],trackTagMap))
+        return true;
+
     return false;
 }
 
@@ -317,8 +327,23 @@ bool CollectionDB::playedTrack(const QString &url, const int &increment)
     return false;
 }
 
-bool CollectionDB::wikiArtist(const QString &artist, const QString &value)
+bool CollectionDB::wikiTrack(const Bae::DB &track, const QString &value)
 {
+    auto url = track[Bae::DBCols::URL];
+
+    if(this->update(Bae::DBTablesMap[Bae::DBTables::TRACKS],
+                    Bae::DBColsMap[Bae::DBCols::WIKI],
+                    value,
+                    Bae::DBColsMap[Bae::DBCols::URL],
+                    url)) return true;
+
+    return false;
+}
+
+bool CollectionDB::wikiArtist(const Bae::DB &track, const QString &value)
+{
+    auto artist = track[Bae::DBCols::ARTIST];
+
     if(this->update(Bae::DBTablesMap[Bae::DBTables::ARTISTS],
                     Bae::DBColsMap[Bae::DBCols::WIKI],
                     value,
@@ -327,9 +352,11 @@ bool CollectionDB::wikiArtist(const QString &artist, const QString &value)
     return false;
 }
 
-bool CollectionDB::tagsArtist(const QString &artist, const QString &value)
+bool CollectionDB::tagsArtist(const Bae::DB &track, const QString &value, const QString &context)
 {
-    QVariantMap tagMap {{Bae::DBColsMap[Bae::DBCols::TAG],value}};
+    auto artist = track[Bae::DBCols::ARTIST];
+
+    QVariantMap tagMap {{Bae::DBColsMap[Bae::DBCols::TAG],value},{Bae::DBColsMap[Bae::DBCols::CONTEXT],context}};
 
     QVariantMap artistTagMap {{Bae::DBColsMap[Bae::DBCols::TAG],value},
                               {Bae::DBColsMap[Bae::DBCols::ARTIST],artist}};
@@ -340,8 +367,11 @@ bool CollectionDB::tagsArtist(const QString &artist, const QString &value)
     return false;
 }
 
-bool CollectionDB::wikiAlbum(const QString &album, const QString &artist,  QString value)
+bool CollectionDB::wikiAlbum(const Bae::DB &track,  QString value)
 {
+    auto artist = track[Bae::DBCols::ARTIST];
+    auto album = track[Bae::DBCols::ALBUM];
+
     auto queryStr = QString("UPDATE %1 SET %2 = \"%3\" WHERE %4 = \"%5\" AND %6 = \"%7\"").arg(
                 Bae::DBTablesMap[Bae::DBTables::ALBUMS],
             Bae::DBColsMap[Bae::DBCols::WIKI], value.replace("\"","\"\""),
@@ -358,10 +388,12 @@ bool CollectionDB::wikiAlbum(const QString &album, const QString &artist,  QStri
     return false;
 }
 
-bool CollectionDB::tagsAlbum(const QString &album, const QString &artist, const QString &value)
+bool CollectionDB::tagsAlbum(const Bae::DB &track, const QString &value, const QString &context)
 {
+    auto artist = track[Bae::DBCols::ARTIST];
+    auto album = track[Bae::DBCols::ALBUM];
 
-    QVariantMap tagMap {{Bae::DBColsMap[Bae::DBCols::TAG],value}};
+    QVariantMap tagMap {{Bae::DBColsMap[Bae::DBCols::TAG],value},{Bae::DBColsMap[Bae::DBCols::CONTEXT],context}};
 
     QVariantMap albumsTagMap {{Bae::DBColsMap[Bae::DBCols::TAG],value},
                               {Bae::DBColsMap[Bae::DBCols::ARTIST],artist},

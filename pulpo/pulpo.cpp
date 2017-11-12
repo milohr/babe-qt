@@ -23,21 +23,17 @@
 #include "pulpo/services/geniusService.h"
 
 Pulpo::Pulpo(const Bae::DB &song,QObject *parent)
-    : QObject(parent), track(song)
-{
-    //    this->page = new webEngine(this);
-}
+    : QObject(parent), track(song) {}
 
 Pulpo::Pulpo(QObject *parent): QObject(parent) {}
 
 Pulpo::~Pulpo() {}
 
-void Pulpo::feed(const Bae::DB &song, const bool &recursive)
+void Pulpo::feed(const Bae::DB &song, const RECURSIVE &recursive)
 {
     this->track = song;
     this->recursive = recursive;
     this->initServices();
-
 }
 
 void Pulpo::registerServices(const QList<Pulpo::SERVICES> &services)
@@ -55,7 +51,7 @@ void Pulpo::setOntology(const Pulpo::ONTOLOGY &ontology)
     this->ontology = ontology;
 }
 
-void Pulpo::setRecursive(const bool &state)
+void Pulpo::setRecursive(const RECURSIVE &state)
 {
     this->recursive=state;
 }
@@ -77,7 +73,7 @@ bool Pulpo::initServices()
 
             if(lastfm.setUpService(this->ontology,this->info))
             {
-                if(!recursive) return true;
+                if(recursive== RECURSIVE::OFF) return true;
 
             }else qDebug()<<"error settingUp lastfm service";
 
@@ -90,9 +86,9 @@ bool Pulpo::initServices()
 
             if(spotify.setUpService(this->ontology,this->info))
             {
-                if(!recursive) return true;
+                if(recursive== RECURSIVE::OFF) return true;
 
-            }else qDebug()<<"error settingUp sotify service";
+            }else qDebug()<<"error settingUp spotify service";
 
             break;
         }
@@ -133,12 +129,29 @@ bool Pulpo::initServices()
     return false;
 }
 
-void Pulpo::passSignal(const Bae::DB &track, const Pulpo::RES &response)
+void Pulpo::passSignal(const Bae::DB &track, const Pulpo::RESPONSE &response)
 {
     emit this->infoReady(track, response);
 }
 
+Pulpo::RESPONSE Pulpo::packResponse(const Pulpo::INFO &infoKey, const Pulpo::CONTEXT &context, const QVariant &value)
+{
+    return {{ infoKey, {{ context, value  }} }};
+}
 
+bool Pulpo::parseArray()
+{
+    if(this->ontology != Pulpo::ONTOLOGY::NONE)
+        switch(this->ontology)
+        {
+        case Pulpo::ONTOLOGY::ALBUM: return this->parseAlbum();
+        case Pulpo::ONTOLOGY::ARTIST: return this->parseArtist();
+        case Pulpo::ONTOLOGY::TRACK: return this->parseTrack();
+        default: return false;
+        }
+
+    return false;
+}
 
 
 //bool Pulpo::fetchArtistInfo(const INFO &infoType)

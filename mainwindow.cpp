@@ -345,29 +345,6 @@ void MainWindow::setUpViews()
 //        }
 //    });
 
-    connect(infoTable,&InfoView::albumTagsReady, [this] (const QStringList &tags,const Bae::DB &track)
-    {
-
-
-        if(this->current_song==track)
-        {
-            QStringList query;
-            for (auto tag : tags) query << QString("tag:"+tag).trimmed();
-            auto searchResults = this->searchFor(query);
-            if(!searchResults.isEmpty()) rabbitTable->populateGeneralSuggestion(searchResults);
-        }
-    });
-
-    connect(infoTable,&InfoView::lyricsReady, [this] (const  QString &lyrics,const Bae::DB &track)
-    {
-        this->connection.lyricsTrack(track[Bae::DBCols::URL],lyrics);
-    });
-
-
-    connect(infoTable,&InfoView::artistWikiReady, [this] (const  QString &wiki,const Bae::DB &track)
-    {
-        this->connection.wikiArtist(track[Bae::DBCols::ARTIST],wiki);
-    });
 
     settings_widget->readSettings();
     connect(settings_widget,&settings::toolbarIconSizeChanged, this, &MainWindow::setToolbarIconSize);

@@ -68,9 +68,9 @@ public slots:
     {
         if(go)
         {
-            //this->trackInfo();
             this->albumInfo();
             this->artistInfo();
+            this->trackInfo();
             //t.msleep(this->interval);
         }
 
@@ -80,17 +80,116 @@ public slots:
     void trackInfo()
     {
         if(!go) return;
-        //        select title, artist, album from tracks t where url not in (select url from tracks_tags)
-        //        const auto queryTxt =  QString("SELECT %1, %2, %3 FROM %4 WHERE %5 NOT IN ( SELECT %5 FROM %6 )").arg(Bae::DBColsMap[Bae::DBCols::TITLE],
-        //                Bae::DBColsMap[Bae::DBCols::ARTIST],Bae::DBColsMap[Bae::DBCols::ALBUM],Bae::DBTablesMap[Bae::DBTables::TRACKS],Bae::DBColsMap[Bae::DBCols::URL],
-        //                Bae::DBTablesMap[Bae::DBTables::TRACKS_TAGS]);
-        //        QSqlQuery query (queryTxt);
-        //        for(auto track : connection.getTrackData(query))
-        //        {
+        Pulpo pulpo;
+        connect(&pulpo, &Pulpo::infoReady, [&] (const Bae::DB &track, const Pulpo::RESPONSE &response)
+        {
+            for( auto info : response.keys())
+                switch(info)
+                {
+                case Pulpo::INFO::TAGS:
+                {
+                    if(!response[info].isEmpty())
+                    {
+                        for (auto context :response[info].keys())
+                            switch(context)
+                            {
+                            case Pulpo::CONTEXT::STAT:
+                            {
+                                if (!response[info][context].toStringList().isEmpty())
+                                    for( auto stat : response[info][context].toStringList() )
+                                        this->connection.tagsTrack(track,stat,pulpo.CONTEXT_MAP[context]);
 
-        //        }
-        qDebug()<<"GETTING BRAINZ INFO";
+                                if (!response[info][context].toString().isEmpty())
+                                    this->connection.tagsTrack(track,response[info][context].toString(),pulpo.CONTEXT_MAP[context]);
+                                break;
+                            }
+                            case Pulpo::CONTEXT::TAG:
+                            {
+                                if (!response[info][context].toStringList().isEmpty())
+                                    for(auto tag : response[info][context].toStringList())
+                                        this->connection.tagsTrack(track,tag,pulpo.CONTEXT_MAP[context]);
 
+                                if (!response[info][context].toString().isEmpty())
+                                    this->connection.tagsTrack(track,response[info][context].toString(),pulpo.CONTEXT_MAP[context]);
+
+                                break;
+                            }
+                            default: continue;
+                            }
+                    }
+
+                    break;
+                }
+                case Pulpo::INFO::WIKI:
+                {
+                    if(!response[info].isEmpty())
+                        if (!response[info][Pulpo::CONTEXT::WIKI].toString().isEmpty())
+                            this->connection.wikiTrack(track,response[info][Pulpo::CONTEXT::WIKI].toString());
+                    break;
+                }
+
+                case Pulpo::INFO::ARTWORK:
+                {
+                    qDebug()<<"GETTING ARTWORK FROM TRACK TITLE";
+                    connect(&connection, &CollectionDB::artworkInserted,[this](const Bae::DB &albumMap)
+                    {
+                        emit this->artworkReady(albumMap);
+                    });
+
+                    connect(&pulpo, &Pulpo::artSaved, &connection, &CollectionDB::insertArtwork);
+
+                    if(!response[info][Pulpo::CONTEXT::IMAGE].toByteArray().isEmpty())
+                        pulpo.saveArt(response[info][Pulpo::CONTEXT::IMAGE].toByteArray(),Bae::CachePath);
+
+                    break;
+                }
+
+                default: continue;
+                }
+        });
+
+        pulpo.setOntology(Pulpo::ONTOLOGY::TRACK);
+        pulpo.registerServices({Pulpo::SERVICES::LastFm,Pulpo::SERVICES::Spotify});
+
+        //select url, title, album, artist from tracks t inner join albums a on a.album=t.album and a.artist=t.artist where a.artwork = ''
+        auto queryTxt =  QString("SELECT %1, %2, %3, %4 FROM %5 t INNER JOIN %6 a ON a.%3=t.%3 AND a.%4=t.%4  WHERE a.%5 = '' LIMIT 1").arg(Bae::DBColsMap[Bae::DBCols::URL],Bae::DBColsMap[Bae::DBCols::TITLE],
+                Bae::DBColsMap[Bae::DBCols::ARTIST],Bae::DBColsMap[Bae::DBCols::ALBUM],Bae::DBTablesMap[Bae::DBTables::TRACKS],Bae::DBTablesMap[Bae::DBTables::ALBUMS],
+                Bae::DBColsMap[Bae::DBCols::ARTWORK]);
+        QSqlQuery query (queryTxt);
+
+        pulpo.setInfo(Pulpo::INFO::ARTWORK);
+        for(auto track : connection.getTrackData(query))
+        {
+            pulpo.feed(track,Pulpo::RECURSIVE::OFF);
+            if(!go) return;
+        }
+
+        // select title, artist, album from tracks t where url not in (select url from tracks_tags)
+        queryTxt =  QString("SELECT %1, %2, %3, %5 FROM %4 WHERE %5 NOT IN ( SELECT %5 FROM %6 )").arg(Bae::DBColsMap[Bae::DBCols::TITLE],
+                Bae::DBColsMap[Bae::DBCols::ARTIST],Bae::DBColsMap[Bae::DBCols::ALBUM],Bae::DBTablesMap[Bae::DBTables::TRACKS],Bae::DBColsMap[Bae::DBCols::URL],
+                Bae::DBTablesMap[Bae::DBTables::TRACKS_TAGS]);
+        query.prepare(queryTxt);
+
+        pulpo.setInfo(Pulpo::INFO::TAGS);
+        for(auto track : connection.getTrackData(query))
+        {
+            pulpo.feed(track,Pulpo::RECURSIVE::ON);
+            if(!go) return;
+        }
+
+
+        qDebug()<<"getting missing TRACK wikis";
+        queryTxt =  QString("SELECT %1, %2, %3, %4 FROM %5 WHERE %6 = '' OR %6 IS NULL").arg(Bae::DBColsMap[Bae::DBCols::URL],Bae::DBColsMap[Bae::DBCols::TITLE],
+                Bae::DBColsMap[Bae::DBCols::ARTIST],Bae::DBColsMap[Bae::DBCols::ALBUM],Bae::DBTablesMap[Bae::DBTables::TRACKS],Bae::DBColsMap[Bae::DBCols::WIKI]);
+        query.prepare(queryTxt);
+        pulpo.setInfo(Pulpo::INFO::WIKI);
+        for(auto track : connection.getTrackData(query))
+        {
+            qDebug()<<"getting missing TRACK wikis";
+
+            pulpo.feed(track, Pulpo::RECURSIVE::OFF);
+            if(!go) return;
+        }
     }
 
     void albumInfo()
@@ -99,15 +198,27 @@ public slots:
 
         /*setup pulpo in place*/
         Pulpo pulpo;
-        connect(&pulpo, &Pulpo::infoReady, [&] (const Bae::DB &track, const Pulpo::RES &response)
+        connect(&pulpo, &Pulpo::infoReady, [&] (const Bae::DB &track, const Pulpo::RESPONSE &response)
         {
             for( auto info : response.keys())
                 switch(info)
                 {
                 case Pulpo::INFO::TAGS:
                 {
-                    for(auto tag :  response[Pulpo::INFO::TAGS].toStringList())
-                        this->connection.tagsAlbum(track[Bae::DBCols::ALBUM],track[Bae::DBCols::ARTIST],tag);
+                    for (auto context : response[info].keys())
+
+                        if(!response[info][context].toMap().isEmpty())
+                            for( auto tag :  response[info][context].toMap().keys() )
+                                this->connection.tagsAlbum(track,tag, pulpo.CONTEXT_MAP[context]);
+
+                        else if (!response[info][context].toStringList().isEmpty())
+                            for( auto tag :  response[info][context].toStringList() )
+                                this->connection.tagsAlbum(track,tag,pulpo.CONTEXT_MAP[context]);
+
+                        else if (!response[info][context].toString().isEmpty())
+                            this->connection.tagsAlbum(track,response[info][context].toString(),pulpo.CONTEXT_MAP[context]);
+
+
                     break;
                 }
                 case Pulpo::INFO::ARTWORK:
@@ -118,13 +229,17 @@ public slots:
                     });
                     connect(&pulpo, &Pulpo::artSaved, &connection, &CollectionDB::insertArtwork);
 
-                    pulpo.saveArt(response[Pulpo::INFO::ARTWORK].toByteArray(),Bae::CachePath);
+                    if(!response[info].isEmpty())
+                        for (auto context : response[info].keys())
+                            pulpo.saveArt(response[info][context].toByteArray(),Bae::CachePath);
 
                     break;
                 }
                 case Pulpo::INFO::WIKI:
                 {
-                    this->connection.wikiAlbum(track[Bae::DBCols::ALBUM],track[Bae::DBCols::ARTIST],response[Pulpo::INFO::WIKI].toString());
+                    if(!response[info].isEmpty())
+                        for (auto context : response[info].keys())
+                            this->connection.wikiAlbum(track,response[info][context].toString());
                     break;
                 }
                 default: continue;
@@ -137,26 +252,25 @@ public slots:
         /* get all albums missing information */
         //select album, artist from albums where  album  not in (select album from albums_tags) and artist  not in (select  artist from albums_tags)
 
-        qDebug()<<"getting missing tags";
-        auto queryTxt =  QString("SELECT %1, %2 FROM %3 WHERE %1 NOT IN ( SELECT %1 FROM %4 ) AND %2 NOT IN ( SELECT %2 FROM %4 )").arg(Bae::DBColsMap[Bae::DBCols::ALBUM],
-                Bae::DBColsMap[Bae::DBCols::ARTIST],Bae::DBTablesMap[Bae::DBTables::ALBUMS],Bae::DBTablesMap[Bae::DBTables::ALBUMS_TAGS]);
-        QSqlQuery query (queryTxt);
-        pulpo.setInfo(Pulpo::INFO::TAGS);
-        for(auto track : connection.getTrackData(query))
-        {
-            pulpo.feed(track);
-            if(!go) return;
-        }
-
         qDebug()<<"getting missing artworks";
-        queryTxt = QString("SELECT %1, %2 FROM %3 WHERE %4 = ''").arg(Bae::DBColsMap[Bae::DBCols::ALBUM],
+        auto queryTxt = QString("SELECT %1, %2 FROM %3 WHERE %4 = ''").arg(Bae::DBColsMap[Bae::DBCols::ALBUM],
                 Bae::DBColsMap[Bae::DBCols::ARTIST],Bae::DBTablesMap[Bae::DBTables::ALBUMS],Bae::DBColsMap[Bae::DBCols::ARTWORK]);
-
-        query.prepare(queryTxt);
+        QSqlQuery query (queryTxt);
         pulpo.setInfo(Pulpo::INFO::ARTWORK);
         for(auto track : connection.getTrackData(query))
         {
-            pulpo.feed(track, false);
+            pulpo.feed(track, Pulpo::RECURSIVE::OFF);
+            if(!go) return;
+        }
+
+        qDebug()<<"getting missing tags";
+        queryTxt =  QString("SELECT %1, %2 FROM %3 WHERE %1 NOT IN ( SELECT %1 FROM %4 ) AND %2 NOT IN ( SELECT %2 FROM %4 )").arg(Bae::DBColsMap[Bae::DBCols::ALBUM],
+                Bae::DBColsMap[Bae::DBCols::ARTIST],Bae::DBTablesMap[Bae::DBTables::ALBUMS],Bae::DBTablesMap[Bae::DBTables::ALBUMS_TAGS]);
+        query.prepare(queryTxt);
+        pulpo.setInfo(Pulpo::INFO::TAGS);
+        for(auto track : connection.getTrackData(query))
+        {
+            pulpo.feed(track,Pulpo::RECURSIVE::ON);
             if(!go) return;
         }
 
@@ -167,7 +281,7 @@ public slots:
         pulpo.setInfo(Pulpo::INFO::WIKI);
         for(auto track : connection.getTrackData(query))
         {
-            pulpo.feed(track);
+            pulpo.feed(track, Pulpo::RECURSIVE::ON);
             if(!go) return;
         }
     }
@@ -178,15 +292,30 @@ public slots:
 
         /*setup pulpo in place*/
         Pulpo pulpo;
-        connect(&pulpo, &Pulpo::infoReady, [&] (const Bae::DB &track, const Pulpo::RES &response)
+        connect(&pulpo, &Pulpo::infoReady, [&] (const Bae::DB &track, const Pulpo::RESPONSE &response)
         {
             for( auto info : response.keys())
                 switch(info)
                 {
                 case Pulpo::INFO::TAGS:
                 {
-                    for(auto tag :  response[Pulpo::INFO::TAGS].toStringList())
-                        this->connection.tagsArtist(track[Bae::DBCols::ARTIST],tag);
+                    if(!response[info].isEmpty())
+                    {
+
+                        for (auto context : response[info].keys())
+
+                            if(!response[info][context].toMap().isEmpty())
+                                for( auto tag :  response[info][context].toMap().keys() )
+                                    this->connection.tagsArtist(track,tag, pulpo.CONTEXT_MAP[context]);
+
+                            else if (!response[info][context].toStringList().isEmpty())
+                                for( auto tag :  response[info][context].toStringList() )
+                                    this->connection.tagsArtist(track,tag,pulpo.CONTEXT_MAP[context]);
+
+                            else if (!response[info][context].toString().isEmpty())
+                                this->connection.tagsArtist(track,response[info][context].toString(),pulpo.CONTEXT_MAP[context]);
+                    }
+
                     break;
                 }
                 case Pulpo::INFO::ARTWORK:
@@ -196,21 +325,22 @@ public slots:
                         emit this->artworkReady(albumMap);
                     });
                     connect(&pulpo, &Pulpo::artSaved, &connection, &CollectionDB::insertArtwork);
-                    pulpo.saveArt(response[Pulpo::INFO::ARTWORK].toByteArray(),Bae::CachePath);
+
+                    if(!response[info].isEmpty())
+                        for (auto context : response[info].keys())
+                            pulpo.saveArt(response[info][context].toByteArray(),Bae::CachePath);
+
 
                     break;
                 }
                 case Pulpo::INFO::WIKI:
                 {
-                    this->connection.wikiArtist(track[Bae::DBCols::ARTIST],response[Pulpo::INFO::WIKI].toString());
+                    if(!response[info].isEmpty())
+                        for (auto context : response[info].keys())
+                            this->connection.wikiArtist(track,response[info][context].toString());
                     break;
                 }
-                case Pulpo::INFO::SIMILAR:
-                {
-                    for (auto tag : response[Pulpo::INFO::SIMILAR].toMap().keys())
-                        this->connection.tagsArtist(track[Bae::DBCols::ARTIST],tag);
-                    break;
-                }
+
                 default: continue;
                 }
         });
@@ -219,27 +349,29 @@ public slots:
         pulpo.registerServices({Pulpo::SERVICES::LastFm,Pulpo::SERVICES::Spotify});
 
         /* get all albums missing information */
-        //select artist from artists where  artist  not in (select album from albums_tags)
-        qDebug()<<"getting missing tags";
-        auto queryTxt =  QString("SELECT %1 FROM %2 WHERE %1 NOT IN ( SELECT %1 FROM %3 ) ").arg(Bae::DBColsMap[Bae::DBCols::ARTIST],
-                Bae::DBTablesMap[Bae::DBTables::ARTISTS],Bae::DBTablesMap[Bae::DBTables::ARTISTS_TAGS]);
-        QSqlQuery query (queryTxt);
-        pulpo.setInfo(Pulpo::INFO::TAGS);
-        for(auto track : connection.getTrackData(query))
-        {
-            pulpo.feed(track);
-            if(!go) return;
-        }
+
 
         qDebug()<<"getting missing artworks";
-        queryTxt = QString("SELECT %1 FROM %2 WHERE %3 = ''").arg(Bae::DBColsMap[Bae::DBCols::ARTIST],
+        auto queryTxt = QString("SELECT %1 FROM %2 WHERE %3 = ''").arg(Bae::DBColsMap[Bae::DBCols::ARTIST],
                 Bae::DBTablesMap[Bae::DBTables::ARTISTS],Bae::DBColsMap[Bae::DBCols::ARTWORK]);
-
-        query.prepare(queryTxt);
+        QSqlQuery query (queryTxt);
         pulpo.setInfo(Pulpo::INFO::ARTWORK);
         for(auto track : connection.getTrackData(query))
         {
-            pulpo.feed(track,false);
+            pulpo.feed(track,Pulpo::RECURSIVE::OFF);
+            if(!go) return;
+        }
+
+
+        //select artist from artists where  artist  not in (select album from albums_tags)
+        qDebug()<<"getting missing tags";
+        queryTxt =  QString("SELECT %1 FROM %2 WHERE %1 NOT IN ( SELECT %1 FROM %3 ) ").arg(Bae::DBColsMap[Bae::DBCols::ARTIST],
+                Bae::DBTablesMap[Bae::DBTables::ARTISTS],Bae::DBTablesMap[Bae::DBTables::ARTISTS_TAGS]);
+        query.prepare(queryTxt);
+        pulpo.setInfo(Pulpo::INFO::TAGS);
+        for(auto track : connection.getTrackData(query))
+        {
+            pulpo.feed(track, Pulpo::RECURSIVE::ON);
             if(!go) return;
         }
 
@@ -250,83 +382,9 @@ public slots:
         pulpo.setInfo(Pulpo::INFO::WIKI);
         for(auto track : connection.getTrackData(query))
         {
-            pulpo.feed(track);
+            pulpo.feed(track, Pulpo::RECURSIVE::ON);
             if(!go) return;
         }
-    }
-
-    void fetchArtwork()
-    {
-        //        int amountArtists=0;
-        //        int amountAlbums=0;
-
-
-        //        QString queryTxt;
-        //        QSqlQuery query_Covers;
-        //        QSqlQuery query_Heads;
-
-        //        connect(&connection, &CollectionDB::artworkInserted,[this](Bae::DB albumMap)
-        //        {
-        //            emit this->artworkReady(albumMap);
-        //        });
-
-        //        queryTxt = QString("SELECT %1, %2 FROM %3 WHERE %4 = ''").arg(Bae::DBColsMap[Bae::DBCols::ALBUM],
-        //                Bae::DBColsMap[Bae::DBCols::ARTIST],Bae::DBTablesMap[Bae::DBTables::ALBUMS],Bae::DBColsMap[Bae::DBCols::ARTWORK]);
-        //        query_Covers.prepare(queryTxt);
-
-        //        queryTxt = QString("SELECT %1 FROM %2 WHERE %3 = ''").arg(Bae::DBColsMap[Bae::DBCols::ARTIST],
-        //                Bae::DBTablesMap[Bae::DBTables::ARTISTS],Bae::DBColsMap[Bae::DBCols::ARTWORK]);
-        //        query_Heads.prepare(queryTxt);
-
-        //        if(query_Covers.exec())
-        //            while (query_Covers.next())
-        //            {
-        //                if(go)
-        //                {
-        //                    QString album = query_Covers.value(Bae::DBColsMap[Bae::DBCols::ALBUM]).toString();
-        //                    QString artist = query_Covers.value(Bae::DBColsMap[Bae::DBCols::ARTIST]).toString();
-        //                    QString title;
-        //                    QSqlQuery query_Title =
-        //                            connection.getQuery("SELECT title FROM tracks WHERE artist = \""+artist+"\" AND album = \""+album+"\" LIMIT 1");
-        //                    if(query_Title.next()) title=query_Title.value(Bae::DBColsMap[Bae::DBCols::TITLE]).toString();
-
-        //                    //                connection.insertArtwork({{Bae::DBCols::ARTWORK,""},{Bae::DBCols::ALBUM,album},{Bae::DBCols::ARTIST,artist}});
-
-        //                    Pulpo art({{Bae::DBCols::TITLE,title},{Bae::DBCols::ARTIST,artist},{Bae::DBCols::ALBUM,album}});
-
-        //                    connect(&art, &Pulpo::albumArtReady,[&] (QByteArray array){ art.saveArt(array,Bae::CachePath); });
-        //                    connect(&art, &Pulpo::artSaved, &connection, &CollectionDB::insertArtwork);
-
-        //                    if (art.fetchAlbumInfo(Pulpo::AlbumArt,Pulpo::LastFm)) qDebug()<<"using lastfm";
-        //                    else if(art.fetchAlbumInfo(Pulpo::AlbumArt,Pulpo::Spotify)) qDebug()<<"using spotify";
-        //                    else if(art.fetchAlbumInfo(Pulpo::AlbumArt,Pulpo::GeniusInfo)) qDebug()<<"using genius";
-        //                    else art.albumArtReady(QByteArray());
-        //                    amountAlbums++;
-        //                }
-        //            }
-        //        else qDebug()<<"fetchArt queryCover failed";
-
-
-        //        if(query_Heads.exec())
-        //            while (query_Heads.next())
-        //            {
-        //                if(go)
-        //                {
-        //                    QString artist = query_Heads.value(Bae::DBColsMap[Bae::DBCols::ARTIST]).toString();
-        //                    Pulpo art({{Bae::DBCols::ARTIST,artist}});
-
-        //                    connect(&art, &Pulpo::artistArtReady,[&] (QByteArray array){ art.saveArt(array,Bae::CachePath); });
-        //                    connect(&art, &Pulpo::artSaved, &connection, &CollectionDB::insertArtwork);
-
-        //                    art.fetchArtistInfo(Pulpo::ArtistArt,Pulpo::LastFm);
-
-        //                    amountArtists++;
-        //                }
-        //            }
-        //        else qDebug()<<"fetchArt queryHeads failed";
-
-
-
     }
 
 

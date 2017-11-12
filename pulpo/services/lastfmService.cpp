@@ -1,18 +1,18 @@
 #include "lastfmService.h"
 
 lastfm::lastfm(const Bae::DB &song)
-{
-    this->track = song;
+{    
     this->availableInfo.insert(ONTOLOGY::ALBUM, {INFO::ARTWORK, INFO::WIKI, INFO::TAGS});
-    this->availableInfo.insert(ONTOLOGY::ARTIST, {INFO::ARTWORK, INFO::WIKI, INFO::TAGS, INFO::SIMILAR});
-    this->availableInfo.insert(ONTOLOGY::TRACK, {});
+    this->availableInfo.insert(ONTOLOGY::ARTIST, {INFO::ARTWORK, INFO::WIKI, INFO::TAGS});
+    this->availableInfo.insert(ONTOLOGY::TRACK, {INFO::TAGS, INFO::WIKI});
 
+    this->track = song;
 }
 
 bool lastfm::setUpService(const Pulpo::ONTOLOGY &ontology, const Pulpo::INFO &info)
 {
     this->ontology = ontology;
-    this->info= info;
+    this->info = info;
 
     if(!this->availableInfo[this->ontology].contains(this->info))
         return false;
@@ -53,8 +53,11 @@ bool lastfm::setUpService(const Pulpo::ONTOLOGY &ontology, const Pulpo::INFO &in
         url.append(KEY);
         url.append("&artist=" + encodedArtist.toString());
         url.append("&track=" + encodedTrack.toString());
+        url.append("&format=json");
+
         break;
     }
+
     default: return false;
     }
 
@@ -66,34 +69,25 @@ bool lastfm::setUpService(const Pulpo::ONTOLOGY &ontology, const Pulpo::INFO &in
     return this->parseArray();
 }
 
-bool lastfm::parseArray()
-{
-    if(this->ontology != Pulpo::ONTOLOGY::NONE)
-        switch(this->ontology)
-        {
-        case Pulpo::ONTOLOGY::ALBUM: return this->parseAlbum();
-        case Pulpo::ONTOLOGY::ARTIST: return this->parseArtist();
-        case Pulpo::ONTOLOGY::TRACK: return this->parseTrack();
-        default: return false;
-        }
-
-    return false;
-}
 
 bool lastfm::parseArtist()
 {
+
     QString xmlData(array);
     QDomDocument doc;
 
     if (!doc.setContent(xmlData)) return false;
 
 
+
     QStringList artistTags;
     QByteArray artistSimilarArt;
-    QMap<QString,QVariant> artistSimilar;
+    QStringList artistSimilar;
+    QStringList artistStats;
 
     if (doc.documentElement().toElement().attributes().namedItem("status").nodeValue()!="ok")
         return false;
+
 
     const QDomNodeList nodeList = doc.documentElement().namedItem("artist").childNodes();
 
@@ -113,8 +107,8 @@ bool lastfm::parseArtist()
                     if (imgSize == "extralarge" && n.isElement())
                     {
                         auto artistArt_url = n.toElement().text();
-                        qDebug()<<"Fetching ArtistArt LastFm["<<artistArt_url<<"]";
-                        emit this->infoReady(this->track,{{INFO::ARTWORK, startConnection(artistArt_url)}});
+
+                        emit this->infoReady(this->track,this->packResponse(INFO::ARTWORK,CONTEXT::IMAGE,startConnection(artistArt_url)));
 
                         if(this->info == INFO::ARTWORK) return true;
                         else continue;
@@ -131,7 +125,7 @@ bool lastfm::parseArtist()
                     auto artistWiki = n.childNodes().item(2).toElement().text();
                     //qDebug()<<"Fetching ArtistWiki LastFm[]";
 
-                    emit this->infoReady(this->track, {{INFO::WIKI,artistWiki}});
+                    emit this->infoReady(this->track, this->packResponse(INFO::WIKI,CONTEXT::WIKI,artistWiki));
 
                     if(this->info == INFO::WIKI) return true;
                     else continue;
@@ -140,49 +134,23 @@ bool lastfm::parseArtist()
 
 
             //Here retrieve the artist similar artists
-            if(this->info == INFO::SIMILAR || this->info == INFO::ALL)
+            if(this->info == INFO::TAGS || this->info == INFO::ALL)
             {
                 if(n.nodeName() == "similar")
                 {
                     auto similarList = n.toElement().childNodes();
-                    //qDebug()<<"Fetching ArtistSimilar LastFm[]";
 
                     for(int i=0; i<similarList.count(); i++)
                     {
                         QDomNode m = similarList.item(i);
 
                         auto artistSimilarName = m.childNodes().item(0).toElement().text();
-                        auto artist = m.toElement().childNodes();
-
-                        for(int j=0; j<artist.count(); j++)
-                        {
-                            QDomNode k = artist.item(j);
-
-                            if(k.nodeName() == "image" && k.hasAttributes())
-                            {
-                                QString imgSize = k.attributes().namedItem("size").nodeValue();
-
-                                if (imgSize == "extralarge")
-                                    if (k.isElement())
-                                    {
-                                        auto artistSimilarArt_url = k.toElement().text();
-                                        artistSimilarArt = startConnection(artistSimilarArt_url);
-                                    }
-                            }
-                        }
-                        artistSimilar.insert(artistSimilarName,artistSimilarArt);
+                        artistSimilar<<artistSimilarName;
                     }
 
-                    emit this->infoReady(this->track,{{INFO::SIMILAR, artistSimilar}});
+                    emit this->infoReady(this->track,this->packResponse(INFO::TAGS,CONTEXT::ARTIST_SIMILAR,artistSimilar));
 
-                    if(this->info == INFO::SIMILAR) return true;
-                    else continue;
-                }else if(this->info == INFO::SIMILAR) continue;
-            }
-
-            if(this->info == INFO::TAGS || this->info == INFO::ALL)
-            {
-                if(n.nodeName() == "tags")
+                }else if(n.nodeName() == "tags")
                 {
                     auto tagsList = n.toElement().childNodes();
                     //qDebug()<<"Fetching ArtistTags LastFm[]";
@@ -193,14 +161,51 @@ bool lastfm::parseArtist()
                         artistTags<<m.childNodes().item(0).toElement().text();
                     }
 
-                    emit this->infoReady(this->track,{{INFO::TAGS, artistTags}});
-                    if(this->info == INFO::TAGS) return true;
-                }else if(this->info == INFO::TAGS) continue;
+                    emit this->infoReady(this->track,this->packResponse(INFO::TAGS,CONTEXT::TAG,artistTags));
 
+
+                }else if(n.nodeName() == "stats")
+                {
+                    QVariant stat;
+                    auto stats = n.toElement().childNodes();
+                    //qDebug()<<"Fetching ArtistTags LastFm[]";
+
+                    for(int i=0; i<stats.count(); i++)
+                    {
+                        QDomNode m = stats.item(i);
+                        artistStats<<m.toElement().text();
+                    }
+
+                    emit this->infoReady(this->track,this->packResponse(INFO::TAGS, CONTEXT::STAT,artistStats));
+
+                }else if(this->info == INFO::TAGS) continue;
             }
+
         }
     }
 
+
+    /*********NOW WE WANT TO PARSE SIMILAR ARTISTS***********/
+    if(this->info == INFO::TAGS || this->info == INFO::ALL)
+    {
+        auto url = this->API;
+        QUrl encodedTrack(this->track[Bae::DBCols::TITLE]);
+        encodedTrack.toEncoded(QUrl::FullyEncoded);
+        QUrl encodedArtist(this->track[Bae::DBCols::ARTIST]);
+        encodedArtist.toEncoded(QUrl::FullyEncoded);
+        url.append("?method=artist.getSimilar");
+        url.append(KEY);
+        url.append("&artist=" + encodedArtist.toString());
+        url.append("&format=json");
+
+
+        qDebug()<< "[lastfm service]: "<< url;
+
+        this->array = this->startConnection(url);
+
+        if(!this->array.isEmpty())
+            this->parseSimilar();
+    }
 
     return true;
 }
@@ -234,7 +239,8 @@ bool lastfm::parseAlbum()
                     if (imgSize == "extralarge" && n.isElement())
                     {
                         auto albumArt_url = n.toElement().text();
-                        emit this->infoReady(this->track,{{INFO::ARTWORK,startConnection(albumArt_url)}});
+
+                        emit this->infoReady(this->track,this->packResponse(INFO::ARTWORK,CONTEXT::IMAGE,startConnection(albumArt_url)));
 
                         if(this->info == INFO::ARTWORK) return true;
                         else continue;
@@ -251,7 +257,7 @@ bool lastfm::parseAlbum()
                     auto albumWiki = n.childNodes().item(1).toElement().text();
                     //qDebug()<<"Fetching AlbumWiki LastFm[]";
 
-                    emit this->infoReady(this->track,{{INFO::WIKI, albumWiki}});
+                    emit this->infoReady(this->track,this->packResponse(INFO::WIKI,CONTEXT::WIKI,albumWiki));
 
                     if(this->info == INFO::WIKI) return true;
                     else continue;
@@ -272,7 +278,8 @@ bool lastfm::parseAlbum()
                         QDomNode m = tagsList.item(i);
                         albumTags<<m.childNodes().item(0).toElement().text();
                     }
-                    emit this->infoReady(this->track,{{INFO::TAGS, albumTags}});
+                    emit this->infoReady(this->track, this->packResponse(INFO::TAGS,CONTEXT::TAG,albumTags));
+
                     if(this->info == INFO::TAGS) return true;
                     else continue;
 
@@ -286,179 +293,109 @@ bool lastfm::parseAlbum()
 
 bool lastfm::parseTrack()
 {
-    //qDebug()<< "parseLastFmTrack";
-    QString xmlData(array);
-    QDomDocument doc;
+    QJsonParseError jsonParseError;
+    QJsonDocument jsonResponse = QJsonDocument::fromJson(static_cast<QString>(this->array).toUtf8(), &jsonParseError);
 
-    if (!doc.setContent(xmlData))
-    {
-        //qDebug() << "The XML obtained from last.fm is invalid.";
+    if (jsonParseError.error != QJsonParseError::NoError)
         return false;
 
-    }else
+    if (!jsonResponse.isObject())
+        return false;
+
+    QJsonObject mainJsonObject(jsonResponse.object());
+    auto data = mainJsonObject.toVariantMap();
+    auto itemMap = data.value("track").toMap();
+
+    if(itemMap.isEmpty()) return false;
+
+    if(this->info == INFO::TAGS || this->info == INFO::ALL)
     {
-        if (doc.documentElement().toElement().attributes().namedItem("status").nodeValue()!="ok")
-            return false;
 
-        const QDomNodeList nodeList = doc.documentElement().namedItem("track").childNodes();
+        auto listeners = itemMap.value("listeners").toString();
+        auto playcount = itemMap.value("playcount").toString();
+        QStringList stats = {listeners,playcount};
 
-        for (int i = 0; i < nodeList.count(); i++)
-        {
-            QDomNode n = nodeList.item(i);
+        emit this->infoReady(this->track, this->packResponse(INFO::TAGS, CONTEXT::STAT,stats));
 
-            if (n.isElement())
-            {
+        auto albumTitle = itemMap.value("album").toMap().value("title").toString();
+        emit this->infoReady(this->track, this->packResponse(INFO::TAGS, CONTEXT::ALBUM_TITLE,albumTitle));
 
-                if(this->info == INFO::TRACK || this->info == INFO::ALL)
-                {
-                    if(n.nodeName() == "album" && n.hasAttributes())
-                    {
-                        //qDebug()<<"Fetching TrackPosition LastFm[]";
+        auto trackNumber = itemMap.value("album").toMap().value("@attr").toMap().value("position").toString();
+        emit this->infoReady(this->track, this->packResponse(INFO::TAGS, CONTEXT::TRACK_NUMBER,trackNumber));
 
-                        int position = n.attributes().namedItem("position").toElement().text().toInt();
-                        emit this->infoReady(this->track, {{INFO::TRACK, position}});
-                        if(this->info == INFO::TRACK) return true;
+        QStringList tags;
+        for(auto tag : itemMap.value("toptags").toMap().value("tag").toList())
+            tags<<tag.toMap().value("name").toString();
 
-                    }else if(this->info == INFO::TRACK) continue;
+        emit this->infoReady(this->track, this->packResponse(INFO::TAGS, CONTEXT::TAG,tags));
 
-                }
-
-                if(this->info == INFO::ALBUM || this->info == INFO::ALL)
-                {
-                    ////qDebug()<<"lastfm[AlbumArt]";
-                    if(n.nodeName() == "album")
-                    {
-                        //qDebug()<<"Fetching TrackAlbum LastFm[]";
-
-                        auto trackAlbum = n.namedItem("title").toElement().text();
-
-                        emit this->infoReady(this->track,{{INFO::ALBUM, trackAlbum}});
-                        if(this->info == INFO::ALBUM) return true;
-                        else continue;
-
-                    }else if(this->info == INFO::ALBUM) continue;
-                }
-
-                if(this->info == INFO::WIKI || this->info == INFO::ALL)
-                {
-
-                    if (n.nodeName() == "wiki")
-                    {
-                        //qDebug()<<"Fetching TrackWiki LastFm[]";
-
-                        auto trackWiki = n.namedItem("summary").toElement().text();
-                        //qDebug()<<trackWiki;
-                        emit this->infoReady(this->track, {{INFO::WIKI, trackWiki}});
-                        if(this->info == INFO::WIKI) return true;
-                        else continue;
-
-                    }else if(this->info == INFO::WIKI) continue;
-
-                }
-
-                if(this->info == INFO::TAGS || this->info == INFO::ALL)
-                {
-                    if (n.nodeName() == "toptags")
-                    {
-
-                        //qDebug()<<"Fetching TrackTags LastFm[]";
-                        auto tagsList = n.toElement().childNodes();
-                        QStringList trackTags;
-                        for(int i=0; i<tagsList.count(); i++)
-                            trackTags<<tagsList.item(i).namedItem("name").toElement().text();
-
-                        emit this->infoReady(this->track, {{INFO::TAGS, trackTags}});
-                        if(this->info == INFO::TAGS) return true;
-                        else continue;
-                    }else if(this->info == INFO::TAGS) continue;
-                }
-
-            }
-        }
+        if(this->info == INFO::TAGS ) return true;
     }
 
-    return true;
+    if(this->info == INFO::WIKI || this->info == INFO::ALL)
+    {
+        auto wiki = itemMap.value("wiki").toMap().value("content").toString();
+        emit this->infoReady(this->track, this->packResponse(INFO::WIKI, CONTEXT::WIKI,wiki));
+        if(!wiki.isEmpty() && this->info == INFO::WIKI) return true;
+    }
+
+    if(this->info == INFO::ARTWORK || this->info == INFO::ALL)
+    {
+        auto images = itemMap.value("album").toMap().value("image").toList();
+
+        for(auto image : images)
+            if(image.toMap().value("size").toString()=="extralarge")
+            {
+                auto artwork = image.toMap().value("#text").toString();
+                emit this->infoReady(this->track, this->packResponse(INFO::ARTWORK, CONTEXT::IMAGE,this->startConnection(artwork)));
+                if(this->info == INFO::ARTWORK) return true;
+            }
+
+        if(this->info == INFO::ARTWORK) return false;
+    }
+
+    return false;
 }
 
-//QVariant lastfm::getTrackInfo(const QByteArray &array, const INFO &this->info)
-//{
-//    QString xmlData(array);
-//    QDomDocument doc;
+bool lastfm::parseSimilar()
+{
 
-//    if (!doc.setContent(xmlData))
-//    {
-//        //qDebug() << "The XML obtained from last.fm is invalid.";
-//        return QVariant();
+    QJsonParseError jsonParseError;
+    QJsonDocument jsonResponse = QJsonDocument::fromJson(static_cast<QString>(this->array).toUtf8(), &jsonParseError);
 
-//    }else
-//    {
-//        if (doc.documentElement().toElement().attributes().namedItem("status").nodeValue()!="ok")
-//            return QVariant();
+    if (jsonParseError.error != QJsonParseError::NoError)
+        return false;
 
-//        const QDomNodeList nodeList = doc.documentElement().namedItem("track").childNodes();
+    if (!jsonResponse.isObject())
+        return false;
 
-//        for (int i = 0; i < nodeList.count(); i++)
-//        {
-//            QDomNode n = nodeList.item(i);
+    QJsonObject mainJsonObject(jsonResponse.object());
+    auto data = mainJsonObject.toVariantMap();
+    auto itemMap = data.value("similarartists").toMap().value("artist");
 
-//            if (n.isElement())
-//            {
+    if(itemMap.isNull()) return false;
 
-//                if(this->info == INFO::TRACK || this->info == INFO::ALL)
-//                {
-//                    if(n.nodeName() == "album" && n.hasAttributes())
-//                    {
-//                        int position = n.attributes().namedItem("position").toElement().text().toInt();
-//                        return QVariant(position);
+    QList<QVariant> items = itemMap.toList();
 
-//                    }else return QVariant(0);
-
-//                }
-
-//                if(this->info == INFO::ALBUM || this->info == INFO::ALL)
-//                {
-//                    ////qDebug()<<"lastfm[AlbumArt]";
-//                    if(n.nodeName() == "album")
-//                    {
-//                        auto trackAlbum = n.namedItem("title").toElement().text();
-//                        return QVariant(trackAlbum);
-
-//                    }else if(this->info == INFO::ALBUM) continue;
-//                }
-
-//                if(this->info == INFO::WIKI || this->info == INFO::ALL)
-//                {
-
-//                    if (n.nodeName() == "wiki")
-//                    {
-//                        auto trackWiki = n.namedItem("summary").toElement().text();
-//                        //qDebug()<<trackWiki;
-//                        return QVariant(trackWiki);
-
-//                    }else if(this->info == INFO::WIKI) continue;
-
-//                }
-
-//                if(this->info == INFO::TAGS || this->info == INFO::ALL)
-//                {
-//                    if (n.nodeName() == "toptags")
-//                    {
-//                        //qDebug()<<"found toptags";
-//                        auto tagsList = n.toElement().childNodes();
-//                        QStringList trackTags;
-//                        for(int i=0; i<tagsList.count(); i++)
-//                            trackTags<<tagsList.item(i).namedItem("name").toElement().text();
+    if(items.isEmpty()) return false;
 
 
-//                        return QVariant(trackTags);
+    if(this->info == INFO::TAGS || this->info == INFO::ALL)
+    {
+        QStringList artistSimilar;
 
-//                    }else if(this->info == INFO::TAGS) continue;
-//                }
+        for(auto item : items)
+            artistSimilar<<item.toMap().value("name").toString();
 
-//            }
-//        }
-//    }
+        emit this->infoReady(this->track, this->packResponse(INFO::TAGS, CONTEXT::ARTIST_SIMILAR,artistSimilar));
 
-//    return QVariant();
+        if(this->info == INFO::TAGS && !artistSimilar.isEmpty() ) return true;
+    }
 
-//}
+    return false;
+}
+
+bool lastfm::parseTags()
+{
+    return false;
+}

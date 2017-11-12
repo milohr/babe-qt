@@ -59,14 +59,16 @@ public:
     bool moodTrack(const QString &path, const QString &value);
     bool artTrack(const QString &path, const QString &value);
     bool lyricsTrack(const QString &path, const QString &value);
-    bool tagsTrack(const QString &path, const QString &value);
     bool playedTrack(const QString &url, const int &increment=1);
 
-    bool wikiArtist(const QString &artist, const QString &value);
-    bool tagsArtist(const QString &artist, const QString &value);
+    bool wikiTrack(const Bae::DB &track, const QString &value);
+    bool tagsTrack(const Bae::DB &track, const QString &value, const QString &context);
 
-    bool wikiAlbum(const QString &album, const QString &artist, QString value);
-    bool tagsAlbum(const QString &album, const QString &artist, const QString &value);
+    bool wikiArtist(const Bae::DB &track, const QString &value);
+    bool tagsArtist(const Bae::DB &track, const QString &value, const QString &context = "");
+
+    bool wikiAlbum(const Bae::DB &track, QString value);
+    bool tagsAlbum(const Bae::DB &track, const QString &value, const QString &context = "");
 
     bool addPlaylist(const QString &title);
     bool trackPlaylist(const QString &url, const QString &playlist);

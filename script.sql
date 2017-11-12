@@ -19,7 +19,8 @@ FOREIGN KEY(artist) REFERENCES artists(artist)
 CREATE TABLE TAGS
 (
 tag TEXT PRIMARY KEY,
-context TEXT
+context TEXT,
+artwork TEXT
 ) ;
 
 CREATE TABLE MOODS
@@ -52,18 +53,19 @@ CREATE TABLE TRACKS
 url         TEXT ,
 sources_url TEXT  ,
 track       INTEGER ,
-title       TEXT  ,
-artist   TEXT,
-album    TEXT,
+title       TEXT NOT NULL,
+artist   TEXT NOT NULL,
+album    TEXT NOT NULL,
 duration    INTEGER  ,
 played      INTEGER  ,
-babe    INTEGER  ,
-stars       INTEGER ,
+babe    INTEGER NOT NULL,
+stars       INTEGER NOT NULL,
 releaseDate DATE ,
-addDate     DATE ,
+addDate     DATE NOT NULL,
 lyrics     TEXT ,
 genre      TEXT,
 art        TEXT,
+wiki    TEXT,
 PRIMARY KEY (url),
 FOREIGN KEY(sources_url) REFERENCES SOURCES(url),
 FOREIGN KEY(album, artist) REFERENCES albums(album, artist)
@@ -128,6 +130,15 @@ PRIMARY KEY (playlist, url),
 FOREIGN KEY(playlist) REFERENCES PLAYLISTS(playlist),
 FOREIGN KEY(url) REFERENCES TRACKS(url)
 ) ;
+
+
+CREATE TABLE LOG
+(
+id INTEGER NOT NULL,
+retrieval_date DATE NOT NULL,
+
+PRIMARY KEY(id)
+);
 
 --First insertions
 

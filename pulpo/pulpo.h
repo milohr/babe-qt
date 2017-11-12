@@ -23,9 +23,6 @@
 #include "../baeUtils.h"
 #include "pulpo/webengine.h"
 
-
-
-
 class Pulpo : public QObject
 {
     Q_OBJECT
@@ -34,71 +31,148 @@ public:
 
     enum class SERVICES : uint8_t
     {
-        LastFm = 0,
-        Spotify = 1,
-        iTunes = 2,
-        MusicBrainz = 3,
-        Genius = 4,
-        LyricWikia = 5,
-        Wikipedia = 6,
-        WikiLyrics = 7,
-        ALL = 8,
-        NONE = 9
+        LastFm,
+        Spotify,
+        iTunes,
+        MusicBrainz,
+        Genius,
+        LyricWikia,
+        Wikipedia,
+        WikiLyrics,
+        ALL,
+        NONE
     };
 
     enum class ONTOLOGY : uint8_t
     {
-        ARTIST,ALBUM,TRACK,GENRE,ALL,NONE
+        ARTIST,
+        ALBUM,
+        TRACK,
+        NONE
     };
 
     enum class INFO : uint8_t
     {
-        ALBUM,ARTIST,ARTWORK,WIKI,ALBUM_TRACKS,TAGS,SIMILAR,LYRICS,TRACK,TITLE,ALL,NONE
+        ARTWORK,
+        WIKI,
+        TAGS,
+        LYRICS,
+        ALL,
+        NONE
     };
 
+    /*Generic context names. It's encouraged to use these instead of a unkown string*/
+    enum class CONTEXT : uint8_t
+    {
+        STAT,
+        TRACK_NUMBER,
+        TRACK_TITLE,
+        TRACK_DATE,
+        TRACK_PRODUCER,
+        TRACK_AUTHOR,
+        TRACK_LANGUAGE,
+        TRACK_SIMILAR,
 
-    typedef QMap<INFO, QVariant> RES;
+        ALBUM_TITLE,
+        ALBUM_DATE,
+        ALBUM_LANGUAGE,
+        ALBUM_SIMILAR,
+
+        ARTIST_TITLE,
+        ARTIST_DATE,
+        ARTIST_LANGUAGE,
+        ARTIST_COUNTRY,
+        ARTIST_SIMILAR,
+
+        GENRE,
+        TAG,
+        WIKI,
+        IMAGE,
+        LYRIC,
+
+    };
+
+    const QMap<CONTEXT,QString> CONTEXT_MAP =
+    {
+        {CONTEXT::STAT, "stat"},
+
+        {CONTEXT::ALBUM_TITLE, "album_title"},
+        {CONTEXT::ALBUM_DATE, "album_date"},
+        {CONTEXT::ALBUM_LANGUAGE, "album_language"},
+        {CONTEXT::ALBUM_SIMILAR, "album_similar"},
+
+        {CONTEXT::ARTIST_TITLE, "artist_title"},
+        {CONTEXT::ARTIST_DATE, "artist_date"},
+        {CONTEXT::ARTIST_LANGUAGE, "artist_language"},
+        {CONTEXT::ARTIST_COUNTRY, "artist_country"},
+        {CONTEXT::ARTIST_SIMILAR, "artist_similar"},
+
+        {CONTEXT::TRACK_DATE, "track_date"},
+        {CONTEXT::TRACK_TITLE, "track_title"},
+        {CONTEXT::TRACK_NUMBER, "track_number"},
+        {CONTEXT::TRACK_PRODUCER, "track_producer"},
+        {CONTEXT::TRACK_AUTHOR, "track_author"},
+        {CONTEXT::TRACK_LANGUAGE, "track_language"},
+        {CONTEXT::TRACK_SIMILAR, "track_similar"},
+
+        {CONTEXT::GENRE, "genre"},
+        {CONTEXT::TAG, "tag"},
+        {CONTEXT::WIKI, "wiki"},
+        {CONTEXT::IMAGE, "image"},
+        {CONTEXT::LYRIC, "lyric"},
+
+    };
+
+    enum class RECURSIVE : bool
+    {
+        ON = true,
+        OFF = false
+    };
+
+    typedef QMap<CONTEXT, QVariant> CONTEXT_K;
+    typedef QMap<INFO, CONTEXT_K> RESPONSE;
     typedef QMap<ONTOLOGY, QList<INFO>> AVAILABLE;
-
 
     explicit Pulpo(const Bae::DB &song, QObject *parent = nullptr);
     explicit Pulpo(QObject *parent = nullptr);
     ~Pulpo();
 
-    void feed(const Bae::DB &song, const bool &recursive=true);
+    void feed(const Bae::DB &song, const RECURSIVE &recursive = RECURSIVE::ON );
     QByteArray startConnection(const QString &url, const QString &auth = "");
 
     void registerServices(const QList<SERVICES> &services);
-    void setInfo(const INFO &info = INFO::ALL);
-    void setOntology(const ONTOLOGY &ontology = ONTOLOGY::ALL);
-    void setRecursive(const bool &state);
+    void setInfo(const INFO &info);
+    void setOntology(const ONTOLOGY &ontology);
+    void setRecursive(const RECURSIVE &state);
 
 private:
     bool initServices();
-    bool recursive = true;
+    RECURSIVE recursive = RECURSIVE::ON;
     QList<SERVICES> registeredServices = {SERVICES::ALL};
 
-    void passSignal(const Bae::DB &track, const Pulpo::RES &response);
-    //    webEngine *page;
+    void passSignal(const Bae::DB &track, const Pulpo::RESPONSE &response);
 
 protected:
     QByteArray array;
     Bae::DB track;
-    INFO info = INFO::ALL;
-    ONTOLOGY ontology = ONTOLOGY::ALL;    
+    INFO info = INFO::NONE;
+    ONTOLOGY ontology = ONTOLOGY::NONE;
     AVAILABLE availableInfo;
+
+    RESPONSE packResponse(const INFO &infoKey, const CONTEXT &contextName, const QVariant &value);
+
     /* expected methods to be overrided by services */
     bool setUpService(const Pulpo::ONTOLOGY &ontology, const Pulpo::INFO &info);
     bool parseArray();
-    bool parseArtist();
-    bool parseAlbum();
-    bool parseTrack();
+    virtual bool parseArtist() {return false;}
+    virtual bool parseAlbum() {return false;}
+    virtual bool parseTrack() {return false;}
 
 public slots:    
     void saveArt(const QByteArray &array, const QString &path);
 
 signals:
-    void infoReady(const Bae::DB &track, const Pulpo::RES &response);
+    void infoReady(const Bae::DB &track, const Pulpo::RESPONSE &response);
     void artSaved(const Bae::DB &track);
 };
 

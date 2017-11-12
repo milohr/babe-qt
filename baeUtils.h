@@ -98,7 +98,9 @@ enum class DBCols :uint8_t
     ARTWORK=18,
     WIKI=19,
     SOURCE_TYPE=20,
-    NONE=21
+    CONTEXT=21,
+    RETRIEVAL_DATE=22,
+    NONE=23
 };
 
 typedef QMap<Bae::DBCols, QString> DB;
@@ -133,7 +135,9 @@ static const DB DBColsMap =
     {DBCols::PLAYLIST,"playlist"},
     {DBCols::ARTWORK,"artwork"},
     {DBCols::WIKI,"wiki"},
-    {DBCols::SOURCE_TYPE,"source_types_id"}
+    {DBCols::SOURCE_TYPE,"source_types_id"},
+    {DBCols::CONTEXT,"context"},
+    {DBCols::RETRIEVAL_DATE,"retrieval_date"}
 };
 
 
