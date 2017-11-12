@@ -5,7 +5,6 @@ AlbumsView::AlbumsView(const bool &extraList, QWidget *parent) :
     QWidget(parent), extraList(extraList)
 {
 
-
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     auto layout = new QGridLayout;
     layout->setMargin(0);

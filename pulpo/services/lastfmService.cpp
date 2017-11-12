@@ -4,7 +4,7 @@ lastfm::lastfm(const Bae::DB &song)
 {    
     this->availableInfo.insert(ONTOLOGY::ALBUM, {INFO::ARTWORK, INFO::WIKI, INFO::TAGS});
     this->availableInfo.insert(ONTOLOGY::ARTIST, {INFO::ARTWORK, INFO::WIKI, INFO::TAGS});
-    this->availableInfo.insert(ONTOLOGY::TRACK, {INFO::TAGS, INFO::WIKI});
+    this->availableInfo.insert(ONTOLOGY::TRACK, {INFO::TAGS, INFO::WIKI, INFO::ARTWORK});
 
     this->track = song;
 }

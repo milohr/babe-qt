@@ -148,6 +148,8 @@ public slots:
         bool checkCollection();
         void createCollectionDB();
 
+        Deamon::Brain brainDeamon;
+
         int getToolbarIconSize()  {return iconSize;}
         void setToolbarIconSize(const int &iconSize);
 
@@ -190,7 +192,6 @@ public slots:
     private:
         Ui::settings *ui;
         TrackSaver trackSaver;
-        Deamon::Brain brainDeamon;
 
         bool busy =false;
 

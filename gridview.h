@@ -40,7 +40,6 @@ private:
     void setUpActions();
 
 protected:
-
     virtual bool eventFilter(QObject *obj, QEvent *event) Q_DECL_OVERRIDE;
 
 signals:

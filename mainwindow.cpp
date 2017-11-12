@@ -327,23 +327,23 @@ void MainWindow::setUpViews()
     connect(infoTable,&InfoView::tagsBtnClicked,[this](QStringList queries) { this->ui->search->setText(queries.join(",")); });
     connect(infoTable,&InfoView::tagClicked,[this](QString query) { this->ui->search->setText(query);});
     connect(infoTable,&InfoView::similarArtistTagClicked,[this](QString query) { this->ui->search->setText(query);});
-//    connect(infoTable,&InfoView::artistSimilarReady, [this] (QMap<QString,QByteArray> info,const Bae::DB &track)
-//    {
+    //    connect(infoTable,&InfoView::artistSimilarReady, [this] (QMap<QString,QByteArray> info,const Bae::DB &track)
+    //    {
 
 
-//        if(this->current_song==track)
-//        {
-//            feedRabbit();
-//            calibrateBtn_menu->actions().at(3)->setEnabled(true);
-//            rabbitTable->flushSuggestions(RabbitView::ALL);
-//            qDebug()<<"&InfoView::artistSimilarReady:"<<info.keys();
-//            rabbitTable->populateArtistSuggestion(info);
-//            QStringList query;
-//            for (auto tag : info.keys()) query << QString("artist:"+tag).trimmed();
-//            auto searchResults = this->searchFor(query);
-//            if(!searchResults.isEmpty()) rabbitTable->populateGeneralSuggestion(searchResults);
-//        }
-//    });
+    //        if(this->current_song==track)
+    //        {
+    //            feedRabbit();
+    //            calibrateBtn_menu->actions().at(3)->setEnabled(true);
+    //            rabbitTable->flushSuggestions(RabbitView::ALL);
+    //            qDebug()<<"&InfoView::artistSimilarReady:"<<info.keys();
+    //            rabbitTable->populateArtistSuggestion(info);
+    //            QStringList query;
+    //            for (auto tag : info.keys()) query << QString("artist:"+tag).trimmed();
+    //            auto searchResults = this->searchFor(query);
+    //            if(!searchResults.isEmpty()) rabbitTable->populateGeneralSuggestion(searchResults);
+    //        }
+    //    });
 
 
     settings_widget->readSettings();
@@ -952,6 +952,22 @@ bool MainWindow::eventFilter(QObject *object, QEvent *event)
 void MainWindow::closeEvent(QCloseEvent* event)
 {
 
+    if(this->settings_widget->brainDeamon.isRunning())
+    {
+        QMessageBox msgBox;
+        msgBox.setText("Babe is still collecting important information about your collection.");
+        msgBox.setInformativeText("Do you want to quit?");
+        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+        msgBox.setDefaultButton(QMessageBox::No);
+        switch(msgBox.exec())
+        {
+        case QMessageBox::Yes: break;
+        case QMessageBox::No: event->ignore(); return;
+        default: event->ignore(); return;
+        }
+
+    }
+
     if(viewMode == FULLMODE )
     {
         this->saveSettings("GEOMETRY",this->geometry(),"MAINWINDOW");
@@ -965,6 +981,8 @@ void MainWindow::closeEvent(QCloseEvent* event)
     this->saveSettings("MINIPLAYBACK",miniPlayback,"MAINWINDOW");
     this->saveSettings("PANEL_POS",playlistPos,"MAINWINDOW");
     this->saveSettings("TIME_LABEL",ui->time->isVisible()&&ui->duration->isVisible(),"MAINWINDOW");
+
+    event->accept();
 
     QMainWindow::closeEvent(event);
 }
@@ -1127,12 +1145,12 @@ void MainWindow::dummy() { qDebug()<<"TEST on DUMMYT"; }
 void MainWindow::setCoverArt(const Bae::DB &song)
 {
     //    qDebug()<<"Trying to retieve the cover art from Pulpo for"<< title << artist << album;
-//    Pulpo coverArt(song);
-//    connect(&coverArt,&Pulpo::albumArtReady,this,&MainWindow::putPixmap);
-//    if (coverArt.fetchAlbumInfo(Pulpo::AlbumArt,Pulpo::LastFm)) qDebug()<<"using lastfm";
-//    else if(coverArt.fetchAlbumInfo(Pulpo::AlbumArt,Pulpo::Spotify)) qDebug()<<"using spotify";
-//    else if(coverArt.fetchAlbumInfo(Pulpo::AlbumArt,Pulpo::GeniusInfo)) qDebug()<<"using genius";
-//    else coverArt.albumArtReady(QByteArray());
+    //    Pulpo coverArt(song);
+    //    connect(&coverArt,&Pulpo::albumArtReady,this,&MainWindow::putPixmap);
+    //    if (coverArt.fetchAlbumInfo(Pulpo::AlbumArt,Pulpo::LastFm)) qDebug()<<"using lastfm";
+    //    else if(coverArt.fetchAlbumInfo(Pulpo::AlbumArt,Pulpo::Spotify)) qDebug()<<"using spotify";
+    //    else if(coverArt.fetchAlbumInfo(Pulpo::AlbumArt,Pulpo::GeniusInfo)) qDebug()<<"using genius";
+    //    else coverArt.albumArtReady(QByteArray());
 }
 
 void MainWindow::putPixmap(const QByteArray &array)
@@ -1868,9 +1886,9 @@ void MainWindow::on_play_btn_clicked()
 
 void MainWindow::play()
 {
-      player->play();
-        ui->play_btn->setIcon(QIcon::fromTheme("media-playback-pause"));
-        this->setWindowTitle(current_song[Bae::DBCols::TITLE]+" \xe2\x99\xa1 "+current_song[Bae::DBCols::ARTIST]);
+    player->play();
+    ui->play_btn->setIcon(QIcon::fromTheme("media-playback-pause"));
+    this->setWindowTitle(current_song[Bae::DBCols::TITLE]+" \xe2\x99\xa1 "+current_song[Bae::DBCols::ARTIST]);
 }
 
 void MainWindow::pause()

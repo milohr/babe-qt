@@ -244,7 +244,7 @@ void CollectionDB::addTrack(const Bae::DB &track)
                               {Bae::DBColsMap[Bae::DBCols::LYRICS],""},
                               {Bae::DBColsMap[Bae::DBCols::GENRE],genre},
                               {Bae::DBColsMap[Bae::DBCols::ART],""},
-                             {Bae::DBColsMap[Bae::DBCols::WIKI],""}};
+                              {Bae::DBColsMap[Bae::DBCols::WIKI],""}};
 
         this->insert(Bae::DBTablesMap[Bae::DBTables::TRACKS],trackMap);
     }
@@ -306,7 +306,7 @@ bool CollectionDB::tagsTrack(const Bae::DB &track, const QString &value, const Q
     QVariantMap tagMap {{Bae::DBColsMap[Bae::DBCols::TAG],value},{Bae::DBColsMap[Bae::DBCols::CONTEXT],context}};
 
     QVariantMap trackTagMap {{Bae::DBColsMap[Bae::DBCols::TAG],value},
-                              {Bae::DBColsMap[Bae::DBCols::URL],url}};
+                             {Bae::DBColsMap[Bae::DBCols::URL],url}};
 
     if(this->insert(Bae::DBTablesMap[Bae::DBTables::TAGS],tagMap) && this->insert(Bae::DBTablesMap[Bae::DBTables::TRACKS_TAGS],trackTagMap))
         return true;
@@ -457,15 +457,12 @@ Bae::DB_LIST CollectionDB::getTrackData(QSqlQuery &query)
         {
             Bae::DB data;
             for(auto key : Bae::DBColsMap.keys())
-            {
                 if(query.record().indexOf(Bae::DBColsMap[key])>-1)
-                {
                     data.insert(key,query.value(Bae::DBColsMap[key]).toString());
-                }
-            }
+
             mapList<< data;
         }
-    }
+    }else qDebug()<< query.lastError();
 
 
     qDebug()<<"MAPLIST SIZE:"<<mapList.size();

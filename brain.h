@@ -75,6 +75,8 @@ public slots:
         }
 
         emit this->finished();
+        this->go = false;
+
     }
 
     void trackInfo()
@@ -152,14 +154,14 @@ public slots:
         pulpo.registerServices({Pulpo::SERVICES::LastFm,Pulpo::SERVICES::Spotify});
 
         //select url, title, album, artist from tracks t inner join albums a on a.album=t.album and a.artist=t.artist where a.artwork = ''
-        auto queryTxt =  QString("SELECT %1, %2, %3, %4 FROM %5 t INNER JOIN %6 a ON a.%3=t.%3 AND a.%4=t.%4  WHERE a.%5 = '' LIMIT 1").arg(Bae::DBColsMap[Bae::DBCols::URL],Bae::DBColsMap[Bae::DBCols::TITLE],
+        auto queryTxt =  QString("SELECT DISTINCT t.%1, t.%2, t.%3, t.%4 FROM %5 t INNER JOIN %6 a ON a.%3 = t.%3 AND a.%4 = t.%4  WHERE a.%7 = '' GROUP BY a.%3, a.%4 ").arg(Bae::DBColsMap[Bae::DBCols::URL],Bae::DBColsMap[Bae::DBCols::TITLE],
                 Bae::DBColsMap[Bae::DBCols::ARTIST],Bae::DBColsMap[Bae::DBCols::ALBUM],Bae::DBTablesMap[Bae::DBTables::TRACKS],Bae::DBTablesMap[Bae::DBTables::ALBUMS],
                 Bae::DBColsMap[Bae::DBCols::ARTWORK]);
         QSqlQuery query (queryTxt);
-
         pulpo.setInfo(Pulpo::INFO::ARTWORK);
         for(auto track : connection.getTrackData(query))
         {
+            qDebug()<<"TRACK TITLE:"<<track[Bae::DBCols::TITLE];
             pulpo.feed(track,Pulpo::RECURSIVE::OFF);
             if(!go) return;
         }

@@ -265,15 +265,11 @@ inline QString removeSubstring(const QString &newTitle, const QString &subString
 {
     const int indexFt = newTitle.indexOf(subString, 0, Qt::CaseInsensitive);
 
-    if (indexFt != -1) {
-        return newTitle.left(indexFt).simplified();
-    }else
-    {
-        return newTitle;
-    }
+    if (indexFt != -1) return newTitle.left(indexFt).simplified();
+    else  return newTitle;
 }
 
-inline QString ucfirst(const QString &str)/*uppercase fist letter*/
+inline QString ucfirst(const QString &str)/*uppercase first letter*/
 {
     if (str.isEmpty()) return "";
 
@@ -304,7 +300,8 @@ inline QString fixString (const QString &str)
 
     //title.remove(QRegExp(QString::fromUtf8("[·-`~!@#$%^&*()_—+=|:;<>«»,.?/{}\'\"\\\[\\\]\\\\]")));
     QString title=str;
-
+    title=title.remove(QChar::Null);
+    title=title.contains('\u0000')?title.replace('\u0000',""):title;
     title=title.contains("(")&&title.contains(")")?fixTitle(title,"(",")"):title;
     title=title.contains("[")&&title.contains("]")?fixTitle(title,"[","]"):title;
     title=title.contains("{")&&title.contains("}")?fixTitle(title,"{","}"):title;
@@ -316,6 +313,7 @@ inline QString fixString (const QString &str)
     title=title.contains("live")?removeSubstring(title, "live"):title;
     title=title.contains("...")?title.replace("...",""):title;
     title=title.contains("|")?title.replace("|",""):title;
+    title=title.contains("|")?removeSubstring(title, "|"):title;
     title=title.contains('"')?title.replace('"',""):title;
     title=title.contains(":")?title.replace(":",""):title;
     title=title.contains("&")? title.replace("&", "and"):title;
