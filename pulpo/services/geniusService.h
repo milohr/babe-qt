@@ -8,25 +8,21 @@
 class genius : public Pulpo
 {
     Q_OBJECT    
+private:
+    const QString KEY = "UARllo5N6CLQYVlqFwolyauSlYiyU_07YTg7HGHkWRbimN4GWPJehPP5fzu9lXeO";
+    const QString API = "https://genius.com/search?q=";
 
 public:
     explicit genius(const Bae::DB &song);
-
-    static QString setUpService(const Bae::DB &song);
-
-    void parseLyrics(const QByteArray &array);
-    void parseAlbumArt(const QByteArray &array);
-    void extractLyrics(const QByteArray &array);
-    void extractAlbumArt(const QString &url);
-    bool neededTag(const QString &txt, const QString &tag);
-
-    void extractLyrics(const QString &url);
+    virtual bool setUpService(const PULPO::ONTOLOGY &ontology, const PULPO::INFO &info);
 
 
-private:
-    QString KEY = "UARllo5N6CLQYVlqFwolyauSlYiyU_07YTg7HGHkWRbimN4GWPJehPP5fzu9lXeO";
-    Bae::DB track;
-    static QString API;
+protected:
+    virtual bool parseArtist();
+    virtual bool parseAlbum();
+    virtual bool parseTrack();
+
+
 };
 
 #endif // GENIUSSERVICE_H

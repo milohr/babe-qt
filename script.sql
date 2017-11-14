@@ -18,9 +18,10 @@ FOREIGN KEY(artist) REFERENCES artists(artist)
 
 CREATE TABLE TAGS
 (
-tag TEXT PRIMARY KEY,
+tag TEXT NOT NULL,
 context TEXT,
-artwork TEXT
+
+PRIMARY KEY(tag)
 ) ;
 
 CREATE TABLE MOODS
@@ -50,13 +51,14 @@ FOREIGN KEY(SOURCE_TYPES_id) REFERENCES SOURCES_TYPES(id)
 
 CREATE TABLE TRACKS
 (
-url         TEXT ,
+url TEXT ,
 sources_url TEXT  ,
-track       INTEGER ,
-title       TEXT NOT NULL,
-artist   TEXT NOT NULL,
+track   INTEGER ,
+title   TEXT NOT NULL,
+artist  TEXT NOT NULL,
 album    TEXT NOT NULL,
 duration    INTEGER  ,
+comment     TEXT,
 played      INTEGER  ,
 babe    INTEGER NOT NULL,
 stars       INTEGER NOT NULL,

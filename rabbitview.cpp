@@ -21,9 +21,9 @@ RabbitView::RabbitView(QWidget *parent) : QWidget(parent)
 
 
     generalSuggestion = new BabeTable(this);
-    generalSuggestion->hideColumn(static_cast<int>(Bae::DBCols::ALBUM));
-    generalSuggestion->hideColumn(static_cast<int>(Bae::DBCols::ARTIST));
-    generalSuggestion->hideColumn(static_cast<int>(Bae::DBCols::DURATION));
+    generalSuggestion->hideColumn(static_cast<int>(Bae::KEY::ALBUM));
+    generalSuggestion->hideColumn(static_cast<int>(Bae::KEY::ARTIST));
+    generalSuggestion->hideColumn(static_cast<int>(Bae::KEY::DURATION));
     generalSuggestion->horizontalHeader()->setVisible(false);
     generalSuggestion->enableRowColoring(true);
     generalSuggestion->enableRowDragging(true);
@@ -54,7 +54,7 @@ void RabbitView::populateArtistSuggestion(QMap<QString,QByteArray> info)
     {
         qDebug()<<tag;
 
-        Bae::DB album {{Bae::DBCols::ARTIST,Bae::fixString(tag)}};
+        Bae::DB album {{Bae::KEY::ARTIST,Bae::fixString(tag)}};
 
         Pulpo saver(album);
         connect(&saver, &Pulpo::artSaved,[this](const Bae::DB &album)

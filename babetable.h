@@ -68,7 +68,7 @@ public slots:
         qDebug()<<"GETTING TRACKS FROM BABETABLE";
 
         QSqlQuery mquery(query);
-        auto tracks = this->connection.getTrackData(mquery);
+        auto tracks = this->connection.getDBData(mquery);
         if(tracks.size()>0)
         {
             for(auto trackMap : tracks)
@@ -138,14 +138,14 @@ public:
     void removeMissing(const QString &url);
     void setRating(const int &rate);
     void setTableOrder(int column, Bae::Order order);
-    void setVisibleColumn(const Bae::DBCols &column);
+    void setVisibleColumn(const Bae::KEY &column);
     void addRow(const Bae::DB &map);
     void addRowAt(const int &row, const Bae::DB &map);
     void passStyle(QString style);
     void setAddMusicMsg(const QString &msg, const QString &icon= "face-sleeping");
     int getIndex();
-    QTableWidgetItem *getItem(const int &row, const Bae::DBCols &column);
-    void putItem(const int &row, const Bae::DBCols &col, QTableWidgetItem *item);
+    QTableWidgetItem *getItem(const int &row, const Bae::KEY &column);
+    void putItem(const int &row, const Bae::KEY &col, QTableWidgetItem *item);
     void enablePreview(const bool state);
     void startPreview(const QString &url);
     void stopPreview();
@@ -161,7 +161,7 @@ public:
 
     Bae::DB getRowData(const int &row);
     QMap<QString, QString> getKdeConnectDevices();
-    QStringList getTableColumnContent(const Bae::DBCols &column);
+    QStringList getTableColumnContent(const Bae::KEY &column);
     Bae::DB_LIST getAllTableContent();
 
 

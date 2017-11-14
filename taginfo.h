@@ -18,7 +18,7 @@ class TagInfo
 {
 
 public:
-    TagInfo(QString file);
+    TagInfo(const QString &file);
     QString getAlbum();
     QString getTitle();
     QString getArtist();
@@ -30,14 +30,13 @@ public:
     int getDuration();
     uint getYear();
 
-    void setAlbum(QString album);
-    void setTitle(QString title);
-    void setTrack(int track);
-    void setArtist(QString artist);
-    void setGenre(QString genre);
-    void setComment(QString comment);
-    void setCover(QByteArray array);
-    void writeData();
+    void setAlbum(const QString &album);
+    void setTitle(const QString &title);
+    void setTrack(const int &track);
+    void setArtist(const QString &artist);
+    void setGenre(const QString &genre);
+    void setComment(const QString &comment);
+    void setCover(const QByteArray &array);
 
 
 private:

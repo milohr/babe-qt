@@ -36,12 +36,12 @@ void Notify::notifySong(const Bae::DB &trackMap,  const QPixmap &pix)
     this->track = trackMap;
     auto notification = new KNotification(QStringLiteral("Notify"),KNotification::CloseOnTimeout, this);
     // notification->setComponentName(QStringLiteral("Babe"));
-    notification->setTitle(QStringLiteral("%1").arg(track[Bae::DBCols::TITLE]));
-    notification->setText(QStringLiteral("%1\n%2").arg(track[Bae::DBCols::ARTIST],track[Bae::DBCols::ALBUM]));
+    notification->setTitle(QStringLiteral("%1").arg(track[Bae::KEY::TITLE]));
+    notification->setText(QStringLiteral("%1\n%2").arg(track[Bae::KEY::ARTIST],track[Bae::KEY::ALBUM]));
     if(!pix.isNull()) notification->setPixmap(pix);
     QStringList actions;
 
-    if(track[Bae::DBCols::BABE].toInt()==1) actions<<i18n("Un-Babe it  \xe2\x99\xa1");
+    if(track[Bae::KEY::BABE].toInt()==1) actions<<i18n("Un-Babe it  \xe2\x99\xa1");
     else actions<<i18n("Babe it  \xe2\x99\xa1");
 
     actions<<i18n("Skip");

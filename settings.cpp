@@ -111,7 +111,7 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
         ui->progressBar->setValue(0);
 
         collectionWatcher();
-        emit refreshTables(Bae::DBTables::TRACKS);
+        emit refreshTables(Bae::TABLE::TRACKS);
         emit getArtwork();
     });
 
@@ -189,7 +189,7 @@ void settings::on_remove_clicked()
             this->dirs.clear();
             this->collectionWatcher();
             this->watcher->removePaths(watcher->directories());            ui->remove->setEnabled(false);
-            emit refreshTables(Bae::DBTables::ALL);
+            emit refreshTables(Bae::TABLE::ALL);
         }
     }
 }
@@ -309,11 +309,11 @@ void settings::addToWatcher(QStringList paths)
 
 void settings::collectionWatcher()
 {
-    auto queryTxt = QString("SELECT %1 FROM %2").arg(Bae::DBColsMap[Bae::DBCols::URL],Bae::DBTablesMap[Bae::DBTables::TRACKS]);
+    auto queryTxt = QString("SELECT %1 FROM %2").arg(Bae::KEYMAP[Bae::KEY::URL],Bae::TABLEMAP[Bae::TABLE::TRACKS]);
     QSqlQuery query = collection_db.getQuery(queryTxt);
     while (query.next())
     {
-        QString location = query.value(Bae::DBColsMap[Bae::DBCols::URL]).toString();
+        QString location = query.value(Bae::KEYMAP[Bae::KEY::URL]).toString();
         if(!location.startsWith(Bae::YoutubeCachePath,Qt::CaseInsensitive)) //exclude the youtube cache folder
         {
             if (!this->dirs.contains(QFileInfo(location).dir().path()) && Bae::fileExists(location)) //check if parent dir isn't already in list and it exists

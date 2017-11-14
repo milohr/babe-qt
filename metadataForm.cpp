@@ -28,11 +28,11 @@ metadataForm::metadataForm(const Bae::DB &info, QWidget *parent) :
      setWindowFlags(flags);
      //mapFromParent(QPoint(100, 100));
 
-     track=info[Bae::DBCols::TRACK];
-     title=info[Bae::DBCols::TITLE];
-     artist=info[Bae::DBCols::ARTIST];
-     album=info[Bae::DBCols::ALBUM];
-     genre=info[Bae::DBCols::GENRE];
+     track=info[Bae::KEY::TRACK];
+     title=info[Bae::KEY::TITLE];
+     artist=info[Bae::KEY::ARTIST];
+     album=info[Bae::KEY::ALBUM];
+     genre=info[Bae::KEY::GENRE];
 
      ui->trackLine->setText(track);
      ui->titleLine->setText(title);
@@ -65,7 +65,7 @@ void metadataForm::on_changebtn_clicked()
     if(_track!=this->track || _title!=this->title || _artist!=this->artist || _album!=this->album || _genre!=this->genre)
     {
         qDebug()<< "the info did changed";
-        const Bae::DB map{{Bae::DBCols::TRACK, _track}, {Bae::DBCols::TITLE, _title}, {Bae::DBCols::ARTIST, _artist},{Bae::DBCols::ALBUM,_album},{Bae::DBCols::GENRE,_genre}};
+        const Bae::DB map{{Bae::KEY::TRACK, _track}, {Bae::KEY::TITLE, _title}, {Bae::KEY::ARTIST, _artist},{Bae::KEY::ALBUM,_album},{Bae::KEY::GENRE,_genre}};
 
         emit infoModified(map);
     }else

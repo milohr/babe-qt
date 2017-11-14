@@ -58,11 +58,13 @@ public:
     bool babeTrack(const QString &path, const bool &value);
     bool moodTrack(const QString &path, const QString &value);
     bool artTrack(const QString &path, const QString &value);
-    bool lyricsTrack(const QString &path, const QString &value);
+    bool lyricsTrack(const Bae::DB &track, const QString &value);
     bool playedTrack(const QString &url, const int &increment=1);
 
     bool wikiTrack(const Bae::DB &track, const QString &value);
     bool tagsTrack(const Bae::DB &track, const QString &value, const QString &context);
+    bool albumTrack(const Bae::DB &track, const QString &value);
+    bool trackTrack(const Bae::DB &track, const QString &value);
 
     bool wikiArtist(const Bae::DB &track, const QString &value);
     bool tagsArtist(const Bae::DB &track, const QString &value, const QString &context = "");
@@ -73,20 +75,18 @@ public:
     bool addPlaylist(const QString &title);
     bool trackPlaylist(const QString &url, const QString &playlist);
 
-    Bae::DB_LIST getTrackData(const QStringList &urls);
-    Bae::DB_LIST getTrackData(QSqlQuery &query);
+    Bae::DB_LIST getDBData(const QStringList &urls);
+    Bae::DB_LIST getDBData(QSqlQuery &query);
 
-    Bae::DB_LIST getArtistData(QSqlQuery &query);
-    Bae::DB_LIST getAlbumData(QSqlQuery &query);
-    Bae::DB_LIST getAlbumTracks(const QString &album, const QString &artist, const Bae::DBCols &orderBy=Bae::DBCols::TRACK, const Bae::Order &order=Bae::Order::ASC);
-    Bae::DB_LIST getArtistTracks(const QString &artist, const Bae::DBCols &orderBy=Bae::DBCols::ALBUM, const Bae::Order &order=Bae::Order::ASC);
-    Bae::DB_LIST getBabedTracks(const Bae::DBCols &orderBy=Bae::DBCols::PLAYED, const Bae::Order &order=Bae::Order::DESC);
-    Bae::DB_LIST getSearchedTracks(const Bae::DBCols &where, const QString &search);
-    Bae::DB_LIST getPlaylistTracks(const QString &playlist, const Bae::DBCols &orderBy=Bae::DBCols::ADD_DATE, const Bae::Order &order=Bae::Order::DESC);
-    Bae::DB_LIST getMostPlayedTracks(const int &greaterThan=1,const int &limit= 50, const Bae::DBCols &orderBy=Bae::DBCols::PLAYED, const Bae::Order &order=Bae::Order::DESC);
-    Bae::DB_LIST getFavTracks(const int &stars=1,const int &limit= 50, const Bae::DBCols &orderBy=Bae::DBCols::STARS, const Bae::Order &order=Bae::Order::DESC);
-    Bae::DB_LIST getRecentTracks(const int &limit= 50, const Bae::DBCols &orderBy=Bae::DBCols::ADD_DATE, const Bae::Order &order=Bae::Order::DESC);
-    Bae::DB_LIST getOnlineTracks(const Bae::DBCols &orderBy=Bae::DBCols::ADD_DATE, const Bae::Order &order=Bae::Order::DESC);
+    Bae::DB_LIST getAlbumTracks(const QString &album, const QString &artist, const Bae::KEY &orderBy=Bae::KEY::TRACK, const Bae::Order &order=Bae::Order::ASC);
+    Bae::DB_LIST getArtistTracks(const QString &artist, const Bae::KEY &orderBy=Bae::KEY::ALBUM, const Bae::Order &order=Bae::Order::ASC);
+    Bae::DB_LIST getBabedTracks(const Bae::KEY &orderBy=Bae::KEY::PLAYED, const Bae::Order &order=Bae::Order::DESC);
+    Bae::DB_LIST getSearchedTracks(const Bae::KEY &where, const QString &search);
+    Bae::DB_LIST getPlaylistTracks(const QString &playlist, const Bae::KEY &orderBy=Bae::KEY::ADD_DATE, const Bae::Order &order=Bae::Order::DESC);
+    Bae::DB_LIST getMostPlayedTracks(const int &greaterThan=1,const int &limit= 50, const Bae::KEY &orderBy=Bae::KEY::PLAYED, const Bae::Order &order=Bae::Order::DESC);
+    Bae::DB_LIST getFavTracks(const int &stars=1,const int &limit= 50, const Bae::KEY &orderBy=Bae::KEY::STARS, const Bae::Order &order=Bae::Order::DESC);
+    Bae::DB_LIST getRecentTracks(const int &limit= 50, const Bae::KEY &orderBy=Bae::KEY::ADD_DATE, const Bae::Order &order=Bae::Order::DESC);
+    Bae::DB_LIST getOnlineTracks(const Bae::KEY &orderBy=Bae::KEY::ADD_DATE, const Bae::Order &order=Bae::Order::DESC);
 
 
     QString getTrackLyrics(const QString &url);

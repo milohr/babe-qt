@@ -15,9 +15,10 @@ private:
 
     bool parseTags();
     bool parseSimilar();
+
 public:
     explicit lastfm(const Bae::DB &song);
-    virtual bool setUpService(const Pulpo::ONTOLOGY &ontology, const Pulpo::INFO &info);
+    virtual bool setUpService(const PULPO::ONTOLOGY &ontology, const PULPO::INFO &info);
 
 protected:
     virtual bool parseArtist();

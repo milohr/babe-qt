@@ -80,7 +80,7 @@ Bae::DB_LIST Playlist::getTracksData()
         QString releaseDate = "";
         QString duration = "";
 
-       mapList<< Bae::DB {{Bae::DBCols::TRACK,track},{Bae::DBCols::TITLE,title},{Bae::DBCols::ARTIST,artist},{Bae::DBCols::ALBUM,album},{Bae::DBCols::DURATION,duration},{Bae::DBCols::GENRE,genre},{Bae::DBCols::URL,location},{Bae::DBCols::STARS,stars},{Bae::DBCols::BABE,babe},{Bae::DBCols::ART,art},{Bae::DBCols::PLAYED,played},{Bae::DBCols::RELEASE_DATE,releaseDate},{Bae::DBCols::ADD_DATE,addDate}};
+       mapList<< Bae::DB {{Bae::KEY::TRACK,track},{Bae::KEY::TITLE,title},{Bae::KEY::ARTIST,artist},{Bae::KEY::ALBUM,album},{Bae::KEY::DURATION,duration},{Bae::KEY::GENRE,genre},{Bae::KEY::URL,location},{Bae::KEY::STARS,stars},{Bae::KEY::BABE,babe},{Bae::KEY::ART,art},{Bae::KEY::PLAYED,played},{Bae::KEY::RELEASE_DATE,releaseDate},{Bae::KEY::ADD_DATE,addDate}};
     }
 
     return mapList;

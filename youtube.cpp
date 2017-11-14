@@ -18,7 +18,7 @@
 
 #include "youtube.h"
 
-
+using namespace Bae;
 
 YouTube::YouTube(QObject *parent) : QObject(parent)
 {
@@ -45,7 +45,7 @@ void YouTube::searchPendingFiles()
 
 }
 
-void YouTube::fetch(QStringList files)
+void YouTube::fetch(const QStringList &files)
 {
     for(auto file: files)
     {
@@ -57,7 +57,7 @@ void YouTube::fetch(QStringList files)
         std::ifstream info(file.toStdString());
         std::string line;
 
-        QMap<int,QString> infoMap;
+
 
         while (std::getline(info, line))
         {
@@ -82,19 +82,19 @@ void YouTube::fetch(QStringList files)
 
         if(QFile(file).remove()) qDebug()<<"removing file"<<file;
 
+        DB infoMap;
+        infoMap.insert(KEY::TITLE,title);
+        infoMap.insert(KEY::ARTIST,artist);
+        infoMap.insert(KEY::ALBUM,album);
+        infoMap.insert(KEY::URL,page);
+        infoMap.insert(KEY::ID,id);
 
-        infoMap.insert(TITLE,title);
-        infoMap.insert(ARTIST,artist);
-        infoMap.insert(ALBUM,album);
-        infoMap.insert(COMMENT,page);
-        infoMap.insert(ID,id);
+        //qDebug()<<infoMap;
 
-        qDebug()<<infoMap;
-
-        if(!this->ids.contains(infoMap[ID]))
+        if(!this->ids.contains(infoMap[KEY::ID]))
         {
 
-            this->ids<<infoMap[ID];
+            this->ids<<infoMap[KEY::ID];
 
             auto process = new QProcess(this);
             process->setWorkingDirectory(cachePath);
@@ -109,35 +109,80 @@ void YouTube::fetch(QStringList files)
 
             });
 
-            nof->notify("Song received!", infoMap[TITLE]+ " - "+ infoMap[ARTIST]+".\nWait a sec while the track is added to your collection :)");
-            auto a = ydl;
+            nof->notify("Song received!", infoMap[KEY::TITLE]+ " - "+ infoMap[KEY::ARTIST]+".\nWait a sec while the track is added to your collection :)");
+            auto command = ydl;
 
-            a = a.replace("$$$",infoMap[COMMENT])+" "+infoMap[ID];
-            qDebug()<<a;
-            process->start(a);
+            command = command.replace("$$$",infoMap[KEY::URL])+" "+infoMap[KEY::ID];
+            qDebug()<<command;
+            process->start(command);
         }
     }
 }
 
-void YouTube::processFinished_totally(const int &state,const QMap<int,QString> &info,const QProcess::ExitStatus &exitStatus)
+void YouTube::processFinished_totally(const int &state,const DB &info,const QProcess::ExitStatus &exitStatus)
 {
+    QString file =this->cachePath+info[KEY::URL]+".m4a";
 
-    QString file =this->cachePath+info[COMMENT]+".m4a";
-    qDebug()<<info[ID]<<info[TITLE]<<info[ARTIST]<<file;
+    auto track = info;
+    track.insert(KEY::URL,file);
+
+    qDebug()<<track[KEY::ID]<<track[KEY::TITLE]<<track[KEY::ARTIST]<<track[KEY::URL];
+
+    /*here get metadata*/
 
     if(exitStatus == QProcess::NormalExit)
     {
-
         if(Bae::fileExists(file))
         {
             TagInfo tag(file);
+            tag.setArtist(track[KEY::ARTIST]);
+            tag.setTitle(track[KEY::TITLE]);
+            tag.setAlbum(track[KEY::ALBUM]);
+            tag.setComment(track[KEY::URL]);
 
-            tag.setArtist(info[ARTIST]);
-            tag.setTitle(info[TITLE]);
-            tag.setAlbum(info[ALBUM]);
-            tag.setComment(info[COMMENT]);
+            Pulpo pulpo;
+            pulpo.registerServices({PULPO::SERVICES::LastFm, PULPO::SERVICES::Spotify});
+            pulpo.setOntology(PULPO::ONTOLOGY::TRACK);
+            pulpo.setInfo(PULPO::INFO::METADATA);
 
-            QString doneId=info[ID];
+            QEventLoop loop;
+
+            QTimer timer;
+            timer.setSingleShot(true);
+            timer.setInterval(1000);
+
+            connect(&timer, &QTimer::timeout,&loop,&QEventLoop::quit);
+
+            connect(&pulpo, &Pulpo::infoReady, [&loop](const Bae::DB &track,const PULPO::RESPONSE  &res)
+            {
+                qDebug()<<"SETTING YOUTUBE DOWNLOAD TRACK METADATA";
+                if(!res[PULPO::INFO::METADATA].isEmpty())
+                {
+                    qDebug()<<res[PULPO::INFO::METADATA][PULPO::CONTEXT::ALBUM_TITLE].toString();
+                    qDebug()<<res[PULPO::INFO::METADATA][PULPO::CONTEXT::TRACK_NUMBER].toString();
+
+                    qDebug()<<track[KEY::URL];
+                    TagInfo tag(track[KEY::URL]);
+
+                    if(!res[PULPO::INFO::METADATA][PULPO::CONTEXT::ALBUM_TITLE].toString().isEmpty())
+                        tag.setAlbum(res[PULPO::INFO::METADATA][PULPO::CONTEXT::ALBUM_TITLE].toString());
+                    else tag.setAlbum(track[KEY::TITLE]);
+
+                    if(!res[PULPO::INFO::METADATA][PULPO::CONTEXT::TRACK_NUMBER].toString().isEmpty())
+                        tag.setTrack(res[PULPO::INFO::METADATA][PULPO::CONTEXT::TRACK_NUMBER].toInt());
+                }
+
+
+                loop.quit();
+
+            });
+
+            pulpo.feed(track, PULPO::RECURSIVE::OFF);
+
+            timer.start();
+            loop.exec();
+            timer.stop();
+            QString doneId = track[KEY::ID];
             qDebug()<<"process finished totally for"<<state<<doneId<<exitStatus;
 
             qDebug()<<"need to delete the id="<<doneId;
@@ -152,7 +197,6 @@ void YouTube::processFinished_totally(const int &state,const QMap<int,QString> &
 
 void YouTube::processFinished()
 {
-
 
     /* QByteArray processOutput;
     processOutput = process->readAllStandardOutput();

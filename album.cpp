@@ -22,18 +22,18 @@ void Album::createAlbum(const Bae::DB &info, const Bae::AlbumSizeHint &widgetSiz
     }
     this->albumMap=info;
 
-    auto artist = this->albumMap[Bae::DBCols::ARTIST];
-    auto album = this->albumMap[Bae::DBCols::ALBUM];
-    auto artwork = this->albumMap[Bae::DBCols::ARTWORK];
+    auto artist = this->albumMap[Bae::KEY::ARTIST];
+    auto album = this->albumMap[Bae::KEY::ALBUM];
+    auto artwork = this->albumMap[Bae::KEY::ARTWORK];
 
     auto albumtype = Bae::albumType(albumMap);
 
-    if(albumtype == Bae::DBTables::ARTISTS)
+    if(albumtype == Bae::TABLE::ARTISTS)
     {
         if(artwork.isEmpty() || artwork=="NULL")
             artwork=":Data/data/cover.svg";
 
-    }else if(albumtype == Bae::DBTables::ALBUMS)
+    }else if(albumtype == Bae::TABLE::ALBUMS)
     {
         if(artwork.isEmpty() || artwork=="NULL")
             artwork = connection.getArtistArt(artist);
@@ -129,7 +129,7 @@ void Album::artIt_action()
     if(!path.isEmpty())
     {
         putPixmap(path);
-        this->albumMap.insert(Bae::DBCols::ARTWORK,path);
+        this->albumMap.insert(Bae::KEY::ARTWORK,path);
         emit changedArt(this->albumMap);
     }
 }
@@ -270,8 +270,8 @@ void Album::setTitle(const QString &artistTitle, const QString &albumTitle)
     this->artist = artistTitle;
     this->album = albumTitle;
 
-    albumMap.insert(Bae::DBCols::ARTIST,this->artist);
-    albumMap.insert(Bae::DBCols::ALBUM, this->album);
+    albumMap.insert(Bae::KEY::ARTIST,this->artist);
+    albumMap.insert(Bae::KEY::ALBUM, this->album);
 
     QString str = album.isEmpty()? artist : album+" - "+artist;
     title->setText(str);

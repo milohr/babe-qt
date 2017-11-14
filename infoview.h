@@ -37,7 +37,6 @@ private:
     QToolButton *hideBtn;
     bool hide= false;
     bool customsearch = false;
-    QWebEngineView *page;
 
 public slots:
 
@@ -47,10 +46,9 @@ public slots:
     void setArtistArt(const QByteArray &array);
     void setArtistArt(const QString &url);
     void setLyrics(const QString &lyrics);
-    void setLyrics(const QUrl &url);
     void setArtistInfo(const QString &info);
-    void setArtistTagInfo(const QStringList &tags);
-    void setTagsInfo(const QStringList &tags);
+    void setArtistTags(const QStringList &tags);
+    void setAlbumTags(const QStringList &tags);
     QStringList getTags();
     QStringList getSimilarArtistTags();
     void hideArtistInfo();

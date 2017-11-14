@@ -53,7 +53,7 @@ signals:
 
 inline uint qHash(const Bae::DB &key, uint seed)
 {
-    return qHash(key[Bae::DBCols::ALBUM]+" "+key[Bae::DBCols::ARTIST], seed) ^ key[Bae::DBCols::ARTIST].length();
+    return qHash(key[Bae::KEY::ALBUM]+" "+key[Bae::KEY::ARTIST], seed) ^ key[Bae::KEY::ARTIST].length();
 }
 
 #endif // GRIDVIEW_H

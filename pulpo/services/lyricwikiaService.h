@@ -8,20 +8,16 @@ class lyricWikia : public Pulpo
     Q_OBJECT
 
 private:
-    QString API = "http://lyrics.wikia.com/api.php?action=lyrics";
-
-    Bae::DB track;
-
-public:
-
-    explicit lyricWikia(const Bae::DB &song);
-
-
-    QString setUpService();
-
-    bool parseLyrics(const QByteArray &array);
+    const QString API = "http://lyrics.wikia.com/api.php?action=lyrics";
 
     void extractLyrics(const QByteArray &array);
+
+public:
+    explicit lyricWikia(const Bae::DB &song);
+    virtual bool setUpService(const ONTOLOGY &ontology, const INFO &info);
+
+protected:
+    virtual bool parseTrack();
 
 };
 

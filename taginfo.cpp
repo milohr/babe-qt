@@ -19,26 +19,28 @@
 
 
 
-TagInfo::TagInfo(QString file)
+TagInfo::TagInfo(const QString &file)
 {
     this->file = TagLib::FileRef(file.toUtf8());
     this->path = file;
 }
 
 
-void TagInfo::writeData()
-{
-//    Pulpo info({{Bae::DBCols::TITLE,this->getTitle()},{Bae::DBCols::ARTIST,this->getArtist()},{Bae::DBCols::ALBUM,this->getAlbum()}});
-//    QString newTitle = info.getStaticTrackInfo(Pulpo::INFO::ALBUM).toString();
-//    int trackPosition = info.getStaticTrackInfo(Pulpo::INFO::TRACK).toInt();
+//void TagInfo::writeData()
+//{
+////    Pulpo info({{Bae::KEY::TITLE,this->getTitle()},{Bae::KEY::ARTIST,this->getArtist()},{Bae::KEY::ALBUM,this->getAlbum()}});
+////    QString newTitle = info.getStaticTrackInfo(PULPO::INFO::ALBUM).toString();
+////    int trackPosition = info.getStaticTrackInfo(PULPO::INFO::TRACK).toInt();
 
-//    this->setTrack(trackPosition);
-//    this->setAlbum(newTitle.isEmpty()?this->getTitle():newTitle);
-}
+////    this->setTrack(trackPosition);
+////    this->setAlbum(newTitle.isEmpty()?this->getTitle():newTitle);
+//}
 
 QString TagInfo::getAlbum()
 {
-    return QString::fromStdWString(file.tag()->album().toWString());
+    return !QString::fromStdWString(file.tag()->album().toWString()).isEmpty()
+            ? QString::fromStdWString(file.tag()->album().toWString())
+            : "UNKNOWN";
 }
 
 QString TagInfo::getTitle()
@@ -98,13 +100,13 @@ QByteArray TagInfo::getCover()
     return array;
 }
 
-void TagInfo::setCover(QByteArray array)
+void TagInfo::setCover(const QByteArray &array)
 {
     Q_UNUSED(array);
 
 }
 
-void TagInfo::setComment(QString comment)
+void TagInfo::setComment(const QString &comment)
 {
 
     this->file.tag()->setComment(comment.toStdString());
@@ -112,32 +114,32 @@ void TagInfo::setComment(QString comment)
 
 }
 
-void TagInfo::setAlbum(QString album)
+void TagInfo::setAlbum(const QString &album)
 {
     this->file.tag()->setAlbum(album.toStdString());
     this->file.save();
 
 }
 
-void TagInfo::setTitle(QString title)
+void TagInfo::setTitle(const QString &title)
 {
     this->file.tag()->setTitle(title.toStdString());
     this->file.save();
 }
 
-void TagInfo::setTrack(int track)
+void TagInfo::setTrack(const int &track)
 {
     this->file.tag()->setTrack(static_cast<unsigned int>(track));
     this->file.save();
 }
 
-void TagInfo::setArtist(QString artist)
+void TagInfo::setArtist(const QString &artist)
 {
     this->file.tag()->setArtist(artist.toStdString());
     this->file.save();
 }
 
-void TagInfo::setGenre(QString genre)
+void TagInfo::setGenre(const QString &genre)
 {
     this->file.tag()->setGenre(genre.toStdString());
     this->file.save();

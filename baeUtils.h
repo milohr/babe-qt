@@ -37,7 +37,7 @@ static const QMap<Order,QString> OrderMap =
     {Order::ASC,"ASC"}
 };
 
-enum class DBTables : uint8_t
+enum class TABLE : uint8_t
 {
     ALBUMS=0,
     ARTISTS=1,
@@ -52,30 +52,32 @@ enum class DBTables : uint8_t
     ALBUMS_TAGS=10,
     ARTISTS_TAGS=11,
     TRACKS_TAGS=12,
-    ALL=13,
-    NONE=14
+    LOGS=13,
+    ALL=14,
+    NONE=15
 
 };
 
-static const QMap<DBTables,QString> DBTablesMap =
+static const QMap<TABLE,QString> TABLEMAP =
 {
-    {DBTables::ALBUMS,"albums"},
-    {DBTables::ARTISTS,"artists"},
-    {DBTables::MOODS,"moods"},
-    {DBTables::PLAYLISTS,"playlists"},
-    {DBTables::SOURCES,"sources"},
-    {DBTables::SOURCES_TYPES,"sources_types"},
-    {DBTables::TRACKS,"tracks"},
-    {DBTables::TRACKS_MOODS,"tracks_moods"},
-    {DBTables::TRACKS_PLAYLISTS,"tracks_playlists"},
-    {DBTables::TAGS,"tags"},
-    {DBTables::ALBUMS_TAGS,"albums_tags"},
-    {DBTables::ARTISTS_TAGS,"artists_tags"},
-    {DBTables::TRACKS_TAGS,"tracks_tags"}
+    {TABLE::ALBUMS,"albums"},
+    {TABLE::ARTISTS,"artists"},
+    {TABLE::MOODS,"moods"},
+    {TABLE::PLAYLISTS,"playlists"},
+    {TABLE::SOURCES,"sources"},
+    {TABLE::SOURCES_TYPES,"sources_types"},
+    {TABLE::TRACKS,"tracks"},
+    {TABLE::TRACKS_MOODS,"tracks_moods"},
+    {TABLE::TRACKS_PLAYLISTS,"tracks_playlists"},
+    {TABLE::TAGS,"tags"},
+    {TABLE::ALBUMS_TAGS,"albums_tags"},
+    {TABLE::ARTISTS_TAGS,"artists_tags"},
+    {TABLE::TRACKS_TAGS,"tracks_tags"},
+    {TABLE::LOGS,"logs"}
 
 };
 
-enum class DBCols :uint8_t
+enum class KEY :uint8_t
 {
     URL=0,
     SOURCES_URL=1,
@@ -100,65 +102,69 @@ enum class DBCols :uint8_t
     SOURCE_TYPE=20,
     CONTEXT=21,
     RETRIEVAL_DATE=22,
-    NONE=23
+    COMMENT=23,
+    ID=24,
+    NONE=25
 };
 
-typedef QMap<Bae::DBCols, QString> DB;
+typedef QMap<Bae::KEY, QString> DB;
 typedef QList<DB> DB_LIST;
 
 
 //inline bool operator==(const Bae::DB &e1, const Bae::DB &e2)
 //{
-//    return e1[Bae::DBCols::ALBUM] == e2[Bae::DBCols::ALBUM]
-//            && e1[Bae::DBCols::ALBUM] == e2[Bae::DBCols::ALBUM];
+//    return e1[Bae::KEY::ALBUM] == e2[Bae::KEY::ALBUM]
+//            && e1[Bae::KEY::ALBUM] == e2[Bae::KEY::ALBUM];
 //}
 
-static const DB DBColsMap =
+static const DB KEYMAP =
 {
-    {DBCols::URL,"url"},
-    {DBCols::SOURCES_URL,"sources_url"},
-    {DBCols::TRACK,"track"},
-    {DBCols::TITLE,"title"},
-    {DBCols::ARTIST,"artist"},
-    {DBCols::ALBUM,"album"},
-    {DBCols::DURATION,"duration"},
-    {DBCols::PLAYED,"played"},
-    {DBCols::BABE,"babe"},
-    {DBCols::STARS,"stars"},
-    {DBCols::RELEASE_DATE,"releaseDate"},
-    {DBCols::ADD_DATE,"addDate"},
-    {DBCols::LYRICS,"lyrics"},
-    {DBCols::GENRE,"genre"},
-    {DBCols::ART,"art"},
-    {DBCols::TAG,"tag"},
-    {DBCols::MOOD,"mood"},
-    {DBCols::PLAYLIST,"playlist"},
-    {DBCols::ARTWORK,"artwork"},
-    {DBCols::WIKI,"wiki"},
-    {DBCols::SOURCE_TYPE,"source_types_id"},
-    {DBCols::CONTEXT,"context"},
-    {DBCols::RETRIEVAL_DATE,"retrieval_date"}
+    {KEY::URL,"url"},
+    {KEY::SOURCES_URL,"sources_url"},
+    {KEY::TRACK,"track"},
+    {KEY::TITLE,"title"},
+    {KEY::ARTIST,"artist"},
+    {KEY::ALBUM,"album"},
+    {KEY::DURATION,"duration"},
+    {KEY::PLAYED,"played"},
+    {KEY::BABE,"babe"},
+    {KEY::STARS,"stars"},
+    {KEY::RELEASE_DATE,"releaseDate"},
+    {KEY::ADD_DATE,"addDate"},
+    {KEY::LYRICS,"lyrics"},
+    {KEY::GENRE,"genre"},
+    {KEY::ART,"art"},
+    {KEY::TAG,"tag"},
+    {KEY::MOOD,"mood"},
+    {KEY::PLAYLIST,"playlist"},
+    {KEY::ARTWORK,"artwork"},
+    {KEY::WIKI,"wiki"},
+    {KEY::SOURCE_TYPE,"source_types_id"},
+    {KEY::CONTEXT,"context"},
+    {KEY::RETRIEVAL_DATE,"retrieval_date"},
+    {KEY::ID,"id"},
+    {KEY::COMMENT,"comment"}
 };
 
 
 
 static const DB TracksColsMap =
 {
-    {DBCols::URL,DBColsMap[DBCols::URL]},
-    {DBCols::SOURCES_URL,DBColsMap[DBCols::SOURCES_URL]},
-    {DBCols::TRACK,DBColsMap[DBCols::TRACK]},
-    {DBCols::TITLE,DBColsMap[DBCols::TITLE]},
-    {DBCols::ARTIST,DBColsMap[DBCols::ARTIST]},
-    {DBCols::ALBUM,DBColsMap[DBCols::ALBUM]},
-    {DBCols::DURATION,DBColsMap[DBCols::DURATION]},
-    {DBCols::PLAYED,DBColsMap[DBCols::PLAYED]},
-    {DBCols::BABE,DBColsMap[DBCols::BABE]},
-    {DBCols::STARS,DBColsMap[DBCols::STARS]},
-    {DBCols::RELEASE_DATE,DBColsMap[DBCols::RELEASE_DATE]},
-    {DBCols::ADD_DATE,DBColsMap[DBCols::ADD_DATE]},
-    {DBCols::LYRICS,DBColsMap[DBCols::LYRICS]},
-    {DBCols::GENRE,DBColsMap[DBCols::GENRE]},
-    {DBCols::ART,DBColsMap[DBCols::ART]}
+    {KEY::URL,KEYMAP[KEY::URL]},
+    {KEY::SOURCES_URL,KEYMAP[KEY::SOURCES_URL]},
+    {KEY::TRACK,KEYMAP[KEY::TRACK]},
+    {KEY::TITLE,KEYMAP[KEY::TITLE]},
+    {KEY::ARTIST,KEYMAP[KEY::ARTIST]},
+    {KEY::ALBUM,KEYMAP[KEY::ALBUM]},
+    {KEY::DURATION,KEYMAP[KEY::DURATION]},
+    {KEY::PLAYED,KEYMAP[KEY::PLAYED]},
+    {KEY::BABE,KEYMAP[KEY::BABE]},
+    {KEY::STARS,KEYMAP[KEY::STARS]},
+    {KEY::RELEASE_DATE,KEYMAP[KEY::RELEASE_DATE]},
+    {KEY::ADD_DATE,KEYMAP[KEY::ADD_DATE]},
+    {KEY::LYRICS,KEYMAP[KEY::LYRICS]},
+    {KEY::GENRE,KEYMAP[KEY::GENRE]},
+    {KEY::ART,KEYMAP[KEY::ART]}
 };
 
 
@@ -329,14 +335,14 @@ inline bool fileExists(const QString &url)
     else return false;
 }
 
-inline Bae::DBTables albumType(const Bae::DB &albumMap)
+inline Bae::TABLE albumType(const Bae::DB &albumMap)
 {
-    if(albumMap[Bae::DBCols::ALBUM].isEmpty() && !albumMap[Bae::DBCols::ARTIST].isEmpty())
-        return Bae::DBTables::ARTISTS;
-    else if(!albumMap[Bae::DBCols::ALBUM].isEmpty() && !albumMap[Bae::DBCols::ARTIST].isEmpty())
-        return Bae::DBTables::ALBUMS;
+    if(albumMap[Bae::KEY::ALBUM].isEmpty() && !albumMap[Bae::KEY::ARTIST].isEmpty())
+        return Bae::TABLE::ARTISTS;
+    else if(!albumMap[Bae::KEY::ALBUM].isEmpty() && !albumMap[Bae::KEY::ARTIST].isEmpty())
+        return Bae::TABLE::ALBUMS;
 
-    return Bae::DBTables::NONE;
+    return Bae::TABLE::NONE;
 }}
 
 #endif // UTILS_H

@@ -26,11 +26,11 @@ public:
         t.wait();
     }
 
-    void requestInfo(Bae::DBTables type, QString query)
+    void requestInfo(Bae::TABLE type, QString query)
     {
-        if(type==Bae::DBTables::ALBUMS)
+        if(type==Bae::TABLE::ALBUMS)
             QMetaObject::invokeMethod(this, "getAlbums", Q_ARG(QString, query));
-        else if(type==Bae::DBTables::ARTISTS)
+        else if(type==Bae::TABLE::ARTISTS)
             QMetaObject::invokeMethod(this, "getArtists", Q_ARG(QString, query));
     }
 
@@ -44,7 +44,7 @@ public slots:
         qDebug()<<"GETTING TRACKS FROM ALBUMSVIEW";
 
         QSqlQuery mquery(query);
-        auto albums = this->connection.getAlbumData(mquery);
+        auto albums = this->connection.getDBData(mquery);
         if(albums.size()>0)
         {
             for(auto albumMap : albums)
@@ -64,7 +64,7 @@ public slots:
     void getArtists(QString query)
     {
         QSqlQuery mquery(query);
-        auto artists = this->connection.getArtistData(mquery);
+        auto artists = this->connection.getDBData(mquery);
         if(artists.size()>0)
         {
             for(auto albumMap : artists)

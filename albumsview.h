@@ -55,11 +55,11 @@ public:
         t.wait();
     }
 
-    void requestAlbums(Bae::DBTables type, QString query)
+    void requestAlbums(Bae::TABLE type, QString query)
     {
-        if(type==Bae::DBTables::ALBUMS)
+        if(type==Bae::TABLE::ALBUMS)
             QMetaObject::invokeMethod(this, "getAlbums", Q_ARG(QString, query));
-        else if(type==Bae::DBTables::ARTISTS)
+        else if(type==Bae::TABLE::ARTISTS)
             QMetaObject::invokeMethod(this, "getArtists", Q_ARG(QString, query));
     }
 
@@ -72,7 +72,7 @@ public slots:
         qDebug()<<"GETTING TRACKS FROM ALBUMSVIEW";
 
         QSqlQuery mquery(query);
-        auto albums = this->connection.getAlbumData(mquery);
+        auto albums = this->connection.getDBData(mquery);
         if(albums.size()>0)
         {
             for(auto albumMap : albums)
@@ -92,7 +92,7 @@ public slots:
     void getArtists(QString query)
     {
         QSqlQuery mquery(query);
-        auto artists = this->connection.getArtistData(mquery);
+        auto artists = this->connection.getDBData(mquery);
         if(artists.size()>0)
         {
             for(auto albumMap : artists)
@@ -128,13 +128,13 @@ public:
 
     explicit AlbumsView(const bool &extraList=false, QWidget *parent = nullptr);
 
-    void populateAlbumsView(const Bae::DBTables &type, QSqlQuery &query);
+    void populateAlbumsView(const Bae::TABLE &type, QSqlQuery &query);
     void addAlbum(const Bae::DB &albumMap);
     void populateExtraList(const QStringList &albums);
     void flushView();
     void hide_all(bool state);
 
-    void filter(const Bae::DB_LIST &filter, const Bae::DBCols &type);
+    void filter(const Bae::DB_LIST &filter, const Bae::KEY &type);
 
     QFrame *utilsFrame;
     BabeTable *albumTable;

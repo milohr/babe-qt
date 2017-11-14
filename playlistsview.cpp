@@ -144,7 +144,7 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
     {
         for(auto row : this->table->getSelectedRows(true))
         {
-            auto url = this->table->getRowData(row)[Bae::DBCols::URL];
+            auto url = this->table->getRowData(row)[Bae::KEY::URL];
             if(!connection.removePlaylistTrack(url, currentPlaylist))
                 qDebug()<<"couldn't remove "<<url<< "from:"<<currentPlaylist;
 
@@ -210,21 +210,21 @@ void PlaylistsView::populatePlaylist(const QModelIndex &index)
     {
         removeBtn->setEnabled(false);
         this->removeFromPlaylist->setVisible(false);
-        table->showColumn(static_cast<int>(Bae::DBCols::PLAYED));
+        table->showColumn(static_cast<int>(Bae::KEY::PLAYED));
         mapList = connection.getMostPlayedTracks();
 
     } else if (currentPlaylist == "Favorites")
     {
         removeBtn->setEnabled(false);
         this->removeFromPlaylist->setVisible(false);
-        table->showColumn(static_cast<int>(Bae::DBCols::STARS));
+        table->showColumn(static_cast<int>(Bae::KEY::STARS));
         mapList = connection.getFavTracks();
 
     }else if (currentPlaylist == "Recent")
     {
         removeBtn->setEnabled(false);
         this->removeFromPlaylist->setVisible(false);
-        table->showColumn(static_cast<int>(Bae::DBCols::STARS));
+        table->showColumn(static_cast<int>(Bae::KEY::STARS));
         mapList = connection.getRecentTracks();
 
     }    else if (currentPlaylist == "Babes")
@@ -243,7 +243,7 @@ void PlaylistsView::populatePlaylist(const QModelIndex &index)
     {
         removeBtn->setEnabled(true);
         this->removeFromPlaylist->setVisible(true);
-        table->hideColumn(static_cast<int>(Bae::DBCols::PLAYED));
+        table->hideColumn(static_cast<int>(Bae::KEY::PLAYED));
         mapList = connection.getPlaylistTracks(currentPlaylist);
         //        queryTxt = QString("SELECT * FROM tracks t INNER JOIN tracks_playlists tpl on tpl.tracks_url = t.url INNER JOIN playlists pl on pl.title = tpl.playlists_title WHERE pl.title = \"%1\" ORDER by addDate desc").arg(currentPlaylist);
     }
@@ -363,7 +363,7 @@ void PlaylistsView::saveToPlaylist(const Bae::DB_LIST &tracks)
 void PlaylistsView::addToPlaylist(const QString &playlist,const Bae::DB_LIST &tracks)
 {
     for (auto track : tracks)
-        if(!this->connection.trackPlaylist(track[Bae::DBCols::URL],playlist))
+        if(!this->connection.trackPlaylist(track[Bae::KEY::URL],playlist))
             qDebug()<<"couldn't insert track:";
 
     emit addedToPlaylist(tracks,playlist);/*tofix*/
@@ -382,7 +382,7 @@ void PlaylistsView::setPlaylistsMoods()
         currentPlaylist = this->moods.at(mood);
         table->flushTable();
         removeBtn->setEnabled(true);
-        table->hideColumn(static_cast<int>(Bae::DBCols::PLAYED));
+        table->hideColumn(static_cast<int>(Bae::KEY::PLAYED));
         QSqlQuery query;
         QString queryTxt = "SELECT * FROM tracks WHERE art = \"" + currentPlaylist + "\"";
         query.prepare(queryTxt);

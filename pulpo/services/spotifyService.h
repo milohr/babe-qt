@@ -16,7 +16,7 @@ private:
 
 public:
     explicit spotify(const Bae::DB &song);
-    virtual bool setUpService(const Pulpo::ONTOLOGY &ontology, const Pulpo::INFO &infoType);
+    virtual bool setUpService(const PULPO::ONTOLOGY &ontology, const PULPO::INFO &infoType);
 
 protected:
     virtual bool parseArtist();

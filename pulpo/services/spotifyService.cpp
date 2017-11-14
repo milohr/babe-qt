@@ -6,10 +6,10 @@ spotify::spotify(const Bae::DB &song)
     this->track = song;
     this->availableInfo.insert(ONTOLOGY::ALBUM, {INFO::ARTWORK});
     this->availableInfo.insert(ONTOLOGY::ARTIST, {INFO::ARTWORK, INFO::TAGS});
-    this->availableInfo.insert(ONTOLOGY::TRACK, {INFO::TAGS, INFO::ARTWORK});
+    this->availableInfo.insert(ONTOLOGY::TRACK, {INFO::TAGS, INFO::ARTWORK, INFO::METADATA});
 }
 
-bool spotify::setUpService(const ONTOLOGY &ontology, const Pulpo::INFO &info)
+bool spotify::setUpService(const ONTOLOGY &ontology, const PULPO::INFO &info)
 {
     this->ontology = ontology;
     this->info= info;
@@ -19,7 +19,7 @@ bool spotify::setUpService(const ONTOLOGY &ontology, const Pulpo::INFO &info)
 
     auto url = this->API;
 
-    QUrl encodedArtist(this->track[Bae::DBCols::ARTIST]);
+    QUrl encodedArtist(this->track[Bae::KEY::ARTIST]);
     encodedArtist.toEncoded(QUrl::FullyEncoded);
 
     switch(this->ontology)
@@ -34,7 +34,7 @@ bool spotify::setUpService(const ONTOLOGY &ontology, const Pulpo::INFO &info)
 
     case ONTOLOGY::ALBUM:
     {
-        QUrl encodedAlbum(this->track[Bae::DBCols::ALBUM]);
+        QUrl encodedAlbum(this->track[Bae::KEY::ALBUM]);
         encodedAlbum.toEncoded(QUrl::FullyEncoded);
 
         url.append("album:");
@@ -47,7 +47,7 @@ bool spotify::setUpService(const ONTOLOGY &ontology, const Pulpo::INFO &info)
 
     case ONTOLOGY::TRACK:
     {
-        QUrl encodedTrack(this->track[Bae::DBCols::TITLE]);
+        QUrl encodedTrack(this->track[Bae::KEY::TITLE]);
         encodedTrack.toEncoded(QUrl::FullyEncoded);
 
         url.append("track:");
@@ -91,7 +91,7 @@ bool spotify::setUpService(const ONTOLOGY &ontology, const Pulpo::INFO &info)
 
     qDebug()<< "[spotify service]: "<< url;
 
-    this->array = this->startConnection(url, "Bearer "+token);
+    this->array = this->startConnection(url, {{"Authorization", "Bearer "+token}});
     if(this->array.isEmpty()) return false;
 
     return this->parseArray();
@@ -199,9 +199,17 @@ bool spotify::parseTrack()
         auto album = item.toMap().value("album").toMap();
         auto trackArtist =  album.value("artists").toList().first().toMap().value("name").toString();
 
-        if(trackArtist.contains(this->track[Bae::DBCols::ARTIST]))
+        if(trackArtist.contains(this->track[Bae::KEY::ARTIST]))
         {
             if(this->info == INFO::TAGS || this->info == INFO::ALL)
+            {               
+                auto popularity = item.toMap().value("popularity").toString();
+                emit this->infoReady(this->track,this->packResponse(INFO::TAGS,CONTEXT::STAT,popularity));
+
+                if(this->info == INFO::TAGS ) return true;
+            }
+
+            if(this->info == INFO::METADATA || this->info == INFO::ALL)
             {
                 auto trackAlbum = album.value("name").toString();
                 emit this->infoReady(this->track,this->packResponse(INFO::TAGS,CONTEXT::ALBUM_TITLE,trackAlbum));
@@ -209,10 +217,7 @@ bool spotify::parseTrack()
                 auto trackPosition = item.toMap().value("track_number").toString();
                 emit this->infoReady(this->track,this->packResponse(INFO::TAGS,CONTEXT::TRACK_NUMBER,trackPosition));
 
-                auto popularity = item.toMap().value("popularity").toString();
-                emit this->infoReady(this->track,this->packResponse(INFO::TAGS,CONTEXT::STAT,popularity));
-
-                if(this->info == INFO::TAGS ) return true;
+                if(this->info == INFO::METADATA ) return true;
             }
 
             if(this->info == INFO::ARTWORK || this->info == INFO::ALL)

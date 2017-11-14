@@ -4,19 +4,24 @@
 #include <QString>
 #include "../pulpo.h"
 
+using namespace Bae;
 
-class musicbrainzService : public Pulpo
+class musicBrainz : public Pulpo
 {
     Q_OBJECT
 
 private:
-    QString API = "http://musicbrainz.org/ws/2/recording/?query=artist:lana%20del%20rey";
+    const QString API = "http://musicbrainz.org/ws/2/";
+    const QMap<QString,QString> header = { {"User-Agent", "Babe/1.0 ( babe.kde.org )"} };
+
 public:
-    explicit musicbrainzService();
+    explicit musicBrainz(const DB &song);
+    virtual bool setUpService(const PULPO::ONTOLOGY &ontology, const PULPO::INFO &info);
 
-signals:
-
-public slots:
+protected:
+    virtual bool parseArtist();
+    virtual bool parseAlbum();
+    virtual bool parseTrack();
 };
 
 #endif // MUSICBRAINZSERVICE_H

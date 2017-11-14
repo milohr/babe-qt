@@ -2,46 +2,69 @@
 #include <QObject>
 
 
-
-QString genius::API =  "https://genius.com/search?q=";
-
-genius::genius(const Bae::DB &song) :
-    track(song) {}
-
- QString genius::setUpService(const Bae::DB &song)
+genius::genius(const Bae::DB &song)
 {
-    QString url = genius::API;
+    this->availableInfo.insert(ONTOLOGY::ALBUM, {INFO::ARTWORK, INFO::WIKI, INFO::TAGS});
+    this->availableInfo.insert(ONTOLOGY::ARTIST, {INFO::ARTWORK, INFO::WIKI, INFO::TAGS});
+    this->availableInfo.insert(ONTOLOGY::TRACK, {INFO::TAGS, INFO::WIKI, INFO::ARTWORK, INFO::METADATA});
 
-    QUrl encodedArtist(song[Bae::DBCols::ARTIST]);
-    encodedArtist.toEncoded(QUrl::FullyEncoded);
-
-    QUrl encodedTrack(song[Bae::DBCols::TITLE]);
-    encodedTrack.toEncoded(QUrl::FullyEncoded);
-
-    url.append(encodedArtist.toString()+" "+encodedTrack.toString());
-
-    qDebug()<<"setUpService genius["<<url<<"]";
-    return url;
+    this->track = song;
 }
 
-void genius::parseLyrics(const QByteArray &array)
+bool genius::setUpService(const PULPO::ONTOLOGY &ontology, const PULPO::INFO &info)
 {
-    htmlParser parser;
-    parser.setHtml(array);
-
-    connect(&parser, &htmlParser::finishedParsingTags,[this] (const QStringList &tags)
-    {
-        qDebug()<<"GENIUS RESULT TAGS:"<<tags;
-        htmlParser parser;
-        if(!tags.isEmpty())
-            extractLyrics(parser.extractProp(tags.first(),"href="));
-    });
-
-    parser.parseTag("a", "class=\"mini_card\"");
+return false;
 }
 
-void genius::parseAlbumArt(const QByteArray &array)
+bool genius::parseArtist()
 {
+    return false;
+}
+
+bool genius::parseAlbum()
+{
+    return false;
+}
+
+bool genius::parseTrack()
+{
+    return false;
+}
+
+// QString genius::setUpService(const Bae::DB &song)
+//{
+//    QString url = genius::API;
+
+//    QUrl encodedArtist(song[Bae::KEY::ARTIST]);
+//    encodedArtist.toEncoded(QUrl::FullyEncoded);
+
+//    QUrl encodedTrack(song[Bae::KEY::TITLE]);
+//    encodedTrack.toEncoded(QUrl::FullyEncoded);
+
+//    url.append(encodedArtist.toString()+" "+encodedTrack.toString());
+
+//    qDebug()<<"setUpService genius["<<url<<"]";
+//    return url;
+//}
+
+//void genius::parseLyrics(const QByteArray &array)
+//{
+//    htmlParser parser;
+//    parser.setHtml(array);
+
+//    connect(&parser, &htmlParser::finishedParsingTags,[this] (const QStringList &tags)
+//    {
+//        qDebug()<<"GENIUS RESULT TAGS:"<<tags;
+//        htmlParser parser;
+//        if(!tags.isEmpty())
+//            extractLyrics(parser.extractProp(tags.first(),"href="));
+//    });
+
+//    parser.parseTag("a", "class=\"mini_card\"");
+//}
+
+//void genius::parseAlbumArt(const QByteArray &array)
+//{
 //    htmlParser parser;
 //    parser.setHtml(array);
 
@@ -87,57 +110,57 @@ void genius::parseAlbumArt(const QByteArray &array)
 //    });
 // parser.parseTag("img", "class=\"cover_art-image\"");
 
-}
+//}
 
 
-void genius::extractLyrics(const QString &url)
-{
+//void genius::extractLyrics(const QString &url)
+//{
 
-/*    qDebug()<<"extractLyrics"<<url;
-    emit trackLyricsReady(url,this->track)*/;
+///*    qDebug()<<"extractLyrics"<<url;
+//    emit trackLyricsReady(url,this->track)*/;
 
-//    QNetworkAccessManager manager;
-//    QNetworkRequest request ((QUrl(url)));
-//    QNetworkReply *reply =  manager.get(request);
-//    QEventLoop loop;
-//    connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
-//    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), &loop,
-//            SLOT(quit()));
+////    QNetworkAccessManager manager;
+////    QNetworkRequest request ((QUrl(url)));
+////    QNetworkReply *reply =  manager.get(request);
+////    QEventLoop loop;
+////    connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+////    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), &loop,
+////            SLOT(quit()));
 
-//    loop.exec();
+////    loop.exec();
 
-//    QByteArray array(reply->readAll());
-//    delete reply;
+////    QByteArray array(reply->readAll());
+////    delete reply;
 
-//    htmlParser parser;
+////    htmlParser parser;
 
-////    qDebug()<<"LYRICS ARRAY"<<array;
+//////    qDebug()<<"LYRICS ARRAY"<<array;
 
-//    parser.setHtml(array);
-//    qDebug()<<"Lyricsssss now";
+////    parser.setHtml(array);
+////    qDebug()<<"Lyricsssss now";
 
-//    connect(&parser, &htmlParser::finishedParsingTags,[this] (const QStringList &list)
-//    {
-//        qDebug()<<"got lyrics"<<list;
-//        if(!list.isEmpty())
-//        {
-//            QString text = "<h2 align='center' >" + this->track[Bae::DBCols::TITLE] + "</h2>";
-//            auto lyrics = list.first();
+////    connect(&parser, &htmlParser::finishedParsingTags,[this] (const QStringList &list)
+////    {
+////        qDebug()<<"got lyrics"<<list;
+////        if(!list.isEmpty())
+////        {
+////            QString text = "<h2 align='center' >" + this->track[Bae::KEY::TITLE] + "</h2>";
+////            auto lyrics = list.first();
 
-//            lyrics=lyrics.trimmed();
-//            lyrics.replace("\n", "<br>");
-//            if(lyrics.isEmpty())
-//            {
-//                qDebug("Not found");
-//                text+="\n<h3 align='center'>:( Nothing Here</h3>";
-//            }
-//            else text += lyrics;
+////            lyrics=lyrics.trimmed();
+////            lyrics.replace("\n", "<br>");
+////            if(lyrics.isEmpty())
+////            {
+////                qDebug("Not found");
+////                text+="\n<h3 align='center'>:( Nothing Here</h3>";
+////            }
+////            else text += lyrics;
 
-//            text= "<div id='geniusLyrics' align='center'>"+text+"</div>";
-//            emit trackLyricsReady(text,this->track);
+////            text= "<div id='geniusLyrics' align='center'>"+text+"</div>";
+////            emit trackLyricsReady(text,this->track);
 
-//        }
-//    });
-// parser.parseTag("div", "class=\"lyrics\"");
+////        }
+////    });
+//// parser.parseTag("div", "class=\"lyrics\"");
 
-}
+//}

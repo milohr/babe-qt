@@ -28,7 +28,7 @@ GridView::GridView(const double &factor, const Bae::AlbumSizeHint &deafultValue,
 
 void GridView::addAlbum(const Bae::DB &albumMap)
 {
-    Bae::DB auxMap {{Bae::DBCols::ARTIST,albumMap[Bae::DBCols::ARTIST]},{Bae::DBCols::ALBUM,albumMap[Bae::DBCols::ALBUM]}};
+    Bae::DB auxMap {{Bae::KEY::ARTIST,albumMap[Bae::KEY::ARTIST]},{Bae::KEY::ALBUM,albumMap[Bae::KEY::ALBUM]}};
 
     if(!this->albumsMap.contains(auxMap))
     {
@@ -84,7 +84,7 @@ void GridView::addAlbum(const Bae::DB &albumMap)
         this->addItem(item);
         this->setItemWidget(item,album);
 
-    }else this->albumsMap[auxMap]->putPixmap(albumMap[Bae::DBCols::ARTWORK]);
+    }else this->albumsMap[auxMap]->putPixmap(albumMap[Bae::KEY::ARTWORK]);
 
     emit this->albumReady();
 }

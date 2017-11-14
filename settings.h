@@ -40,7 +40,7 @@ public:
         moveToThread(&t);
 
         qRegisterMetaType<Bae::DB>("Bae::DB");
-        qRegisterMetaType<Bae::DBTables>("Bae::DBTables");
+        qRegisterMetaType<Bae::TABLE>("Bae::TABLE");
 
         t.start();
     }
@@ -84,7 +84,7 @@ public slots:
             {
                 if(go)
                 {
-                    if(!connection.check_existance(Bae::DBTablesMap[Bae::DBTables::TRACKS],Bae::DBColsMap[Bae::DBCols::URL],url))
+                    if(!connection.check_existance(Bae::TABLEMAP[Bae::TABLE::TRACKS],Bae::KEYMAP[Bae::KEY::URL],url))
                     {
                         TagInfo info(url);
                         QString  album = Bae::fixString(info.getAlbum());
@@ -96,24 +96,21 @@ public slots:
                         int duration = info.getDuration();
                         auto year = info.getYear();
 
-                        Bae::DB trackMap
-                        {
-                            {Bae::DBCols::URL,url},
-                            {Bae::DBCols::TRACK,QString::number(track)},
-                            {Bae::DBCols::TITLE,title},
-                            {Bae::DBCols::ARTIST,artist},
-                            {Bae::DBCols::ALBUM,album},
-                            {Bae::DBCols::DURATION,QString::number(duration)},
-                            {Bae::DBCols::GENRE,genre},
-                            {Bae::DBCols::SOURCES_URL,sourceUrl},
-                            {Bae::DBCols::BABE, url.startsWith(Bae::YoutubeCachePath)?"1":"0"},
-                                {Bae::DBCols::RELEASE_DATE,QString::number(year)}
-                            };
+                        Bae::DB trackMap{
+                            {Bae::KEY::URL,url},
+                            {Bae::KEY::TRACK,QString::number(track)},
+                            {Bae::KEY::TITLE,title},
+                            {Bae::KEY::ARTIST,artist},
+                            {Bae::KEY::ALBUM,album},
+                            {Bae::KEY::DURATION,QString::number(duration)},
+                            {Bae::KEY::GENRE,genre},
+                            {Bae::KEY::SOURCES_URL,sourceUrl},
+                            {Bae::KEY::BABE, url.startsWith(Bae::YoutubeCachePath)?"1":"0"},
+                                {Bae::KEY::RELEASE_DATE,QString::number(year)}};
 
                             emit trackReady(trackMap);
                             while(this->wait){t.msleep(100);}
                             this->wait=!this->wait;
-
                         }
 
                     }else break;
@@ -221,7 +218,7 @@ public slots:
         void toolbarIconSizeChanged(int newSize);
         void collectionPathChanged(QString newPath);
         void collectionDBFinishedAdding();
-        void refreshTables(const Bae::DBTables &reset);
+        void refreshTables(const Bae::TABLE &reset);
         void finishedTracksInsertion();
         void getArtwork();
         void albumArtReady(const Bae::DB &albumMap);

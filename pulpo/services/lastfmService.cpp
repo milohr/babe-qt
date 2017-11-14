@@ -4,12 +4,12 @@ lastfm::lastfm(const Bae::DB &song)
 {    
     this->availableInfo.insert(ONTOLOGY::ALBUM, {INFO::ARTWORK, INFO::WIKI, INFO::TAGS});
     this->availableInfo.insert(ONTOLOGY::ARTIST, {INFO::ARTWORK, INFO::WIKI, INFO::TAGS});
-    this->availableInfo.insert(ONTOLOGY::TRACK, {INFO::TAGS, INFO::WIKI, INFO::ARTWORK});
+    this->availableInfo.insert(ONTOLOGY::TRACK, {INFO::TAGS, INFO::WIKI, INFO::ARTWORK, INFO::METADATA});
 
     this->track = song;
 }
 
-bool lastfm::setUpService(const Pulpo::ONTOLOGY &ontology, const Pulpo::INFO &info)
+bool lastfm::setUpService(const PULPO::ONTOLOGY &ontology, const PULPO::INFO &info)
 {
     this->ontology = ontology;
     this->info = info;
@@ -19,12 +19,12 @@ bool lastfm::setUpService(const Pulpo::ONTOLOGY &ontology, const Pulpo::INFO &in
 
     auto url = this->API;
 
-    QUrl encodedArtist(this->track[Bae::DBCols::ARTIST]);
+    QUrl encodedArtist(this->track[Bae::KEY::ARTIST]);
     encodedArtist.toEncoded(QUrl::FullyEncoded);
 
     switch(this->ontology)
     {
-    case Pulpo::ONTOLOGY::ARTIST:
+    case PULPO::ONTOLOGY::ARTIST:
     {
         url.append("?method=artist.getinfo");
         url.append(KEY);
@@ -32,9 +32,9 @@ bool lastfm::setUpService(const Pulpo::ONTOLOGY &ontology, const Pulpo::INFO &in
         break;
     }
 
-    case Pulpo::ONTOLOGY::ALBUM:
+    case PULPO::ONTOLOGY::ALBUM:
     {
-        QUrl encodedAlbum(this->track[Bae::DBCols::ALBUM]);
+        QUrl encodedAlbum(this->track[Bae::KEY::ALBUM]);
         encodedAlbum.toEncoded(QUrl::FullyEncoded);
 
         url.append("?method=album.getinfo");
@@ -44,9 +44,9 @@ bool lastfm::setUpService(const Pulpo::ONTOLOGY &ontology, const Pulpo::INFO &in
         break;
     }
 
-    case Pulpo::ONTOLOGY::TRACK:
+    case PULPO::ONTOLOGY::TRACK:
     {
-        QUrl encodedTrack(this->track[Bae::DBCols::TITLE]);
+        QUrl encodedTrack(this->track[Bae::KEY::TITLE]);
         encodedTrack.toEncoded(QUrl::FullyEncoded);
 
         url.append("?method=track.getinfo");
@@ -189,9 +189,9 @@ bool lastfm::parseArtist()
     if(this->info == INFO::TAGS || this->info == INFO::ALL)
     {
         auto url = this->API;
-        QUrl encodedTrack(this->track[Bae::DBCols::TITLE]);
+        QUrl encodedTrack(this->track[Bae::KEY::TITLE]);
         encodedTrack.toEncoded(QUrl::FullyEncoded);
-        QUrl encodedArtist(this->track[Bae::DBCols::ARTIST]);
+        QUrl encodedArtist(this->track[Bae::KEY::ARTIST]);
         encodedArtist.toEncoded(QUrl::FullyEncoded);
         url.append("?method=artist.getSimilar");
         url.append(KEY);
@@ -315,22 +315,30 @@ bool lastfm::parseTrack()
         auto playcount = itemMap.value("playcount").toString();
         QStringList stats = {listeners,playcount};
 
-        emit this->infoReady(this->track, this->packResponse(INFO::TAGS, CONTEXT::STAT,stats));
-
-        auto albumTitle = itemMap.value("album").toMap().value("title").toString();
-        emit this->infoReady(this->track, this->packResponse(INFO::TAGS, CONTEXT::ALBUM_TITLE,albumTitle));
-
-        auto trackNumber = itemMap.value("album").toMap().value("@attr").toMap().value("position").toString();
-        emit this->infoReady(this->track, this->packResponse(INFO::TAGS, CONTEXT::TRACK_NUMBER,trackNumber));
 
         QStringList tags;
         for(auto tag : itemMap.value("toptags").toMap().value("tag").toList())
             tags<<tag.toMap().value("name").toString();
 
-        emit this->infoReady(this->track, this->packResponse(INFO::TAGS, CONTEXT::TAG,tags));
+        PULPO::CONTEXT_K contexts = {{ CONTEXT::STAT,stats},{ CONTEXT::TAG,tags}};
+
+        emit this->infoReady(this->track, this->packResponse(INFO::TAGS, contexts));
 
         if(this->info == INFO::TAGS ) return true;
     }
+
+    if(this->info == INFO::METADATA || this->info == INFO::ALL)
+    {
+        qDebug()<<"ASKED FOR METADTA";
+
+        auto albumTitle = itemMap.value("album").toMap().value("title").toString();
+        auto trackNumber = itemMap.value("album").toMap().value("@attr").toMap().value("position").toString();
+
+        emit this->infoReady(this->track, this->packResponse(INFO::METADATA, {{CONTEXT::TRACK_NUMBER,trackNumber},{CONTEXT::ALBUM_TITLE,albumTitle}}));
+
+        if(this->info == INFO::METADATA ) return true;
+    }
+
 
     if(this->info == INFO::WIKI || this->info == INFO::ALL)
     {
