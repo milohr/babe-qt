@@ -57,6 +57,10 @@ public:
 
     void requestAlbums(Bae::TABLE type, QString query)
     {
+        if(this->go) this->go = false;
+
+        this->go = true;
+
         if(type==Bae::TABLE::ALBUMS)
             QMetaObject::invokeMethod(this, "getAlbums", Q_ARG(QString, query));
         else if(type==Bae::TABLE::ARTISTS)
@@ -82,7 +86,7 @@ public slots:
                     while(this->nextAlbum && go){t.msleep(100);}
                     this->nextAlbum=!this->nextAlbum;
 
-                }else break;
+                }else return;
             }
         }
         t.msleep(100);
@@ -102,7 +106,7 @@ public slots:
                     emit albumReady(albumMap);
                     while(this->nextAlbum && go){t.msleep(100); }
                     this->nextAlbum=true;
-                }else break;
+                }else return;
             }
         }
         t.msleep(100);

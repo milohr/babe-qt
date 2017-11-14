@@ -753,12 +753,11 @@ QStringList CollectionDB::getArtistTags(const QString &artist)
 
     auto queryStr = QString("SELECT at.%1 FROM %2 at "
                             "INNER JOIN %3 ta ON ta.%1 = at.%1 "
-                            "WHERE (ta.%4 = '%5' OR ta.%4 = '%6') "
-                            "AND at.%7 = \"%8\"").arg(KEYMAP[KEY::TAG],
+                            "WHERE ta.%4 = '%5' "
+                            "AND at.%6 = \"%7\"").arg(KEYMAP[KEY::TAG],
             TABLEMAP[TABLE::ARTISTS_TAGS],
             TABLEMAP[TABLE::TAGS],
             KEYMAP[KEY::CONTEXT],
-            PULPO::CONTEXT_MAP[CONTEXT::TAG],
             PULPO::CONTEXT_MAP[CONTEXT::ARTIST_SIMILAR],
             KEYMAP[KEY::ARTIST],artist);
     QSqlQuery query(queryStr);

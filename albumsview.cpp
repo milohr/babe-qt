@@ -189,6 +189,7 @@ void AlbumsView::populateAlbumsView(const Bae::TABLE &type,QSqlQuery &query)
     albumLoader.requestAlbums(type, query.lastQuery());
 }
 
+
 void AlbumsView::addAlbum(const Bae::DB &albumMap)
 {
     this->grid->addAlbum(albumMap);

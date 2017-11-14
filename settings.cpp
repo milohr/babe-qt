@@ -61,9 +61,9 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
     if (!youtubeCache_dir.exists())
         youtubeCache_dir.mkpath(".");
 
-    connect(&this->brainDeamon, &Deamon::Brain::artworkReady, [this] (Bae::DB albumMap)
+    connect(&this->brainDeamon, &Deamon::Brain::artworkReady, [this] (Bae::TABLE type)
     {
-        emit this->albumArtReady(albumMap);
+        emit this->albumArtReady(type);
     });
 
     connect(&this->brainDeamon, &Deamon::Brain::finished, [this]()

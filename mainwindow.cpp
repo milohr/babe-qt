@@ -349,16 +349,7 @@ void MainWindow::setUpViews()
     settings_widget->readSettings();
     connect(settings_widget,&settings::toolbarIconSizeChanged, this, &MainWindow::setToolbarIconSize);
     connect(settings_widget,&settings::refreshTables,this,  &MainWindow::refreshTables);
-    connect(settings_widget,&settings::albumArtReady,[this](const Bae::DB albumMap)
-    {
-        auto albumType = Bae::albumType(albumMap);
-
-        if(albumType==Bae::TABLE::ALBUMS)
-            this->albumsTable->addAlbum(albumMap);
-        else if(albumType==Bae::TABLE::ARTISTS)
-            this->artistsTable->addAlbum(albumMap);
-
-    });
+    connect(settings_widget,&settings::albumArtReady,this, &MainWindow::refreshAlbumsView);
 
     /* THE BUTTONS VIEWS */
     connect(ui->tracks_view,&QToolButton::clicked, this, &MainWindow::collectionView);
@@ -1004,18 +995,27 @@ void MainWindow::resizeEvent(QResizeEvent* event)
     QMainWindow::resizeEvent(event);
 }
 
-void MainWindow::refreshAlbumsView()
+void MainWindow::refreshAlbumsView(const Bae::TABLE &type)
 {
-    if(!ui->fav_btn->isEnabled()) ui->fav_btn->setEnabled(true);
-    qDebug()<<"now it i time to put the tracks in the table ;)";
-    QSqlQuery query;
-    query.prepare(QString("SELECT * FROM %1 ORDER BY  %2").arg(Bae::TABLEMAP[Bae::TABLE::ALBUMS],Bae::KEYMAP[Bae::KEY::ALBUM]));
-    albumsTable->populateAlbumsView(Bae::TABLE::ALBUMS,query);
-    albumsTable->hideAlbumFrame();
+    switch(type)
+    {
+    case Bae::TABLE::ALBUMS:
+    {
+        QSqlQuery query(QString("SELECT * FROM %1 ORDER BY  %2").arg(Bae::TABLEMAP[Bae::TABLE::ALBUMS],Bae::KEYMAP[Bae::KEY::ALBUM]));
+        albumsTable->populateAlbumsView(Bae::TABLE::ALBUMS,query);
+        albumsTable->hideAlbumFrame();
+        break;
+    }
+    case Bae::TABLE::ARTISTS:
+    {
+        QSqlQuery query(QString("SELECT * FROM %1 ORDER BY  %2").arg(Bae::TABLEMAP[Bae::TABLE::ARTISTS],Bae::KEYMAP[Bae::KEY::ARTIST]));
+        artistsTable->populateAlbumsView(Bae::TABLE::ARTISTS,query);
+        artistsTable->hideAlbumFrame();
+        break;
+    }
+        default: return;
+    }
 
-    query.prepare(QString("SELECT * FROM %1 ORDER BY  %2").arg(Bae::TABLEMAP[Bae::TABLE::ARTISTS],Bae::KEYMAP[Bae::KEY::ARTIST]));
-    artistsTable->populateAlbumsView(Bae::TABLE::ARTISTS,query);
-    artistsTable->hideAlbumFrame();
 }
 
 void MainWindow::refreshTables(const Bae::TABLE &reset) //tofix

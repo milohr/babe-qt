@@ -125,16 +125,14 @@ public slots:
 
                 case PULPO::INFO::ARTWORK:
                 {
-                    qDebug()<<"GETTING ARTWORK FROM TRACK TITLE";
-                    connect(&connection, &CollectionDB::artworkInserted,[this](const DB &albumMap)
-                    {
-                        emit this->artworkReady(albumMap);
-                    });
+                    if(!response[info].isEmpty())
 
-                    connect(&pulpo, &Pulpo::artSaved, &connection, &CollectionDB::insertArtwork);
+                        if(!response[info][PULPO::CONTEXT::IMAGE].toByteArray().isEmpty())
+                        {
+                            connect(&pulpo, &Pulpo::artSaved, &connection, &CollectionDB::insertArtwork);
+                            pulpo.saveArt(response[info][PULPO::CONTEXT::IMAGE].toByteArray(),CachePath);
+                        }
 
-                    if(!response[info][PULPO::CONTEXT::IMAGE].toByteArray().isEmpty())
-                        pulpo.saveArt(response[info][PULPO::CONTEXT::IMAGE].toByteArray(),CachePath);
 
                     break;
                 }
@@ -236,6 +234,8 @@ public slots:
             if(!go) return;
         }
 
+        emit this->artworkReady(TABLE::ALBUMS);
+
         // select title, artist, album from tracks t where url not in (select url from tracks_tags)
         queryTxt =  QString("SELECT %1, %2, %3, %4 FROM %5 WHERE %1 NOT IN ( SELECT %1 FROM %6 )").arg(KEYMAP[KEY::URL],
                 KEYMAP[KEY::TITLE],
@@ -300,15 +300,14 @@ public slots:
 
                 case PULPO::INFO::ARTWORK:
                 {
-                    connect(&connection, &CollectionDB::artworkInserted,[this](const DB &albumMap)
-                    {
-                        emit this->artworkReady(albumMap);
-                    });
-                    connect(&pulpo, &Pulpo::artSaved, &connection, &CollectionDB::insertArtwork);
 
                     if(!response[info].isEmpty())
-                        for (auto context : response[info].keys())
-                            pulpo.saveArt(response[info][context].toByteArray(),CachePath);
+
+                        if(!response[info][PULPO::CONTEXT::IMAGE].toByteArray().isEmpty())
+                        {
+                            connect(&pulpo, &Pulpo::artSaved, &connection, &CollectionDB::insertArtwork);
+                            pulpo.saveArt(response[info][PULPO::CONTEXT::IMAGE].toByteArray(),CachePath);
+                        }
 
                     break;
                 }
@@ -341,6 +340,8 @@ public slots:
             pulpo.feed(track, PULPO::RECURSIVE::OFF);
             if(!go) return;
         }
+
+        emit this->artworkReady(TABLE::ALBUMS);
 
         qDebug()<<"getting missing tags";
         queryTxt =  QString("SELECT %1, %2 FROM %3 WHERE %1 NOT IN ( SELECT %1 FROM %4 ) AND %2 NOT IN ( SELECT %2 FROM %4 )").arg(KEYMAP[KEY::ALBUM],
@@ -398,16 +399,13 @@ public slots:
                 }
                 case PULPO::INFO::ARTWORK:
                 {
-                    connect(&connection, &CollectionDB::artworkInserted,[this](const DB &albumMap)
-                    {
-                        emit this->artworkReady(albumMap);
-                    });
-                    connect(&pulpo, &Pulpo::artSaved, &connection, &CollectionDB::insertArtwork);
-
                     if(!response[info].isEmpty())
-                        for (auto context : response[info].keys())
-                            pulpo.saveArt(response[info][context].toByteArray(),CachePath);
 
+                        if(!response[info][PULPO::CONTEXT::IMAGE].toByteArray().isEmpty())
+                        {
+                            connect(&pulpo, &Pulpo::artSaved, &connection, &CollectionDB::insertArtwork);
+                            pulpo.saveArt(response[info][PULPO::CONTEXT::IMAGE].toByteArray(),CachePath);
+                        }
 
                     break;
                 }
@@ -440,6 +438,7 @@ public slots:
             if(!go) return;
         }
 
+        emit this->artworkReady(TABLE::ARTISTS);
 
         //select artist from artists where  artist  not in (select album from albums_tags)
         qDebug()<<"getting missing tags";
@@ -474,6 +473,6 @@ private:
 signals:
 
     void finished();
-    void artworkReady(const DB &album);
+    void artworkReady(const TABLE &type);
 };
 }

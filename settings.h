@@ -109,8 +109,8 @@ public slots:
                                 {Bae::KEY::RELEASE_DATE,QString::number(year)}};
 
                             emit trackReady(trackMap);
-                            while(this->wait){t.msleep(100);}
-                            this->wait=!this->wait;
+//                            while(this->wait){t.msleep(100);}
+//                            this->wait=!this->wait;
                         }
 
                     }else break;
@@ -221,7 +221,7 @@ public slots:
         void refreshTables(const Bae::TABLE &reset);
         void finishedTracksInsertion();
         void getArtwork();
-        void albumArtReady(const Bae::DB &albumMap);
+        void albumArtReady(const Bae::TABLE &type);
 
     };
 
