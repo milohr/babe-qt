@@ -15,14 +15,13 @@
 #include "../db/collectionDB.h"
 #include "../kde/notify.h"
 
-namespace Ui { class PlaylistsView; }
-
 class PlaylistsView : public QWidget
 {
     Q_OBJECT
 
 public:
     explicit PlaylistsView(QWidget *parent = nullptr);
+    ~PlaylistsView();
     BabeTable *table;
     QListWidget *list;
 

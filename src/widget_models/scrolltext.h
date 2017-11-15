@@ -12,7 +12,7 @@ class ScrollText : public QLabel
 
     public: //Member Functions
         enum Direction{LeftToRight,RightToLeft};
-        ScrollText(QWidget *parent = 0);
+        ScrollText(QWidget *parent = nullptr);
         ~ScrollText();
         void show();
         void setAlignment(Qt::Alignment);

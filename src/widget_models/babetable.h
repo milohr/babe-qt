@@ -110,7 +110,7 @@ private:
     bool rowPreview=true;
 
     QMenu *contextMenu;
-    QMenu* sendToMenu;
+    QMenu *sendToMenu;
 
     QMap<QString,QString> devices;
     QButtonGroup *stars;
@@ -126,7 +126,7 @@ private:
 public:
 
     explicit BabeTable(QWidget *parent = nullptr);
-
+~BabeTable();
     enum menuActions //this order must be followed
     {
         BABEIT, QUEUEIT, INFOIT, EDITIT, SAVETO, REMOVEIT, RATEIT, MOODIT, SENDIT, ADDTO

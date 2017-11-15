@@ -47,6 +47,11 @@ RabbitView::RabbitView(QWidget *parent) : QWidget(parent)
 
 }
 
+RabbitView::~RabbitView()
+{
+    qDebug()<<"DELETING RABBITVIEW";
+}
+
 
 void RabbitView::populateArtistSuggestion(QMap<QString,QByteArray> info)
 {

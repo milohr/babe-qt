@@ -160,6 +160,11 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
     this->setLayout(layout);
 }
 
+PlaylistsView::~PlaylistsView()
+{
+    qDebug()<<"DELETING PLAYLISVIEW";
+}
+
 void PlaylistsView::showPlaylistDialog()
 {
     QDialog *playlistDialog = new QDialog(this);

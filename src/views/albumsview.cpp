@@ -143,6 +143,11 @@ AlbumsView::AlbumsView(const bool &extraList, QWidget *parent) :
     this->setLayout(layout);
 }
 
+AlbumsView::~AlbumsView()
+{
+    qDebug()<<"DELETING ALBUMSVIEW";
+}
+
 
 void AlbumsView::expandList()
 {

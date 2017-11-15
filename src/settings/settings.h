@@ -66,7 +66,6 @@ public:
     // enum artists { ARTIST_TITLE, ART};
 
 private slots:
-
     void on_open_clicked();
     void on_toolbarIconSize_activated(const QString &arg1);
     void on_pushButton_clicked();

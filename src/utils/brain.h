@@ -202,6 +202,7 @@ public slots:
         //        }
 
         pulpo.registerServices({PULPO::SERVICES::LyricWikia});
+        qDebug()<<"getting missing track lyrics";
 
         auto queryTxt =  QString("SELECT %1, %2, %3 FROM %4 WHERE %5 = ''").arg(KEYMAP[KEY::URL],
                 KEYMAP[KEY::TITLE],
@@ -222,6 +223,8 @@ public slots:
 
         pulpo.registerServices({PULPO::SERVICES::LastFm,PULPO::SERVICES::Spotify,PULPO::SERVICES::MusicBrainz});
         pulpo.setInfo(PULPO::INFO::ARTWORK);
+        qDebug()<<"getting missing track artwork";
+
         //select url, title, album, artist from tracks t inner join albums a on a.album=t.album and a.artist=t.artist where a.artwork = ''
         queryTxt =  QString("SELECT DISTINCT t.%1, t.%2, t.%3, t.%4 FROM %5 t INNER JOIN %6 a ON a.%3 = t.%3 AND a.%4 = t.%4  WHERE a.%7 = '' GROUP BY a.%3, a.%4 ").arg(KEYMAP[KEY::URL],
                 KEYMAP[KEY::TITLE],
@@ -241,6 +244,8 @@ public slots:
 
         emit this->artworkReady(TABLE::ALBUMS);
 
+
+        qDebug()<<"getting missing track tags";
         // select title, artist, album from tracks t where url not in (select url from tracks_tags)
         queryTxt =  QString("SELECT %1, %2, %3, %4 FROM %5 WHERE %1 NOT IN ( SELECT %1 FROM %6 )").arg(KEYMAP[KEY::URL],
                 KEYMAP[KEY::TITLE],
@@ -259,7 +264,7 @@ public slots:
         }
 
 
-        qDebug()<<"getting missing TRACK wikis";
+        qDebug()<<"getting missing track wikis";
         queryTxt =  QString("SELECT %1, %2, %3, %4 FROM %5 WHERE %6 = ''").arg(KEYMAP[KEY::URL],KEYMAP[KEY::TITLE],
                 KEYMAP[KEY::ARTIST],KEYMAP[KEY::ALBUM],TABLEMAP[TABLE::TRACKS],KEYMAP[KEY::WIKI]);
         query.prepare(queryTxt);
@@ -333,9 +338,8 @@ public slots:
         pulpo.registerServices({PULPO::SERVICES::LastFm,PULPO::SERVICES::Spotify,PULPO::SERVICES::MusicBrainz});
 
         /* get all albums missing information */
-        //select album, artist from albums where  album  not in (select album from albums_tags) and artist  not in (select  artist from albums_tags)
 
-        qDebug()<<"getting missing artworks";
+        qDebug()<<"getting missing album artworks";
         auto queryTxt = QString("SELECT %1, %2 FROM %3 WHERE %4 = ''").arg(KEYMAP[KEY::ALBUM],
                 KEYMAP[KEY::ARTIST],TABLEMAP[TABLE::ALBUMS],KEYMAP[KEY::ARTWORK]);
         QSqlQuery query (queryTxt);
@@ -348,7 +352,8 @@ public slots:
 
         emit this->artworkReady(TABLE::ALBUMS);
 
-        qDebug()<<"getting missing tags";
+        //select album, artist from albums where  album  not in (select album from albums_tags) and artist  not in (select  artist from albums_tags)
+        qDebug()<<"getting missing album tags";
         queryTxt =  QString("SELECT %1, %2 FROM %3 WHERE %1 NOT IN ( SELECT %1 FROM %4 ) AND %2 NOT IN ( SELECT %2 FROM %4 )").arg(KEYMAP[KEY::ALBUM],
                 KEYMAP[KEY::ARTIST],TABLEMAP[TABLE::ALBUMS],TABLEMAP[TABLE::ALBUMS_TAGS]);
         query.prepare(queryTxt);
@@ -359,13 +364,14 @@ public slots:
             if(!go) return;
         }
 
-        qDebug()<<"getting missing wikis";
+        qDebug()<<"getting missing album wikis";
         queryTxt =  QString("SELECT %1, %2 FROM %3 WHERE %4 = '' ").arg(KEYMAP[KEY::ALBUM],
                 KEYMAP[KEY::ARTIST],TABLEMAP[TABLE::ALBUMS],KEYMAP[KEY::WIKI]);
         query.prepare(queryTxt);
         pulpo.setInfo(PULPO::INFO::WIKI);
         for(auto track : connection.getDBData(query))
         {
+            this->connection.wikiAlbum(track,SLANG[W::NONE]);
             pulpo.feed(track, PULPO::RECURSIVE::ON);
             if(!go) return;
         }
@@ -432,7 +438,7 @@ public slots:
         /* get all albums missing information */
 
 
-        qDebug()<<"getting missing artworks";
+        qDebug()<<"getting missing artist artworks";
         auto queryTxt = QString("SELECT %1 FROM %2 WHERE %3 = ''").arg(KEYMAP[KEY::ARTIST],
                 TABLEMAP[TABLE::ARTISTS],KEYMAP[KEY::ARTWORK]);
         QSqlQuery query (queryTxt);
@@ -446,7 +452,7 @@ public slots:
         emit this->artworkReady(TABLE::ARTISTS);
 
         //select artist from artists where  artist  not in (select album from albums_tags)
-        qDebug()<<"getting missing tags";
+        qDebug()<<"getting missing artist tags";
         queryTxt =  QString("SELECT %1 FROM %2 WHERE %1 NOT IN ( SELECT %1 FROM %3 ) ").arg(KEYMAP[KEY::ARTIST],
                 TABLEMAP[TABLE::ARTISTS],TABLEMAP[TABLE::ARTISTS_TAGS]);
         query.prepare(queryTxt);
@@ -457,13 +463,14 @@ public slots:
             if(!go) return;
         }
 
-        qDebug()<<"getting missing wikis";
+        qDebug()<<"getting missing artist wikis";
         queryTxt =  QString("SELECT %1 FROM %2 WHERE %3 = '' ").arg(KEYMAP[KEY::ARTIST],
                 TABLEMAP[TABLE::ARTISTS],KEYMAP[KEY::WIKI]);
         query.prepare(queryTxt);
         pulpo.setInfo(PULPO::INFO::WIKI);
         for(auto track : connection.getDBData(query))
         {
+            this->connection.wikiArtist(track,SLANG[W::NONE]);
             pulpo.feed(track, PULPO::RECURSIVE::ON);
             if(!go) return;
         }

@@ -213,6 +213,11 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent)
 
 }
 
+BabeTable::~BabeTable()
+{
+ qDebug()<<"DELETING BABETABLE";
+}
+
 
 
 

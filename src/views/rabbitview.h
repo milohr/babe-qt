@@ -15,6 +15,8 @@
 #include "../widget_models/babealbum.h"
 #include "../widget_models/babetable.h"
 #include "../pulpo/pulpo.h"
+
+
 class RabbitView : public QWidget
 {
     Q_OBJECT
@@ -22,6 +24,7 @@ class RabbitView : public QWidget
 public:
 
     explicit RabbitView(QWidget *parent = nullptr);
+    ~RabbitView();
 
     enum suggestionsTables
     {

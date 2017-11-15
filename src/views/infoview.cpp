@@ -136,7 +136,11 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView)
 
 }
 
-InfoView::~InfoView() { delete ui; }
+InfoView::~InfoView()
+{
+    qDebug()<<"DELETING INFOVIEW";
+    delete ui;
+}
 
 void InfoView::setTrack(const Bae::DB &track)
 {

@@ -3,6 +3,11 @@
 
 BabeAlbum::BabeAlbum(QWidget *parent) : QLabel(parent){}
 
+BabeAlbum::~BabeAlbum()
+{
+    qDebug()<<"DELETING BABEALBUM";
+}
+
 void BabeAlbum::createAlbum(const Bae::DB &info, const Bae::AlbumSizeHint &widgetSize, const uint &widgetRadius, const bool &isDraggable)
 {
     switch (widgetSize)

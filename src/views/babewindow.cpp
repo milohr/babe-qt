@@ -97,6 +97,7 @@ BabeWindow::BabeWindow(const QStringList &files, QWidget *parent) : QMainWindow(
 
 BabeWindow::~BabeWindow()
 {
+    qDebug()<<"DELETING BABEWINDOW";
     delete ui;
 }
 

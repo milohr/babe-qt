@@ -28,6 +28,7 @@ class BabeAlbum : public QLabel
 
 public:
     explicit BabeAlbum(QWidget *parent = nullptr);
+    ~BabeAlbum();
     void changeArt();
     void createAlbum(const DB &info, const AlbumSizeHint &widgetSize, const uint &widgetRadius=0, const bool &isDraggable=false);
     void setArtist(const QString &artistTitle);

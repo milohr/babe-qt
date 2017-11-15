@@ -17,6 +17,7 @@
 
 
 #include "scrolltext.h"
+#include <QDebug>
 
 ScrollText::ScrollText(QWidget *parent) {
 
@@ -31,8 +32,6 @@ ScrollText::ScrollText(QWidget *parent) {
 void ScrollText::refreshLabel() { repaint(); }
 
 void ScrollText::start() {}
-
-
 
 void ScrollText::enterEvent(QEvent *event) {
     Q_UNUSED(event);
@@ -65,7 +64,10 @@ void ScrollText::reset() {
     timer.stop();
 }
 
-ScrollText::~ScrollText() { }
+ScrollText::~ScrollText()
+{
+    qDebug()<<"DELETING SCROLLTEXT";
+}
 
 void ScrollText::show() { QLabel::show(); }
 

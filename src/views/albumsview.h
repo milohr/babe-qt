@@ -126,6 +126,7 @@ class AlbumsView : public QWidget
 
 public:
     explicit AlbumsView(const bool &extraList=false, QWidget *parent = nullptr);
+    ~AlbumsView();
 
     void populate(const Bae::TABLE &type, QSqlQuery &query);
     void addAlbum(const Bae::DB &albumMap);

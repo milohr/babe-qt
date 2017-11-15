@@ -149,6 +149,7 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
 
 settings::~settings()
 {
+    qDebug()<<"DELETING SETTINGS";
     delete ui;
     //    delete fileSaver;
     //    delete this->brainDeamon;

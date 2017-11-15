@@ -31,7 +31,7 @@ bool musicBrainz::setUpService(const PULPO::ONTOLOGY &ontology, const PULPO::INF
     {
     case PULPO::ONTOLOGY::ARTIST:
     {
-        url.append("artist/?query=artist:\"" + encodedArtist.toString()+ "\"") ;
+        url.append(QString("artist/?query=artist:\"" + encodedArtist.toString()+ "\"")) ;
         url.append("&fmt=json");
         url.append("&limit=5");
         break;
@@ -42,9 +42,9 @@ bool musicBrainz::setUpService(const PULPO::ONTOLOGY &ontology, const PULPO::INF
         QUrl encodedAlbum(this->track[Bae::KEY::ALBUM]);
         encodedAlbum.toEncoded(QUrl::FullyEncoded);
 
-        url.append("release/?query=release:\"" + encodedAlbum.toString()+ "\"") ;
-        url.append("+artist:\"" + encodedArtist.toString()+ "\"") ;
-        url.append("+primarytype:\"album\"&fmt=json&limit=5");
+        url.append(QString("release/?query=release:\"" + encodedAlbum.toString()+ "\"")) ;
+        url.append(QString("+artist:\"" + encodedArtist.toString()+ "\"")) ;
+        url.append(QString("+primarytype:\"album\"&fmt=json&limit=5"));
         break;
     }
 
@@ -52,8 +52,8 @@ bool musicBrainz::setUpService(const PULPO::ONTOLOGY &ontology, const PULPO::INF
     {
         QUrl encodedTrack(this->track[Bae::KEY::TITLE]);
         encodedTrack.toEncoded(QUrl::FullyEncoded);
-        url.append("recording/?query=artist:\"" + encodedArtist.toString() + "\"");
-        url.append("+recording:\"" + encodedTrack.toString()+ "\"");
+        url.append(QString("recording/?query=artist:\"" + encodedArtist.toString() + "\""));
+        url.append(QString("+recording:\"" + encodedTrack.toString()+ "\""));
         url.append("&fmt=json");
         url.append("&limit=5");
 
