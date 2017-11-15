@@ -1,0 +1,1106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>BabeWindow</class>
+ <widget class="QMainWindow" name="BabeWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>765</width>
+    <height>411</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>0</width>
+    <height>0</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Babe</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../../data.qrc">
+    <normaloff>:/Data/data/48-apps-babe.svg</normaloff>:/Data/data/48-apps-babe.svg</iconset>
+  </property>
+  <property name="autoFillBackground">
+   <bool>false</bool>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
+  <property name="tabShape">
+   <enum>QTabWidget::Triangular</enum>
+  </property>
+  <property name="unifiedTitleAndToolBarOnMac">
+   <bool>true</bool>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <widget class="QWidget" name="collectionUtils" native="true">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>230</y>
+      <width>181</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="QToolButton" name="addAll">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="toolTip">
+        <string>Add...</string>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+       <property name="icon">
+        <iconset theme="list-add">
+         <normaloff>.</normaloff>.</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>22</width>
+         <height>22</height>
+        </size>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="saveResults">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="toolTip">
+        <string>Save results...</string>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+       <property name="icon">
+        <iconset theme="document-save-as">
+         <normaloff>.</normaloff>.</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>22</width>
+         <height>22</height>
+        </size>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QFrame" name="frame_4">
+    <property name="geometry">
+     <rect>
+      <x>70</x>
+      <y>190</y>
+      <width>191</width>
+      <height>1</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>16777215</width>
+      <height>1</height>
+     </size>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::HLine</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Plain</enum>
+    </property>
+   </widget>
+   <widget class="QFrame" name="frame_5">
+    <property name="geometry">
+     <rect>
+      <x>70</x>
+      <y>210</y>
+      <width>191</width>
+      <height>1</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>16777215</width>
+      <height>1</height>
+     </size>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::HLine</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Plain</enum>
+    </property>
+   </widget>
+   <widget class="QFrame" name="frame_6">
+    <property name="geometry">
+     <rect>
+      <x>70</x>
+      <y>230</y>
+      <width>191</width>
+      <height>1</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>16777215</width>
+      <height>1</height>
+     </size>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::HLine</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Plain</enum>
+    </property>
+   </widget>
+   <widget class="QWidget" name="controls" native="true">
+    <property name="geometry">
+     <rect>
+      <x>280</x>
+      <y>130</y>
+      <width>371</width>
+      <height>201</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="autoFillBackground">
+     <bool>false</bool>
+    </property>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="1" column="2">
+      <spacer name="verticalSpacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="2" column="0">
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="6" column="0">
+      <widget class="QLabel" name="time">
+       <property name="text">
+        <string>00:00</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="4">
+      <widget class="QLabel" name="duration">
+       <property name="text">
+        <string>00:00</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="4">
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="6" column="2">
+      <widget class="QToolButton" name="miniPlaybackBtn">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+       <property name="icon">
+        <iconset theme="go-top">
+         <normaloff>.</normaloff>.</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>22</width>
+         <height>22</height>
+        </size>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QToolButton" name="backward_btn">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="autoFillBackground">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+       <property name="icon">
+        <iconset theme="media-skip-backward">
+         <normaloff>.</normaloff>.</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>22</width>
+         <height>22</height>
+        </size>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="3">
+      <widget class="QToolButton" name="foward_btn">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="autoFillBackground">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+       <property name="icon">
+        <iconset theme="media-skip-forward">
+         <normaloff>.</normaloff>.</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>22</width>
+         <height>22</height>
+        </size>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QToolButton" name="hide_sidebar_btn">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="autoFillBackground">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+       <property name="icon">
+        <iconset theme="zoom">
+         <normaloff>.</normaloff>.</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>22</width>
+         <height>22</height>
+        </size>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="2">
+      <widget class="QToolButton" name="play_btn">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="autoFillBackground">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+       <property name="icon">
+        <iconset theme="media-playback-start">
+         <normaloff>.</normaloff>.</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>22</width>
+         <height>22</height>
+        </size>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="2">
+      <widget class="QToolButton" name="fav_btn">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="autoFillBackground">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+       <property name="icon">
+        <iconset theme="love">
+         <normaloff>.</normaloff>.</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>22</width>
+         <height>22</height>
+        </size>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="3">
+      <widget class="QToolButton" name="shuffle_btn">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="autoFillBackground">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+       <property name="icon">
+        <iconset theme="media-playlist-repeat">
+         <normaloff>.</normaloff>.</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>22</width>
+         <height>22</height>
+        </size>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="2">
+      <spacer name="verticalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="playlistUtils" native="true">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>50</y>
+      <width>321</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="autoFillBackground">
+     <bool>false</bool>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_6">
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="QToolButton" name="tracks_view_2">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="toolTip">
+        <string>Back</string>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+       <property name="icon">
+        <iconset theme="filename-filetype-amarok">
+         <normaloff>.</normaloff>.</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>22</width>
+         <height>22</height>
+        </size>
+       </property>
+       <property name="checkable">
+        <bool>false</bool>
+       </property>
+       <property name="autoExclusive">
+        <bool>true</bool>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="rabbit_view">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="toolTip">
+        <string>Discover</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset theme="kstars_constellationart">
+         <normaloff>.</normaloff>.</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>22</width>
+         <height>22</height>
+        </size>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="autoExclusive">
+        <bool>false</bool>
+       </property>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonIconOnly</enum>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QWidget" name="filterBox" native="true">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QLineEdit" name="filter">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="frame">
+           <bool>false</bool>
+          </property>
+          <property name="placeholderText">
+           <string>Filter...</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QFrame" name="frame_8">
+          <property name="maximumSize">
+           <size>
+            <width>1</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::VLine</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Plain</enum>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="filterBtn">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="toolTip">
+        <string>Filter..</string>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+       <property name="icon">
+        <iconset theme="edit-find">
+         <normaloff>.</normaloff>.</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>22</width>
+         <height>22</height>
+        </size>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="calibrateBtn">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="toolTip">
+        <string>Calibrations</string>
+       </property>
+       <property name="toolTipDuration">
+        <number>-1</number>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+       <property name="icon">
+        <iconset theme="tools-wizard">
+         <normaloff>.</normaloff>.</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>22</width>
+         <height>22</height>
+        </size>
+       </property>
+       <property name="popupMode">
+        <enum>QToolButton::InstantPopup</enum>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+       <property name="arrowType">
+        <enum>Qt::NoArrow</enum>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="viewsUtils" native="true">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>130</y>
+      <width>311</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="autoFillBackground">
+     <bool>true</bool>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_9">
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="QToolButton" name="tracks_view">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Songs</string>
+       </property>
+       <property name="icon">
+        <iconset theme="filename-filetype-amarok">
+         <normaloff>.</normaloff>.</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>22</width>
+         <height>22</height>
+        </size>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="autoExclusive">
+        <bool>true</bool>
+       </property>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonTextBesideIcon</enum>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="albums_view">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>Albums</string>
+       </property>
+       <property name="icon">
+        <iconset theme="media-album-track">
+         <normaloff>.</normaloff>.</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>22</width>
+         <height>22</height>
+        </size>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="autoExclusive">
+        <bool>true</bool>
+       </property>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonTextBesideIcon</enum>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="artists_view">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Artists</string>
+       </property>
+       <property name="icon">
+        <iconset theme="amarok_artist">
+         <normaloff>.</normaloff>.</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>22</width>
+         <height>22</height>
+        </size>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="autoExclusive">
+        <bool>true</bool>
+       </property>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonTextBesideIcon</enum>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="playlists_view">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="toolTip">
+        <string>Playlists</string>
+       </property>
+       <property name="text">
+        <string>Playlists</string>
+       </property>
+       <property name="icon">
+        <iconset theme="view-media-playlist">
+         <normaloff>.</normaloff>.</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>22</width>
+         <height>22</height>
+        </size>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="autoExclusive">
+        <bool>true</bool>
+       </property>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonTextBesideIcon</enum>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QFrame" name="frame_3">
+       <property name="maximumSize">
+        <size>
+         <width>1</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::VLine</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Plain</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="search">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="frame">
+        <bool>false</bool>
+       </property>
+       <property name="placeholderText">
+        <string>Search...</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QFrame" name="frame_11">
+       <property name="maximumSize">
+        <size>
+         <width>1</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::VLine</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Plain</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="playAll">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="toolTip">
+        <string>Play results...</string>
+       </property>
+       <property name="autoFillBackground">
+        <bool>true</bool>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset theme="media-playback-start">
+         <normaloff>.</normaloff>.</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>22</width>
+         <height>22</height>
+        </size>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="info_view">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="toolTip">
+        <string>Info</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset theme="help-about">
+         <normaloff>.</normaloff>.</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>22</width>
+         <height>22</height>
+        </size>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="autoExclusive">
+        <bool>true</bool>
+       </property>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonIconOnly</enum>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="settings_view">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="toolTip">
+        <string>Settings</string>
+       </property>
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset theme="games-config-options">
+         <normaloff>.</normaloff>.</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>22</width>
+         <height>22</height>
+        </size>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="autoExclusive">
+        <bool>true</bool>
+       </property>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonIconOnly</enum>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QFrame" name="vLine">
+    <property name="geometry">
+     <rect>
+      <x>420</x>
+      <y>20</y>
+      <width>1</width>
+      <height>80</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>1</width>
+      <height>16777215</height>
+     </size>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::VLine</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+   </widget>
+  </widget>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources>
+  <include location="../../data.qrc"/>
+ </resources>
+ <connections/>
+</ui>

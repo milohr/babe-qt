@@ -46,10 +46,11 @@
         <file>data/go-top.svg</file>
         <file>data/go-bottom.svg</file>
         <file>data/appointment-new.svg</file>
-        <file>script.sql</file>
         <file>data/48-apps-babe.svg</file>
         <file>data/64-apps-babe.svg</file>
         <file>data/128-apps-babe.png</file>
         <file>data/128-apps-babe.svg</file>
+        <file>src/db/script.sql</file>
+        <file>src/db/queries.json</file>
     </qresource>
 </RCC>

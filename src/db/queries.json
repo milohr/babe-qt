@@ -1,0 +1,25 @@
+{
+
+    "TRACK" : {
+        "similar": "" ,
+        "like" : "" ,
+        "tag": "",
+        "lyrics": "",
+    },
+
+
+    "ARTIST" : {
+        "similar": "" ,
+        "like": "" ,
+        "tag": "",
+        "lyrics": "",
+    },
+
+    "ALBUM" : {
+        "similar": "" ,
+        "like": "" ,
+        "tag": "",
+        "lyrics": "",
+    }
+
+}
