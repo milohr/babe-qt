@@ -99,8 +99,8 @@ public slots:
         if(go)
         {
             this->albumInfo();
-            //            this->artistInfo();
-            //            this->trackInfo();
+            this->artistInfo();
+            this->trackInfo();
         }
 
         emit this->finished();
