@@ -26,18 +26,21 @@ BabeGrid::BabeGrid(const double &factor, const Bae::AlbumSizeHint &deafultValue,
 
 }
 
+BabeGrid::~BabeGrid()
+{
+    qDebug()<<"DELETING BABEGRID";
+}
+
 void BabeGrid::addAlbum(const Bae::DB &albumMap)
 {
     Bae::DB auxMap {{Bae::KEY::ARTIST,albumMap[Bae::KEY::ARTIST]},{Bae::KEY::ALBUM,albumMap[Bae::KEY::ALBUM]}};
 
     if(!this->albumsMap.contains(auxMap))
     {
-        auto album= new BabeAlbum(this);
-        album->createAlbum(albumMap,defaultAlbumValue,4,true);
-
+        auto album= new BabeAlbum(albumMap,defaultAlbumValue,4,true,this);
         this->albumsMap.insert(auxMap,album);
 
-        connect(album,&BabeAlbum::albumCoverClicked,[&](const Bae::DB &albumMap)
+        connect(album,&BabeAlbum::albumCoverClicked,[this](const Bae::DB &albumMap)
         {
             emit this->albumClicked(albumMap);
         });
@@ -50,6 +53,10 @@ void BabeGrid::addAlbum(const Bae::DB &albumMap)
         album->setGraphicsEffect(shadow);
         album->borderColor=false;
         album->setUpMenu();
+
+        auto sendIt = new QAction("Send it to phone",this);
+
+        album->addAction(sendIt);
 
         connect(album,&BabeAlbum::albumCoverDoubleClicked, [this] (const Bae::DB &albumMap)
         {

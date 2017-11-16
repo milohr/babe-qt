@@ -22,7 +22,6 @@ class RabbitView : public QWidget
     Q_OBJECT
 
 public:
-
     explicit RabbitView(QWidget *parent = nullptr);
     ~RabbitView();
 

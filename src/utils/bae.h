@@ -26,17 +26,6 @@ static const SEARCH SearchTMap {
     {Bae::SearchT::SIMILAR,"similar"}
 };
 
-enum Order
-{
-    DESC, ASC
-};
-
-static const QMap<Order,QString> OrderMap =
-{
-    {Order::DESC, "DESC"},
-    {Order::ASC,"ASC"}
-};
-
 enum class W : uint_fast8_t
 {
     ALL,
@@ -45,6 +34,8 @@ enum class W : uint_fast8_t
     SIMILAR,
     UNKNOWN,
     DONE,
+    DESC,
+    ASC
 };
 
 static const QMap<W,QString> SLANG =
@@ -54,29 +45,29 @@ static const QMap<W,QString> SLANG =
     {W::LIKE, "LIKE"},
     {W::SIMILAR, "SIMILAR"},
     {W::UNKNOWN, "UNKNOWN"},
-    {W::DONE, "DONE"}
-
+    {W::DONE, "DONE"},
+    {W::DESC, "DESC"},
+    {W::ASC,"ASC"}
 };
 
 enum class TABLE : uint8_t
 {
-    ALBUMS=0,
-    ARTISTS=1,
-    MOODS=2,
-    PLAYLISTS=3,
-    SOURCES=4,
-    SOURCES_TYPES=5,
-    TRACKS=6,
-    TRACKS_MOODS=7,
-    TRACKS_PLAYLISTS=8,
-    TAGS=9,
-    ALBUMS_TAGS=10,
-    ARTISTS_TAGS=11,
-    TRACKS_TAGS=12,
-    LOGS=13,
-    ALL=14,
-    NONE=15
-
+    ALBUMS,
+    ARTISTS,
+    MOODS,
+    PLAYLISTS,
+    SOURCES,
+    SOURCES_TYPES,
+    TRACKS,
+    TRACKS_MOODS,
+    TRACKS_PLAYLISTS,
+    TAGS,
+    ALBUMS_TAGS,
+    ARTISTS_TAGS,
+    TRACKS_TAGS,
+    LOGS,
+    ALL,
+    NONE
 };
 
 static const QMap<TABLE,QString> TABLEMAP =
@@ -100,103 +91,96 @@ static const QMap<TABLE,QString> TABLEMAP =
 
 enum class KEY :uint8_t
 {
-    URL=0,
-    SOURCES_URL=1,
-    TRACK=2,
-    TITLE=3,
-    ARTIST=4,
-    ALBUM=5,
-    DURATION=6,
-    PLAYED=7,
-    BABE=8,
-    STARS=9,
-    RELEASE_DATE=10,
-    ADD_DATE=11,
-    LYRICS=12,
-    GENRE=13,
-    ART=14,
-    TAG=15,
-    MOOD=16,
-    PLAYLIST=17,
-    ARTWORK=18,
-    WIKI=19,
-    SOURCE_TYPE=20,
-    CONTEXT=21,
-    RETRIEVAL_DATE=22,
-    COMMENT=23,
-    ID=24,
+    URL = 0,
+    SOURCES_URL = 1,
+    TRACK = 2,
+    TITLE = 3,
+    ARTIST = 4,
+    ALBUM = 5,
+    DURATION = 6,
+    PLAYED = 7,
+    BABE = 8,
+    STARS = 9,
+    RELEASE_DATE = 10,
+    ADD_DATE = 11,
+    LYRICS = 12,
+    GENRE = 13,
+    ART = 14,
+    TAG = 15,
+    MOOD = 16,
+    PLAYLIST = 17,
+    ARTWORK = 18,
+    WIKI = 19,
+    SOURCE_TYPE = 20,
+    CONTEXT = 21,
+    RETRIEVAL_DATE = 22,
+    COMMENT = 23,
+    ID = 24,
 
-    NONE=25    
+    NONE = 25
 };
-
-
 
 typedef QMap<Bae::KEY, QString> DB;
 typedef QList<DB> DB_LIST;
 
-
-//inline bool operator==(const Bae::DB &e1, const Bae::DB &e2)
-//{
-//    return e1[Bae::KEY::ALBUM] == e2[Bae::KEY::ALBUM]
-//            && e1[Bae::KEY::ALBUM] == e2[Bae::KEY::ALBUM];
-//}
-
 static const DB KEYMAP =
 {
-    {KEY::URL,"url"},
-    {KEY::SOURCES_URL,"sources_url"},
-    {KEY::TRACK,"track"},
-    {KEY::TITLE,"title"},
-    {KEY::ARTIST,"artist"},
-    {KEY::ALBUM,"album"},
-    {KEY::DURATION,"duration"},
-    {KEY::PLAYED,"played"},
-    {KEY::BABE,"babe"},
-    {KEY::STARS,"stars"},
-    {KEY::RELEASE_DATE,"releaseDate"},
-    {KEY::ADD_DATE,"addDate"},
-    {KEY::LYRICS,"lyrics"},
-    {KEY::GENRE,"genre"},
-    {KEY::ART,"art"},
-    {KEY::TAG,"tag"},
-    {KEY::MOOD,"mood"},
-    {KEY::PLAYLIST,"playlist"},
-    {KEY::ARTWORK,"artwork"},
-    {KEY::WIKI,"wiki"},
-    {KEY::SOURCE_TYPE,"source_types_id"},
-    {KEY::CONTEXT,"context"},
-    {KEY::RETRIEVAL_DATE,"retrieval_date"},
-    {KEY::ID,"id"},
-    {KEY::COMMENT,"comment"}
+    {KEY::URL, "url"},
+    {KEY::SOURCES_URL, "sources_url"},
+    {KEY::TRACK, "track"},
+    {KEY::TITLE, "title"},
+    {KEY::ARTIST, "artist"},
+    {KEY::ALBUM, "album"},
+    {KEY::DURATION, "duration"},
+    {KEY::PLAYED, "played"},
+    {KEY::BABE, "babe"},
+    {KEY::STARS, "stars"},
+    {KEY::RELEASE_DATE, "releaseDate"},
+    {KEY::ADD_DATE, "addDate"},
+    {KEY::LYRICS, "lyrics"},
+    {KEY::GENRE, "genre"},
+    {KEY::ART, "art"},
+    {KEY::TAG, "tag"},
+    {KEY::MOOD, "mood"},
+    {KEY::PLAYLIST, "playlist"},
+    {KEY::ARTWORK, "artwork"},
+    {KEY::WIKI, "wiki"},
+    {KEY::SOURCE_TYPE, "source_types_id"},
+    {KEY::CONTEXT, "context"},
+    {KEY::RETRIEVAL_DATE, "retrieval_date"},
+    {KEY::ID, "id"},
+    {KEY::COMMENT, "comment"}
 };
-
-
 
 static const DB TracksColsMap =
 {
-    {KEY::URL,KEYMAP[KEY::URL]},
-    {KEY::SOURCES_URL,KEYMAP[KEY::SOURCES_URL]},
-    {KEY::TRACK,KEYMAP[KEY::TRACK]},
-    {KEY::TITLE,KEYMAP[KEY::TITLE]},
-    {KEY::ARTIST,KEYMAP[KEY::ARTIST]},
-    {KEY::ALBUM,KEYMAP[KEY::ALBUM]},
-    {KEY::DURATION,KEYMAP[KEY::DURATION]},
-    {KEY::PLAYED,KEYMAP[KEY::PLAYED]},
-    {KEY::BABE,KEYMAP[KEY::BABE]},
-    {KEY::STARS,KEYMAP[KEY::STARS]},
-    {KEY::RELEASE_DATE,KEYMAP[KEY::RELEASE_DATE]},
-    {KEY::ADD_DATE,KEYMAP[KEY::ADD_DATE]},
-    {KEY::LYRICS,KEYMAP[KEY::LYRICS]},
-    {KEY::GENRE,KEYMAP[KEY::GENRE]},
-    {KEY::ART,KEYMAP[KEY::ART]}
+    {KEY::URL, KEYMAP[KEY::URL]},
+    {KEY::SOURCES_URL, KEYMAP[KEY::SOURCES_URL]},
+    {KEY::TRACK, KEYMAP[KEY::TRACK]},
+    {KEY::TITLE, KEYMAP[KEY::TITLE]},
+    {KEY::ARTIST, KEYMAP[KEY::ARTIST]},
+    {KEY::ALBUM, KEYMAP[KEY::ALBUM]},
+    {KEY::DURATION, KEYMAP[KEY::DURATION]},
+    {KEY::PLAYED, KEYMAP[KEY::PLAYED]},
+    {KEY::BABE, KEYMAP[KEY::BABE]},
+    {KEY::STARS, KEYMAP[KEY::STARS]},
+    {KEY::RELEASE_DATE, KEYMAP[KEY::RELEASE_DATE]},
+    {KEY::ADD_DATE, KEYMAP[KEY::ADD_DATE]},
+    {KEY::LYRICS, KEYMAP[KEY::LYRICS]},
+    {KEY::GENRE, KEYMAP[KEY::GENRE]},
+    {KEY::ART, KEYMAP[KEY::ART]}
 };
 
+enum class AlbumSizeHint : uint
+{
+    BIG_ALBUM = 200,
+    MEDIUM_ALBUM = 120,
+    SMALL_ALBUM = 80
+};
 
-enum class AlbumSizeHint : uint {BIG_ALBUM=200,MEDIUM_ALBUM=120,SMALL_ALBUM=80};
-
-static const uint MAX_BIG_ALBUM_SIZE=300;
-static const uint MAX_MID_ALBUM_SIZE=200;
-static const uint MAX_MIN_ALBUM_SIZE=100;
+static const uint MAX_BIG_ALBUM_SIZE = 300;
+static const uint MAX_MID_ALBUM_SIZE = 200;
+static const uint MAX_MIN_ALBUM_SIZE = 100;
 
 static const double BIG_ALBUM_FACTOR = 0.039;
 static const double BIG_ALBUM_FACTOR_SUBWIDGET = 0.27;
@@ -214,14 +198,11 @@ inline uint getWidgetSizeHint(const double &factor, const AlbumSizeHint &deafult
     auto albumSizeHint =  static_cast<uint>(sqrt((screenSize.height()*screenSize.width())*factor));
     ALBUM_SIZE = albumSizeHint > ALBUM_SIZE? albumSizeHint : ALBUM_SIZE;
 
-
     switch(deafultValue)
     {
-
     case AlbumSizeHint::BIG_ALBUM:  return ALBUM_SIZE > MAX_BIG_ALBUM_SIZE? MAX_BIG_ALBUM_SIZE : ALBUM_SIZE;
     case AlbumSizeHint::MEDIUM_ALBUM:  return ALBUM_SIZE > MAX_MID_ALBUM_SIZE? MAX_MID_ALBUM_SIZE : ALBUM_SIZE;
     case AlbumSizeHint::SMALL_ALBUM:  return ALBUM_SIZE > MAX_MIN_ALBUM_SIZE ? MAX_MIN_ALBUM_SIZE :ALBUM_SIZE;
-    default: return MAX_MID_ALBUM_SIZE;
     }
 }
 
@@ -236,10 +217,9 @@ inline QString transformTime(const qint64 &value)
             format = "hh:mm:ss";
         tStr = time.toString(format);
     }
+
     return tStr.isEmpty()?"00:00":tStr;
 }
-
-
 
 inline QString getNameFromLocation(const QString &str)
 {
@@ -247,17 +227,14 @@ inline QString getNameFromLocation(const QString &str)
     int index = 0;
 
     for(int i = str.size() - 1; i >= 0; i--)
-    {
         if(str[i] == '/')
         {
             index = i + 1;
             i = -1;
         }
-    }
 
     for(; index < str.size(); index++)
         ret.push_back(str[index]);
-
 
     return ret;
 }
@@ -268,28 +245,25 @@ const QString CachePath = QStandardPaths::writableLocation(QStandardPaths::Gener
 const QString YoutubeCachePath = QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation)+"/babe/youtube/";
 const QString ExtensionFetchingPath = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
 const QString NotifyDir = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
-const QStringList MoodColors = {"#F0FF01","#01FF5B","#3DAEFD","#B401FF","#E91E63"};
-const QStringList formats {"*.mp4","*.mp3","*.wav","*.flac","*.ogg","*.m4a"};
 
+const QStringList MoodColors = {"#F0FF01","#01FF5B","#3DAEFD","#B401FF","#E91E63"};
+
+const QStringList formats {"*.mp4","*.mp3","*.wav","*.flac","*.ogg","*.m4a"};
 
 inline QString fixTitle(const QString &title,const QString &s,const QString &e)
 {
     QString newTitle;
     for(int i=0; i<title.size();i++)
-    {
         if(title.at(i)==s)
         {
             while(title.at(i)!=e)
-            {
                 if(i==title.size()-1) break;
                 else i++;
-            }
+
         }else newTitle+=title.at(i);
-    }
 
     return newTitle.simplified();
 }
-
 
 inline QString removeSubstring(const QString &newTitle, const QString &subString)
 {
@@ -320,7 +294,6 @@ inline QString ucfirst(const QString &str)/*uppercase first letter*/
 
         output = result.join(" ");
     }else output = str;
-
 
     return output.simplified();
 }

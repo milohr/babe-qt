@@ -50,31 +50,34 @@ public:
         t.wait();
     }
 
-    void requestAlbums(Bae::TABLE type, QString query)
+    void requestAlbums(QString query)
     {
         if(this->go) this->go = false;
 
         this->go = true;
 
-        if(type==Bae::TABLE::ALBUMS)
-            QMetaObject::invokeMethod(this, "getAlbums", Q_ARG(QString, query));
-        else if(type==Bae::TABLE::ARTISTS)
-            QMetaObject::invokeMethod(this, "getArtists", Q_ARG(QString, query));
+        QMetaObject::invokeMethod(this, "getAlbums", Q_ARG(QString, query));
+    }
+
+    void requestAlbums(Bae::DB_LIST albums)
+    {
+        if(this->go) this->go = false;
+
+        this->go = true;
+
+        QMetaObject::invokeMethod(this, "placeAlbums", Q_ARG(Bae::DB_LIST, albums));
     }
 
     void next() { this->nextAlbum = false;  }
 
 public slots:
-    void getAlbums(QString query)
-    {
-        qDebug()<<"GETTING TRACKS FROM ALBUMSVIEW";
 
-        QSqlQuery mquery(query);
-        auto albums = this->connection.getDBData(mquery);
-        if(albums.size()>0)
-        {
+    void placeAlbums(Bae::DB_LIST albums)
+    {
+        if(!albums.isEmpty())
             for(auto albumMap : albums)
-            {   if(go)
+            {
+                if(go)
                 {
                     emit albumReady(albumMap);
                     while(this->nextAlbum && go){t.msleep(100);}
@@ -82,29 +85,16 @@ public slots:
 
                 }else return;
             }
-        }
+
         t.msleep(100);
         emit finished();
     }
 
-    void getArtists(QString query)
+    void getAlbums(QString query)
     {
         QSqlQuery mquery(query);
-        auto artists = this->connection.getDBData(mquery);
-        if(artists.size()>0)
-        {
-            for(auto albumMap : artists)
-            {
-                if(go)
-                {
-                    emit albumReady(albumMap);
-                    while(this->nextAlbum && go){t.msleep(100); }
-                    this->nextAlbum=true;
-                }else return;
-            }
-        }
-        t.msleep(100);
-        emit finished();
+        auto albums = this->connection.getDBData(mquery);
+        this->placeAlbums(albums);
     }
 
 signals:
@@ -128,7 +118,9 @@ public:
     explicit AlbumsView(const bool &extraList=false, QWidget *parent = nullptr);
     ~AlbumsView();
 
-    void populate(const Bae::TABLE &type, QSqlQuery &query);
+    void populate(QSqlQuery &query);
+    void populate(const DB_LIST &albums);
+
     void addAlbum(const Bae::DB &albumMap);
     void populateExtraList(const QStringList &albums);
     void flushView();

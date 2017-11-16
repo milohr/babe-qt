@@ -52,11 +52,15 @@ void Pulpo::setOntology(const PULPO::ONTOLOGY &ontology)
     this->ontology = ontology;
 }
 
+ONTOLOGY Pulpo::getOntology()
+{
+    return this->ontology;
+}
+
 void Pulpo::setRecursive(const RECURSIVE &state)
 {
     this->recursive=state;
 }
-
 
 bool Pulpo::initServices()
 {
@@ -153,14 +157,14 @@ void Pulpo::passSignal(const Bae::DB &track, const PULPO::RESPONSE &response)
     emit this->infoReady(track, response);
 }
 
-PULPO::RESPONSE Pulpo::packResponse(const PULPO::INFO &infoKey, const PULPO::CONTEXT &context, const QVariant &value)
+PULPO::RESPONSE Pulpo::packResponse(const PULPO::ONTOLOGY ontology, const PULPO::INFO &infoKey, const PULPO::CONTEXT &context, const QVariant &value)
 {
-    return {{ infoKey, {{ context, value  }} }};
+    return { { ontology ,{{ infoKey, {{ context, value }} }} } };
 }
 
-PULPO::RESPONSE Pulpo::packResponse(const PULPO::INFO &infoKey, const CONTEXT_K &map)
+PULPO::RESPONSE Pulpo::packResponse(const ONTOLOGY ontology, const PULPO::INFO &infoKey, const PULPO::VALUE &map)
 {
-    return  {{infoKey, map}};
+    return  {{ ontology, { {infoKey, map} }} };
 }
 
 bool Pulpo::parseArray()

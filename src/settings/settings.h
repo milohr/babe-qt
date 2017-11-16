@@ -117,7 +117,7 @@ signals:
     void refreshTables(const Bae::TABLE &reset);
     void finishedTracksInsertion();
     void getArtwork();
-    void albumArtReady(const Bae::TABLE &type);
+    void albumArtReady(const DB &album);
 
 };
 

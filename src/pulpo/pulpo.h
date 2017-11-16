@@ -40,6 +40,7 @@ public:
     void registerServices(const QList<SERVICES> &services);
     void setInfo(const INFO &info);
     void setOntology(const ONTOLOGY &ontology);
+    ONTOLOGY getOntology();
     void setRecursive(const RECURSIVE &state);
 
 private:
@@ -56,8 +57,8 @@ protected:
     ONTOLOGY ontology = ONTOLOGY::NONE;
     AVAILABLE availableInfo;
 
-    RESPONSE packResponse(const INFO &infoKey, const CONTEXT &contextName, const QVariant &value);
-    RESPONSE packResponse(const PULPO::INFO &infoKey, const CONTEXT_K &map);
+    RESPONSE packResponse(const ONTOLOGY ontology, const INFO &infoKey, const CONTEXT &contextName, const QVariant &value);
+    RESPONSE packResponse(const ONTOLOGY ontology, const PULPO::INFO &infoKey, const VALUE &map);
 
     QByteArray startConnection(const QString &url, const QMap<QString, QString> &headers = {});
     bool parseArray();
@@ -72,7 +73,7 @@ public slots:
     void saveArt(const QByteArray &array, const QString &path);
 
 signals:
-    void infoReady(const Bae::DB &track, const PULPO::RESPONSE &response);
+    void infoReady(Bae::DB track, PULPO::RESPONSE response);
     void artSaved(const Bae::DB &track);
     void serviceFail(const QString &message);
 };

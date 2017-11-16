@@ -28,7 +28,6 @@ public:
         LOCAL, ONLINE, DEVICE
     };
 
-
     explicit CollectionDB();
     //CollectionDB(bool connect);
     ~CollectionDB(){}
@@ -38,8 +37,6 @@ public:
     bool removeQuery(QString queryTxt);
     bool execQuery(QString queryTxt);
 
-    QStringList albums;
-    QStringList artists;
 
     /*basic public actions*/
     void prepareCollectionDB();
@@ -76,15 +73,15 @@ public:
     Bae::DB_LIST getDBData(const QStringList &urls);
     Bae::DB_LIST getDBData(QSqlQuery &query);
 
-    Bae::DB_LIST getAlbumTracks(const QString &album, const QString &artist, const Bae::KEY &orderBy=Bae::KEY::TRACK, const Bae::Order &order=Bae::Order::ASC);
-    Bae::DB_LIST getArtistTracks(const QString &artist, const Bae::KEY &orderBy=Bae::KEY::ALBUM, const Bae::Order &order=Bae::Order::ASC);
-    Bae::DB_LIST getBabedTracks(const Bae::KEY &orderBy=Bae::KEY::PLAYED, const Bae::Order &order=Bae::Order::DESC);
+    Bae::DB_LIST getAlbumTracks(const QString &album, const QString &artist, const Bae::KEY &orderBy = Bae::KEY::TRACK, const Bae::W &order = Bae::W::ASC);
+    Bae::DB_LIST getArtistTracks(const QString &artist, const Bae::KEY &orderBy = Bae::KEY::ALBUM, const Bae::W &order = Bae::W::ASC);
+    Bae::DB_LIST getBabedTracks(const Bae::KEY &orderBy = Bae::KEY::PLAYED, const Bae::W &order = Bae::W::DESC);
     Bae::DB_LIST getSearchedTracks(const Bae::KEY &where, const QString &search);
-    Bae::DB_LIST getPlaylistTracks(const QString &playlist, const Bae::KEY &orderBy=Bae::KEY::ADD_DATE, const Bae::Order &order=Bae::Order::DESC);
-    Bae::DB_LIST getMostPlayedTracks(const int &greaterThan=1,const int &limit= 50, const Bae::KEY &orderBy=Bae::KEY::PLAYED, const Bae::Order &order=Bae::Order::DESC);
-    Bae::DB_LIST getFavTracks(const int &stars=1,const int &limit= 50, const Bae::KEY &orderBy=Bae::KEY::STARS, const Bae::Order &order=Bae::Order::DESC);
-    Bae::DB_LIST getRecentTracks(const int &limit= 50, const Bae::KEY &orderBy=Bae::KEY::ADD_DATE, const Bae::Order &order=Bae::Order::DESC);
-    Bae::DB_LIST getOnlineTracks(const Bae::KEY &orderBy=Bae::KEY::ADD_DATE, const Bae::Order &order=Bae::Order::DESC);
+    Bae::DB_LIST getPlaylistTracks(const QString &playlist, const Bae::KEY &orderBy = Bae::KEY::ADD_DATE, const Bae::W &order = Bae::W::DESC);
+    Bae::DB_LIST getMostPlayedTracks(const int &greaterThan = 1,const int &limit = 50, const Bae::KEY &orderBy = Bae::KEY::PLAYED, const Bae::W &order = Bae::W::DESC);
+    Bae::DB_LIST getFavTracks(const int &stars = 1,const int &limit = 50, const Bae::KEY &orderBy = Bae::KEY::STARS, const Bae::W &order = Bae::W::DESC);
+    Bae::DB_LIST getRecentTracks(const int &limit = 50, const Bae::KEY &orderBy = Bae::KEY::ADD_DATE, const Bae::W &order = Bae::W::DESC);
+    Bae::DB_LIST getOnlineTracks(const Bae::KEY &orderBy = Bae::KEY::ADD_DATE, const Bae::W &order = Bae::W::DESC);
 
 
     QString getTrackLyrics(const QString &url);
@@ -119,15 +116,11 @@ public:
 private:
 
     QSqlDatabase m_db;
-
     /*basic actions*/
     bool insert(const QString &tableName, const QVariantMap &insertData);
     bool update(const QString &table, const QString &column, const QVariant &newValue, const QVariant &op, const QString &id);
     bool remove();
     bool openDB();
-    QSqlQuery select();
-
-
 
 public slots:
     void closeConnection();

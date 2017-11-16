@@ -33,10 +33,9 @@ BabeWindow::BabeWindow(const QStringList &files, QWidget *parent) : QMainWindow(
     this->player = new QMediaPlayer(this);
     //mpris = new Mpris(this);
     this->nof = new Notify(this);
-    this->album_art = new BabeAlbum(this);
+    this->album_art = new BabeAlbum(Bae::DB{{Bae::KEY::ARTWORK,":Data/data/babe.png"}},Bae::AlbumSizeHint::BIG_ALBUM,0,false,this);
     connect(album_art,&BabeAlbum::playAlbum,this,&BabeWindow::putAlbumOnPlay);
     connect(album_art,&BabeAlbum::babeAlbum,this,&BabeWindow::babeAlbum);
-    album_art->createAlbum(Bae::DB{{Bae::KEY::ARTWORK,":Data/data/babe.png"}},Bae::AlbumSizeHint::BIG_ALBUM,0,false);
 
     this->ALBUM_SIZE = album_art->getSize();
 
@@ -349,7 +348,21 @@ void BabeWindow::setUpViews()
     settings_widget->readSettings();
     connect(settings_widget,&settings::toolbarIconSizeChanged, this, &BabeWindow::setToolbarIconSize);
     connect(settings_widget,&settings::refreshTables,this,  &BabeWindow::refreshTables);
-    connect(settings_widget,&settings::albumArtReady,this, &BabeWindow::refreshAlbumsView);
+    connect(settings_widget,&settings::albumArtReady,[this](const DB &album)
+    {
+        switch(albumType(album))
+        {
+        case TABLE::ALBUMS:
+            this->albumsTable->addAlbum(album);
+            break;
+
+        case TABLE::ARTISTS:
+            this->artistsTable->addAlbum(album);
+            break;
+
+        default: break;
+        }
+    });
 
     /* THE BUTTONS VIEWS */
     connect(ui->tracks_view,&QToolButton::clicked, this, &BabeWindow::collectionView);
@@ -1002,18 +1015,18 @@ void BabeWindow::refreshAlbumsView(const Bae::TABLE &type)
     case Bae::TABLE::ALBUMS:
     {
         QSqlQuery query(QString("SELECT * FROM %1 ORDER BY  %2").arg(Bae::TABLEMAP[Bae::TABLE::ALBUMS],Bae::KEYMAP[Bae::KEY::ALBUM]));
-        albumsTable->populate(Bae::TABLE::ALBUMS,query);
+        albumsTable->populate(query);
         albumsTable->hideAlbumFrame();
         break;
     }
     case Bae::TABLE::ARTISTS:
     {
         QSqlQuery query(QString("SELECT * FROM %1 ORDER BY  %2").arg(Bae::TABLEMAP[Bae::TABLE::ARTISTS],Bae::KEYMAP[Bae::KEY::ARTIST]));
-        artistsTable->populate(Bae::TABLE::ARTISTS,query);
+        artistsTable->populate(query);
         artistsTable->hideAlbumFrame();
         break;
     }
-        default: return;
+    default: return;
     }
 
 }
@@ -1050,11 +1063,11 @@ void BabeWindow::refreshTables(const Bae::TABLE &reset) //tofix
     collectionTable->populateTableView(query);
 
     query.prepare(QString("SELECT * FROM %1 ORDER BY  %2").arg(Bae::TABLEMAP[Bae::TABLE::ALBUMS],Bae::KEYMAP[Bae::KEY::ALBUM]));
-    albumsTable->populate(Bae::TABLE::ALBUMS,query);
+    albumsTable->populate(query);
     albumsTable->hideAlbumFrame();
 
     query.prepare(QString("SELECT * FROM %1 ORDER BY  %2").arg(Bae::TABLEMAP[Bae::TABLE::ARTISTS],Bae::KEYMAP[Bae::KEY::ARTIST]));
-    artistsTable->populate(Bae::TABLE::ARTISTS,query);
+    artistsTable->populate(query);
     artistsTable->hideAlbumFrame();
 
     playlistTable->list->clear();

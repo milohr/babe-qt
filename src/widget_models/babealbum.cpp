@@ -1,59 +1,67 @@
 #include "babealbum.h"
 
 
-BabeAlbum::BabeAlbum(QWidget *parent) : QLabel(parent){}
-
-BabeAlbum::~BabeAlbum()
+BabeAlbum::BabeAlbum(const DB &info, const AlbumSizeHint &widgetSize, const uint &widgetRadius, const bool &isDraggable, QWidget *parent) : QLabel(parent)
 {
-    qDebug()<<"DELETING BABEALBUM";
-}
 
-void BabeAlbum::createAlbum(const Bae::DB &info, const Bae::AlbumSizeHint &widgetSize, const uint &widgetRadius, const bool &isDraggable)
-{
+    connect(this,&BabeAlbum::changedArt,&connection,&CollectionDB::insertArtwork);
+
     switch (widgetSize)
     {
     case Bae::AlbumSizeHint::BIG_ALBUM:
-        this->size=Bae::getWidgetSizeHint(Bae::BIG_ALBUM_FACTOR,Bae::AlbumSizeHint::BIG_ALBUM);
-        this->subSize=Bae::BIG_ALBUM_FACTOR_SUBWIDGET;
-        break;
-    case Bae::AlbumSizeHint::MEDIUM_ALBUM:
-        this->size=Bae::getWidgetSizeHint(Bae::MEDIUM_ALBUM_FACTOR,Bae::AlbumSizeHint::MEDIUM_ALBUM);
-        this->subSize=Bae::MEDIUM_ALBUM_FACTOR_SUBWIDGET;
-        break;
-    case Bae::AlbumSizeHint::SMALL_ALBUM:
-        this->size=Bae::getWidgetSizeHint(Bae::SMALL_ALBUM_FACTOR,Bae::AlbumSizeHint::SMALL_ALBUM);
-        this->subSize=Bae::SMALL_ALBUM_FACTOR_SUBWIDGET;
+    {
+        this->size = Bae::getWidgetSizeHint(Bae::BIG_ALBUM_FACTOR,Bae::AlbumSizeHint::BIG_ALBUM);
+        this->subSize = Bae::BIG_ALBUM_FACTOR_SUBWIDGET;
         break;
     }
-    this->albumMap=info;
+    case Bae::AlbumSizeHint::MEDIUM_ALBUM:
+    {
+        this->size = Bae::getWidgetSizeHint(Bae::MEDIUM_ALBUM_FACTOR,Bae::AlbumSizeHint::MEDIUM_ALBUM);
+        this->subSize = Bae::MEDIUM_ALBUM_FACTOR_SUBWIDGET;
+        break;
+    }
+    case Bae::AlbumSizeHint::SMALL_ALBUM:
+    {
+        this->size = Bae::getWidgetSizeHint(Bae::SMALL_ALBUM_FACTOR,Bae::AlbumSizeHint::SMALL_ALBUM);
+        this->subSize = Bae::SMALL_ALBUM_FACTOR_SUBWIDGET;
+        break;
+    }
+    }
+
+    this->albumMap = info;
 
     auto artist = this->albumMap[Bae::KEY::ARTIST];
     auto album = this->albumMap[Bae::KEY::ALBUM];
     auto artwork = this->albumMap[Bae::KEY::ARTWORK];
 
-    auto albumtype = Bae::albumType(albumMap);
-
-    if(albumtype == Bae::TABLE::ARTISTS)
+    switch(Bae::albumType(albumMap))//TODO
     {
-        if(artwork.isEmpty() || artwork == SLANG[W::NONE])
-            artwork=":Data/data/cover.svg";
+        case Bae::TABLE::ARTISTS :
+        {
+            if(artwork.isEmpty() || artwork == SLANG[W::NONE])
+                artwork=":Data/data/cover.svg";
 
-    }else if(albumtype == Bae::TABLE::ALBUMS)
-    {
-        if(artwork.isEmpty() || artwork == SLANG[W::NONE])
-            artwork = connection.getArtistArt(artist);
+            break;
+        }
+       case Bae::TABLE::ALBUMS:
+        {
+            if(artwork.isEmpty() || artwork == SLANG[W::NONE])
+                artwork = connection.getArtistArt(artist);
 
-        if(artwork.isEmpty() || artwork == SLANG[W::NONE])
-            artwork=":Data/data/cover.svg";
+            if(artwork.isEmpty() || artwork == SLANG[W::NONE])
+                artwork=":Data/data/cover.svg";
+            break;
+        }
+
+    default: break;
     }
 
-    this->setFixedSize(static_cast<int>(size),static_cast<int>(size));
-    this->border_radius=widgetRadius;
-    this->draggable=isDraggable;
+    this->setFixedSize(static_cast<int>(size), static_cast<int>(size));
+    this->border_radius = widgetRadius;
+    this->draggable = isDraggable;
     this->borderQColor = this->palette().color(QPalette::BrightText).name();
 
     this->putPixmap(artwork);
-
 
     auto layout = new QHBoxLayout;
     widget = new QWidget(this);
@@ -61,17 +69,16 @@ void BabeAlbum::createAlbum(const Bae::DB &info, const Bae::AlbumSizeHint &widge
 
     //    widget->setStyleSheet( QString(" background: rgba(0,0,0,150); border-top: 1px solid rgba(%1,%1,%1,120); border-top-left-radius:0; border-top-right-radius:0; border-bottom-right-radius:%2px; border-bottom-left-radius:%3px;").arg( QString::number(this->palette().color(QPalette::WindowText).blue()), QString::number(border_radius-1),QString::number(border_radius-1)));
     widget->setStyleSheet( QString(" background: rgba(0,0,0,150); border-top: 1px solid rgba(%1,%1,%1,150); border-top-left-radius:0; border-top-right-radius:0; border-bottom-right-radius:%2px; border-bottom-left-radius:%3px;").arg( QString::number(0), QString::number(border_radius-1),QString::number(border_radius-1)));
-    title = new ScrollText(this);
+    this->title = new ScrollText(this);
 
     title->setMaxSize(size+10);
-
     title->setStyleSheet("QLabel{background:transparent; color:white; border:none;}");
 
     layout->addStretch();
     layout->addWidget(title);
     layout->addStretch();
 
-    playBtn = new QToolButton(this);
+    this->playBtn = new QToolButton(this);
     connect(playBtn,&QToolButton::clicked,[this]() { emit playAlbum(this->albumMap); });
 
     playBtn->installEventFilter(this);
@@ -81,26 +88,28 @@ void BabeAlbum::createAlbum(const Bae::DB &info, const Bae::AlbumSizeHint &widge
     playBtn->setVisible(false);
 
     this->setSize(size);
-
     this->setTitle(artist,album);
 
-    connect(this,&BabeAlbum::changedArt,&connection,&CollectionDB::insertArtwork);
+    this->contextMenu = new QMenu(this);
+    this->setContextMenuPolicy(Qt::ActionsContextMenu);
+}
+
+BabeAlbum::~BabeAlbum()
+{
+    qDebug()<<"DELETING BABEALBUM";
 }
 
 void BabeAlbum::setUpMenu()
 {
-    auto contextMenu = new QMenu(this);
-    this->setContextMenuPolicy(Qt::ActionsContextMenu);
-
-    auto babeIt = new QAction("Babe it \xe2\x99\xa1",contextMenu);
+    auto babeIt = new QAction("Babe it \xe2\x99\xa1",this->contextMenu);
     connect(babeIt, SIGNAL(triggered()), this, SLOT(babeIt_action()));
     this->addAction(babeIt);
 
-    auto removeIt = new QAction("Remove",contextMenu);
+    auto removeIt = new QAction("Remove",this->contextMenu);
     connect(removeIt, SIGNAL(triggered()), this, SLOT(removeIt_action()));
     this->addAction(removeIt);
 
-    auto artIt = new QAction("Change art...",contextMenu);
+    auto artIt = new QAction("Change art...",this->contextMenu);
     connect(artIt, SIGNAL(triggered()), this, SLOT(artIt_action()));
     this->addAction(artIt);
 }
@@ -132,7 +141,7 @@ void BabeAlbum::artIt_action()
     QString path = QFileDialog::getOpenFileName(this, tr("Select Music Files"),Bae::CachePath, tr("Image Files (*.png *.jpg *.bmp)"));
     if(!path.isEmpty())
     {
-        putPixmap(path);
+        this->putPixmap(path);
         this->albumMap.insert(Bae::KEY::ARTWORK,path);
         emit changedArt(this->albumMap);
     }
@@ -214,7 +223,6 @@ QPixmap BabeAlbum::getPixmap()
     return image;
 }
 
-
 void BabeAlbum::putPixmap(const QByteArray &pix)
 {
     if(!pix.isEmpty()) this->image.loadFromData(pix);
@@ -259,9 +267,9 @@ void BabeAlbum::setArtist(const QString &artistTitle) { this->artist=artistTitle
 
 void BabeAlbum::setAlbum(const QString &albumTitle) { this->album=albumTitle; }
 
-void BabeAlbum::setBGcolor(const QString &bgColor)
+void BabeAlbum::setBGColor(const QString &bgColor)
 {
-    this->bgColor=bgColor;
+    this->bgColor = bgColor;
 
     QColor color;
     color.setNamedColor(bgColor);
@@ -280,7 +288,6 @@ void BabeAlbum::setTitle(const QString &artistTitle, const QString &albumTitle)
     QString str = album.isEmpty()? artist : album+" - "+artist;
     title->setText(str);
 }
-
 
 void BabeAlbum::setTitleGeometry(const int &x, const int &y, const int &w, const int &h) { widget->setGeometry(x,y,w,h); }
 

@@ -24,15 +24,13 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView)
 {
     ui->setupUi(this);
 
-    artist = new BabeAlbum(this);
+    artist = new BabeAlbum(Bae::DB{{Bae::KEY::ARTWORK, ":Data/data/cover.png"}}, Bae::AlbumSizeHint::MEDIUM_ALBUM, 100,false,this);
     connect(artist,&BabeAlbum::playAlbum,[this](const Bae::DB &info)
     {
         qDebug()<<"head on info view clicked!";
         emit this->playAlbum(info);
 
     });
-    artist->createAlbum(Bae::DB{{Bae::KEY::ARTWORK, ":Data/data/cover.png"}}, Bae::AlbumSizeHint::MEDIUM_ALBUM, 100,false);
-
 
     /*
      *ui->lyricsText->setLineWrapMode(QTextEdit::NoWrap);

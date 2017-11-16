@@ -120,13 +120,13 @@ bool spotify::parseArtist()
     if(this->info == INFO::TAGS || this->info == INFO::ALL)
     {
         auto followers = root.value("followers").toMap().value("total").toString();
-        emit this->infoReady(this->track,this->packResponse(INFO::TAGS,CONTEXT::STAT,followers));
+        emit this->infoReady(this->track,this->packResponse(ONTOLOGY::ARTIST, INFO::TAGS, CONTEXT::STAT, followers));
 
         auto genres = root.value("genres").toStringList();
-        emit this->infoReady(this->track,this->packResponse(INFO::TAGS,CONTEXT::GENRE,genres));
+        emit this->infoReady(this->track,this->packResponse(ONTOLOGY::ARTIST, INFO::TAGS, CONTEXT::GENRE, genres));
 
         auto popularity = root.value("popularity").toString();
-        emit this->infoReady(this->track,this->packResponse(INFO::TAGS,CONTEXT::STAT,followers));
+        emit this->infoReady(this->track,this->packResponse(ONTOLOGY::ARTIST, INFO::TAGS, CONTEXT::STAT, followers));
 
         if(this->info == INFO::TAGS ) return true;
     }
@@ -134,7 +134,7 @@ bool spotify::parseArtist()
     if(this->info == INFO::ARTWORK || this->info == INFO::ALL)
     {
         auto artwork = root.value("images").toList().first().toMap().value("url").toString();
-        emit this->infoReady(this->track,this->packResponse(INFO::ARTWORK,CONTEXT::IMAGE,this->startConnection(artwork)));
+        emit this->infoReady(this->track,this->packResponse(ONTOLOGY::ARTIST, INFO::ARTWORK, CONTEXT::IMAGE,this->startConnection(artwork)));
 
         if(this->info == INFO::ARTWORK && !artwork.isEmpty() ) return true;
     }
@@ -164,7 +164,7 @@ bool spotify::parseAlbum()
     if(this->info == INFO::ARTWORK || this->info == INFO::ALL)
     {
         auto albumArt =items.first().toMap().value("images").toList().first().toMap().value("url").toString();
-        emit this->infoReady(this->track, this->packResponse(INFO::ARTWORK,CONTEXT::IMAGE, startConnection(albumArt)));
+        emit this->infoReady(this->track, this->packResponse(ONTOLOGY::ALBUM, INFO::ARTWORK,CONTEXT::IMAGE, startConnection(albumArt)));
         qDebug()<<"parseSpotifyAlbum ["<< albumArt<<"]";
 
         if(this->info == INFO::ARTWORK && !albumArt.isEmpty() ) return true;
@@ -204,7 +204,7 @@ bool spotify::parseTrack()
             if(this->info == INFO::TAGS || this->info == INFO::ALL)
             {               
                 auto popularity = item.toMap().value("popularity").toString();
-                emit this->infoReady(this->track,this->packResponse(INFO::TAGS,CONTEXT::STAT,popularity));
+                emit this->infoReady(this->track,this->packResponse(ONTOLOGY::TRACK, INFO::TAGS, CONTEXT::STAT,popularity));
 
                 if(this->info == INFO::TAGS ) return true;
             }
@@ -212,10 +212,10 @@ bool spotify::parseTrack()
             if(this->info == INFO::METADATA || this->info == INFO::ALL)
             {
                 auto trackAlbum = album.value("name").toString();
-                emit this->infoReady(this->track,this->packResponse(INFO::TAGS,CONTEXT::ALBUM_TITLE,trackAlbum));
+                emit this->infoReady(this->track,this->packResponse(ONTOLOGY::TRACK, INFO::METADATA, CONTEXT::ALBUM_TITLE,trackAlbum));
 
                 auto trackPosition = item.toMap().value("track_number").toString();
-                emit this->infoReady(this->track,this->packResponse(INFO::TAGS,CONTEXT::TRACK_NUMBER,trackPosition));
+                emit this->infoReady(this->track,this->packResponse(ONTOLOGY::TRACK, INFO::METADATA, CONTEXT::TRACK_NUMBER,trackPosition));
 
                 if(this->info == INFO::METADATA ) return true;
             }
@@ -223,7 +223,7 @@ bool spotify::parseTrack()
             if(this->info == INFO::ARTWORK || this->info == INFO::ALL)
             {
                 auto artwork = album.value("images").toList().first().toMap().value("url").toString();
-                emit this->infoReady(this->track,this->packResponse(INFO::ARTWORK,CONTEXT::IMAGE,this->startConnection(artwork)));
+                emit this->infoReady(this->track,this->packResponse(ONTOLOGY::TRACK, INFO::ARTWORK,CONTEXT::IMAGE,this->startConnection(artwork)));
                 if(!artwork.isEmpty() && this->info == INFO::ARTWORK ) return true;
             }
 

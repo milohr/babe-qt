@@ -50,9 +50,9 @@ void CollectionDB::closeConnection()
 
 void CollectionDB::setUpCollection(const QString &path)
 {
-    this->m_db = QSqlDatabase::addDatabase("QSQLITE");
-    this->m_db.setDatabaseName(path);
-    this->openDB();
+    m_db = QSqlDatabase::addDatabase("QSQLITE");
+    m_db.setDatabaseName(path);
+    openDB();
 }
 
 
@@ -205,19 +205,19 @@ void CollectionDB::addTrack(const DB &track)
         QVariantMap sourceMap {{KEYMAP[KEY::URL],sourceUrl},
                                {KEYMAP[KEY::SOURCE_TYPE], sourceType(url)}};
 
-        this->insert(TABLEMAP[TABLE::SOURCES],sourceMap);
+        insert(TABLEMAP[TABLE::SOURCES],sourceMap);
 
         QVariantMap artistMap {{KEYMAP[KEY::ARTIST], artist},
                                {KEYMAP[KEY::ARTWORK],""},
                                {KEYMAP[KEY::WIKI],""}};
 
-        this->insert(TABLEMAP[TABLE::ARTISTS],artistMap);
+        insert(TABLEMAP[TABLE::ARTISTS],artistMap);
 
         QVariantMap albumMap {{KEYMAP[KEY::ALBUM],album},
                               {KEYMAP[KEY::ARTIST],artist},
                               {KEYMAP[KEY::ARTWORK],""},
                               {KEYMAP[KEY::WIKI],""}};
-        this->insert(TABLEMAP[TABLE::ALBUMS],albumMap);
+        insert(TABLEMAP[TABLE::ALBUMS],albumMap);
 
         QVariantMap trackMap {{KEYMAP[KEY::URL],url},
                               {KEYMAP[KEY::SOURCES_URL],sourceUrl},
@@ -237,7 +237,7 @@ void CollectionDB::addTrack(const DB &track)
                               {KEYMAP[KEY::WIKI],""},
                               {KEYMAP[KEY::COMMENT],""}};
 
-        this->insert(TABLEMAP[TABLE::TRACKS],trackMap);
+        insert(TABLEMAP[TABLE::TRACKS],trackMap);
     }
 
     emit trackInserted();
@@ -245,7 +245,7 @@ void CollectionDB::addTrack(const DB &track)
 
 bool CollectionDB::rateTrack(const QString &path, const int &value)
 {
-    if(this->update(TABLEMAP[TABLE::TRACKS],
+    if(update(TABLEMAP[TABLE::TRACKS],
                     KEYMAP[KEY::STARS],
                     value,
                     KEYMAP[KEY::URL],
@@ -255,7 +255,7 @@ bool CollectionDB::rateTrack(const QString &path, const int &value)
 
 bool CollectionDB::babeTrack(const QString &path, const bool &value)
 {
-    if(this->update(TABLEMAP[TABLE::TRACKS],
+    if(update(TABLEMAP[TABLE::TRACKS],
                     KEYMAP[KEY::BABE],
                     value?1:0,
                     KEYMAP[KEY::URL],
@@ -265,14 +265,14 @@ bool CollectionDB::babeTrack(const QString &path, const bool &value)
 
 bool CollectionDB::moodTrack(const QString &path, const QString &value)
 {
-
+    Q_UNUSED(path);
+    Q_UNUSED(value);
     return false;
-
 }
 
 bool CollectionDB::artTrack(const QString &path, const QString &value)
 {
-    if(this->update(TABLEMAP[TABLE::TRACKS],
+    if(update(TABLEMAP[TABLE::TRACKS],
                     KEYMAP[KEY::ART],
                     value,
                     KEYMAP[KEY::URL],
@@ -282,7 +282,7 @@ bool CollectionDB::artTrack(const QString &path, const QString &value)
 
 bool CollectionDB::lyricsTrack(const DB &track, const QString &value)
 {
-    if(this->update(TABLEMAP[TABLE::TRACKS],
+    if(update(TABLEMAP[TABLE::TRACKS],
                     KEYMAP[KEY::LYRICS],
                     value,
                     KEYMAP[KEY::URL],
@@ -299,7 +299,7 @@ bool CollectionDB::tagsTrack(const DB &track, const QString &value, const QStrin
     QVariantMap trackTagMap {{KEYMAP[KEY::TAG],value},
                              {KEYMAP[KEY::URL],url}};
 
-    if(this->insert(TABLEMAP[TABLE::TAGS],tagMap) && this->insert(TABLEMAP[TABLE::TRACKS_TAGS],trackTagMap))
+    if(insert(TABLEMAP[TABLE::TAGS],tagMap) && insert(TABLEMAP[TABLE::TRACKS_TAGS],trackTagMap))
         return true;
 
     return false;
@@ -315,7 +315,7 @@ bool CollectionDB::albumTrack(const DB &track, const QString &value)
             KEYMAP[KEY::ALBUM],album, KEYMAP[KEY::ARTIST], artist);
     QSqlQuery query(queryTxt);
 
-    auto result = this->getDBData(query);
+    auto result = getDBData(query);
     if(result.isEmpty())  return false;
 
     auto oldAlbum = result.first();
@@ -324,19 +324,19 @@ bool CollectionDB::albumTrack(const DB &track, const QString &value)
                           {KEYMAP[KEY::ARTWORK],oldAlbum[KEY::ARTWORK]},
                           {KEYMAP[KEY::WIKI],oldAlbum[KEY::WIKI]}};
 
-    if (!this->insert(TABLEMAP[TABLE::ALBUMS],albumMap)) return false;
+    if (!insert(TABLEMAP[TABLE::ALBUMS],albumMap)) return false;
 
     // update albums SET album = "newalbumname" WHERE album = "albumname" NAD artist = "aretist name";
     queryTxt = QString("UPDATE %1 SET %2 = %3 AND %4 = %5 WHERE %2 = %6 AND %4 = %5").arg(TABLEMAP[TABLE::TRACKS],
             KEYMAP[KEY::ALBUM],value,
             KEYMAP[KEY::ARTIST], oldAlbum[KEY::ARTIST],oldAlbum[KEY::ALBUM]);
 
-    if(!this->execQuery(queryTxt)) return false;
+    if(!execQuery(queryTxt)) return false;
 
     queryTxt = QString("DELETE FROM %1 WHERE %2 = %3 AND %4 = %5").arg(TABLEMAP[TABLE::ALBUMS],
             KEYMAP[KEY::ALBUM],oldAlbum[KEY::ALBUM], KEYMAP[KEY::ARTIST], artist);
 
-    if(!this->execQuery(queryTxt)) return false;
+    if(!execQuery(queryTxt)) return false;
 
     return true;
 }
@@ -358,7 +358,7 @@ bool CollectionDB::wikiTrack(const DB &track, const QString &value)
 {
     auto url = track[KEY::URL];
 
-    if(this->update(TABLEMAP[TABLE::TRACKS],
+    if(update(TABLEMAP[TABLE::TRACKS],
                     KEYMAP[KEY::WIKI],
                     value,
                     KEYMAP[KEY::URL],
@@ -371,7 +371,7 @@ bool CollectionDB::wikiArtist(const DB &track, const QString &value)
 {
     auto artist = track[KEY::ARTIST];
 
-    if(this->update(TABLEMAP[TABLE::ARTISTS],
+    if(update(TABLEMAP[TABLE::ARTISTS],
                     KEYMAP[KEY::WIKI],
                     value,
                     KEYMAP[KEY::ARTIST],
@@ -388,7 +388,7 @@ bool CollectionDB::tagsArtist(const DB &track, const QString &value, const QStri
     QVariantMap artistTagMap {{KEYMAP[KEY::TAG],value},
                               {KEYMAP[KEY::ARTIST],artist}};
 
-    if(this->insert(TABLEMAP[TABLE::TAGS],tagMap) && this->insert(TABLEMAP[TABLE::ARTISTS_TAGS],artistTagMap))
+    if(insert(TABLEMAP[TABLE::TAGS],tagMap) && insert(TABLEMAP[TABLE::ARTISTS_TAGS],artistTagMap))
         return true;
 
     return false;
@@ -426,7 +426,7 @@ bool CollectionDB::tagsAlbum(const DB &track, const QString &value, const QStrin
                               {KEYMAP[KEY::ARTIST],artist},
                               {KEYMAP[KEY::ALBUM],album}};
 
-    if(this->insert(TABLEMAP[TABLE::TAGS],tagMap) && this->insert(TABLEMAP[TABLE::ALBUMS_TAGS],albumsTagMap))
+    if(insert(TABLEMAP[TABLE::TAGS],tagMap) && insert(TABLEMAP[TABLE::ALBUMS_TAGS],albumsTagMap))
         return true;
 
     return false;
@@ -439,7 +439,7 @@ bool CollectionDB::addPlaylist(const QString &title)
         QVariantMap playlist {{KEYMAP[KEY::PLAYLIST],title},
                               {KEYMAP[KEY::ADD_DATE],QDate::currentDate()}};
 
-        if(this->insert(TABLEMAP[TABLE::PLAYLISTS],playlist))
+        if(insert(TABLEMAP[TABLE::PLAYLISTS],playlist))
             return true;
     }
 
@@ -452,7 +452,7 @@ bool CollectionDB::trackPlaylist(const QString &url, const QString &playlist)
                      {KEYMAP[KEY::URL],url},
                      {KEYMAP[KEY::ADD_DATE],QDate::currentDate()}};
 
-    if(this->insert(TABLEMAP[TABLE::TRACKS_PLAYLISTS],map))
+    if(insert(TABLEMAP[TABLE::TRACKS_PLAYLISTS],map))
         return true;
 
     return false;
@@ -468,7 +468,7 @@ DB_LIST CollectionDB::getDBData(const QStringList &urls)
         auto queryTxt = QString("SELECT * FROM %1 WHERE %2 = \"%3\"").arg(TABLEMAP[TABLE::TRACKS],
                 KEYMAP[KEY::URL],url);
         query.prepare(queryTxt);
-        mapList<<this->getDBData(query);
+        mapList<<getDBData(query);
     }
 
     return mapList;
@@ -499,23 +499,23 @@ DB_LIST CollectionDB::getDBData(QSqlQuery &query)
 }
 
 
-DB_LIST CollectionDB::getAlbumTracks(const QString &album, const QString &artist, const KEY &orderBy, const Order &order)
+DB_LIST CollectionDB::getAlbumTracks(const QString &album, const QString &artist, const KEY &orderBy, const Bae::W &order)
 {
     auto queryTxt = QString("SELECT * FROM %1 WHERE %2 = \"%3\" AND %4 = \"%5\" ORDER by %6 %7").arg(TABLEMAP[TABLE::TRACKS],
-            KEYMAP[KEY::ARTIST],artist,KEYMAP[KEY::ALBUM],album,KEYMAP[orderBy], OrderMap[order]);
+            KEYMAP[KEY::ARTIST],artist,KEYMAP[KEY::ALBUM],album,KEYMAP[orderBy], SLANG[order]);
     QSqlQuery query(queryTxt);
 
-    return this->getDBData(query);
+    return getDBData(query);
 }
 
-DB_LIST CollectionDB::getArtistTracks(const QString &artist, const KEY &orderBy, const Order &order)
+DB_LIST CollectionDB::getArtistTracks(const QString &artist, const KEY &orderBy, const Bae::W &order)
 {
     auto queryTxt = QString("SELECT * FROM %1 WHERE %2 = \"%3\" ORDER by %4 %5, %6 %5").arg(TABLEMAP[TABLE::TRACKS],
-            KEYMAP[KEY::ARTIST],artist,KEYMAP[orderBy],OrderMap[order],KEYMAP[KEY::TRACK]);
+            KEYMAP[KEY::ARTIST],artist,KEYMAP[orderBy],SLANG[order],KEYMAP[KEY::TRACK]);
 
     QSqlQuery query(queryTxt);
 
-    return this->getDBData(query);
+    return getDBData(query);
 
 }
 
@@ -532,14 +532,14 @@ QStringList CollectionDB::getArtistAlbums(const QString &artist)
     return albums;
 }
 
-DB_LIST CollectionDB::getBabedTracks(const KEY &orderBy, const Order &order)
+DB_LIST CollectionDB::getBabedTracks(const KEY &orderBy, const Bae::W &order)
 {
     auto queryTxt= QString("SELECT * FROM %1 WHERE %2 = 1 ORDER by %3 %4").arg(TABLEMAP[TABLE::TRACKS],
             KEYMAP[KEY::BABE],
-            KEYMAP[orderBy], OrderMap[order]);
+            KEYMAP[orderBy], SLANG[order]);
     QSqlQuery query(queryTxt);
 
-    return this->getDBData(query);
+    return getDBData(query);
 }
 
 DB_LIST CollectionDB::getSearchedTracks(const KEY &where, const QString &search)
@@ -595,62 +595,62 @@ DB_LIST CollectionDB::getSearchedTracks(const KEY &where, const QString &search)
 
     QSqlQuery query(queryTxt);
 
-    return this->getDBData(query);
+    return getDBData(query);
 
 }
 
-DB_LIST CollectionDB::getPlaylistTracks(const QString &playlist, const KEY &orderBy, const Order &order)
+DB_LIST CollectionDB::getPlaylistTracks(const QString &playlist, const KEY &orderBy, const Bae::W &order)
 {
     auto queryTxt= QString("SELECT * FROM %1 t INNER JOIN %2 tp ON t.%3 = tp.%3 WHERE tp.%4 = \"%5\" ORDER BY %6 %7").arg(TABLEMAP[TABLE::TRACKS],
             TABLEMAP[TABLE::TRACKS_PLAYLISTS],KEYMAP[KEY::URL],
             KEYMAP[KEY::PLAYLIST],
-            playlist,KEYMAP[orderBy],OrderMap[order],KEYMAP[KEY::TRACK] );
+            playlist,KEYMAP[orderBy],SLANG[order],KEYMAP[KEY::TRACK] );
 
     QSqlQuery query(queryTxt);
 
-    return this->getDBData(query);
+    return getDBData(query);
 }
 
-DB_LIST CollectionDB::getFavTracks(const int &stars, const int &limit, const KEY &orderBy, const Order &order)
+DB_LIST CollectionDB::getFavTracks(const int &stars, const int &limit, const KEY &orderBy, const Bae::W &order)
 {
     auto queryTxt= QString("SELECT * FROM %1 WHERE %2 >= %3 ORDER BY %4 %5 LIMIT %6" ).arg(TABLEMAP[TABLE::TRACKS],
             KEYMAP[KEY::STARS], QString::number(stars),
-            KEYMAP[orderBy],OrderMap[order],QString::number(limit));
+            KEYMAP[orderBy],SLANG[order],QString::number(limit));
 
     QSqlQuery query(queryTxt);
 
-    return this->getDBData(query);
+    return getDBData(query);
 }
 
-DB_LIST CollectionDB::getRecentTracks(const int &limit, const KEY &orderBy, const Order &order)
+DB_LIST CollectionDB::getRecentTracks(const int &limit, const KEY &orderBy, const Bae::W &order)
 {
     auto queryTxt= QString("SELECT * FROM %1 ORDER BY strftime(\"%s\",%2) %3 LIMIT %4" ).arg(TABLEMAP[TABLE::TRACKS],
-            KEYMAP[orderBy],OrderMap[order],QString::number(limit));
+            KEYMAP[orderBy],SLANG[order],QString::number(limit));
 
     QSqlQuery query(queryTxt);
 
-    return this->getDBData(query);
+    return getDBData(query);
 }
 
-DB_LIST CollectionDB::getOnlineTracks(const KEY &orderBy, const Order &order)
+DB_LIST CollectionDB::getOnlineTracks(const KEY &orderBy, const Bae::W &order)
 {
     auto queryTxt= QString("SELECT * FROM %1 WHERE %2 LIKE \"%3%\" ORDER BY %4 %5" ).arg(TABLEMAP[TABLE::TRACKS],
-            KEYMAP[KEY::URL],YoutubeCachePath,KEYMAP[orderBy],OrderMap[order]);
+            KEYMAP[KEY::URL],YoutubeCachePath,KEYMAP[orderBy],SLANG[order]);
 
     QSqlQuery query(queryTxt);
 
-    return this->getDBData(query);
+    return getDBData(query);
 }
 
-DB_LIST CollectionDB::getMostPlayedTracks(const int &greaterThan, const int &limit, const KEY &orderBy, const Order &order)
+DB_LIST CollectionDB::getMostPlayedTracks(const int &greaterThan, const int &limit, const KEY &orderBy, const Bae::W &order)
 {
     auto queryTxt= QString("SELECT * FROM %1 WHERE %2 > %3 ORDER BY %4 %5 LIMIT %6" ).arg(TABLEMAP[TABLE::TRACKS],
             KEYMAP[KEY::PLAYED], QString::number(greaterThan),
-            KEYMAP[orderBy],OrderMap[order],QString::number(limit));
+            KEYMAP[orderBy],SLANG[order],QString::number(limit));
 
     QSqlQuery query(queryTxt);
 
-    return this->getDBData(query);
+    return getDBData(query);
 }
 
 QString CollectionDB::getTrackLyrics(const QString &url)
@@ -684,6 +684,7 @@ QString CollectionDB::getTrackArt(const QString &path)
 
 QStringList CollectionDB::getTrackTags(const QString &path)
 {
+    Q_UNUSED(path);
     return {};
 }
 
@@ -844,7 +845,7 @@ bool CollectionDB::removeTrack(const QString &path)
     QSqlQuery query(queryTxt);
     if(query.exec())
     {
-        if(this->cleanAlbums()) this->cleanArtists();
+        if(cleanAlbums()) cleanArtists();
         return true;
     }
     return false;
@@ -863,7 +864,7 @@ bool CollectionDB::removeSource(const QString &path)
         query.prepare(queryTxt);
         if(query.exec())
         {
-            if(this->cleanAlbums()) this->cleanArtists();
+            if(cleanAlbums()) cleanArtists();
             return true;
         }
     }
@@ -877,7 +878,7 @@ bool CollectionDB::removeSource(const QString &path)
 CollectionDB::sourceTypes CollectionDB::sourceType(const QString &url)
 {
     /*for now*/
-
+    Q_UNUSED(url);
     return sourceTypes::LOCAL;
 }
 

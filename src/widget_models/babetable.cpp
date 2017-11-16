@@ -516,11 +516,11 @@ void BabeTable::setRating(const int &rate)
 
 }
 
-void BabeTable::setTableOrder(int column, Bae::Order order)
+void BabeTable::setTableOrder(int column, Bae::W order)
 {
-    if (order == Bae::Order::DESC) {
+    if (order == Bae::W::DESC) {
         this->sortByColumn(column, Qt::DescendingOrder);
-    } else if (order == Bae::Order ::ASC) {
+    } else if (order == Bae::W ::ASC) {
         this->sortByColumn(column, Qt::AscendingOrder);
     }
 }

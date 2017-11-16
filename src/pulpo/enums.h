@@ -115,8 +115,10 @@ enum class RECURSIVE : bool
     OFF = false
 };
 
-typedef QMap<CONTEXT, QVariant> CONTEXT_K;
-typedef QMap<INFO, CONTEXT_K> RESPONSE;
+typedef QMap<CONTEXT, QVariant> VALUE;
+typedef QMap<INFO, VALUE> INFO_K;
+typedef QMap<ONTOLOGY, INFO_K> RESPONSE;
+
 typedef QMap<ONTOLOGY, QList<INFO>> AVAILABLE;
 
 }

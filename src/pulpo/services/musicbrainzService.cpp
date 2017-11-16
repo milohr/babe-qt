@@ -95,7 +95,7 @@ bool musicBrainz::parseArtist()
 
         if(this->info == INFO::TAGS || this->info == INFO::ALL)
         {
-            PULPO::CONTEXT_K contexts;
+            PULPO::VALUE contexts;
 
             auto score = itemMap.value("score").toString();
             contexts.insert(CONTEXT::STAT,score);
@@ -131,7 +131,7 @@ bool musicBrainz::parseArtist()
 
             contexts.insert(CONTEXT::TAG,tags);
 
-            emit this->infoReady(this->track, this->packResponse(INFO::TAGS,contexts));
+            emit this->infoReady(this->track, this->packResponse(ONTOLOGY::ARTIST, INFO::TAGS,contexts));
             if(this->info == INFO::TAGS  && !contexts.isEmpty()) return true;
         }
 
@@ -164,7 +164,7 @@ bool musicBrainz::parseAlbum()
 
         if(this->info == INFO::TAGS || this->info == INFO::ALL)
         {
-            PULPO::CONTEXT_K contexts;
+            PULPO::VALUE contexts;
 
             auto score = itemMap.value("score").toString();
             contexts.insert(CONTEXT::STAT,score);
@@ -178,7 +178,7 @@ bool musicBrainz::parseAlbum()
 
             contexts.insert(CONTEXT::ALBUM_LABEL,labels);
 
-            emit this->infoReady(this->track, this->packResponse(INFO::TAGS,contexts));
+            emit this->infoReady(this->track, this->packResponse(ONTOLOGY::ALBUM, INFO::TAGS,contexts));
             if(this->info == INFO::TAGS  && !contexts.isEmpty()) return true;
         }
 
@@ -238,7 +238,7 @@ bool musicBrainz::parseTrack()
             people<<team;
         }
 
-        emit this->infoReady(this->track, this->packResponse(INFO::TAGS,CONTEXT::TRACK_TEAM, people));
+        emit this->infoReady(this->track, this->packResponse(ONTOLOGY::TRACK, INFO::TAGS,CONTEXT::TRACK_TEAM, people));
         if(this->info == INFO::TAGS  && !people.isEmpty()) return true;
     }
 

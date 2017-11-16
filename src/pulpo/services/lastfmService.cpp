@@ -108,7 +108,7 @@ bool lastfm::parseArtist()
                     {
                         auto artistArt_url = n.toElement().text();
 
-                        emit this->infoReady(this->track,this->packResponse(INFO::ARTWORK,CONTEXT::IMAGE,startConnection(artistArt_url)));
+                        emit this->infoReady(this->track,this->packResponse(ONTOLOGY::ARTIST, INFO::ARTWORK,CONTEXT::IMAGE,startConnection(artistArt_url)));
 
                         if(this->info == INFO::ARTWORK) return true;
                         else continue;
@@ -125,7 +125,7 @@ bool lastfm::parseArtist()
                     auto artistWiki = n.childNodes().item(2).toElement().text();
                     //qDebug()<<"Fetching ArtistWiki LastFm[]";
 
-                    emit this->infoReady(this->track, this->packResponse(INFO::WIKI,CONTEXT::WIKI,artistWiki));
+                    emit this->infoReady(this->track, this->packResponse(ONTOLOGY::ARTIST, INFO::WIKI,CONTEXT::WIKI,artistWiki));
 
                     if(this->info == INFO::WIKI) return true;
                     else continue;
@@ -148,7 +148,7 @@ bool lastfm::parseArtist()
                         artistSimilar<<artistSimilarName;
                     }
 
-                    emit this->infoReady(this->track,this->packResponse(INFO::TAGS,CONTEXT::ARTIST_SIMILAR,artistSimilar));
+                    emit this->infoReady(this->track,this->packResponse(ONTOLOGY::ARTIST, INFO::TAGS,CONTEXT::ARTIST_SIMILAR,artistSimilar));
 
                 }else if(n.nodeName() == "tags")
                 {
@@ -161,7 +161,7 @@ bool lastfm::parseArtist()
                         artistTags<<m.childNodes().item(0).toElement().text();
                     }
 
-                    emit this->infoReady(this->track,this->packResponse(INFO::TAGS,CONTEXT::TAG,artistTags));
+                    emit this->infoReady(this->track,this->packResponse(ONTOLOGY::ARTIST, INFO::TAGS,CONTEXT::TAG,artistTags));
 
 
                 }else if(n.nodeName() == "stats")
@@ -176,7 +176,7 @@ bool lastfm::parseArtist()
                         artistStats<<m.toElement().text();
                     }
 
-                    emit this->infoReady(this->track,this->packResponse(INFO::TAGS, CONTEXT::STAT,artistStats));
+                    emit this->infoReady(this->track,this->packResponse(ONTOLOGY::ARTIST, INFO::TAGS, CONTEXT::STAT,artistStats));
 
                 }else if(this->info == INFO::TAGS) continue;
             }
@@ -240,7 +240,7 @@ bool lastfm::parseAlbum()
                     {
                         auto albumArt_url = n.toElement().text();
 
-                        emit this->infoReady(this->track,this->packResponse(INFO::ARTWORK,CONTEXT::IMAGE,startConnection(albumArt_url)));
+                        emit this->infoReady(this->track,this->packResponse(ONTOLOGY::ALBUM, INFO::ARTWORK,CONTEXT::IMAGE,startConnection(albumArt_url)));
 
                         if(this->info == INFO::ARTWORK) return true;
                         else continue;
@@ -257,7 +257,7 @@ bool lastfm::parseAlbum()
                     auto albumWiki = n.childNodes().item(1).toElement().text();
                     //qDebug()<<"Fetching AlbumWiki LastFm[]";
 
-                    emit this->infoReady(this->track,this->packResponse(INFO::WIKI,CONTEXT::WIKI,albumWiki));
+                    emit this->infoReady(this->track,this->packResponse(ONTOLOGY::ALBUM, INFO::WIKI,CONTEXT::WIKI,albumWiki));
 
                     if(this->info == INFO::WIKI) return true;
                     else continue;
@@ -278,7 +278,7 @@ bool lastfm::parseAlbum()
                         QDomNode m = tagsList.item(i);
                         albumTags<<m.childNodes().item(0).toElement().text();
                     }
-                    emit this->infoReady(this->track, this->packResponse(INFO::TAGS,CONTEXT::TAG,albumTags));
+                    emit this->infoReady(this->track, this->packResponse(ONTOLOGY::ALBUM, INFO::TAGS,CONTEXT::TAG,albumTags));
 
                     if(this->info == INFO::TAGS) return true;
                     else continue;
@@ -320,9 +320,9 @@ bool lastfm::parseTrack()
         for(auto tag : itemMap.value("toptags").toMap().value("tag").toList())
             tags<<tag.toMap().value("name").toString();
 
-        PULPO::CONTEXT_K contexts = {{ CONTEXT::STAT,stats},{ CONTEXT::TAG,tags}};
+        PULPO::VALUE contexts = {{ CONTEXT::STAT,stats},{ CONTEXT::TAG,tags}};
 
-        emit this->infoReady(this->track, this->packResponse(INFO::TAGS, contexts));
+        emit this->infoReady(this->track, this->packResponse(ONTOLOGY::TRACK, INFO::TAGS, contexts));
 
         if(this->info == INFO::TAGS ) return true;
     }
@@ -334,7 +334,7 @@ bool lastfm::parseTrack()
         auto albumTitle = itemMap.value("album").toMap().value("title").toString();
         auto trackNumber = itemMap.value("album").toMap().value("@attr").toMap().value("position").toString();
 
-        emit this->infoReady(this->track, this->packResponse(INFO::METADATA, {{CONTEXT::TRACK_NUMBER,trackNumber},{CONTEXT::ALBUM_TITLE,albumTitle}}));
+        emit this->infoReady(this->track, this->packResponse(ONTOLOGY::TRACK, INFO::METADATA, {{CONTEXT::TRACK_NUMBER,trackNumber},{CONTEXT::ALBUM_TITLE,albumTitle}}));
 
         if(this->info == INFO::METADATA ) return true;
     }
@@ -343,7 +343,7 @@ bool lastfm::parseTrack()
     if(this->info == INFO::WIKI || this->info == INFO::ALL)
     {
         auto wiki = itemMap.value("wiki").toMap().value("content").toString();
-        emit this->infoReady(this->track, this->packResponse(INFO::WIKI, CONTEXT::WIKI,wiki));
+        emit this->infoReady(this->track, this->packResponse(ONTOLOGY::TRACK, INFO::WIKI, CONTEXT::WIKI,wiki));
         if(!wiki.isEmpty() && this->info == INFO::WIKI) return true;
     }
 
@@ -355,7 +355,7 @@ bool lastfm::parseTrack()
             if(image.toMap().value("size").toString()=="extralarge")
             {
                 auto artwork = image.toMap().value("#text").toString();
-                emit this->infoReady(this->track, this->packResponse(INFO::ARTWORK, CONTEXT::IMAGE,this->startConnection(artwork)));
+                emit this->infoReady(this->track, this->packResponse(ONTOLOGY::TRACK, INFO::ARTWORK, CONTEXT::IMAGE,this->startConnection(artwork)));
                 if(this->info == INFO::ARTWORK) return true;
             }
 
@@ -395,7 +395,7 @@ bool lastfm::parseSimilar()
         for(auto item : items)
             artistSimilar<<item.toMap().value("name").toString();
 
-        emit this->infoReady(this->track, this->packResponse(INFO::TAGS, CONTEXT::ARTIST_SIMILAR,artistSimilar));
+        emit this->infoReady(this->track, this->packResponse(ONTOLOGY::ARTIST, INFO::TAGS, CONTEXT::ARTIST_SIMILAR,artistSimilar));
 
         if(this->info == INFO::TAGS && !artistSimilar.isEmpty() ) return true;
     }

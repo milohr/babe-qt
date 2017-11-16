@@ -123,10 +123,10 @@ private:
 
     const QStringList colors = Bae::MoodColors;
 
-public:
-
+public:    
     explicit BabeTable(QWidget *parent = nullptr);
-~BabeTable();
+    ~BabeTable();
+
     enum menuActions //this order must be followed
     {
         BABEIT, QUEUEIT, INFOIT, EDITIT, SAVETO, REMOVEIT, RATEIT, MOODIT, SENDIT, ADDTO
@@ -137,7 +137,7 @@ public:
     void populateTableView(QSqlQuery &indication);
     void removeMissing(const QString &url);
     void setRating(const int &rate);
-    void setTableOrder(int column, Bae::Order order);
+    void setTableOrder(int column, Bae::W order);
     void setVisibleColumn(const Bae::KEY &column);
     void addRow(const Bae::DB &map);
     void addRowAt(const int &row, const Bae::DB &map);
@@ -164,8 +164,6 @@ public:
     QStringList getTableColumnContent(const Bae::KEY &column);
     Bae::DB_LIST getAllTableContent();
 
-
-
 protected:
     virtual void enterEvent(QEvent *event);
     virtual void leaveEvent(QEvent *event);
@@ -175,7 +173,6 @@ protected:
     virtual void keyPressEvent(QKeyEvent *event);
 
 private slots:
-
     void on_tableWidget_doubleClicked(const QModelIndex &index);
     void rateGroup(const int &id, const bool &rightClick=true);
     void setUpContextMenu(const int row, const int column);
@@ -196,7 +193,6 @@ public slots:
     void colorizeRow(const QList<int> &rows, const QString &color, const bool &dark=false);
 
 signals:
-
     void tableWidget_doubleClicked(const Bae::DB_LIST &mapList);
     void songRated(const QStringList &list);
     void enterTable();

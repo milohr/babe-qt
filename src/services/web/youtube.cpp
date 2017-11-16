@@ -148,20 +148,20 @@ void YouTube::processFinished_totally(const int &state,const DB &info,const QPro
             connect(&pulpo, &Pulpo::infoReady, [&loop](const Bae::DB &track,const PULPO::RESPONSE  &res)
             {
                 qDebug()<<"SETTING YOUTUBE DOWNLOAD TRACK METADATA";
-                if(!res[PULPO::INFO::METADATA].isEmpty())
+                if(!res[PULPO::ONTOLOGY::TRACK][PULPO::INFO::METADATA].isEmpty())
                 {
-                    qDebug()<<res[PULPO::INFO::METADATA][PULPO::CONTEXT::ALBUM_TITLE].toString();
-                    qDebug()<<res[PULPO::INFO::METADATA][PULPO::CONTEXT::TRACK_NUMBER].toString();
+                    qDebug()<<res[PULPO::ONTOLOGY::TRACK][PULPO::INFO::METADATA][PULPO::CONTEXT::ALBUM_TITLE].toString();
+                    qDebug()<<res[PULPO::ONTOLOGY::TRACK][PULPO::INFO::METADATA][PULPO::CONTEXT::TRACK_NUMBER].toString();
 
                     qDebug()<<track[KEY::URL];
                     TagInfo tag(track[KEY::URL]);
 
-                    if(!res[PULPO::INFO::METADATA][PULPO::CONTEXT::ALBUM_TITLE].toString().isEmpty())
-                        tag.setAlbum(res[PULPO::INFO::METADATA][PULPO::CONTEXT::ALBUM_TITLE].toString());
+                    if(!res[PULPO::ONTOLOGY::TRACK][PULPO::INFO::METADATA][PULPO::CONTEXT::ALBUM_TITLE].toString().isEmpty())
+                        tag.setAlbum(res[PULPO::ONTOLOGY::TRACK][PULPO::INFO::METADATA][PULPO::CONTEXT::ALBUM_TITLE].toString());
                     else tag.setAlbum(track[KEY::TITLE]);
 
-                    if(!res[PULPO::INFO::METADATA][PULPO::CONTEXT::TRACK_NUMBER].toString().isEmpty())
-                        tag.setTrack(res[PULPO::INFO::METADATA][PULPO::CONTEXT::TRACK_NUMBER].toInt());
+                    if(!res[PULPO::ONTOLOGY::TRACK][PULPO::INFO::METADATA][PULPO::CONTEXT::TRACK_NUMBER].toString().isEmpty())
+                        tag.setTrack(res[PULPO::ONTOLOGY::TRACK][PULPO::INFO::METADATA][PULPO::CONTEXT::TRACK_NUMBER].toInt());
                 }
 
                 loop.quit();

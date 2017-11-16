@@ -10,33 +10,33 @@ AlbumsView::AlbumsView(const bool &extraList, QWidget *parent) :
     layout->setMargin(0);
     layout->setSpacing(0);
     this->setAcceptDrops(false);
-    this->grid = new BabeGrid(Bae::MEDIUM_ALBUM_FACTOR,Bae::AlbumSizeHint::MEDIUM_ALBUM,this);
-    connect(grid,&BabeGrid::albumReady,[this](){albumLoader.next();});
-    connect(&albumLoader, &AlbumLoader::albumReady,this, &AlbumsView::addAlbum);
-    connect(&albumLoader, &AlbumLoader::finished,[this]()
+    this->grid = new BabeGrid(Bae::MEDIUM_ALBUM_FACTOR, Bae::AlbumSizeHint::MEDIUM_ALBUM,this);
+    connect(grid, &BabeGrid::albumReady, [this](){albumLoader.next();});
+    connect(&albumLoader, &AlbumLoader::albumReady, this, &AlbumsView::addAlbum);
+    connect(&albumLoader, &AlbumLoader::finished, [this]()
     {
         this->grid->sortItems(Qt::AscendingOrder);
     });
 
-    connect(grid,&BabeGrid::albumClicked,this,&AlbumsView::showAlbumInfo);
+    connect(grid, &BabeGrid::albumClicked, this, &AlbumsView::showAlbumInfo);
 
-    connect(grid,&BabeGrid::albumDoubleClicked,[this](const Bae::DB &albumMap)
+    connect(grid, &BabeGrid::albumDoubleClicked, [this](const Bae::DB &albumMap)
     {
-         emit this->albumDoubleClicked(albumMap);
-         hideAlbumFrame();
+        emit this->albumDoubleClicked(albumMap);
+        hideAlbumFrame();
     });
 
-    connect(grid,&BabeGrid::playAlbum,[this](const Bae::DB &albumMap)
+    connect(grid, &BabeGrid::playAlbum, [this](const Bae::DB &albumMap)
     {
-         emit this->playAlbum(albumMap);
+        emit this->playAlbum(albumMap);
     });
 
-    connect(grid,&BabeGrid::babeAlbum,[this](const Bae::DB &albumMap)
+    connect(grid ,&BabeGrid::babeAlbum, [this](const Bae::DB &albumMap)
     {
-         emit this->babeAlbum(albumMap);
+        emit this->babeAlbum(albumMap);
     });
 
-    connect(grid,&BabeGrid::dragAlbum,this,&AlbumsView::hideAlbumFrame);
+    connect(grid, &BabeGrid::dragAlbum, this, &AlbumsView::hideAlbumFrame);
 
     auto utilsLayout = new QHBoxLayout;
     utilsLayout->setContentsMargins(0,0,0,0);
@@ -46,7 +46,7 @@ AlbumsView::AlbumsView(const bool &extraList, QWidget *parent) :
     this->utilsFrame->setLayout(utilsLayout);
     this->utilsFrame->setFrameShape(QFrame::NoFrame);
     this->utilsFrame->setFrameShadow(QFrame::Plain);
-    this->utilsFrame->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Minimum);
+    this->utilsFrame->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
     this->albumTable = new BabeTable(this);
     this->albumTable->setFrameShape(QFrame::NoFrame);
@@ -67,21 +67,20 @@ AlbumsView::AlbumsView(const bool &extraList, QWidget *parent) :
     this->line_h->setFrameShadow(QFrame::Plain);
     this->line_h->setMaximumHeight(1);
 
-    this->cover = new BabeAlbum(this);
+    this->cover = new BabeAlbum({{Bae::KEY::ARTWORK, ":Data/data/cover.svg"}}, Bae::AlbumSizeHint::MEDIUM_ALBUM, 0, true, this);
     connect(this->cover,&BabeAlbum::playAlbum,[this] (const Bae::DB &info) { emit this->playAlbum(info); });
-    connect(this->cover,&BabeAlbum::babeAlbum,this,&AlbumsView::babeAlbum);
-    this->cover->createAlbum({{Bae::KEY::ARTWORK,":Data/data/cover.svg"}},Bae::AlbumSizeHint::MEDIUM_ALBUM,0,true);
+    connect(this->cover, &BabeAlbum::babeAlbum, this, &AlbumsView::babeAlbum);
     this->cover->showTitle(false);
 
     this->closeBtn = new QToolButton(cover);
-    connect(this->closeBtn,&QToolButton::clicked,this,&AlbumsView::hideAlbumFrame);
+    connect(this->closeBtn, &QToolButton::clicked, this, &AlbumsView::hideAlbumFrame);
     this->closeBtn->setGeometry(2,2,16,16);
     this->closeBtn->setIcon(QIcon::fromTheme("tab-close"));
     this->closeBtn->setAutoRaise(true);
     this->closeBtn->setToolTip("Close");
 
     this->expandBtn = new QToolButton(cover);
-    connect(expandBtn,&QToolButton::clicked,this,&AlbumsView::expandList);
+    connect(expandBtn,&QToolButton::clicked, this, &AlbumsView::expandList);
     this->expandBtn->setGeometry(static_cast<int>(cover->getSize())-18,2,16,16);
     this->expandBtn->setIcon(QIcon(":/Data/data/icons/artists_selected.svg"));
     this->expandBtn->setAutoRaise(true);
@@ -116,18 +115,18 @@ AlbumsView::AlbumsView(const bool &extraList, QWidget *parent) :
 
     }
 
-//    auto spacer = new QWidget(this);
-//    spacer->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
-//    spacer->setFixedHeight(15);
-//    spacer->setAutoFillBackground(false);
-//    spacer->setPalette(this->grid->palette());
+    //    auto spacer = new QWidget(this);
+    //    spacer->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
+    //    spacer->setFixedHeight(15);
+    //    spacer->setAutoFillBackground(false);
+    //    spacer->setPalette(this->grid->palette());
     //spacer->setStyleSheet("QWidget{background-color:transparent;");
 
     auto *splitter = new QSplitter(parent);
     splitter->setChildrenCollapsible(false);
     splitter->setOrientation(Qt::Vertical);
 
-//    splitter->addWidget(spacer);
+    //    splitter->addWidget(spacer);
     splitter->addWidget(this->grid);
     splitter->addWidget(this->line_h);
     splitter->addWidget(this->albumBox_frame);
@@ -170,11 +169,10 @@ void AlbumsView::filterAlbum(QModelIndex index)
     qDebug()<<album;
 
     albumTable->flushTable();
-    albumTable->populateTableView(connection.getAlbumTracks(album,cover->getArtist()));
-    cover->setTitle(cover->getArtist(),album);
+    albumTable->populateTableView(connection.getAlbumTracks(album, cover->getArtist()));
+    cover->setTitle(cover->getArtist(), album);
 
-    cover->putPixmap(connection.getAlbumArt(album,cover->getArtist()));
-
+    cover->putPixmap(connection.getAlbumArt(album, cover->getArtist()));
 }
 
 
@@ -186,32 +184,30 @@ void  AlbumsView::flushView()
     this->hideAlbumFrame();
 }
 
-
-
-void AlbumsView::populate(const Bae::TABLE &type,QSqlQuery &query)
+void AlbumsView::populate(QSqlQuery &query)
 {
     qDebug()<<"POPULATING ALBUMS WAS CALLED";
-    albumLoader.requestAlbums(type, query.lastQuery());
+    albumLoader.requestAlbums(query.lastQuery());
 }
 
-
+void AlbumsView::populate(const DB_LIST &albums)
+{
+    qDebug()<<"POPULATING ALBUMS WAS CALLED";
+    albumLoader.requestAlbums(albums);
+}
 void AlbumsView::addAlbum(const Bae::DB &albumMap)
 {
     this->grid->addAlbum(albumMap);
 }
 
-
 void AlbumsView::filter(const Bae::DB_LIST &filter, const Bae::KEY &type)
 {
-
     hide_all(true);
     this->hideAlbumFrame();
 
     QList<QListWidgetItem*> matches;
 
     for(auto result : filter)
-    {
-
         switch(type)
         {
         case Bae::KEY::ALBUM:
@@ -222,7 +218,7 @@ void AlbumsView::filter(const Bae::DB_LIST &filter, const Bae::KEY &type)
             break;
         default: break;
         }
-    }
+
     for(QListWidgetItem* item : matches)
         item->setHidden(false);
 }
@@ -232,8 +228,6 @@ void AlbumsView::hide_all(bool state)
     for(int row = 0; row < grid->count(); row++ )
         grid->item(row)->setHidden(state);
 }
-
-
 
 void AlbumsView::populateExtraList(const QStringList &albums)
 {
@@ -249,7 +243,6 @@ void AlbumsView::populateExtraList(const QStringList &albums)
         artistList->addItem(item);
     }
 }
-
 
 void AlbumsView::showAlbumInfo(const Bae::DB &albumMap)
 {
