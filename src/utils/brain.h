@@ -73,18 +73,19 @@ public:
         this->interval = value*60000;
     }
 
-    void setInfo(DB_LIST data, ONTOLOGY ontology, QList<SERVICES> services, INFO info, RECURSIVE recursive = RECURSIVE::ON, void (*cb)(DB) = nullptr)
+    void setInfo(DB_LIST dataList, ONTOLOGY ontology, QList<SERVICES> services, INFO info, RECURSIVE recursive = RECURSIVE::ON, void (*cb)(DB) = nullptr)
     {
         this->pulpo.registerServices(services);
         this->pulpo.setOntology(ontology);
         this->pulpo.setInfo(info);
 
-        if(data.isEmpty()) return;
+        if(dataList.isEmpty()) return;
 
-        for(auto track : data)
+        for(auto data : dataList)
         {
-            if (cb != nullptr) cb(track);
-            pulpo.feed(track,recursive);
+            qDebug()<<"get info for:"<<data[KEY::ALBUM];
+            if (cb != nullptr) cb(data);
+            pulpo.feed(data,recursive);
 
             if(!go) return;
         }
@@ -98,8 +99,8 @@ public slots:
         if(go)
         {
             this->albumInfo();
-            this->artistInfo();
-            this->trackInfo();
+            //            this->artistInfo();
+            //            this->trackInfo();
         }
 
         emit this->finished();
@@ -119,7 +120,7 @@ public slots:
             }
     }
 
-    void parseAlbumInfo(const DB &track, const INFO_K &response)
+    void parseAlbumInfo(DB &track, const INFO_K &response)
     {
         for( auto info : response.keys())
             switch(info)
@@ -147,9 +148,10 @@ public slots:
 
                     if(!response[info][CONTEXT::IMAGE].toByteArray().isEmpty())
                     {
+                        qDebug()<<"SAVING ARTWORK FOR: "<<track[KEY::ALBUM];
                         connect(&connection, &CollectionDB::artworkInserted, this, &Brain::artworkReady);
-                        connect(&pulpo, &Pulpo::artSaved, &connection, &CollectionDB::insertArtwork);
-                        pulpo.saveArt(response[info][CONTEXT::IMAGE].toByteArray(),CachePath);
+                        saveArt(track, response[info][CONTEXT::IMAGE].toByteArray(), CachePath);
+                        connection.insertArtwork(track);
                     }
 
                 break;
@@ -167,7 +169,7 @@ public slots:
             }
     }
 
-    void parseArtistInfo(const DB &track, const INFO_K &response)
+    void parseArtistInfo(DB &track, const INFO_K &response)
     {
         for( auto info : response.keys())
             switch(info)
@@ -199,8 +201,8 @@ public slots:
                     if(!response[info][CONTEXT::IMAGE].toByteArray().isEmpty())
                     {
                         connect(&connection, &CollectionDB::artworkInserted, this, &Brain::artworkReady);
-                        connect(&pulpo, &Pulpo::artSaved, &connection, &CollectionDB::insertArtwork);
-                        pulpo.saveArt(response[info][CONTEXT::IMAGE].toByteArray(),CachePath);
+                        saveArt(track,response[info][CONTEXT::IMAGE].toByteArray(),CachePath);
+                        connection.insertArtwork(track);
                     }
 
                 break;
@@ -217,7 +219,7 @@ public slots:
             }
     }
 
-    void parseTrackInfo(const DB &track, const INFO_K &response)
+    void parseTrackInfo(DB &track, const INFO_K &response)
     {
         for( auto info : response.keys())
             switch(info)
@@ -263,8 +265,8 @@ public slots:
                     if(!response[info][CONTEXT::IMAGE].toByteArray().isEmpty())
                     {
                         connect(&connection, &CollectionDB::artworkInserted, this, &Brain::artworkReady);
-                        connect(&pulpo, &Pulpo::artSaved, &connection, &CollectionDB::insertArtwork);
-                        pulpo.saveArt(response[info][CONTEXT::IMAGE].toByteArray(),CachePath);
+                        saveArt(track, response[info][CONTEXT::IMAGE].toByteArray(),CachePath);
+                        connection.insertArtwork(track);
                     }
 
                 break;

@@ -62,12 +62,12 @@ void RabbitView::populateArtistSuggestion(QMap<QString,QByteArray> info)
         Bae::DB album {{Bae::KEY::ARTIST,Bae::fixString(tag)}};
 
         Pulpo saver(album);
-        connect(&saver, &Pulpo::artSaved,[this](const Bae::DB &album)
-        {
-            artistSuggestion->addAlbum(album);
+//        connect(&saver, &Pulpo::artSaved,[this](const Bae::DB &album)
+//        {
+//            artistSuggestion->addAlbum(album);
 
-        });
-        saver.saveArt(info[tag],Bae::CachePath);
+//        });
+//        saver.saveArt(info[tag],Bae::CachePath);
 
 
     }

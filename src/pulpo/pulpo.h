@@ -69,12 +69,8 @@ protected:
     virtual bool parseAlbum() {return false;}
     virtual bool parseTrack() {return false;}
 
-public slots:    
-    void saveArt(const QByteArray &array, const QString &path);
-
 signals:
     void infoReady(Bae::DB track, PULPO::RESPONSE response);
-    void artSaved(const Bae::DB &track);
     void serviceFail(const QString &message);
 };
 

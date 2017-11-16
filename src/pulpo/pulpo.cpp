@@ -210,22 +210,4 @@ QByteArray Pulpo::startConnection(const QString &url, const QMap<QString,QString
 }
 
 
-void Pulpo::saveArt(const QByteArray &array, const QString &path)
-{
-    if(!array.isNull()&&!array.isEmpty())
-    {
-        // qDebug()<<"tryna save array: "<< array;
 
-        QImage img;
-        img.loadFromData(array);
-        QString name = !this->track[Bae::KEY::ALBUM].isEmpty()? this->track[Bae::KEY::ARTIST] + "_" + this->track[Bae::KEY::ALBUM] : this->track[Bae::KEY::ARTIST];
-        name.replace("/", "-");
-        name.replace("&", "-");
-        QString format = "JPEG";
-        if (img.save(path + name + ".jpg", format.toLatin1(), 100))
-            this->track.insert(Bae::KEY::ARTWORK,path + name + ".jpg");
-        else  qDebug() << "couldn't save artwork";
-    }else qDebug()<<"array is empty";
-
-    emit artSaved(this->track);
-}

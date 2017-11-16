@@ -329,8 +329,6 @@ bool lastfm::parseTrack()
 
     if(this->info == INFO::METADATA || this->info == INFO::ALL)
     {
-        qDebug()<<"ASKED FOR METADTA";
-
         auto albumTitle = itemMap.value("album").toMap().value("title").toString();
         auto trackNumber = itemMap.value("album").toMap().value("@attr").toMap().value("position").toString();
 

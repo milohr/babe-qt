@@ -340,6 +340,28 @@ inline Bae::TABLE albumType(const Bae::DB &albumMap)
         return Bae::TABLE::ALBUMS;
 
     return Bae::TABLE::NONE;
-}}
+}
+
+inline void saveArt(DB &track, const QByteArray &array, const QString &path)
+{
+    if(!array.isNull()&&!array.isEmpty())
+    {
+        // qDebug()<<"tryna save array: "<< array;
+
+        QImage img;
+        img.loadFromData(array);
+        QString name = !track[Bae::KEY::ALBUM].isEmpty()? track[Bae::KEY::ARTIST] + "_" + track[Bae::KEY::ALBUM] : track[Bae::KEY::ARTIST];
+        name.replace("/", "-");
+        name.replace("&", "-");
+        QString format = "JPEG";
+        if (img.save(path + name + ".jpg", format.toLatin1(), 100))
+            track.insert(Bae::KEY::ARTWORK,path + name + ".jpg");
+        else  qDebug() << "couldn't save artwork";
+    }else qDebug()<<"array is empty";
+}
+
+}
+
+
 
 #endif // BAE_H

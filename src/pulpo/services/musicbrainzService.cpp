@@ -207,7 +207,7 @@ bool musicBrainz::parseTrack()
 
     auto id = items.first().toMap().value("id").toString();
     auto url =QString("http://musicbrainz.org/ws/2/recording/%1?inc=artist-rels+recording-rels&fmt=json&limit=5").arg(id);
-
+    qDebug()<<"NEW TRACK INFO URL MUSICBRAINZ"<<url;
     auto rel = this->startConnection(url, this->header);
 
     if(rel.isEmpty()) return false;
