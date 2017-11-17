@@ -109,7 +109,7 @@ void BabeWindow::start()
         auto savedList = loadSettings("PLAYLIST","MAINWINDOW").toStringList();
         this->addToPlaylist(connection.getDBData(savedList),false, APPENDBOTTOM);
         if(this->mainList->rowCount()==0) populateMainList();
-        emit collectionChecked(Bae::TABLE::ALL);
+        emit collectionChecked({{TABLE::TRACKS, true},{TABLE::ALBUMS, true},{TABLE::ARTISTS, true},{TABLE::PLAYLISTS, true}});
     } else settings_widget->createCollectionDB();
 
     if(mainList->rowCount()>0)
@@ -348,21 +348,6 @@ void BabeWindow::setUpViews()
     settings_widget->readSettings();
     connect(settings_widget,&settings::toolbarIconSizeChanged, this, &BabeWindow::setToolbarIconSize);
     connect(settings_widget,&settings::refreshTables,this,  &BabeWindow::refreshTables);
-    connect(settings_widget,&settings::albumArtReady,[this](const DB &album)
-    {
-        switch(albumType(album))
-        {
-        case TABLE::ALBUMS:
-            this->albumsTable->addAlbum(album);
-            break;
-
-        case TABLE::ARTISTS:
-            this->artistsTable->addAlbum(album);
-            break;
-
-        default: break;
-        }
-    });
 
     /* THE BUTTONS VIEWS */
     connect(ui->tracks_view,&QToolButton::clicked, this, &BabeWindow::collectionView);
@@ -1008,71 +993,54 @@ void BabeWindow::resizeEvent(QResizeEvent* event)
     QMainWindow::resizeEvent(event);
 }
 
-void BabeWindow::refreshAlbumsView(const Bae::TABLE &type)
+
+void BabeWindow::refreshTables(const QMap<Bae::TABLE, bool> &tableReset) //tofix
 {
-    switch(type)
-    {
-    case Bae::TABLE::ALBUMS:
-    {
-        QSqlQuery query(QString("SELECT * FROM %1 ORDER BY  %2").arg(Bae::TABLEMAP[Bae::TABLE::ALBUMS],Bae::KEYMAP[Bae::KEY::ALBUM]));
-        albumsTable->populate(query);
-        albumsTable->hideAlbumFrame();
-        break;
-    }
-    case Bae::TABLE::ARTISTS:
-    {
-        QSqlQuery query(QString("SELECT * FROM %1 ORDER BY  %2").arg(Bae::TABLEMAP[Bae::TABLE::ARTISTS],Bae::KEYMAP[Bae::KEY::ARTIST]));
-        artistsTable->populate(query);
-        artistsTable->hideAlbumFrame();
-        break;
-    }
-    default: return;
-    }
-
-}
-
-void BabeWindow::refreshTables(const Bae::TABLE &reset) //tofix
-{
-    switch(reset)
-    {
-    case Bae::TABLE::TRACKS:
-        collectionTable->flushTable();
-        break;
-    case Bae::TABLE::ALBUMS:
-        albumsTable->flushView();
-        break;
-    case Bae::TABLE::ARTISTS:
-        artistsTable->flushView();
-        break;
-    case Bae::TABLE::ALL:
-        albumsTable->flushView();
-        artistsTable->flushView();
-        collectionTable->flushTable();
-        break;
-    default:
-        albumsTable->flushView();
-        artistsTable->flushView();
-        collectionTable->flushTable();
-        break;
-    }
-
     nof->notify("Loading collection","this might take some time depending on your colleciton size");
 
     QSqlQuery query;
-    query.prepare(QString("SELECT * FROM %1 ORDER BY  %2").arg(Bae::TABLEMAP[Bae::TABLE::TRACKS],Bae::KEYMAP[Bae::KEY::ARTIST]));
-    collectionTable->populateTableView(query);
 
-    query.prepare(QString("SELECT * FROM %1 ORDER BY  %2").arg(Bae::TABLEMAP[Bae::TABLE::ALBUMS],Bae::KEYMAP[Bae::KEY::ALBUM]));
-    albumsTable->populate(query);
-    albumsTable->hideAlbumFrame();
+    for (auto table : tableReset.keys())
+        switch(table)
+        {
+        case Bae::TABLE::TRACKS:
+        {
+            if(tableReset[table]) collectionTable->flushTable();
+            qDebug()<<"popullllll tracks";
+            query.prepare(QString("SELECT * FROM %1 ORDER BY  %2").arg(Bae::TABLEMAP[Bae::TABLE::TRACKS],Bae::KEYMAP[Bae::KEY::ARTIST]));
+            collectionTable->populateTableView(query);
+            break;
 
-    query.prepare(QString("SELECT * FROM %1 ORDER BY  %2").arg(Bae::TABLEMAP[Bae::TABLE::ARTISTS],Bae::KEYMAP[Bae::KEY::ARTIST]));
-    artistsTable->populate(query);
-    artistsTable->hideAlbumFrame();
+        }
+        case Bae::TABLE::ALBUMS:
+        {
+            if(tableReset[table]) albumsTable->flushView();
 
-    playlistTable->list->clear();
-    playlistTable->setDefaultPlaylists();
-    playlistTable->setPlaylists(connection.getPlaylists());
+            query.prepare(QString("SELECT * FROM %1 ORDER BY  %2").arg(Bae::TABLEMAP[Bae::TABLE::ALBUMS],Bae::KEYMAP[Bae::KEY::ALBUM]));
+            albumsTable->populate(query);
+            albumsTable->hideAlbumFrame();
+            break;
+        }
+        case Bae::TABLE::ARTISTS:
+        {
+            if(tableReset[table]) artistsTable->flushView();
+
+
+            query.prepare(QString("SELECT * FROM %1 ORDER BY  %2").arg(Bae::TABLEMAP[Bae::TABLE::ARTISTS],Bae::KEYMAP[Bae::KEY::ARTIST]));
+            artistsTable->populate(query);
+            artistsTable->hideAlbumFrame();
+            break;
+        }
+        case Bae::TABLE::PLAYLISTS:
+        {
+            playlistTable->list->clear();
+            playlistTable->setDefaultPlaylists();
+            playlistTable->setPlaylists(connection.getPlaylists());
+            break;
+        }
+
+        default: return;
+        }
 
     emit finishRefresh();
 

@@ -114,8 +114,9 @@ signals:
     void toolbarIconSizeChanged(int newSize);
     void collectionPathChanged(QString newPath);
     void collectionDBFinishedAdding();
-    void refreshTables(const Bae::TABLE &reset);
+    void refreshTables(const QMap<Bae::TABLE,bool> &reset);
     void finishedTracksInsertion();
+    void refreshAlbumsView();
     void getArtwork();
     void albumArtReady(const DB &album);
 

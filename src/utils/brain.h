@@ -83,7 +83,6 @@ public:
 
         for(auto data : dataList)
         {
-            qDebug()<<"get info for:"<<data[KEY::ALBUM];
             if (cb != nullptr) cb(data);
             pulpo.feed(data,recursive);
 
@@ -149,7 +148,7 @@ public slots:
                     if(!response[info][CONTEXT::IMAGE].toByteArray().isEmpty())
                     {
                         qDebug()<<"SAVING ARTWORK FOR: "<<track[KEY::ALBUM];
-                        connect(&connection, &CollectionDB::artworkInserted, this, &Brain::artworkReady);
+                        // connect(&connection, &CollectionDB::artworkInserted, this, &Brain::artworkReady);
                         saveArt(track, response[info][CONTEXT::IMAGE].toByteArray(), CachePath);
                         connection.insertArtwork(track);
                     }
@@ -200,7 +199,7 @@ public slots:
 
                     if(!response[info][CONTEXT::IMAGE].toByteArray().isEmpty())
                     {
-                        connect(&connection, &CollectionDB::artworkInserted, this, &Brain::artworkReady);
+//                        connect(&connection, &CollectionDB::artworkInserted, this, &Brain::artworkReady);
                         saveArt(track,response[info][CONTEXT::IMAGE].toByteArray(),CachePath);
                         connection.insertArtwork(track);
                     }
@@ -264,7 +263,7 @@ public slots:
 
                     if(!response[info][CONTEXT::IMAGE].toByteArray().isEmpty())
                     {
-                        connect(&connection, &CollectionDB::artworkInserted, this, &Brain::artworkReady);
+//                        connect(&connection, &CollectionDB::artworkInserted, this, &Brain::artworkReady);
                         saveArt(track, response[info][CONTEXT::IMAGE].toByteArray(),CachePath);
                         connection.insertArtwork(track);
                     }
@@ -388,6 +387,10 @@ public slots:
         //            pulpo.feed(track,RECURSIVE::OFF);
         //            if(!go) return;
         //        }
+
+        // emit this->done(TABLE::TRACKS);
+        emit this->done(TABLE::ALBUMS);
+
     }
 
     void albumInfo()
@@ -421,6 +424,9 @@ public slots:
             connection.wikiAlbum(track,SLANG[W::NONE]);
         });
 
+        emit this->done(TABLE::ALBUMS);
+
+
     }
 
     void artistInfo()
@@ -436,7 +442,6 @@ public slots:
                 TABLEMAP[TABLE::ARTISTS],KEYMAP[KEY::ARTWORK]);
         QSqlQuery query (queryTxt);
         this->setInfo(connection.getDBData(query), ontology, services, INFO::ARTWORK, RECURSIVE::OFF, nullptr);
-
 
         //select artist from artists where  artist  not in (select album from albums_tags)
         qDebug()<<"getting missing artist tags";
@@ -454,6 +459,9 @@ public slots:
         {
             connection.wikiArtist(track,SLANG[W::NONE]);
         });
+
+        emit this->done(TABLE::ARTISTS);
+
     }
 
 
@@ -466,5 +474,7 @@ signals:
 
     void finished();
     void artworkReady(const DB &track);
+
+    void done(const TABLE &type);
 };
 }

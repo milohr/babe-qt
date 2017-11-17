@@ -70,6 +70,12 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
         this->movie->stop();
         ui->label->hide();
         this->ui->sourcesFrame->setEnabled(true);
+
+    });
+
+    connect(&this->brainDeamon, &Deamon::Brain::done, [this](const TABLE type)
+    {
+        emit this->refreshTables({{type,false}});
     });
 
     connect(this->ui->pulpoBrainz_spinBox, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](const int &value)
@@ -110,7 +116,7 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
         ui->progressBar->setValue(0);
 
         collectionWatcher();
-        emit refreshTables(Bae::TABLE::TRACKS);
+        emit refreshTables({{TABLE::TRACKS, true},{TABLE::ALBUMS, false},{TABLE::ARTISTS, false},{TABLE::PLAYLISTS, true}});
         emit getArtwork();
     });
 
@@ -190,7 +196,7 @@ void settings::on_remove_clicked()
             this->dirs.clear();
             this->collectionWatcher();
             this->watcher->removePaths(watcher->directories());            ui->remove->setEnabled(false);
-            emit refreshTables(Bae::TABLE::ALL);
+            emit refreshTables({{TABLE::TRACKS, true},{TABLE::ALBUMS, true},{TABLE::ARTISTS, true},{TABLE::PLAYLISTS, true}});
         }
     }
 }
@@ -311,7 +317,7 @@ void settings::addToWatcher(QStringList paths)
 void settings::collectionWatcher()
 {
     auto queryTxt = QString("SELECT %1 FROM %2").arg(Bae::KEYMAP[Bae::KEY::URL],Bae::TABLEMAP[Bae::TABLE::TRACKS]);
-    QSqlQuery query = collection_db.getQuery(queryTxt);
+    QSqlQuery query(queryTxt);
     while (query.next())
     {
         QString location = query.value(Bae::KEYMAP[Bae::KEY::URL]).toString();

@@ -120,13 +120,13 @@ bool CollectionDB::check_existance(const QString &tableName, const QString &sear
     QSqlQuery query;
     query.prepare(queryStr);
     //    qDebug()<<queryStr;
-    if (query.exec())
+
+    if (this->execQuery(query))
     {
         if (query.next()) return true;
     }else qDebug()<<query.lastError().text();
 
     return false;
-
 }
 
 bool CollectionDB::insert(const QString &tableName, const QVariantMap &insertData)
@@ -157,7 +157,7 @@ bool CollectionDB::insert(const QString &tableName, const QVariantMap &insertDat
     foreach (const QVariant &value, values)
         query.bindValue(k++, value);
 
-    return query.exec();
+    return this->execQuery(query);
 
 }
 
@@ -165,19 +165,29 @@ bool CollectionDB::update(const QString &table,const QString &column,const QVari
 {
     auto queryStr = QString("UPDATE %1 SET %2 = \"%3\" WHERE %4 = \"%5\"").arg(table, column, newValue.toString().replace("\"","\"\""), op.toString(), id);
     QSqlQuery query(queryStr);
-    qDebug()<<queryStr;
-    if(query.exec())
-        return true;
+    return this->execQuery(query);
 
-    query.lastError().text();
+}
+
+bool CollectionDB::execQuery(QSqlQuery &query)
+{
+
+    if(query.exec()) return true;
+    qDebug()<<"ERROR ON EXEC QUERY";
+    qDebug()<<query.lastError()<<query.lastQuery();
     return false;
+}
 
+bool CollectionDB::execQuery(const QString &queryTxt)
+{
+    QSqlQuery query(queryTxt);
+    return this->execQuery(query);
 }
 
 bool CollectionDB::openDB()
 {
-    if (m_db.open())
-        return true;
+    if (m_db.open()) return true;
+
     qDebug() << "Error: connection with database fail" <<m_db.lastError().text();
     return false;
 }
@@ -188,7 +198,6 @@ void CollectionDB::addTrack(const DB &track)
     QSqlQuery query;
     if(query.exec("PRAGMA synchronous=OFF"))
     {
-
         auto url = track[KEY::URL];
         auto title = track[KEY::TITLE];
         auto artist = track[KEY::ARTIST];
@@ -246,20 +255,20 @@ void CollectionDB::addTrack(const DB &track)
 bool CollectionDB::rateTrack(const QString &path, const int &value)
 {
     if(update(TABLEMAP[TABLE::TRACKS],
-                    KEYMAP[KEY::STARS],
-                    value,
-                    KEYMAP[KEY::URL],
-                    path)) return true;
+              KEYMAP[KEY::STARS],
+              value,
+              KEYMAP[KEY::URL],
+              path)) return true;
     return false;
 }
 
 bool CollectionDB::babeTrack(const QString &path, const bool &value)
 {
     if(update(TABLEMAP[TABLE::TRACKS],
-                    KEYMAP[KEY::BABE],
-                    value?1:0,
-                    KEYMAP[KEY::URL],
-                    path)) return true;
+              KEYMAP[KEY::BABE],
+              value?1:0,
+              KEYMAP[KEY::URL],
+              path)) return true;
     return false;
 }
 
@@ -273,20 +282,20 @@ bool CollectionDB::moodTrack(const QString &path, const QString &value)
 bool CollectionDB::artTrack(const QString &path, const QString &value)
 {
     if(update(TABLEMAP[TABLE::TRACKS],
-                    KEYMAP[KEY::ART],
-                    value,
-                    KEYMAP[KEY::URL],
-                    path)) return true;
+              KEYMAP[KEY::ART],
+              value,
+              KEYMAP[KEY::URL],
+              path)) return true;
     return false;
 }
 
 bool CollectionDB::lyricsTrack(const DB &track, const QString &value)
 {
     if(update(TABLEMAP[TABLE::TRACKS],
-                    KEYMAP[KEY::LYRICS],
-                    value,
-                    KEYMAP[KEY::URL],
-                    track[KEY::URL])) return true;
+              KEYMAP[KEY::LYRICS],
+              value,
+              KEYMAP[KEY::URL],
+              track[KEY::URL])) return true;
     return false;
 }
 
@@ -330,13 +339,15 @@ bool CollectionDB::albumTrack(const DB &track, const QString &value)
     queryTxt = QString("UPDATE %1 SET %2 = %3 AND %4 = %5 WHERE %2 = %6 AND %4 = %5").arg(TABLEMAP[TABLE::TRACKS],
             KEYMAP[KEY::ALBUM],value,
             KEYMAP[KEY::ARTIST], oldAlbum[KEY::ARTIST],oldAlbum[KEY::ALBUM]);
+    query.prepare(queryTxt);
 
-    if(!execQuery(queryTxt)) return false;
+    if(!execQuery(query)) return false;
 
     queryTxt = QString("DELETE FROM %1 WHERE %2 = %3 AND %4 = %5").arg(TABLEMAP[TABLE::ALBUMS],
             KEYMAP[KEY::ALBUM],oldAlbum[KEY::ALBUM], KEYMAP[KEY::ARTIST], artist);
+    query.prepare(queryTxt);
 
-    if(!execQuery(queryTxt)) return false;
+    if(!execQuery(query)) return false;
 
     return true;
 }
@@ -359,10 +370,10 @@ bool CollectionDB::wikiTrack(const DB &track, const QString &value)
     auto url = track[KEY::URL];
 
     if(update(TABLEMAP[TABLE::TRACKS],
-                    KEYMAP[KEY::WIKI],
-                    value,
-                    KEYMAP[KEY::URL],
-                    url)) return true;
+              KEYMAP[KEY::WIKI],
+              value,
+              KEYMAP[KEY::URL],
+              url)) return true;
 
     return false;
 }
@@ -372,10 +383,10 @@ bool CollectionDB::wikiArtist(const DB &track, const QString &value)
     auto artist = track[KEY::ARTIST];
 
     if(update(TABLEMAP[TABLE::ARTISTS],
-                    KEYMAP[KEY::WIKI],
-                    value,
-                    KEYMAP[KEY::ARTIST],
-                    artist)) return true;
+              KEYMAP[KEY::WIKI],
+              value,
+              KEYMAP[KEY::ARTIST],
+              artist)) return true;
     return false;
 }
 
@@ -405,14 +416,10 @@ bool CollectionDB::wikiAlbum(const DB &track,  QString value)
             KEYMAP[KEY::ALBUM],
             album,KEYMAP[KEY::ARTIST], artist);
 
+
     qDebug()<<queryStr;
     QSqlQuery query(queryStr);
-
-    if(query.exec())
-        return true;
-
-    query.lastError().text();
-    return false;
+    return this->execQuery(query);
 }
 
 bool CollectionDB::tagsAlbum(const DB &track, const QString &value, const QString &context)
@@ -478,7 +485,7 @@ DB_LIST CollectionDB::getDBData(QSqlQuery &query)
 {
     DB_LIST mapList;
 
-    if(query.exec())
+    if(this->execQuery(query))
     {
         while(query.next())
         {
@@ -526,9 +533,11 @@ QStringList CollectionDB::getArtistAlbums(const QString &artist)
     auto queryTxt = QString("SELECT %4 FROM %1 WHERE %2 = \"%3\" ORDER BY %4 ASC").arg(TABLEMAP[TABLE::ALBUMS],
             KEYMAP[KEY::ARTIST],artist,KEYMAP[KEY::ALBUM]);
     QSqlQuery query(queryTxt);
-    if(query.exec())
+
+    if(this->execQuery(query))
         while(query.next())
             albums<<query.value(KEYMAP[KEY::ALBUM]).toString();
+
     return albums;
 }
 
@@ -660,7 +669,7 @@ QString CollectionDB::getTrackLyrics(const QString &url)
                     TABLEMAP[TABLE::TRACKS],
             KEYMAP[KEY::URL],url));
 
-    if(query.exec())
+    if(this->execQuery(query))
         if(query.next())
             lyrics=query.value(KEYMAP[KEY::LYRICS]).toString();
 
@@ -675,7 +684,7 @@ QString CollectionDB::getTrackArt(const QString &path)
                     TABLEMAP[TABLE::TRACKS],
             KEYMAP[KEY::URL],path));
 
-    if(query.exec())
+    if(this->execQuery(query))
         if(query.next())
             color=query.value(KEYMAP[KEY::ART]).toString();
 
@@ -695,7 +704,7 @@ int CollectionDB::getTrackStars(const QString &path)
                     TABLEMAP[TABLE::TRACKS],
             KEYMAP[KEY::URL],path));
 
-    if(query.exec())
+    if(this->execQuery(query))
         if(query.next())
             stars=query.value(KEYMAP[KEY::STARS]).toInt();
 
@@ -709,7 +718,7 @@ int CollectionDB::getTrackBabe(const QString &path)
                     TABLEMAP[TABLE::TRACKS],
             KEYMAP[KEY::URL],path));
 
-    if(query.exec())
+    if(this->execQuery(query))
         if(query.next())
             babe=query.value(KEYMAP[KEY::BABE]).toInt();
 
@@ -724,9 +733,10 @@ QString CollectionDB::getArtistArt(const QString &artist)
                         TABLEMAP[TABLE::ARTISTS],
             KEYMAP[KEY::ARTIST],artist));
 
-    while (queryHead.next())
-        if(!queryHead.value(0).toString().isEmpty()&&queryHead.value(0).toString() != SLANG[W::NONE])
-            artistHead = queryHead.value(0).toString();
+    if (this->execQuery(queryHead))
+        while (queryHead.next())
+            if(!queryHead.value(0).toString().isEmpty()&&queryHead.value(0).toString() != SLANG[W::NONE])
+                artistHead = queryHead.value(0).toString();
 
     return artistHead;
 }
@@ -739,7 +749,7 @@ QString CollectionDB::getArtistWiki(const QString &artist)
                     TABLEMAP[TABLE::ARTISTS],
             KEYMAP[KEY::ARTIST],artist));
 
-    if(query.exec())
+    if(this->execQuery(query))
         while (query.next())
             wiki = query.value(0).toString();
 
@@ -761,7 +771,7 @@ QStringList CollectionDB::getArtistTags(const QString &artist)
             KEYMAP[KEY::ARTIST],artist);
     QSqlQuery query(queryStr);
 
-    if(query.exec())
+    if(this->execQuery(query))
         while (query.next())
             tags << query.value(0).toString();
 
@@ -777,9 +787,11 @@ QString CollectionDB::getAlbumArt(const QString &album, const QString &artist)
             KEYMAP[KEY::ARTIST],artist);
     QSqlQuery queryCover(queryStr);
     qDebug()<<queryStr;
-    while (queryCover.next())
-        if(!queryCover.value(0).toString().isEmpty()&&queryCover.value(0).toString() != SLANG[W::NONE])
-            albumCover = queryCover.value(0).toString();
+
+    if(this->execQuery(queryCover))
+        while (queryCover.next())
+            if(!queryCover.value(0).toString().isEmpty()&&queryCover.value(0).toString() != SLANG[W::NONE])
+                albumCover = queryCover.value(0).toString();
 
     return albumCover;
 }
@@ -793,7 +805,7 @@ QString CollectionDB::getAlbumWiki(const QString &album, const QString &artist)
             KEYMAP[KEY::ARTIST],artist);
     QSqlQuery query(queryStr);
 
-    if(query.exec())
+    if(this->execQuery(query))
         while (query.next())
             wiki = query.value(0).toString();
 
@@ -811,11 +823,11 @@ QStringList CollectionDB::getAlbumTags(const QString &album, const QString &arti
             TABLEMAP[TABLE::TAGS],
             KEYMAP[KEY::CONTEXT],
             PULPO::CONTEXT_MAP[PULPO::CONTEXT::TAG],
-             KEYMAP[KEY::ALBUM],album,
+            KEYMAP[KEY::ALBUM],album,
             KEYMAP[KEY::ARTIST],artist);
     QSqlQuery query(queryStr);
 
-    if(query.exec())
+    if(this->execQuery(query))
         while (query.next())
             tags << query.value(0).toString();
 
@@ -830,7 +842,7 @@ QStringList CollectionDB::getPlaylists()
                     KEYMAP[KEY::ADD_DATE],
             TABLEMAP[TABLE::PLAYLISTS]));
 
-    if (query.exec())
+    if (this->execQuery(query))
         while (query.next())
             playlists << query.value(0).toString();
 
@@ -843,7 +855,7 @@ bool CollectionDB::removeTrack(const QString &path)
     auto queryTxt = QString("DELETE FROM %1 WHERE %2 =  \"%3\"").arg(TABLEMAP[TABLE::TRACKS],
             KEYMAP[KEY::URL],path);
     QSqlQuery query(queryTxt);
-    if(query.exec())
+    if(this->execQuery(query))
     {
         if(cleanAlbums()) cleanArtists();
         return true;
@@ -862,7 +874,7 @@ bool CollectionDB::removeSource(const QString &path)
         queryTxt = QString("DELETE FROM %1 WHERE %2 LIKE \"%3%\"").arg(TABLEMAP[TABLE::SOURCES],
                 KEYMAP[KEY::URL],path);
         query.prepare(queryTxt);
-        if(query.exec())
+        if(this->execQuery(query))
         {
             if(cleanAlbums()) cleanArtists();
             return true;
@@ -883,37 +895,7 @@ CollectionDB::sourceTypes CollectionDB::sourceType(const QString &url)
 }
 
 
-QSqlQuery CollectionDB::getQuery(const QString &queryTxt)
-{
-    QSqlQuery query(queryTxt);
-    return query;
-}
-
 /*******************OLD STUFF********************/
-
-bool CollectionDB::removeQuery(QString queryTxt)
-{
-    QSqlQuery query;
-    query.prepare(queryTxt);
-
-    if(!query.exec())
-    {
-        qDebug() << "removeQuery error: "<< query.lastError();
-        return false;
-    }else return true;
-}
-
-bool CollectionDB::checkQuery(QString queryTxt)
-{
-    QSqlQuery query(queryTxt);
-
-    //    qDebug()<<"The Query is: "<<queryTxt;
-
-    if (query.exec())
-        if (query.next()) return true;
-        else return false;
-    else return false;
-}
 
 void CollectionDB::insertArtwork(const DB &track)
 {
@@ -928,13 +910,13 @@ void CollectionDB::insertArtwork(const DB &track)
         auto queryStr = QString("UPDATE %1 SET %2 = \"%3\" WHERE %4 = \"%5\" AND %6 = \"%7\"").arg(TABLEMAP[TABLE::ALBUMS],
                 KEYMAP[KEY::ARTWORK],
                 path.isEmpty() ? SLANG[W::NONE] : path,
-                KEYMAP[KEY::ALBUM],
-                album,
-                KEYMAP[KEY::ARTIST],
-                artist);
+                                                  KEYMAP[KEY::ALBUM],
+                                                  album,
+                                                  KEYMAP[KEY::ARTIST],
+                                                  artist);
 
         QSqlQuery query(queryStr);
-        if(!query.exec())qDebug()<<"COULDNT Artwork[cover] inerted into DB"<<artist<<album;
+        if(!this->execQuery(query))qDebug()<<"COULDNT Artwork[cover] inerted into DB"<<artist<<album;
         break;
 
     }
@@ -943,10 +925,10 @@ void CollectionDB::insertArtwork(const DB &track)
         auto queryStr = QString("UPDATE %1 SET %2 = \"%3\" WHERE %4 = \"%5\"").arg(TABLEMAP[TABLE::ARTISTS],
                 KEYMAP[KEY::ARTWORK],
                 path.isEmpty() ? SLANG[W::NONE] : path,
-                KEYMAP[KEY::ARTIST],
-                artist);
+                                                  KEYMAP[KEY::ARTIST],
+                                                  artist);
         QSqlQuery query(queryStr);
-        if(!query.exec())qDebug()<<"COULDNT Artwork[head] inerted into DB"<<artist;
+        if(!this->execQuery(query))qDebug()<<"COULDNT Artwork[head] inerted into DB"<<artist;
 
         break;
 
@@ -957,40 +939,6 @@ void CollectionDB::insertArtwork(const DB &track)
     emit artworkInserted(track);
 }
 
-
-bool CollectionDB::execQuery(QString queryTxt)
-{
-    QSqlQuery query;
-    query.prepare(queryTxt);
-
-    if(query.exec())
-    {
-        qDebug()<<"executing query: "<<queryTxt;
-
-        return true;
-    }else return false;
-}
-
-bool CollectionDB::insertInto(const QString &tableName, const QString &column, const QString &location, const QVariant &value)
-{
-    QSqlQuery query;
-
-    if(query.exec("PRAGMA synchronous=OFF"))
-    {
-        query.prepare("UPDATE "+tableName+" SET "+column+" = (:value) WHERE url = (:url)" );
-        //query.prepare("SELECT * FROM "+tableName+" WHERE "+searchId+" = (:search)");
-
-        query.bindValue(":value", value);
-        query.bindValue(":url", location);
-        if(query.exec())
-        {
-            return true;
-        }else return false;
-
-    }else return false;
-
-}
-
 QStringList CollectionDB::getPlaylistsMoods()
 {
     QStringList moods;
@@ -998,7 +946,7 @@ QStringList CollectionDB::getPlaylistsMoods()
 
     query.prepare("SELECT * FROM playlists order by title");
 
-    if (query.exec())
+    if (this->execQuery(query))
         while (query.next())
             if(!query.value(1).toString().isEmpty()&&query.value(0).toString().contains("mood"))
                 moods << query.value(1).toString();
@@ -1012,8 +960,7 @@ bool CollectionDB::removePlaylistTrack(const QString &url, const QString &playli
     auto queryTxt = QString("DELETE FROM %1 WHERE %2 = \"%3\" AND %4 = \"%5\"").arg(TABLEMAP[TABLE::TRACKS_PLAYLISTS],
             KEYMAP[KEY::PLAYLIST],playlist,KEYMAP[KEY::URL],url);
     QSqlQuery query(queryTxt);
-    if(!query.exec()) return false;
-    return true;
+    return this->execQuery(query);
 }
 
 bool CollectionDB::removePlaylist(const QString &playlist)
@@ -1030,8 +977,7 @@ bool CollectionDB::removePlaylist(const QString &playlist)
             KEYMAP[KEY::PLAYLIST],playlist);
 
     query.prepare(queryTxt);
-    if(!query.exec()) return false;
-    return true;
+    return this->execQuery(query);
 }
 
 bool CollectionDB::removeArtist(const QString &artist)
@@ -1063,8 +1009,7 @@ bool CollectionDB::removeAlbum(const QString &album, const QString &artist)
     auto queryTxt = QString("DELETE FROM %1 WHERE %2 = \"%3\" AND %4 = \"%5\"").arg(TABLEMAP[TABLE::ALBUMS],
             KEYMAP[KEY::ALBUM],album,KEYMAP[KEY::ARTIST],artist);
     QSqlQuery query(queryTxt);
-    if(!query.exec()) return false;
-    return true;
+    return this->execQuery(query);
 }
 
 bool CollectionDB::cleanAlbums()
@@ -1079,7 +1024,7 @@ bool CollectionDB::cleanAlbums()
     qDebug()<<queryTxt;
     QSqlQuery query(queryTxt);
 
-    return query.exec();
+    return this->execQuery(query);
 }
 
 

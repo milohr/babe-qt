@@ -160,8 +160,7 @@ private slots:
     void setCoverArt(const Bae::DB &song);
     void on_rowInserted(QModelIndex model ,int x,int y);
 
-    void refreshAlbumsView(const TABLE &type);
-    void refreshTables(const Bae::TABLE &reset);
+    void refreshTables(const QMap<Bae::TABLE, bool> &tableReset);
     void addToPlayed(const QString &url);
     void on_tracks_view_2_clicked();
     void on_addAll_clicked();
@@ -291,7 +290,7 @@ private:
 
 signals:
     void finishedPlayingSong(QString url);
-    void collectionChecked(const Bae::TABLE &reset);
+    void collectionChecked(const QMap<TABLE,bool> &reset);
     void fetchCover(const Bae::DB &song);
     void finishRefresh();
 };

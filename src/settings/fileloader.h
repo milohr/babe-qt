@@ -19,7 +19,7 @@ public:
 
         qRegisterMetaType<Bae::DB>("Bae::DB");
         qRegisterMetaType<Bae::TABLE>("Bae::TABLE");
-
+        qRegisterMetaType<QMap<Bae::TABLE,bool>>("QMap<Bae::TABLE,bool>");
         t.start();
     }
 

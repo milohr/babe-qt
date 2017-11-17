@@ -975,9 +975,6 @@ void BabeTable::itemEdited(const Bae::DB &map)
     this->getItem(rRow,Bae::KEY::ARTIST)->setText(map[Bae::KEY::ARTIST]);
     this->getItem(rRow,Bae::KEY::ALBUM)->setText(map[Bae::KEY::ALBUM]);
     this->getItem(rRow,Bae::KEY::GENRE)->setText(map[Bae::KEY::GENRE]);
-
-    //connection.insertInto("tracks",column,this->model()->index(newIndex.row(),LOCATION).data().toString(),newIndex.data().toString());
-
 }
 
 void BabeTable::infoIt_action()

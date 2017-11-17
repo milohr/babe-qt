@@ -31,12 +31,8 @@ public:
     explicit CollectionDB();
     //CollectionDB(bool connect);
     ~CollectionDB(){}
-    QSqlQuery getQuery(const QString &queryTxt);
-    bool checkQuery(QString queryTxt);
-    bool insertInto(const QString &tableName, const QString &column, const QString &location, const QVariant &value);
-    bool removeQuery(QString queryTxt);
-    bool execQuery(QString queryTxt);
-
+    bool execQuery(QSqlQuery &query);
+    bool execQuery(const QString &queryTxt);
 
     /*basic public actions*/
     void prepareCollectionDB();
