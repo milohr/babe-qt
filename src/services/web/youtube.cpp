@@ -26,7 +26,7 @@ YouTube::YouTube(QObject *parent) : QObject(parent)
     this->nof = new Notify(this);
 }
 
-YouTube::~YouTube(){  }
+YouTube::~YouTube(){   }
 
 void YouTube::searchPendingFiles()
 {

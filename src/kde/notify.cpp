@@ -19,6 +19,11 @@
 
 Notify::Notify(QObject *parent) : QObject(parent) {}
 
+Notify::~Notify()
+{
+    qDebug()<<"DELETING KNOTIFY";
+}
+
 void Notify::notify(const QString &title, const QString &body)
 {
     auto notification = new KNotification(QStringLiteral("Notify"),KNotification::CloseOnTimeout, this);
@@ -26,6 +31,8 @@ void Notify::notify(const QString &title, const QString &body)
     notification->setTitle(QStringLiteral("%1").arg(title));
     notification->setText(QStringLiteral("%1").arg(body));
     notification->sendEvent();
+
+    notification->deleteLater();
 }
 
 void Notify::notifySong(const Bae::DB &trackMap,  const QPixmap &pix)
@@ -47,6 +54,8 @@ void Notify::notifySong(const Bae::DB &trackMap,  const QPixmap &pix)
     connect(notification, SIGNAL(activated(uint)), SLOT(actions(uint)));
 
     notification->sendEvent();
+
+    notification->deleteLater();
 
 }
 

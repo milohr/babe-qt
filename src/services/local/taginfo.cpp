@@ -24,6 +24,7 @@ TagInfo::TagInfo(const QString &file)
 {
     this->file = TagLib::FileRef(file.toUtf8());
     this->path = file;
+    qDebug()<<"TAGINFO::"<<path;
 }
 
 

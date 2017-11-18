@@ -52,6 +52,7 @@ enum class CONTEXT : uint8_t
     TRACK_LANGUAGE,
     TRACK_SIMILAR,
 
+    ALBUM_TEAM,
     ALBUM_STAT,
     ALBUM_TITLE,
     ALBUM_DATE,
@@ -74,6 +75,7 @@ enum class CONTEXT : uint8_t
     WIKI,
     IMAGE,
     LYRIC,
+    SOURCE
 
 };
 
@@ -85,6 +87,7 @@ static const QMap<CONTEXT,QString> CONTEXT_MAP =
     {CONTEXT::ALBUM_LANGUAGE, "album_language"},
     {CONTEXT::ALBUM_SIMILAR, "album_similar"},
     {CONTEXT::ALBUM_LABEL, "album_label"},
+    {CONTEXT::ALBUM_TEAM, "album_team"},
 
     {CONTEXT::ARTIST_STAT, "artist_stat"},
     {CONTEXT::ARTIST_TITLE, "artist_title"},
@@ -94,6 +97,7 @@ static const QMap<CONTEXT,QString> CONTEXT_MAP =
     {CONTEXT::ARTIST_SIMILAR, "artist_similar"},
     {CONTEXT::ARTIST_ALIAS, "artist_alias"},
     {CONTEXT::ARTIST_GENDER, "artist_gender"},
+    {CONTEXT::ARTIST_TEAM, "artist_team"},
 
     {CONTEXT::TRACK_STAT, "track_stat"},
     {CONTEXT::TRACK_DATE, "track_date"},
@@ -109,6 +113,7 @@ static const QMap<CONTEXT,QString> CONTEXT_MAP =
     {CONTEXT::WIKI, "wiki"},
     {CONTEXT::IMAGE, "image"},
     {CONTEXT::LYRIC, "lyric"},
+    {CONTEXT::SOURCE, "source"}
 
 };
 

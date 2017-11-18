@@ -24,7 +24,7 @@ QString htmlParser::extractProp(const QString &tag,const QString &prop)
 
 }
 
-void htmlParser::parseTag(const QString &tagRef, const QString &attribute)
+QStringList htmlParser::parseTag(const QString &tagRef, const QString &attribute)
 {
 
     QStringList results;
@@ -56,7 +56,7 @@ void htmlParser::parseTag(const QString &tagRef, const QString &attribute)
 
     }
 
-    emit finishedParsingTags(results);
+    return results;
 }
 
 /*QStringList htmlParser::parseTag_old(const QString &tagRef)

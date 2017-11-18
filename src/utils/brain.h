@@ -322,7 +322,7 @@ public slots:
         if(!go) return;
 
         auto ontology = ONTOLOGY::TRACK;
-        auto services = {SERVICES::LyricWikia};
+        auto services = {SERVICES::LyricWikia, SERVICES::Genius};
 
         qDebug()<<"getting missing track lyrics";
         auto queryTxt =  QString("SELECT %1, %2, %3 FROM %4 WHERE %5 = ''").arg(KEYMAP[KEY::URL],

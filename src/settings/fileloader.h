@@ -58,8 +58,7 @@ public slots:
 
         if(urls.size()>0)
         {
-            for(auto url : urls)
-            {
+            for(auto url : urls)            
                 if(go)
                 {
                     if(!connection.check_existance(Bae::TABLEMAP[Bae::TABLE::TRACKS],Bae::KEYMAP[Bae::KEY::URL],url))
@@ -73,6 +72,8 @@ public slots:
                         auto sourceUrl = QFileInfo(url).dir().path();
                         int duration = info.getDuration();
                         auto year = info.getYear();
+
+                        qDebug()<<"FILE LOADER:"<< title << album << artist <<url;
 
                         Bae::DB trackMap = {
                             {Bae::KEY::URL,url},
@@ -92,7 +93,7 @@ public slots:
                     }
 
                 }else break;
-            }
+
         }
         t.msleep(100);
         emit finished();

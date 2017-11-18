@@ -1,11 +1,11 @@
 #include "geniusService.h"
 #include <QObject>
-
+#include "../htmlparser.h"
 
 genius::genius(const Bae::DB &song)
 {
     this->availableInfo.insert(ONTOLOGY::ARTIST, {INFO::ARTWORK, INFO::WIKI, INFO::TAGS});
-    this->availableInfo.insert(ONTOLOGY::TRACK, {INFO::TAGS, INFO::WIKI, INFO::ARTWORK, INFO::METADATA});
+    this->availableInfo.insert(ONTOLOGY::TRACK, {INFO::TAGS, INFO::WIKI, INFO::ARTWORK, INFO::LYRICS});
 
     this->track = song;
 }
@@ -193,25 +193,21 @@ bool genius::parseTrack()
     if(this->info == INFO::TAGS || this->info == INFO::ALL)
     {
         VALUE contexts;
-        auto performances = itemMap.value("custom_performances").toList();
-
         QStringList team;
 
+        auto performances = itemMap.value("custom_performances").toList();
         for(auto performance : performances)
             for(auto artist : performance.toMap().value("artists").toList())
                 team<< artist.toMap().value("name").toString();
 
-        QStringList features;
+        qDebug()<<this->track[Bae::KEY::TITLE]<<"CUSTOM PERFORMANCES:"<<team;
+
         for(auto feature : itemMap.value("featured_artists").toList())
             team<<feature.toMap().value("name").toString();
 
-
-        QStringList producers;
         for(auto producer : itemMap.value("producer_artists").toList())
             team<<producer.toMap().value("name").toString();
 
-
-        QStringList writers;
         for(auto producer : itemMap.value("writer_artists").toList())
             team<<producer.toMap().value("name").toString();
 
@@ -242,6 +238,19 @@ bool genius::parseTrack()
         emit this->infoReady(this->track, this->packResponse(ONTOLOGY::TRACK, INFO::ARTWORK, CONTEXT::IMAGE,this->startConnection(image)));
 
         if(this->info == INFO::ARTWORK) return false;
+    }
+
+    if(this->info == INFO::LYRICS || this->info == INFO::ALL)
+    {
+        auto lyricsPath = itemMap.value("path").toString();
+
+        auto path = "https://genius.com"+lyricsPath;
+        qDebug()<<"LYRICS PATH"<<path;
+        auto lyricsArray = this->startConnection(path);
+
+        if(!lyricsArray.isEmpty()) this->extractLyrics(lyricsArray);
+
+        if(this->info == INFO::LYRICS ) return true;
     }
 
     return false;
@@ -276,15 +285,14 @@ bool genius::getAlbumInfo(const QByteArray &array)
         auto views = itemMap.value("song_pageviews").toString();
         tags.insert(CONTEXT::ALBUM_STAT, views );
 
-        QStringList similar;
+        QStringList team;
         for(auto name : itemMap.value("song_performances").toList())
             for(auto artist : name.toMap().value("artists").toList())
-                similar<<artist.toMap().value("name").toString();
+                team<<artist.toMap().value("name").toString();
 
-        tags.insert(CONTEXT::ARTIST_SIMILAR, similar);
+        tags.insert(CONTEXT::ALBUM_TEAM, team);
 
-        qDebug()<<similar;
-        emit this->infoReady(this->track,this->packResponse(ONTOLOGY::TRACK, INFO::TAGS, tags));
+        emit this->infoReady(this->track,this->packResponse(ONTOLOGY::ALBUM, INFO::TAGS, tags));
 
         if(this->info == INFO::TAGS ) return true;
     }
@@ -298,140 +306,41 @@ bool genius::getAlbumInfo(const QByteArray &array)
     }
 
 
+
     return false;
 }
 
+void genius::extractLyrics(const QByteArray &array)
+{
+    QString lyrics;
+    htmlParser parser;
+    parser.setHtml(array);
 
-// QString genius::setUpService(const Bae::DB &song)
-//{
-//    QString url = genius::API;
+    auto lyricsList = parser.parseTag("div", "class=\"lyrics\"");
+    qDebug()<<lyricsList;
 
-//    QUrl encodedArtist(song[Bae::KEY::ARTIST]);
-//    encodedArtist.toEncoded(QUrl::FullyEncoded);
+    if(!lyricsList.isEmpty())
+        lyrics=lyricsList.first();
 
-//    QUrl encodedTrack(song[Bae::KEY::TITLE]);
-//    encodedTrack.toEncoded(QUrl::FullyEncoded);
+    //    QString content = QString::fromUtf8(array.constData());
+    //    //    content.replace("&lt;", "<");
+    //    QRegExp lyrics_regexp("<div class=\"lyrics\">(.*)</div>");
+    //    lyrics_regexp.indexIn(content);
+    QString text;
+    //    QString lyrics = lyrics_regexp.cap(1);
+    //    qDebug()<<lyrics;
+    //    lyrics = lyrics.trimmed();
+    //    lyrics.replace("\n", "<br>");
 
-//    url.append(encodedArtist.toString()+" "+encodedTrack.toString());
+    if(!lyrics.isEmpty())
+    {
+        text = "<h2 align='center' >" + this->track[Bae::KEY::TITLE] + "</h2>";
+        text += lyrics;
 
-//    qDebug()<<"setUpService genius["<<url<<"]";
-//    return url;
-//}
+        text= "<div align='center'>"+text+"</div>";
+    }
 
-//void genius::parseLyrics(const QByteArray &array)
-//{
-//    htmlParser parser;
-//    parser.setHtml(array);
-
-//    connect(&parser, &htmlParser::finishedParsingTags,[this] (const QStringList &tags)
-//    {
-//        qDebug()<<"GENIUS RESULT TAGS:"<<tags;
-//        htmlParser parser;
-//        if(!tags.isEmpty())
-//            extractLyrics(parser.extractProp(tags.first(),"href="));
-//    });
-
-//    parser.parseTag("a", "class=\"mini_card\"");
-//}
-
-//void genius::parseAlbumArt(const QByteArray &array)
-//{
-//    htmlParser parser;
-//    parser.setHtml(array);
-
-//    connect(&parser, &htmlParser::finishedParsingTags,[&parser, this] (const QStringList &tags)
-//    {
-//        if(!tags.isEmpty())
-//        {
-//            extractAlbumArt(parser.extractProp(tags.first(),"ng-href="));
-//        }
-//    });
-
-//    parser.parseTag("li", "class=\"search_result\"");
-//}
+    emit this->infoReady(this->track, this->packResponse(ONTOLOGY::TRACK, INFO::LYRICS,CONTEXT::LYRIC,text));
+}
 
 
-//void genius::extractAlbumArt(const QString &url)
-//{
-
-//    QNetworkAccessManager manager;
-//    QNetworkRequest request ((QUrl(url)));
-//    QNetworkReply *reply =  manager.get(request);
-//    QEventLoop loop;
-//    connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
-//    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), &loop,
-//            SLOT(quit()));
-
-//    loop.exec();
-
-//    QByteArray array(reply->readAll());
-//    delete reply;
-
-//    htmlParser parser;
-//    parser.setHtml(array);
-//    qDebug()<<"Artwork now";
-
-//    connect(&parser, &htmlParser::finishedParsingTags,[this] (const QStringList &list)
-//    {
-//        if(!list.isEmpty())
-//        {
-//            htmlParser parser;
-//            emit albumArtReady(Pulpo::startConnection(parser.extractProp(list.first(),"src=")));
-//        }
-//    });
-// parser.parseTag("img", "class=\"cover_art-image\"");
-
-//}
-
-
-//void genius::extractLyrics(const QString &url)
-//{
-
-///*    qDebug()<<"extractLyrics"<<url;
-//    emit trackLyricsReady(url,this->track)*/;
-
-////    QNetworkAccessManager manager;
-////    QNetworkRequest request ((QUrl(url)));
-////    QNetworkReply *reply =  manager.get(request);
-////    QEventLoop loop;
-////    connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
-////    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), &loop,
-////            SLOT(quit()));
-
-////    loop.exec();
-
-////    QByteArray array(reply->readAll());
-////    delete reply;
-
-////    htmlParser parser;
-
-//////    qDebug()<<"LYRICS ARRAY"<<array;
-
-////    parser.setHtml(array);
-////    qDebug()<<"Lyricsssss now";
-
-////    connect(&parser, &htmlParser::finishedParsingTags,[this] (const QStringList &list)
-////    {
-////        qDebug()<<"got lyrics"<<list;
-////        if(!list.isEmpty())
-////        {
-////            QString text = "<h2 align='center' >" + this->track[Bae::KEY::TITLE] + "</h2>";
-////            auto lyrics = list.first();
-
-////            lyrics=lyrics.trimmed();
-////            lyrics.replace("\n", "<br>");
-////            if(lyrics.isEmpty())
-////            {
-////                qDebug("Not found");
-////                text+="\n<h3 align='center'>:( Nothing Here</h3>";
-////            }
-////            else text += lyrics;
-
-////            text= "<div id='geniusLyrics' align='center'>"+text+"</div>";
-////            emit trackLyricsReady(text,this->track);
-
-////        }
-////    });
-//// parser.parseTag("div", "class=\"lyrics\"");
-
-//}
