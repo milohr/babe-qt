@@ -99,6 +99,15 @@ bool Pulpo::initServices()
         }
         case SERVICES::Genius:
         {
+            genius genius(this->track);
+            connect(&genius, &genius::infoReady, this, &Pulpo::passSignal);
+
+            if(genius.setUpService(this->ontology,this->info))
+            {
+                if(recursive== RECURSIVE::OFF) return true;
+
+            }else qDebug()<<"error settingUp spotify service";
+
             break;
         }
         case SERVICES::MusicBrainz:

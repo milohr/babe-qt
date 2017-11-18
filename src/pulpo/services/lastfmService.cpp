@@ -176,7 +176,7 @@ bool lastfm::parseArtist()
                         artistStats<<m.toElement().text();
                     }
 
-                    emit this->infoReady(this->track,this->packResponse(ONTOLOGY::ARTIST, INFO::TAGS, CONTEXT::STAT,artistStats));
+                    emit this->infoReady(this->track,this->packResponse(ONTOLOGY::ARTIST, INFO::TAGS, CONTEXT::ARTIST_STAT,artistStats));
 
                 }else if(this->info == INFO::TAGS) continue;
             }
@@ -320,7 +320,7 @@ bool lastfm::parseTrack()
         for(auto tag : itemMap.value("toptags").toMap().value("tag").toList())
             tags<<tag.toMap().value("name").toString();
 
-        PULPO::VALUE contexts = {{ CONTEXT::STAT,stats},{ CONTEXT::TAG,tags}};
+        PULPO::VALUE contexts = {{ CONTEXT::TRACK_STAT,stats},{ CONTEXT::TAG,tags}};
 
         emit this->infoReady(this->track, this->packResponse(ONTOLOGY::TRACK, INFO::TAGS, contexts));
 

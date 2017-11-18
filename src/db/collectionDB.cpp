@@ -306,6 +306,7 @@ bool CollectionDB::tagsTrack(const DB &track, const QString &value, const QStrin
     QVariantMap tagMap {{KEYMAP[KEY::TAG],value},{KEYMAP[KEY::CONTEXT],context}};
 
     QVariantMap trackTagMap {{KEYMAP[KEY::TAG],value},
+                             {KEYMAP[KEY::CONTEXT],context},
                              {KEYMAP[KEY::URL],url}};
 
     if(insert(TABLEMAP[TABLE::TAGS],tagMap) && insert(TABLEMAP[TABLE::TRACKS_TAGS],trackTagMap))
@@ -397,6 +398,7 @@ bool CollectionDB::tagsArtist(const DB &track, const QString &value, const QStri
     QVariantMap tagMap {{KEYMAP[KEY::TAG],value},{KEYMAP[KEY::CONTEXT],context}};
 
     QVariantMap artistTagMap {{KEYMAP[KEY::TAG],value},
+                              {KEYMAP[KEY::CONTEXT],context},
                               {KEYMAP[KEY::ARTIST],artist}};
 
     if(insert(TABLEMAP[TABLE::TAGS],tagMap) && insert(TABLEMAP[TABLE::ARTISTS_TAGS],artistTagMap))
@@ -430,6 +432,7 @@ bool CollectionDB::tagsAlbum(const DB &track, const QString &value, const QStrin
     QVariantMap tagMap {{KEYMAP[KEY::TAG],value},{KEYMAP[KEY::CONTEXT],context}};
 
     QVariantMap albumsTagMap {{KEYMAP[KEY::TAG],value},
+                              {KEYMAP[KEY::CONTEXT],context},
                               {KEYMAP[KEY::ARTIST],artist},
                               {KEYMAP[KEY::ALBUM],album}};
 

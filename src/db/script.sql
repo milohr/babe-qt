@@ -19,9 +19,9 @@ FOREIGN KEY(artist) REFERENCES artists(artist)
 CREATE TABLE TAGS
 (
 tag TEXT NOT NULL,
-context TEXT,
+context TEXT NOT NULL,
 
-PRIMARY KEY(tag)
+PRIMARY KEY(tag, context)
 ) ;
 
 CREATE TABLE MOODS
@@ -86,9 +86,10 @@ FOREIGN KEY(url) REFERENCES TRACKS(url)
 CREATE TABLE TRACKS_TAGS
 (
 tag  TEXT NOT NULL ,
+context TEXT NOT NULL ,
 url TEXT NOT NULL ,
-PRIMARY KEY (tag, url),
-FOREIGN KEY(tag) REFERENCES TAGS(tag),
+PRIMARY KEY (tag, context, url),
+FOREIGN KEY(tag, context) REFERENCES TAGS(tag, context),
 FOREIGN KEY(url) REFERENCES TRACKS(url)
 
 ) ;
@@ -96,9 +97,10 @@ FOREIGN KEY(url) REFERENCES TRACKS(url)
 CREATE TABLE ARTISTS_TAGS
 (
 tag  TEXT NOT NULL ,
+context TEXT NOT NULL,
 artist TEXT NOT NULL ,
-PRIMARY KEY (tag, artist),
-FOREIGN KEY(tag) REFERENCES TAGS(tag),
+PRIMARY KEY (tag, context, artist),
+FOREIGN KEY(tag, context) REFERENCES TAGS(tag, context),
 FOREIGN KEY(artist) REFERENCES ARTISTS(artist)
 
 ) ;
@@ -108,8 +110,8 @@ CREATE TABLE ALBUMS_TAGS
 tag  TEXT NOT NULL ,
 album TEXT NOT NULL ,
 artist TEXT NOT NULL,
-PRIMARY KEY (tag, album, artist),
-FOREIGN KEY(tag) REFERENCES TAGS(tag),
+PRIMARY KEY (tag, context, album, artist),
+FOREIGN KEY(tag, context) REFERENCES TAGS(tag, context),
 FOREIGN KEY(album, artist) REFERENCES ALBUMS(album, artist)
 ) ;
 

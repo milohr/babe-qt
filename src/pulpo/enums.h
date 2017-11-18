@@ -43,7 +43,7 @@ enum class INFO : uint8_t
 /*Generic context names. It's encouraged to use these instead of a unkown string*/
 enum class CONTEXT : uint8_t
 {
-    STAT,
+    TRACK_STAT,
     TRACK_NUMBER,
     TRACK_TITLE,
     TRACK_DATE,
@@ -52,12 +52,14 @@ enum class CONTEXT : uint8_t
     TRACK_LANGUAGE,
     TRACK_SIMILAR,
 
+    ALBUM_STAT,
     ALBUM_TITLE,
     ALBUM_DATE,
     ALBUM_LANGUAGE,
     ALBUM_SIMILAR,
     ALBUM_LABEL,
 
+    ARTIST_STAT,
     ARTIST_TITLE,
     ARTIST_DATE,
     ARTIST_LANGUAGE,
@@ -77,14 +79,14 @@ enum class CONTEXT : uint8_t
 
 static const QMap<CONTEXT,QString> CONTEXT_MAP =
 {
-    {CONTEXT::STAT, "stat"},
-
+    {CONTEXT::ALBUM_STAT, "album_stat"},
     {CONTEXT::ALBUM_TITLE, "album_title"},
     {CONTEXT::ALBUM_DATE, "album_date"},
     {CONTEXT::ALBUM_LANGUAGE, "album_language"},
     {CONTEXT::ALBUM_SIMILAR, "album_similar"},
     {CONTEXT::ALBUM_LABEL, "album_label"},
 
+    {CONTEXT::ARTIST_STAT, "artist_stat"},
     {CONTEXT::ARTIST_TITLE, "artist_title"},
     {CONTEXT::ARTIST_DATE, "artist_date"},
     {CONTEXT::ARTIST_LANGUAGE, "artist_language"},
@@ -93,6 +95,7 @@ static const QMap<CONTEXT,QString> CONTEXT_MAP =
     {CONTEXT::ARTIST_ALIAS, "artist_alias"},
     {CONTEXT::ARTIST_GENDER, "artist_gender"},
 
+    {CONTEXT::TRACK_STAT, "track_stat"},
     {CONTEXT::TRACK_DATE, "track_date"},
     {CONTEXT::TRACK_TITLE, "track_title"},
     {CONTEXT::TRACK_NUMBER, "track_number"},

@@ -98,7 +98,7 @@ bool musicBrainz::parseArtist()
             PULPO::VALUE contexts;
 
             auto score = itemMap.value("score").toString();
-            contexts.insert(CONTEXT::STAT,score);
+            contexts.insert(CONTEXT::ARTIST_STAT,score);
 
             auto alias = itemMap.value("sort-name").toString();
             contexts.insert(CONTEXT::ARTIST_ALIAS,alias);
@@ -167,7 +167,7 @@ bool musicBrainz::parseAlbum()
             PULPO::VALUE contexts;
 
             auto score = itemMap.value("score").toString();
-            contexts.insert(CONTEXT::STAT,score);
+            contexts.insert(CONTEXT::ALBUM_STAT,score);
 
             auto date = itemMap.value("date").toString();
             contexts.insert(CONTEXT::ALBUM_DATE,date);

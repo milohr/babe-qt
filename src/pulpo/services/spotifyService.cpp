@@ -119,14 +119,18 @@ bool spotify::parseArtist()
 
     if(this->info == INFO::TAGS || this->info == INFO::ALL)
     {
+        VALUE tags;
+
         auto followers = root.value("followers").toMap().value("total").toString();
-        emit this->infoReady(this->track,this->packResponse(ONTOLOGY::ARTIST, INFO::TAGS, CONTEXT::STAT, followers));
+        tags.insert(CONTEXT::ARTIST_STAT, followers);
 
         auto genres = root.value("genres").toStringList();
-        emit this->infoReady(this->track,this->packResponse(ONTOLOGY::ARTIST, INFO::TAGS, CONTEXT::GENRE, genres));
+        tags.insert(CONTEXT::GENRE, genres);
 
         auto popularity = root.value("popularity").toString();
-        emit this->infoReady(this->track,this->packResponse(ONTOLOGY::ARTIST, INFO::TAGS, CONTEXT::STAT, followers));
+        tags.insert(CONTEXT::ARTIST_STAT, popularity);
+
+        emit this->infoReady(this->track,this->packResponse(ONTOLOGY::ARTIST, INFO::TAGS, tags));
 
         if(this->info == INFO::TAGS ) return true;
     }
@@ -176,7 +180,7 @@ bool spotify::parseAlbum()
 bool spotify::parseTrack()
 {
     QJsonParseError jsonParseError;
-    QJsonDocument jsonResponse = QJsonDocument::fromJson(static_cast<QString>(array).toUtf8(), &jsonParseError);
+    QJsonDocument jsonResponse = QJsonDocument::fromJson(static_cast<QString>(this->array).toUtf8(), &jsonParseError);
 
     if (jsonParseError.error != QJsonParseError::NoError)
         return false;
@@ -204,7 +208,7 @@ bool spotify::parseTrack()
             if(this->info == INFO::TAGS || this->info == INFO::ALL)
             {               
                 auto popularity = item.toMap().value("popularity").toString();
-                emit this->infoReady(this->track,this->packResponse(ONTOLOGY::TRACK, INFO::TAGS, CONTEXT::STAT,popularity));
+                emit this->infoReady(this->track,this->packResponse(ONTOLOGY::TRACK, INFO::TAGS, CONTEXT::TRACK_STAT,popularity));
 
                 if(this->info == INFO::TAGS ) return true;
             }

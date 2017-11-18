@@ -46,6 +46,7 @@ public:
     {
         qDebug()<<"Deleting Brainz obj";
         this->stop();
+        connection.deleteLater();
     }
 
     void start()
@@ -199,7 +200,7 @@ public slots:
 
                     if(!response[info][CONTEXT::IMAGE].toByteArray().isEmpty())
                     {
-//                        connect(&connection, &CollectionDB::artworkInserted, this, &Brain::artworkReady);
+                        //                        connect(&connection, &CollectionDB::artworkInserted, this, &Brain::artworkReady);
                         saveArt(track,response[info][CONTEXT::IMAGE].toByteArray(),CachePath);
                         connection.insertArtwork(track);
                     }
@@ -228,22 +229,15 @@ public slots:
                 if(!response[info].isEmpty())
                 {
                     for (auto context :response[info].keys())
-                        switch(context)
-                        {
-                        case CONTEXT::TRACK_TEAM:
-                        case CONTEXT::TAG:
-                        case CONTEXT::STAT:
-                        {
-                            if (!response[info][context].toStringList().isEmpty())
-                                for( auto tag : response[info][context].toStringList() )
-                                    connection.tagsTrack(track,tag,CONTEXT_MAP[context]);
+                    {
+                        if (!response[info][context].toStringList().isEmpty())
+                            for( auto tag : response[info][context].toStringList() )
+                                connection.tagsTrack(track,tag,CONTEXT_MAP[context]);
 
-                            if (!response[info][context].toString().isEmpty())
-                                connection.tagsTrack(track,response[info][context].toString(),CONTEXT_MAP[context]);
-                            break;
-                        }
-                        default: continue;
-                        }
+                        if (!response[info][context].toString().isEmpty())
+                            connection.tagsTrack(track,response[info][context].toString(),CONTEXT_MAP[context]);
+
+                    }
                 }
 
                 break;
@@ -263,7 +257,7 @@ public slots:
 
                     if(!response[info][CONTEXT::IMAGE].toByteArray().isEmpty())
                     {
-//                        connect(&connection, &CollectionDB::artworkInserted, this, &Brain::artworkReady);
+                        //                        connect(&connection, &CollectionDB::artworkInserted, this, &Brain::artworkReady);
                         saveArt(track, response[info][CONTEXT::IMAGE].toByteArray(),CachePath);
                         connection.insertArtwork(track);
                     }
@@ -339,7 +333,7 @@ public slots:
             connection.lyricsTrack(track,SLANG[W::NONE]);
         });
 
-        services = {SERVICES::LastFm,SERVICES::Spotify,SERVICES::MusicBrainz};
+        services = {SERVICES::LastFm,SERVICES::Spotify,SERVICES::MusicBrainz,SERVICES::Genius};
 
         qDebug()<<"getting missing track artwork";
         //select url, title, album, artist from tracks t inner join albums a on a.album=t.album and a.artist=t.artist where a.artwork = ''
@@ -433,7 +427,7 @@ public slots:
     {
         if(!go) return;
 
-        auto services = {SERVICES::LastFm,SERVICES::Spotify,SERVICES::MusicBrainz};
+        auto services = {SERVICES::LastFm,SERVICES::Spotify,SERVICES::MusicBrainz, SERVICES::Genius};
         auto ontology = ONTOLOGY::ARTIST;
 
 
