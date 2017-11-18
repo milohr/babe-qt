@@ -40,45 +40,45 @@ include_directories (${TAGLIB_INCLUDES})
 add_subdirectory(data)
 
 set(babe_SRCS
-  src/data_models/track.cpp \
-    src/db/collectionDB.cpp \
-    src/dialogs/about.cpp \
-    src/dialogs/playlistform.cpp \
-    src/kde/mpris2.cpp \
-    src/kde/notify.cpp \
-    src/pulpo/services/geniusService.cpp \
-    src/pulpo/services/lastfmService.cpp \
-    src/pulpo/services/lyricwikiaService.cpp \
-    src/pulpo/services/musicbrainzService.cpp \
-    src/pulpo/services/spotifyService.cpp \
-    src/pulpo/htmlparser.cpp \
-    src/pulpo/pulpo.cpp \
-    src/pulpo/webengine.cpp \
-    src/settings/settings.cpp \
-    src/views/albumsview.cpp \
-    src/views/infoview.cpp \
-    src/views/playlistsview.cpp \
-    src/views/rabbitview.cpp \
-    src/widget_models/babealbum.cpp \
-    src/widget_models/babegrid.cpp \
-    src/widget_models/babetable.cpp \
-    src/main.cpp \
-    src/services/local/taginfo.cpp \
-    src/services/web/web_jgm90.cpp \
-    src/services/web/youtube.cpp \
-    src/widget_models/scrolltext.cpp \
-    src/data_models/tracklist.cpp \
-    src/dialogs/metadataform.cpp \
+  src/data_models/track.cpp
+    src/db/collectionDB.cpp
+    src/dialogs/about.cpp
+    src/dialogs/playlistform.cpp
+    src/kde/mpris2.cpp
+    src/kde/notify.cpp
+    src/pulpo/services/geniusService.cpp
+    src/pulpo/services/lastfmService.cpp
+    src/pulpo/services/lyricwikiaService.cpp
+    src/pulpo/services/musicbrainzService.cpp
+    src/pulpo/services/spotifyService.cpp
+    src/pulpo/htmlparser.cpp
+    src/pulpo/pulpo.cpp
+    src/pulpo/webengine.cpp
+    src/settings/settings.cpp
+    src/views/albumsview.cpp
+    src/views/infoview.cpp
+    src/views/playlistsview.cpp
+    src/views/rabbitview.cpp
+    src/widget_models/babealbum.cpp
+    src/widget_models/babegrid.cpp
+    src/widget_models/babetable.cpp
+    src/main.cpp
+    src/services/local/taginfo.cpp
+    src/services/web/web_jgm90.cpp
+    src/services/web/youtube.cpp
+    src/widget_models/scrolltext.cpp
+    src/data_models/tracklist.cpp
+    src/dialogs/metadataform.cpp
     src/views/babewindow.cpp
 
 )
 
 ki18n_wrap_ui(babe_SRCS
-    src/dialogs/about.ui \
-    src/dialogs/metadataForm.ui \
-    src/dialogs/playlistform.ui \
-    src/settings/settings.ui \
-    src/views/infoview.ui \
+    src/dialogs/about.ui
+    src/dialogs/metadataForm.ui
+    src/dialogs/playlistform.ui
+    src/settings/settings.ui
+    src/views/infoview.ui
     src/views/babewindow.ui
 )
 
