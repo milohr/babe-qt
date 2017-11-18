@@ -195,29 +195,27 @@ bool genius::parseTrack()
         VALUE contexts;
         auto performances = itemMap.value("custom_performances").toList();
 
-        QStringList similar;
+        QStringList team;
+
         for(auto performance : performances)
             for(auto artist : performance.toMap().value("artists").toList())
-                similar<< artist.toMap().value("name").toString();
-        contexts.insert(CONTEXT::TRACK_TEAM, similar);
+                team<< artist.toMap().value("name").toString();
 
         QStringList features;
         for(auto feature : itemMap.value("featured_artists").toList())
-            features<<feature.toMap().value("name").toString();
+            team<<feature.toMap().value("name").toString();
 
-        contexts.insert(CONTEXT::TRACK_TEAM, features);
 
         QStringList producers;
         for(auto producer : itemMap.value("producer_artists").toList())
-            producers<<producer.toMap().value("name").toString();
+            team<<producer.toMap().value("name").toString();
 
-        contexts.insert(CONTEXT::TRACK_TEAM, producers);
 
         QStringList writers;
         for(auto producer : itemMap.value("writer_artists").toList())
-            writers<<producer.toMap().value("name").toString();
+            team<<producer.toMap().value("name").toString();
 
-        contexts.insert(CONTEXT::TRACK_TEAM, writers);
+        contexts.insert(CONTEXT::TRACK_TEAM, team);
 
         emit this->infoReady(this->track, this->packResponse(ONTOLOGY::TRACK, INFO::TAGS, contexts));
 

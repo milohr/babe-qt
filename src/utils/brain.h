@@ -228,8 +228,11 @@ public slots:
             {
                 if(!response[info].isEmpty())
                 {
+                    qDebug()<<"CUSTOM PERFROMANCES"<<response[info][CONTEXT::TRACK_TEAM].toStringList();
+
                     for (auto context :response[info].keys())
                     {
+
                         if (!response[info][context].toStringList().isEmpty())
                             for( auto tag : response[info][context].toStringList() )
                                 connection.tagsTrack(track,tag,CONTEXT_MAP[context]);

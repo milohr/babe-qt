@@ -100,30 +100,29 @@ bool musicBrainz::parseArtist()
             auto score = itemMap.value("score").toString();
             contexts.insert(CONTEXT::ARTIST_STAT,score);
 
-            auto alias = itemMap.value("sort-name").toString();
-            contexts.insert(CONTEXT::ARTIST_ALIAS,alias);
+            QStringList aliases;
+            aliases << itemMap.value("sort-name").toString();
+            for(auto alias : itemMap.value("aliases").toList())
+                aliases << alias.toMap().value("name").toString();
+
+            contexts.insert(CONTEXT::ARTIST_ALIAS,aliases);
 
             auto gender = itemMap.value("gender").toString();
             contexts.insert(CONTEXT::ARTIST_GENDER,gender);
 
-            auto country = itemMap.value("country").toString();
-            contexts.insert(CONTEXT::ARTIST_PLACE,country);
+            QStringList places;
 
-            auto area = itemMap.value("area").toMap().value("name").toString();
-            contexts.insert(CONTEXT::ARTIST_PLACE,area);
+            places << itemMap.value("country").toString();
+            places << itemMap.value("area").toMap().value("name").toString();
+            places << itemMap.value("begin-area").toMap().value("name").toString();
 
-            auto subarea = itemMap.value("begin-area").toMap().value("name").toString();
-            contexts.insert(CONTEXT::ARTIST_PLACE,subarea);
+            contexts.insert(CONTEXT::ARTIST_PLACE,places);
 
             auto lifeSpan_begin = itemMap.value("life-span").toMap().value("begin").toString();
             auto lifeSpan_end = itemMap.value("life-span").toMap().value("ended").toString();
             contexts.insert(CONTEXT::ARTIST_DATE, QStringList{lifeSpan_begin,lifeSpan_end});
 
-            QStringList aliases;
-            for(auto alias : itemMap.value("aliases").toList())
-                aliases << alias.toMap().value("name").toString();
 
-            contexts.insert(CONTEXT::ARTIST_ALIAS,aliases);
 
             QStringList tags;
             for(auto tag : itemMap.value("tags").toList())

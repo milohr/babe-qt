@@ -24,13 +24,13 @@ bool spotify::setUpService(const ONTOLOGY &ontology, const PULPO::INFO &info)
 
     switch(this->ontology)
     {
-        case ONTOLOGY::ARTIST:
-        {
-            url.append("artist:");
-            url.append(encodedArtist.toString());
-            url.append("&type=artist&limit=5");
-            break;
-        }
+    case ONTOLOGY::ARTIST:
+    {
+        url.append("artist:");
+        url.append(encodedArtist.toString());
+        url.append("&type=artist&limit=5");
+        break;
+    }
 
     case ONTOLOGY::ALBUM:
     {
@@ -121,14 +121,14 @@ bool spotify::parseArtist()
     {
         VALUE tags;
 
-        auto followers = root.value("followers").toMap().value("total").toString();
-        tags.insert(CONTEXT::ARTIST_STAT, followers);
+        QStringList stats;
+        stats << root.value("popularity").toString();
+        stats << root.value("followers").toMap().value("total").toString();
+
+        tags.insert(CONTEXT::ARTIST_STAT, stats);
 
         auto genres = root.value("genres").toStringList();
         tags.insert(CONTEXT::GENRE, genres);
-
-        auto popularity = root.value("popularity").toString();
-        tags.insert(CONTEXT::ARTIST_STAT, popularity);
 
         emit this->infoReady(this->track,this->packResponse(ONTOLOGY::ARTIST, INFO::TAGS, tags));
 
@@ -206,7 +206,7 @@ bool spotify::parseTrack()
         if(trackArtist.contains(this->track[Bae::KEY::ARTIST]))
         {
             if(this->info == INFO::TAGS || this->info == INFO::ALL)
-            {               
+            {
                 auto popularity = item.toMap().value("popularity").toString();
                 emit this->infoReady(this->track,this->packResponse(ONTOLOGY::TRACK, INFO::TAGS, CONTEXT::TRACK_STAT,popularity));
 

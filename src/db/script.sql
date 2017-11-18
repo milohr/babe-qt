@@ -108,6 +108,7 @@ FOREIGN KEY(artist) REFERENCES ARTISTS(artist)
 CREATE TABLE ALBUMS_TAGS
 (
 tag  TEXT NOT NULL ,
+context TEXT NOT NULL,
 album TEXT NOT NULL ,
 artist TEXT NOT NULL,
 PRIMARY KEY (tag, context, album, artist),

@@ -303,16 +303,17 @@ bool CollectionDB::tagsTrack(const DB &track, const QString &value, const QStrin
 {
     auto url = track[KEY::URL];
 
+    qDebug()<<"INSERTIN TRACK TAG"<<value<<context<<url;
+
     QVariantMap tagMap {{KEYMAP[KEY::TAG],value},{KEYMAP[KEY::CONTEXT],context}};
 
     QVariantMap trackTagMap {{KEYMAP[KEY::TAG],value},
                              {KEYMAP[KEY::CONTEXT],context},
                              {KEYMAP[KEY::URL],url}};
 
-    if(insert(TABLEMAP[TABLE::TAGS],tagMap) && insert(TABLEMAP[TABLE::TRACKS_TAGS],trackTagMap))
-        return true;
-
-    return false;
+    insert(TABLEMAP[TABLE::TAGS],tagMap);
+    insert(TABLEMAP[TABLE::TRACKS_TAGS],trackTagMap);
+    return true;
 }
 
 bool CollectionDB::albumTrack(const DB &track, const QString &value)
@@ -401,10 +402,11 @@ bool CollectionDB::tagsArtist(const DB &track, const QString &value, const QStri
                               {KEYMAP[KEY::CONTEXT],context},
                               {KEYMAP[KEY::ARTIST],artist}};
 
-    if(insert(TABLEMAP[TABLE::TAGS],tagMap) && insert(TABLEMAP[TABLE::ARTISTS_TAGS],artistTagMap))
-        return true;
+    insert(TABLEMAP[TABLE::TAGS],tagMap);
+    insert(TABLEMAP[TABLE::ARTISTS_TAGS],artistTagMap);
 
-    return false;
+    return true;
+
 }
 
 bool CollectionDB::wikiAlbum(const DB &track,  QString value)
@@ -436,10 +438,9 @@ bool CollectionDB::tagsAlbum(const DB &track, const QString &value, const QStrin
                               {KEYMAP[KEY::ARTIST],artist},
                               {KEYMAP[KEY::ALBUM],album}};
 
-    if(insert(TABLEMAP[TABLE::TAGS],tagMap) && insert(TABLEMAP[TABLE::ALBUMS_TAGS],albumsTagMap))
-        return true;
-
-    return false;
+    insert(TABLEMAP[TABLE::TAGS],tagMap);
+    insert(TABLEMAP[TABLE::ALBUMS_TAGS],albumsTagMap);
+    return true;
 }
 
 bool CollectionDB::addPlaylist(const QString &title)
