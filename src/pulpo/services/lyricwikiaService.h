@@ -10,7 +10,7 @@ class lyricWikia : public Pulpo
 private:
     const QString API = "http://lyrics.wikia.com/api.php?action=lyrics";
 
-    void extractLyrics(const QByteArray &array);
+    bool extractLyrics(const QByteArray &array);
 
 public:
     explicit lyricWikia(const Bae::DB &song);

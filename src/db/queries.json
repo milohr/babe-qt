@@ -1,9 +1,9 @@
 {
 
     "TRACK" : {
-        "similar": "" ,
+        "similar": "select distinct t.* from tracks t inner join tracks_tags tg on t.url = tg.url where tg.tag COLLATE NOCASE in (select tag from tracks_tags where url = ? and (context='track_team' or context = 'tag')) or (t.album COLLATE NOCASE in (select album from albums_tags where tag in (select tag from tracks_tags where url = ? and (context='track_team' or context = 'tag') ) ) )",
         "like" : "" ,
-        "tag": "",
+        "tag": "select distinct t.* from tracks t inner join tracks_tags tg on t.url = tg.url where tg.tag LIKE '%?%';",
         "lyrics": "",
     },
 

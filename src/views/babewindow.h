@@ -113,7 +113,6 @@ protected:
 public slots:
 
     void addToPlaylist(const Bae::DB_LIST &mapList, const bool &notRepeated=false, const appendPos &pos = APPENDBOTTOM);
-    void putPixmap(const QByteArray &array);
     void populateResultsTable(const Bae::DB_LIST &mapList);
     void addToQueue(const Bae::DB_LIST &tracks);
 
@@ -171,7 +170,7 @@ private slots:
     void putOnPlay(const Bae::DB_LIST &mapList);
     void playItNow(const Bae::DB_LIST &list);
     void babeAlbum(const Bae::DB &info);
-    bool loadCover(const QString &artist, const QString &album, const QString &title);
+    bool loadCover(DB &track);
     void babeIt(const Bae::DB_LIST &tracks);
     bool unbabeIt(const Bae::DB &track);
     void loadMood();
@@ -252,7 +251,6 @@ private:
     void updateList();
     void populateMainList();
     int isBabed(const Bae::DB &track);
-    void feedRabbit();
     void expandAlbumList(const QString &artist);
     void blurWidget(BabeAlbum &widget, const int &radius );
     void babedIcon(const bool &state);
@@ -276,7 +274,6 @@ private:
 
     Bae::DB current_song;
     int current_song_pos=0;
-    QString current_artwork;
 
     Bae::DB prev_song;
     int prev_song_pos=0;

@@ -32,7 +32,17 @@ public:
 
     void requestPath(QString path)
     {
-        QMetaObject::invokeMethod(this, "getTracks", Q_ARG(QString, path));
+        queue<<path;
+
+        for(auto url : queue)
+        {
+            if(!go)
+            {
+                go = true;
+                QMetaObject::invokeMethod(this, "getTracks", Q_ARG(QString, url));
+                queue.removeOne(url);
+            }
+        }
     }
 
     void nextTrack()
@@ -58,19 +68,19 @@ public slots:
 
         if(urls.size()>0)
         {
-            for(auto url : urls)            
+            for(auto url : urls)
                 if(go)
                 {
                     if(!connection.check_existance(Bae::TABLEMAP[Bae::TABLE::TRACKS],Bae::KEYMAP[Bae::KEY::URL],url))
                     {
                         TagInfo info(url);
-                        auto  album = Bae::fixString(info.getAlbum());
+                        auto album = Bae::fixString(info.getAlbum());
                         auto track= info.getTrack();
                         auto title = Bae::fixString(info.getTitle()); /* to fix*/
                         auto artist = Bae::fixString(info.getArtist());
                         auto genre = info.getGenre();
                         auto sourceUrl = QFileInfo(url).dir().path();
-                        int duration = info.getDuration();
+                        auto duration = info.getDuration();
                         auto year = info.getYear();
 
                         qDebug()<<"FILE LOADER:"<< title << album << artist <<url;
@@ -95,8 +105,11 @@ public slots:
                 }else break;
 
         }
+
         t.msleep(100);
         emit finished();
+        go = false;
+
     }
 
 signals:
@@ -107,8 +120,9 @@ signals:
 private:
     QThread t;
     CollectionDB connection;
-    bool go=true;
-    bool wait=true;
+    bool go = false;
+    bool wait = true;
+    QStringList queue;
 };
 
 

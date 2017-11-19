@@ -353,6 +353,7 @@ public slots:
             connection.insertArtwork(track);
         });
 
+        emit this->done(TABLE::ALBUMS);
 
         qDebug()<<"getting missing track tags";
         // select title, artist, album from tracks t where url not in (select url from tracks_tags)
@@ -386,7 +387,7 @@ public slots:
         //        }
 
         // emit this->done(TABLE::TRACKS);
-        emit this->done(TABLE::ALBUMS);
+
 
     }
 

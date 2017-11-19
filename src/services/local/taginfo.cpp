@@ -20,11 +20,16 @@
 
 using namespace Bae;
 
-TagInfo::TagInfo(const QString &file)
+TagInfo::TagInfo(const QString &url)
 {
-    this->file = TagLib::FileRef(file.toUtf8());
-    this->path = file;
-    qDebug()<<"TAGINFO::"<<path;
+    this->file = TagLib::FileRef(url.toUtf8());
+    this->path = url;
+    qDebug()<<"TAGINFO::"<<path<<file.isNull()<<file.file()->isReadable(url.toStdString().c_str());
+}
+
+TagInfo::~TagInfo()
+{
+    qDebug()<<"DELETING TAGINFO";
 }
 
 

@@ -14,7 +14,7 @@ private:
 
     QString getID(const QString &url);
     bool getAlbumInfo(const QByteArray &array);
-    void extractLyrics(const QByteArray &array);
+    bool extractLyrics(const QByteArray &array);
 
 public:
     explicit genius(const Bae::DB &song);

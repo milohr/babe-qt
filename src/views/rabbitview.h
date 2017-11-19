@@ -30,6 +30,8 @@ public:
         SIMILAR,GENERAL,ALL
     };
 
+    void seed (const Bae::DB &track);
+
     void flushSuggestions(suggestionsTables = ALL);
     BabeTable * getTable() { return this->generalSuggestion; }
 
@@ -37,13 +39,13 @@ public:
 private:
 
     uint ALBUM_SIZE_MEDIUM = Bae::getWidgetSizeHint(Bae::MEDIUM_ALBUM_FACTOR,Bae::AlbumSizeHint::MEDIUM_ALBUM);
-
+    CollectionDB connection;
     BabeGrid *artistSuggestion;
     BabeTable *generalSuggestion;
 
 public slots:
 
-    void populateArtistSuggestion(QMap<QString, QByteArray> info);
+    void populateArtistSuggestion(const DB_LIST &mapList);
     void populateGeneralSuggestion(const Bae::DB_LIST &mapList);
 
     void filterByArtist(const Bae::DB &albumMap);

@@ -13,7 +13,6 @@ private:
     const QString API = "http://ws.audioscrobbler.com/2.0/";
     const QString KEY = "&api_key=ba6f0bd3c887da9101c10a50cf2af133";
 
-    bool parseTags();
     bool parseSimilar();
 
 public:

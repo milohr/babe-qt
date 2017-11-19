@@ -347,7 +347,18 @@ void settings::collectionWatcher()
 void settings::handleDirectoryChanged(const QString &dir)
 {
     qDebug()<<"directory changed:"<<dir;
-    emit collectionPathChanged(dir);
+
+    auto wait = new QTimer(this);
+    wait->setSingleShot(true);
+    wait->setInterval(1000);
+    connect(wait, &QTimer::timeout,[=]()
+    {
+        emit collectionPathChanged(dir);
+        wait->deleteLater();
+
+    });
+    wait->start();
+
 }
 
 void settings::readSettings()

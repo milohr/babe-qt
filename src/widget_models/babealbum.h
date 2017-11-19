@@ -37,7 +37,6 @@ public:
     void setUpMenu();
     void setTitleGeometry(const int &x, const int &y, const int &w, const int &h);
     void setSize(const uint &value);
-    void setBGColor(const QString &bgColor);
 
     void saturatePixmap(const int &value);
     void restoreSaturation();
@@ -55,9 +54,6 @@ public:
     QString getBGcolor();
     DB getAlbumMap();
 
-    QPixmap image;
-    QPixmap getPixmap();
-    QPixmap unsaturated;
 
     void showTitle(const bool &state);
     bool showPlayBtn = true;
@@ -101,8 +97,6 @@ signals:
     void albumCoverLeave();
 
 public slots:
-    void putPixmap(const QByteArray &pix);
-    void putPixmap(const QPixmap &pix);
     void putPixmap(const QString &path);
     void putDefaultPixmap();
     void babeIt_action();
@@ -117,7 +111,7 @@ protected:
     virtual void leaveEvent(QEvent *event) Q_DECL_OVERRIDE;
     virtual void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
     virtual bool eventFilter(QObject * watched, QEvent * event) Q_DECL_OVERRIDE;
-// virtual void  mouseMoveEvent(QMouseEvent *evt);
+    // virtual void  mouseMoveEvent(QMouseEvent *evt);
 };
 
 #endif // ALBUM_H

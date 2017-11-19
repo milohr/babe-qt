@@ -228,7 +228,7 @@ bool genius::parseTrack()
 
         emit this->infoReady(this->track,this->packResponse(ONTOLOGY::TRACK, INFO::WIKI, CONTEXT::WIKI, wikiData));
 
-        if(!wikiData.isEmpty() && this->info == INFO::WIKI) return true;
+        if(wikiData.isEmpty() && this->info == INFO::WIKI) return false;
     }
 
     if(this->info == INFO::ARTWORK || this->info == INFO::ALL)
@@ -237,7 +237,7 @@ bool genius::parseTrack()
 
         emit this->infoReady(this->track, this->packResponse(ONTOLOGY::TRACK, INFO::ARTWORK, CONTEXT::IMAGE,this->startConnection(image)));
 
-        if(this->info == INFO::ARTWORK) return false;
+        if(image.isEmpty() && this->info == INFO::ARTWORK) return false;
     }
 
     if(this->info == INFO::LYRICS || this->info == INFO::ALL)
@@ -248,9 +248,12 @@ bool genius::parseTrack()
         qDebug()<<"LYRICS PATH"<<path;
         auto lyricsArray = this->startConnection(path);
 
-        if(!lyricsArray.isEmpty()) this->extractLyrics(lyricsArray);
+        bool lyrics = false;
 
-        if(this->info == INFO::LYRICS ) return true;
+        if(!lyricsArray.isEmpty())
+            lyrics = this->extractLyrics(lyricsArray);
+
+        if(!lyrics && this->info == INFO::LYRICS) return false;
     }
 
     return false;
@@ -305,12 +308,10 @@ bool genius::getAlbumInfo(const QByteArray &array)
         if(!artwork.isEmpty() && this->info == INFO::ARTWORK ) return true;
     }
 
-
-
     return false;
 }
 
-void genius::extractLyrics(const QByteArray &array)
+bool genius::extractLyrics(const QByteArray &array)
 {
     QString lyrics;
     htmlParser parser;

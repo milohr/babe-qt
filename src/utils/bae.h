@@ -31,6 +31,7 @@ enum class W : uint_fast8_t
     ALL,
     NONE,
     LIKE,
+    TAG,
     SIMILAR,
     UNKNOWN,
     DONE,
@@ -47,7 +48,8 @@ static const QMap<W,QString> SLANG =
     {W::UNKNOWN, "UNKNOWN"},
     {W::DONE, "DONE"},
     {W::DESC, "DESC"},
-    {W::ASC,"ASC"}
+    {W::ASC,"ASC"},
+    {W::TAG,"TAG"}
 };
 
 enum class TABLE : uint8_t

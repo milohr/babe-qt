@@ -1,5 +1,8 @@
 #include "rabbitview.h"
 #include <QColor>
+#include"../db/rabbithole.h"
+
+using namespace Query;
 
 RabbitView::RabbitView(QWidget *parent) : QWidget(parent)
 {
@@ -14,7 +17,7 @@ RabbitView::RabbitView(QWidget *parent) : QWidget(parent)
 
     artistSuggestion = new BabeGrid(Bae::SMALL_ALBUM_FACTOR,Bae::AlbumSizeHint::SMALL_ALBUM,this);
     artistSuggestion->setAlbumsSpacing(10);
-    artistSuggestion->setFixedHeight(static_cast<int>(ALBUM_SIZE_MEDIUM));
+    artistSuggestion->setMinimumHeight(static_cast<int>(ALBUM_SIZE_MEDIUM));
 
     artistSuggestion->setFlow(QListView::TopToBottom);
     artistSuggestion->setSizePolicy(QSizePolicy ::Expanding , QSizePolicy ::Fixed);
@@ -22,12 +25,12 @@ RabbitView::RabbitView(QWidget *parent) : QWidget(parent)
 
     generalSuggestion = new BabeTable(this);
     generalSuggestion->hideColumn(static_cast<int>(Bae::KEY::ALBUM));
-    generalSuggestion->hideColumn(static_cast<int>(Bae::KEY::ARTIST));
+    //    generalSuggestion->hideColumn(static_cast<int>(Bae::KEY::ARTIST));
     generalSuggestion->hideColumn(static_cast<int>(Bae::KEY::DURATION));
     generalSuggestion->horizontalHeader()->setVisible(false);
     generalSuggestion->enableRowColoring(true);
     generalSuggestion->enableRowDragging(true);
-//    generalSuggestion->passStyle("QHeaderView::section { background-color:#333; color:white; }");
+    //    generalSuggestion->passStyle("QHeaderView::section { background-color:#333; color:white; }");
     generalSuggestion->setAddMusicMsg("\nCouldn't find similar music","face-quiet");
 
     auto bgcolor= QColor(generalSuggestion->palette().color(QPalette::Background).name()).dark(200).name();
@@ -43,6 +46,10 @@ RabbitView::RabbitView(QWidget *parent) : QWidget(parent)
 
     suggestionWidget_layout->addWidget(splitter,0,0);
 
+    splitter->setSizes({0,0});
+    splitter->setStretchFactor(0, 0);
+    splitter->setStretchFactor(1, 1);
+
     this->setLayout(suggestionWidget_layout);
 
 }
@@ -52,25 +59,24 @@ RabbitView::~RabbitView()
     qDebug()<<"DELETING RABBITVIEW";
 }
 
-
-void RabbitView::populateArtistSuggestion(QMap<QString,QByteArray> info)
+void RabbitView::seed(const DB &track)
 {
-    for(auto tag: info.keys())
-    {
-        qDebug()<<tag;
+    this->flushSuggestions();
+    auto queryTxt = QUERY[TABLE::TRACKS][W::SIMILAR];
+    QSqlQuery query(queryTxt.replace("?", track[KEY::URL]));
+    this->populateGeneralSuggestion(connection.getDBData(query));
 
-        Bae::DB album {{Bae::KEY::ARTIST,Bae::fixString(tag)}};
+    queryTxt = QUERY[TABLE::ARTISTS][W::SIMILAR];
+    query.prepare(queryTxt.replace("?", track[KEY::URL]));
+    this->populateArtistSuggestion(connection.getDBData(query));
 
-        Pulpo saver(album);
-//        connect(&saver, &Pulpo::artSaved,[this](const Bae::DB &album)
-//        {
-//            artistSuggestion->addAlbum(album);
-
-//        });
-//        saver.saveArt(info[tag],Bae::CachePath);
+}
 
 
-    }
+void RabbitView::populateArtistSuggestion(const Bae::DB_LIST &mapList)
+{
+    for(auto artist : mapList)
+        this->artistSuggestion->addAlbum(artist);
 }
 
 void RabbitView::populateGeneralSuggestion(const Bae::DB_LIST &mapList)
@@ -85,7 +91,7 @@ void RabbitView::flushSuggestions(RabbitView::suggestionsTables list)
     {
     case SIMILAR: artistSuggestion->clear(); break;
     case GENERAL: generalSuggestion->flushTable(); break;
-    case ALL:  generalSuggestion->flushTable(); artistSuggestion->clear(); break;
+    case ALL:  generalSuggestion->flushTable(); artistSuggestion->flushGrid(); break;
     }
 
 }

@@ -89,7 +89,7 @@ void BabeGrid::addAlbum(const Bae::DB &albumMap)
 
         item->setTextAlignment(Qt::AlignCenter);
         this->addItem(item);
-        this->setItemWidget(item,album);
+        this->setItemWidget(item,album);        
 
     }else this->albumsMap[auxMap]->putPixmap(albumMap[Bae::KEY::ARTWORK]);
 

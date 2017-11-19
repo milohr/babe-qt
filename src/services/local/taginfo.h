@@ -16,7 +16,8 @@ class TagInfo
 {
 
 public:
-    TagInfo(const QString &file);
+    TagInfo(const QString &url);
+    ~TagInfo();
     QString getAlbum();
     QString getTitle();
     QString getArtist();

@@ -32,36 +32,13 @@ BabeAlbum::BabeAlbum(const DB &info, const AlbumSizeHint &widgetSize, const uint
 
     auto artist = this->albumMap[Bae::KEY::ARTIST];
     auto album = this->albumMap[Bae::KEY::ALBUM];
-    auto artwork = this->albumMap[Bae::KEY::ARTWORK];
+    auto artwork = albumMap[Bae::KEY::ARTWORK];
 
-    switch(Bae::albumType(albumMap))//TODO
-    {
-        case Bae::TABLE::ARTISTS :
-        {
-            if(artwork.isEmpty() || artwork == SLANG[W::NONE])
-                artwork=":Data/data/cover.svg";
-
-            break;
-        }
-       case Bae::TABLE::ALBUMS:
-        {
-            if(artwork.isEmpty() || artwork == SLANG[W::NONE])
-                artwork = connection.getArtistArt(artist);
-
-            if(artwork.isEmpty() || artwork == SLANG[W::NONE])
-                artwork=":Data/data/cover.svg";
-            break;
-        }
-
-    default: break;
-    }
-
+    this->putPixmap(artwork);
     this->setFixedSize(static_cast<int>(size), static_cast<int>(size));
     this->border_radius = widgetRadius;
     this->draggable = isDraggable;
     this->borderQColor = this->palette().color(QPalette::BrightText).name();
-
-    this->putPixmap(artwork);
 
     auto layout = new QHBoxLayout;
     widget = new QWidget(this);
@@ -160,36 +137,37 @@ uint BabeAlbum::getSize()
 
 void BabeAlbum::saturatePixmap(const int &value)
 {
-    auto saturationValue = value;
-    this->unsaturated = this->getPixmap();
-
-    auto image = this->getPixmap().toImage();
-
-
-    for(int i=0; i<image.width(); i++)
+    if(!this->pixmap()->isNull())
     {
-        for(int j=0; j<image.height(); j++)
+        auto saturationValue = value;
+
+        auto image = this->pixmap()->toImage();
+
+        for(int i=0; i<image.width(); i++)
         {
-            QColor color = image.pixelColor(i,j);
-            if(color.black()<150)
+            for(int j=0; j<image.height(); j++)
             {
+                QColor color = image.pixelColor(i,j);
+                if(color.black()<150)
+                {
 
-                int hue = color.hue();
-                int saturation = color.saturation()+saturationValue;
+                    int hue = color.hue();
+                    int saturation = color.saturation()+saturationValue;
 
-                // modify hue as you’d like and write back to the image
-                color.setHsv(hue, saturation>255?255:saturation, color.value(), color.alpha());
-                image.setPixelColor(i, j, color);
+                    // modify hue as you’d like and write back to the image
+                    color.setHsv(hue, saturation>255?255:saturation, color.value(), color.alpha());
+                    image.setPixelColor(i, j, color);
+                }
             }
         }
-    }
 
-    this->putPixmap(QPixmap::fromImage(image));
+        this->setPixmap(QPixmap::fromImage(image));
+    }
 }
 
 void BabeAlbum::restoreSaturation()
 {
-    if(!unsaturated.isNull())this->putPixmap(this->unsaturated);
+    this->putPixmap(this->imagePath);
 }
 
 void BabeAlbum::setSize(const uint &value)
@@ -207,8 +185,8 @@ void BabeAlbum::paintEvent(QPaintEvent *event)
     event->accept();
 
     QBrush brush(Qt::yellow);
-    if(!image.isNull())
-        brush.setTexture(image.scaled(static_cast<int>(size),static_cast<int>(size),Qt::KeepAspectRatio));
+    if(!this->pixmap()->isNull())
+        brush.setTexture(this->pixmap()->scaled(static_cast<int>(size),static_cast<int>(size),Qt::KeepAspectRatio));
 
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
@@ -218,39 +196,19 @@ void BabeAlbum::paintEvent(QPaintEvent *event)
     painter.drawRoundedRect(0,0,static_cast<int>(size),static_cast<int>(size), border_radius, border_radius);
 }
 
-QPixmap BabeAlbum::getPixmap()
-{
-    return image;
-}
-
-void BabeAlbum::putPixmap(const QByteArray &pix)
-{
-    if(!pix.isEmpty()) this->image.loadFromData(pix);
-    else this->image.load(":Data/data/cover.svg");
-
-    this->setPixmap(image);
-}
-
-void BabeAlbum::putPixmap(const QPixmap &pix)
-{
-    this->image=pix;
-    this->setPixmap(image);
-}
 
 void BabeAlbum::putPixmap(const QString &path)
-{
-    if(!path.isEmpty() && Bae::fileExists(path)) this->image.load(path);
-    else this->image.load(":Data/data/cover.svg");
-
-    if(!this->image.isNull())
-        this->setPixmap(image);
+{   
+    this->imagePath = path;
+    QPixmap pix(imagePath);
+    if(!pix.isNull())
+        this->setPixmap(pix);
     else putDefaultPixmap();
 }
 
 void BabeAlbum::putDefaultPixmap()
 {
-    this->image.load(":Data/data/cover.svg");
-    this->setPixmap(image);
+    this->putPixmap(":Data/data/cover.svg");
 }
 
 QString BabeAlbum::getTitle() { return title->text(); }
@@ -266,16 +224,6 @@ Bae::DB BabeAlbum::getAlbumMap() { return this->albumMap; }
 void BabeAlbum::setArtist(const QString &artistTitle) { this->artist=artistTitle; }
 
 void BabeAlbum::setAlbum(const QString &albumTitle) { this->album=albumTitle; }
-
-void BabeAlbum::setBGColor(const QString &bgColor)
-{
-    this->bgColor = bgColor;
-
-    QColor color;
-    color.setNamedColor(bgColor);
-    image.fill(color);
-    this->setPixmap(image);
-}
 
 void BabeAlbum::setTitle(const QString &artistTitle, const QString &albumTitle)
 {
@@ -344,7 +292,7 @@ void BabeAlbum::performDrag()
 
     QDrag *drag = new QDrag(this);
     drag->setMimeData(mimeData);
-    drag->setPixmap(image.scaled(size/2,size/2,Qt::KeepAspectRatio));
+    drag->setPixmap(this->pixmap()->scaled(size/2,size/2,Qt::KeepAspectRatio));
     if (drag->exec(Qt::MoveAction) == Qt::MoveAction)
         emit albumDragged();
 }

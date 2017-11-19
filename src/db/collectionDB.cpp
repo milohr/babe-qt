@@ -169,7 +169,7 @@ bool CollectionDB::update(const QString &table,const QString &column,const QVari
 
 }
 
-bool CollectionDB::execQuery(QSqlQuery &query)
+bool CollectionDB::execQuery(QSqlQuery &query) const
 {
 
     if(query.exec()) return true;
@@ -485,7 +485,7 @@ DB_LIST CollectionDB::getDBData(const QStringList &urls)
     return mapList;
 }
 
-DB_LIST CollectionDB::getDBData(QSqlQuery &query)
+DB_LIST CollectionDB::getDBData(QSqlQuery &query) const
 {
     DB_LIST mapList;
 

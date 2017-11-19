@@ -342,22 +342,22 @@ bool lastfm::parseTrack()
     {
         auto wiki = itemMap.value("wiki").toMap().value("content").toString();
         emit this->infoReady(this->track, this->packResponse(ONTOLOGY::TRACK, INFO::WIKI, CONTEXT::WIKI,wiki));
-        if(!wiki.isEmpty() && this->info == INFO::WIKI) return true;
+        if(wiki.isEmpty() && this->info == INFO::WIKI) return false;
     }
 
     if(this->info == INFO::ARTWORK || this->info == INFO::ALL)
     {
         auto images = itemMap.value("album").toMap().value("image").toList();
 
+        QString artwork;
+
         for(auto image : images)
             if(image.toMap().value("size").toString()=="extralarge")
-            {
-                auto artwork = image.toMap().value("#text").toString();
-                emit this->infoReady(this->track, this->packResponse(ONTOLOGY::TRACK, INFO::ARTWORK, CONTEXT::IMAGE,this->startConnection(artwork)));
-                if(this->info == INFO::ARTWORK) return true;
-            }
+                artwork = image.toMap().value("#text").toString();
 
-        if(this->info == INFO::ARTWORK) return false;
+
+        emit this->infoReady(this->track, this->packResponse(ONTOLOGY::TRACK, INFO::ARTWORK, CONTEXT::IMAGE,this->startConnection(artwork)));
+        if(artwork.isEmpty() && this->info == INFO::ARTWORK) return false;
     }
 
     return false;
@@ -401,7 +401,4 @@ bool lastfm::parseSimilar()
     return false;
 }
 
-bool lastfm::parseTags()
-{
-    return false;
-}
+

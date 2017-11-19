@@ -32,7 +32,6 @@ void Notify::notify(const QString &title, const QString &body)
     notification->setText(QStringLiteral("%1").arg(body));
     notification->sendEvent();
 
-    notification->deleteLater();
 }
 
 void Notify::notifySong(const Bae::DB &trackMap,  const QPixmap &pix)
@@ -55,7 +54,6 @@ void Notify::notifySong(const Bae::DB &trackMap,  const QPixmap &pix)
 
     notification->sendEvent();
 
-    notification->deleteLater();
 
 }
 

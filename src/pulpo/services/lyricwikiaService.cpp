@@ -86,11 +86,10 @@ bool lyricWikia::parseTrack()
 
     if(array.isEmpty()) return false;
 
-    this->extractLyrics(array);
-    return true;
+    return this->extractLyrics(array);
 }
 
-void lyricWikia::extractLyrics(const QByteArray &array)
+bool lyricWikia::extractLyrics(const QByteArray &array)
 {
     QString content = QString::fromUtf8(array.constData());
     content.replace("&lt;", "<");
@@ -108,6 +107,8 @@ void lyricWikia::extractLyrics(const QByteArray &array)
         text= "<div align='center'>"+text+"</div>";
     }
 
-    emit this->infoReady(this->track, this->packResponse(ONTOLOGY::TRACK, INFO::LYRICS,CONTEXT::LYRIC,text));
+    if(text.isEmpty()) return false;
 
+    emit this->infoReady(this->track, this->packResponse(ONTOLOGY::TRACK, INFO::LYRICS,CONTEXT::LYRIC,text));
+    return true;
 }

@@ -332,7 +332,7 @@ void BabeWindow::setUpViews()
 
     //        if(this->current_song==track)
     //        {
-    //            feedRabbit();
+    //
     //            calibrateBtn_menu->actions().at(3)->setEnabled(true);
     //            rabbitTable->flushSuggestions(RabbitView::ALL);
     //            qDebug()<<"&InfoView::artistSimilarReady:"<<info.keys();
@@ -677,15 +677,15 @@ void BabeWindow::setUpRightFrame()
     this->ui->rabbit_view->setChecked(false);
 
     connect(rabbitTable,&RabbitView::playAlbum,this,&BabeWindow::putAlbumOnPlay);
-    connect(rabbitTable->getTable(),&BabeTable::tableWidget_doubleClicked, [this] (Bae::DB_LIST list) { addToPlaylist(list,false,APPENDBOTTOM);});
-    connect(rabbitTable->getTable(),&BabeTable::queueIt_clicked,this,&BabeWindow::addToQueue);
-    connect(rabbitTable->getTable(),&BabeTable::babeIt_clicked,this,&BabeWindow::babeIt);
-    connect(rabbitTable->getTable(),&BabeTable::infoIt_clicked,this,&BabeWindow::infoIt);
-    connect(rabbitTable->getTable(),&BabeTable::previewStarted,this,&BabeWindow::pause);
-    connect(rabbitTable->getTable(),&BabeTable::previewFinished,this,&BabeWindow::play);
-    connect(rabbitTable->getTable(),&BabeTable::playItNow,this,&BabeWindow::playItNow);
-    connect(rabbitTable->getTable(),&BabeTable::appendIt, [this] (Bae::DB_LIST list) { addToPlaylist(list,false,APPENDAFTER);});
-    connect(rabbitTable->getTable(),&BabeTable::saveToPlaylist,playlistTable,&PlaylistsView::saveToPlaylist);
+    connect(rabbitTable->getTable(), &BabeTable::tableWidget_doubleClicked, [this] (Bae::DB_LIST list) { addToPlaylist(list,false,APPENDBOTTOM);});
+    connect(rabbitTable->getTable(), &BabeTable::queueIt_clicked, this, &BabeWindow::addToQueue);
+    connect(rabbitTable->getTable(), &BabeTable::babeIt_clicked, this, &BabeWindow::babeIt);
+    connect(rabbitTable->getTable(), &BabeTable::infoIt_clicked, this, &BabeWindow::infoIt);
+    connect(rabbitTable->getTable(), &BabeTable::previewStarted, this, &BabeWindow::pause);
+    connect(rabbitTable->getTable(), &BabeTable::previewFinished, this ,&BabeWindow::play);
+    connect(rabbitTable->getTable(), &BabeTable::playItNow, this, &BabeWindow::playItNow);
+    connect(rabbitTable->getTable(), &BabeTable::appendIt, [this] (Bae::DB_LIST list) { addToPlaylist(list,false,APPENDAFTER);});
+    connect(rabbitTable->getTable(), &BabeTable::saveToPlaylist, playlistTable,&PlaylistsView::saveToPlaylist);
 
     this->ui->vLine->setVisible(false);
     auto *rightFrame_layout = new QGridLayout;
@@ -1134,12 +1134,6 @@ void BabeWindow::setCoverArt(const Bae::DB &song)
     //    else coverArt.albumArtReady(QByteArray());
 }
 
-void BabeWindow::putPixmap(const QByteArray &array)
-{
-    if(!array.isEmpty()) album_art->putPixmap(array);
-    else  album_art->putDefaultPixmap();
-}
-
 void BabeWindow::setToolbarIconSize(const uint &iconSize) //tofix
 {
 
@@ -1563,13 +1557,6 @@ void BabeWindow::removeSong(const int &index)/*tofix*/
     }
 }
 
-void BabeWindow::feedRabbit()
-{
-    rabbitTable->flushSuggestions(RabbitView::GENERAL);
-    rabbitTable->populateGeneralSuggestion(connection.getArtistTracks(current_song[Bae::KEY::ARTIST]));
-    //    rabbitTable->populateGeneralSuggestion(connection.getDBData(QString("SELECT * FROM tracks WHERE genre = \""+current_song[BabeTable::GENRE]+"\"")));
-}
-
 void BabeWindow::expandAlbumList(const QString &artist)
 {
     if(!artist.isEmpty())
@@ -1616,18 +1603,19 @@ void BabeWindow::loadTrack()
 
         loadMood();
 
-        loadCover(current_song[Bae::KEY::ARTIST],current_song[Bae::KEY::ALBUM],current_song[Bae::KEY::TITLE]);
+        loadCover(current_song);
 
         if(!this->isActiveWindow())
-            nof->notifySong(current_song,QPixmap(current_artwork));
-
-        loadInfo(current_song);
+            nof->notifySong(current_song,QPixmap(current_song[Bae::KEY::ARTWORK]));
 
         if(miniPlayback)
         {
             this->blurWidget(*album_art,28);
             album_art->saturatePixmap(100);
         }
+
+        loadInfo(current_song);
+        this->rabbitTable->seed(current_song);
 
     }else removeSong(current_song_pos);
 
@@ -1674,9 +1662,12 @@ void BabeWindow::loadMood()
 }
 
 
-bool BabeWindow::loadCover(const QString &artist, const QString &album, const QString &title) //tofix separte getalbumcover from get artisthead
+bool BabeWindow::loadCover(DB &track) //tofix separte getalbumcover from get artisthead
 {
-    Q_UNUSED(title);
+    auto artist = track[Bae::KEY::ARTIST];
+    auto album = track[Bae::KEY::ALBUM];
+    auto title = track[Bae::KEY::TITLE];
+
     QString artistHead = this->connection.getArtistArt(artist);
 
     if(!artistHead.isEmpty())
@@ -1686,17 +1677,17 @@ bool BabeWindow::loadCover(const QString &artist, const QString &album, const QS
 
     }else infoTable->setArtistArt(QString(":Data/data/cover.svg"));
 
-    this->current_artwork = this->connection.getAlbumArt(album, artist);
+    this->current_song.insert(Bae::KEY::ARTWORK,this->connection.getAlbumArt(album, artist));
 
-    if(!current_artwork.isEmpty())
-        this->album_art->putPixmap(current_artwork);
+    if(!current_song[Bae::KEY::ARTWORK].isEmpty())
+        this->album_art->putPixmap(current_song[Bae::KEY::ARTWORK]);
     else if (!artistHead.isEmpty())
     {
-        this->current_artwork = artistHead;
-        this->album_art->putPixmap(current_artwork);
+         this->current_song.insert(Bae::KEY::ARTWORK,artistHead);
+        this->album_art->putPixmap(current_song[Bae::KEY::ARTWORK]);
     }
     else{
-        emit fetchCover(this->current_song);
+        emit fetchCover(track);
         return false;
     }
 
