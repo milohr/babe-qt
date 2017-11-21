@@ -21,10 +21,7 @@
 
 Tracklist::Tracklist() {}
 
-Tracklist::~Tracklist()
-{
-    delete this;
-}
+Tracklist::~Tracklist(){}
 
 bool Tracklist::isMusic(const QString &file)
 {
