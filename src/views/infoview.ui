@@ -285,6 +285,15 @@
        </item>
        <item>
         <widget class="QTextBrowser" name="lyricsText">
+         <property name="autoFillBackground">
+          <bool>false</bool>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QTextBrowser
+{
+background-color:transparent;
+}</string>
+         </property>
          <property name="frameShape">
           <enum>QFrame::NoFrame</enum>
          </property>

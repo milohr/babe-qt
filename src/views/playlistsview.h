@@ -24,6 +24,7 @@ public:
     ~PlaylistsView();
     BabeTable *table;
     QListWidget *list;
+    QListWidget *tagList;
 
     void setPlaylists(const QStringList &playlists);
     void setPlaylistsMoods();
@@ -33,7 +34,10 @@ public:
     void addToPlaylist(const QString &playlist, const Bae::DB_LIST &tracks);
     bool insertPlaylist(const QString &playlist);
     void refreshCurrentPlaylist();
+    void populateTagList();
+
     QFrame *line_v;
+    QFrame *line_v2;
     QWidget *btnContainer;
     QString currentPlaylist;
     QStringList playlists;
@@ -43,7 +47,6 @@ public:
     // QToolButton *removeBtn;
 
 private:
-
     uint ALBUM_SIZE_MEDIUM = Bae::getWidgetSizeHint(Bae::MEDIUM_ALBUM_FACTOR,Bae::AlbumSizeHint::MEDIUM_ALBUM);
 
     QToolButton *addBtn;
@@ -57,7 +60,6 @@ private:
 
 
 public slots:
-
     void createPlaylist();
     void removePlaylist();
     void playlistName(QListWidgetItem *item);

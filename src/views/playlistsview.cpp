@@ -50,6 +50,21 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
     list->setContextMenuPolicy(Qt::ActionsContextMenu);
 
 
+    tagList = new QListWidget(this);
+    connect(this->tagList, &QListWidget::clicked,[this](QModelIndex index)
+    {
+        auto tag = index.data().toString();
+        qDebug()<<"TAGGGGGGG<<"<<tag;
+        QSqlQuery query(QString("select * from tracks where url in (select url from tracks_tags where tag = '%1')").arg(tag));
+        auto mapList = connection.getDBData(query);
+        this->table->flushTable();
+        this->table->populateTableView(mapList);
+    });
+    tagList->setAlternatingRowColors(true);
+    tagList->setFrameShape(QFrame::NoFrame);
+    tagList->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    tagList->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
     table->setFrameShape(QFrame::NoFrame);
     frame = new QFrame(this);
     frame->setFrameShadow(QFrame::Raised);
@@ -67,10 +82,10 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
     addBtn->setIcon(QIcon::fromTheme("list-add"));
     removeBtn->setIcon(QIcon::fromTheme("entry-delete"));
 
-    auto line = new QFrame(this);
-    line->setFrameShape(QFrame::VLine);
-    line->setFrameShadow(QFrame::Plain);
-    line->setMaximumWidth(1);
+    //    auto line = new QFrame(this);
+    //    line->setFrameShape(QFrame::VLine);
+    //    line->setFrameShadow(QFrame::Plain);
+    //    line->setMaximumWidth(1);
 
     btnContainer = new QWidget(list);
 
@@ -82,14 +97,17 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
     btnLayout->addWidget(new QLabel("Playlists"));
     btnLayout->addStretch();
     btnLayout->addWidget(addBtn);
-
-
     btnLayout->addWidget(removeBtn);
 
     line_v = new QFrame(this);
     line_v->setFrameShape(QFrame::VLine);
     line_v->setFrameShadow(QFrame::Plain);
     line_v->setFixedWidth(1);
+
+    line_v2 = new QFrame(this);
+    line_v2->setFrameShape(QFrame::VLine);
+    line_v2->setFrameShadow(QFrame::Plain);
+    line_v2->setFixedWidth(1);
 
     auto line_h = new QFrame(this);
     line_h->setFrameShape(QFrame::HLine);
@@ -130,11 +148,14 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
 
     splitter->addWidget(playlistsWidget);
     splitter->addWidget(line_v);
+    splitter->addWidget(tagList);
+    splitter->addWidget(line_v2);
     splitter->addWidget(table);
 
-    splitter->setSizes({0,0,0});
+    splitter->setSizes({0,0,0,0,0});
     splitter->setStretchFactor(0, 0);
-    splitter->setStretchFactor(2, 1);
+    splitter->setStretchFactor(2, 0);
+    splitter->setStretchFactor(4, 1);
 
     layout->addWidget(splitter, 0, 0);
 
@@ -158,6 +179,10 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
     this->removeFromPlaylist->setVisible(false);
 
     this->setLayout(layout);
+
+    this->line_v2->setVisible(false);
+    this->tagList->setVisible(false);
+
 }
 
 PlaylistsView::~PlaylistsView()
@@ -201,6 +226,11 @@ void PlaylistsView::setDefaultPlaylists()
     online->setText("Online");
     list->addItem(online);
 
+    auto tags = new QListWidgetItem;
+    tags->setIcon(QIcon::fromTheme("tag"));
+    tags->setText("Tags");
+    list->addItem(tags);
+
 }
 
 
@@ -210,6 +240,9 @@ void PlaylistsView::populatePlaylist(const QModelIndex &index)
     QString queryTxt;
     this->currentPlaylist = index.data().toString();
     this->table->flushTable();
+    this->tagList->setVisible(false);
+    this->line_v2->setVisible(false);
+
 
     if (currentPlaylist == "Most Played")
     {
@@ -244,6 +277,16 @@ void PlaylistsView::populatePlaylist(const QModelIndex &index)
         this->removeFromPlaylist->setVisible(false);
         removeBtn->setEnabled(false);
         mapList = connection.getOnlineTracks();
+    }else if (currentPlaylist == "Tags")
+    {
+        // table->showColumn(BabeTable::PLAYED);
+        this->removeFromPlaylist->setVisible(false);
+        removeBtn->setEnabled(false);
+        this->tagList->setVisible(true);
+        this->line_v2->setVisible(true);
+
+        this->populateTagList();
+
     } else if(!currentPlaylist.isEmpty())
     {
         removeBtn->setEnabled(true);
@@ -309,6 +352,22 @@ void PlaylistsView::refreshCurrentPlaylist()
     this->table->populateTableView(connection.getPlaylistTracks(currentPlaylist));
 }
 
+void PlaylistsView::populateTagList()
+{
+    QSqlQuery query("select distinct tag from tracks_tags "
+                    "where context = 'tag' "
+                    "and tag collate nocase not in "
+                    "(select artist from artists) "
+                    "and tag in "
+                    "(select tag from tracks_tags group by tag having count(url) > 1) "
+                    "order by tag collate nocase "
+                    "limit 1000");
+    auto tags = connection.getDBData(query);
+
+    for( auto tag :  tags )
+        this->tagList->addItem(tag[Bae::KEY::TAG]);
+}
+
 void PlaylistsView::playlistName(QListWidgetItem *item) {
     qDebug() << "old playlist name: " << currentPlaylist
              << "new playlist name: " << item->text();
@@ -351,17 +410,20 @@ void PlaylistsView::saveToPlaylist(const Bae::DB_LIST &tracks)
 {
     auto form = new PlaylistForm (connection.getPlaylists(),tracks,this);
     connect(form,&PlaylistForm::saved,this,&PlaylistsView::addToPlaylist);
-    connect(form,&PlaylistForm::created,[this](const QString &playlist)
+    connect(form,&PlaylistForm::created,[=](const QString &playlist)
     {
         if(insertPlaylist(playlist))
         {
             auto item = new QListWidgetItem;
+            item->setText(playlist);
             item->setFlags(item->flags() | Qt::ItemIsEditable);
             list->addItem(item);
         }
 
+        form->deleteLater();
     });
     form->show();
+
 }
 
 

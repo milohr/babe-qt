@@ -87,6 +87,7 @@ public:
             if (cb != nullptr) cb(data);
             pulpo.feed(data,recursive);
 
+            t.msleep(500);
             if(!go) return;
         }
 
@@ -348,12 +349,14 @@ public slots:
                 TABLEMAP[TABLE::ALBUMS],
                 KEYMAP[KEY::ARTWORK]);
         query.prepare(queryTxt);
-        this->setInfo(connection.getDBData(query), ontology, services, INFO::ARTWORK, RECURSIVE::OFF, [](DB track)
+        auto artworks = connection.getDBData(query);
+        this->setInfo(artworks, ontology, services, INFO::ARTWORK, RECURSIVE::OFF, [](DB track)
         {
             connection.insertArtwork(track);
         });
 
-        emit this->done(TABLE::ALBUMS);
+        if(!artworks.isEmpty())
+            emit this->done(TABLE::ALBUMS);
 
         qDebug()<<"getting missing track tags";
         // select title, artist, album from tracks t where url not in (select url from tracks_tags)
@@ -402,7 +405,8 @@ public slots:
         auto queryTxt = QString("SELECT %1, %2 FROM %3 WHERE %4 = ''").arg(KEYMAP[KEY::ALBUM],
                 KEYMAP[KEY::ARTIST],TABLEMAP[TABLE::ALBUMS],KEYMAP[KEY::ARTWORK]);
         QSqlQuery query (queryTxt);
-        this->setInfo(connection.getDBData(query), ontology, services, INFO::ARTWORK, RECURSIVE::OFF, nullptr);
+        auto artworks = connection.getDBData(query);
+        this->setInfo(artworks, ontology, services, INFO::ARTWORK, RECURSIVE::OFF, nullptr);
 
 
         //select album, artist from albums where  album  not in (select album from albums_tags) and artist  not in (select  artist from albums_tags)
@@ -422,7 +426,8 @@ public slots:
             connection.wikiAlbum(track,SLANG[W::NONE]);
         });
 
-        emit this->done(TABLE::ALBUMS);
+        if(!artworks.isEmpty())
+            emit this->done(TABLE::ALBUMS);
 
 
     }
@@ -439,7 +444,8 @@ public slots:
         auto queryTxt = QString("SELECT %1 FROM %2 WHERE %3 = ''").arg(KEYMAP[KEY::ARTIST],
                 TABLEMAP[TABLE::ARTISTS],KEYMAP[KEY::ARTWORK]);
         QSqlQuery query (queryTxt);
-        this->setInfo(connection.getDBData(query), ontology, services, INFO::ARTWORK, RECURSIVE::OFF, nullptr);
+        auto artworks = connection.getDBData(query);
+        this->setInfo(artworks, ontology, services, INFO::ARTWORK, RECURSIVE::OFF, nullptr);
 
         //select artist from artists where  artist  not in (select album from albums_tags)
         qDebug()<<"getting missing artist tags";
@@ -458,7 +464,8 @@ public slots:
             connection.wikiArtist(track,SLANG[W::NONE]);
         });
 
-        emit this->done(TABLE::ARTISTS);
+        if(!artworks.isEmpty())
+            emit this->done(TABLE::ARTISTS);
 
     }
 

@@ -18,7 +18,7 @@ BabeGrid::BabeGrid(const double &factor, const Bae::AlbumSizeHint &deafultValue,
     this->setSizePolicy(QSizePolicy ::Expanding , QSizePolicy ::Expanding );
     this->setSizeAdjustPolicy(QListWidget::AdjustToContentsOnFirstShow);
 
-    this->setStyleSheet("QListWidget::item,QListWidget::item:selected,QListWidget::item:selected:active {background:transparent; color:transparent; }");
+    this->setStyleSheet("QListWidget,QListWidget::item,QListWidget::item:selected,QListWidget::item:selected:active {background:transparent; color:transparent; }");
     this->setGridSize(QSize(static_cast<int>(this->albumSize+this->albumSpacing),static_cast<int>(this->albumSize+this->albumSpacing)));
     this->setContextMenuPolicy(Qt::ContextMenuPolicy::ActionsContextMenu);
 
