@@ -54,11 +54,21 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
     connect(this->tagList, &QListWidget::clicked,[this](QModelIndex index)
     {
         auto tag = index.data().toString();
-        qDebug()<<"TAGGGGGGG<<"<<tag;
-        QSqlQuery query(QString("select * from tracks where url in (select url from tracks_tags where tag = '%1')").arg(tag));
-        auto mapList = connection.getDBData(query);
-        this->table->flushTable();
-        this->table->populateTableView(mapList);
+
+        if(this->list->currentIndex().data().toString()=="Tags")
+        {
+            QSqlQuery query(QString("select * from tracks where url in (select url from tracks_tags where tag = '%1')").arg(tag));
+            auto mapList = connection.getDBData(query);
+            this->table->flushTable();
+            this->table->populateTableView(mapList);
+        }else if(this->list->currentIndex().data().toString()=="Relationships")
+        {
+            QSqlQuery query(QString("select * from tracks where artist in (select artist from artists_tags where tag = '%1')").arg(tag));
+            auto mapList = connection.getDBData(query);
+            this->table->flushTable();
+            this->table->populateTableView(mapList);
+        }
+
     });
     tagList->setAlternatingRowColors(true);
     tagList->setFrameShape(QFrame::NoFrame);
@@ -231,6 +241,16 @@ void PlaylistsView::setDefaultPlaylists()
     tags->setText("Tags");
     list->addItem(tags);
 
+    auto relations = new QListWidgetItem;
+    relations->setIcon(QIcon::fromTheme("similarartists-amarok"));
+    relations->setText("Relationships");
+    list->addItem(relations);
+
+    auto popular = new QListWidgetItem;
+    popular->setIcon(QIcon::fromTheme("office-chart-line"));
+    popular->setText("Popular");
+    list->addItem(popular);
+
 }
 
 
@@ -284,9 +304,39 @@ void PlaylistsView::populatePlaylist(const QModelIndex &index)
         removeBtn->setEnabled(false);
         this->tagList->setVisible(true);
         this->line_v2->setVisible(true);
+        QString query = "select distinct tag from tracks_tags "
+                        "where context = 'tag' "
+                        "and tag collate nocase not in "
+                        "(select artist from artists) "
+                        "and tag in "
+                        "(select tag from tracks_tags group by tag having count(url) > 1) "
+                        "order by tag collate nocase "
+                        "limit 1000";
+        this->populateTagList(query);
 
-        this->populateTagList();
+    }else if (currentPlaylist == "Relationships")
+    {
+        // table->showColumn(BabeTable::PLAYED);
+        this->removeFromPlaylist->setVisible(false);
+        removeBtn->setEnabled(false);
+        this->tagList->setVisible(true);
+        this->line_v2->setVisible(true);
 
+        this->populateTagList("select distinct tag from tags "
+                              "where context = 'artist_similar' "
+                              "order by tag collate nocase");
+
+    }else if (currentPlaylist == "Popular")
+    {
+        // table->showColumn(BabeTable::PLAYED);
+        this->removeFromPlaylist->setVisible(false);
+        removeBtn->setEnabled(false);
+        QSqlQuery query ("select t.* from tracks t "
+                         "inner join tracks_tags tt on tt.url = t.url "
+                         "where tt.context = 'track_stat' "
+                         "group by tt.url order by sum(tag) desc limit 250");
+
+        mapList = connection.getDBData(query);
     } else if(!currentPlaylist.isEmpty())
     {
         removeBtn->setEnabled(true);
@@ -352,16 +402,10 @@ void PlaylistsView::refreshCurrentPlaylist()
     this->table->populateTableView(connection.getPlaylistTracks(currentPlaylist));
 }
 
-void PlaylistsView::populateTagList()
+void PlaylistsView::populateTagList(const QString &queryTxt)
 {
-    QSqlQuery query("select distinct tag from tracks_tags "
-                    "where context = 'tag' "
-                    "and tag collate nocase not in "
-                    "(select artist from artists) "
-                    "and tag in "
-                    "(select tag from tracks_tags group by tag having count(url) > 1) "
-                    "order by tag collate nocase "
-                    "limit 1000");
+    this->tagList->clear();
+    QSqlQuery query(queryTxt);
     auto tags = connection.getDBData(query);
 
     for( auto tag :  tags )

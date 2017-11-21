@@ -34,7 +34,7 @@ public:
     void addToPlaylist(const QString &playlist, const Bae::DB_LIST &tracks);
     bool insertPlaylist(const QString &playlist);
     void refreshCurrentPlaylist();
-    void populateTagList();
+    void populateTagList(const QString &query);
 
     QFrame *line_v;
     QFrame *line_v2;
