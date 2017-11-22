@@ -196,7 +196,7 @@
    <widget class="QWidget" name="controls" native="true">
     <property name="geometry">
      <rect>
-      <x>280</x>
+      <x>350</x>
       <y>130</y>
       <width>371</width>
       <height>201</height>
@@ -552,44 +552,6 @@
        </property>
        <property name="autoExclusive">
         <bool>true</bool>
-       </property>
-       <property name="autoRaise">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QToolButton" name="rabbit_view">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="toolTip">
-        <string>Discover</string>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="icon">
-        <iconset theme="kstars_constellationart">
-         <normaloff>.</normaloff>.</iconset>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>22</width>
-         <height>22</height>
-        </size>
-       </property>
-       <property name="checkable">
-        <bool>true</bool>
-       </property>
-       <property name="autoExclusive">
-        <bool>false</bool>
-       </property>
-       <property name="toolButtonStyle">
-        <enum>Qt::ToolButtonIconOnly</enum>
        </property>
        <property name="autoRaise">
         <bool>true</bool>
@@ -1000,6 +962,44 @@
       </widget>
      </item>
      <item>
+      <widget class="QToolButton" name="rabbit_view">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="toolTip">
+        <string>Discover</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset theme="kstars_constellationart">
+         <normaloff>.</normaloff>.</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>22</width>
+         <height>22</height>
+        </size>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="autoExclusive">
+        <bool>true</bool>
+       </property>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonIconOnly</enum>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QToolButton" name="info_view">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
@@ -1102,17 +1102,26 @@
      <enum>QFrame::Raised</enum>
     </property>
    </widget>
-   <widget class="Line" name="vLine_pane">
+   <widget class="QFrame" name="frame">
     <property name="geometry">
      <rect>
-      <x>620</x>
-      <y>40</y>
-      <width>3</width>
-      <height>61</height>
+      <x>70</x>
+      <y>300</y>
+      <width>184</width>
+      <height>1</height>
      </rect>
     </property>
-    <property name="orientation">
-     <enum>Qt::Vertical</enum>
+    <property name="maximumSize">
+     <size>
+      <width>16777215</width>
+      <height>1</height>
+     </size>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::HLine</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
     </property>
    </widget>
   </widget>

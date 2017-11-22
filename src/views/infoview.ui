@@ -46,22 +46,6 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="QFrame" name="frame_2">
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>1</height>
-          </size>
-         </property>
-         <property name="frameShape">
-          <enum>QFrame::HLine</enum>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Raised</enum>
-         </property>
-        </widget>
-       </item>
-       <item>
         <widget class="QTextBrowser" name="similarArtistInfo">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
@@ -85,7 +69,10 @@
           <bool>false</bool>
          </property>
          <property name="styleSheet">
-          <string notr="true"/>
+          <string notr="true">QTextBrowser
+{
+background-color:transparent;
+}</string>
          </property>
          <property name="frameShape">
           <enum>QFrame::NoFrame</enum>
@@ -109,6 +96,12 @@
            <height>60</height>
           </size>
          </property>
+         <property name="styleSheet">
+          <string notr="true">QTextBrowser
+{
+background-color:transparent;
+}</string>
+         </property>
          <property name="frameShape">
           <enum>QFrame::NoFrame</enum>
          </property>
@@ -124,6 +117,12 @@
            <width>0</width>
            <height>100</height>
           </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QTextBrowser
+{
+background-color:transparent;
+}</string>
          </property>
          <property name="frameShape">
           <enum>QFrame::NoFrame</enum>
@@ -143,6 +142,12 @@
            <width>0</width>
            <height>100</height>
           </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QTextBrowser
+{
+background-color:transparent;
+}</string>
          </property>
          <property name="frameShape">
           <enum>QFrame::NoFrame</enum>

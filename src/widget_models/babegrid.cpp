@@ -1,13 +1,13 @@
 #include "babegrid.h"
 
-BabeGrid::BabeGrid(const double &factor, const Bae::AlbumSizeHint &deafultValue, QWidget *parent) : QListWidget(parent)
+BabeGrid::BabeGrid(const double &factor, const Bae::AlbumSizeHint &deafultValue, const uint8_t &albumRadius, QWidget *parent) : QListWidget(parent)
 {
     this->albumFactor= factor;
     this->defaultAlbumValue= deafultValue;
     this->albumSize = Bae::getWidgetSizeHint(factor,deafultValue);
-
+    this->albumRadius = albumRadius;
     this->installEventFilter(this);
-    this->setObjectName("grid");
+    //    this->setObjectName("grid");
     this->setMinimumHeight(static_cast<int>(this->albumSize));
     this->setViewMode(QListWidget::IconMode);
     this->setResizeMode(QListWidget::Adjust);
@@ -37,7 +37,7 @@ void BabeGrid::addAlbum(const Bae::DB &albumMap)
 
     if(!this->albumsMap.contains(auxMap))
     {
-        auto album= new BabeAlbum(albumMap,defaultAlbumValue,4,true,this);
+        auto album= new BabeAlbum(albumMap,defaultAlbumValue,this->albumRadius,true,this);
         this->albumsMap.insert(auxMap,album);
 
         connect(album,&BabeAlbum::albumCoverClicked,[this](const Bae::DB &albumMap)
@@ -45,14 +45,21 @@ void BabeGrid::addAlbum(const Bae::DB &albumMap)
             emit this->albumClicked(albumMap);
         });
 
-        auto shadow = new QGraphicsDropShadowEffect(this);
-        shadow->setColor(QColor(0, 0, 0, 140));
-        shadow->setBlurRadius(9);
-        shadow->setOffset(3,5);
 
-        album->setGraphicsEffect(shadow);
+        if(this->albumShadows)
+        {
+            auto shadow = new QGraphicsDropShadowEffect(this);
+
+            shadow->setColor(QColor(0, 0, 0, 140));
+            shadow->setBlurRadius(9);
+            shadow->setOffset(3,5);
+
+            album->setGraphicsEffect(shadow);
+        }
+
         album->borderColor=false;
         album->setUpMenu();
+        album->showTitle(!hiddenLabels);
 
         auto sendIt = new QAction("Send it to phone",this);
 
@@ -69,15 +76,15 @@ void BabeGrid::addAlbum(const Bae::DB &albumMap)
         connect(album,&BabeAlbum::albumCoverEnter,[=]()
         {
             if(hiddenLabels) album->showTitle(true);
-            shadow->setColor(QColor(0, 0, 0, 180));
-            shadow->setOffset(2,3);
+            //            shadow->setColor(QColor(0, 0, 0, 180));
+            //            shadow->setOffset(2,3);
         });
 
         connect(album, &BabeAlbum::albumCoverLeave,[=]()
         {
             if(hiddenLabels) album->showTitle(false);
-            shadow->setColor(QColor(0, 0, 0, 140));
-            shadow->setOffset(3,5);
+            //            shadow->setColor(QColor(0, 0, 0, 140));
+            //            shadow->setOffset(3,5);
         });
 
         auto item = new QListWidgetItem;
@@ -89,7 +96,7 @@ void BabeGrid::addAlbum(const Bae::DB &albumMap)
 
         item->setTextAlignment(Qt::AlignCenter);
         this->addItem(item);
-        this->setItemWidget(item,album);        
+        this->setItemWidget(item,album);
 
     }else this->albumsMap[auxMap]->putPixmap(albumMap[Bae::KEY::ARTWORK]);
 
@@ -124,10 +131,23 @@ void BabeGrid::setAlbumsSpacing(const uint &space)
 
 }
 
+void BabeGrid::showLabels(const bool &state)
+{
+    for(auto album: albumsMap.values())
+        album->showTitle(state);
+
+    this->actions().at(1)->setText(state ? "Show titles" : "Hide Labels" );
+    this->hiddenLabels = !this->hiddenLabels ;
+}
+
 bool BabeGrid::eventFilter(QObject *obj, QEvent *event)
 {
-    if(obj==this && event->type()==QEvent::Resize)
-        this->adjustGrid();
+    if(autoAdjust)
+        if(obj==this && event->type()==QEvent::Resize)
+        {
+            this->adjustGrid();
+            event->accept();
+        }
 
     return QWidget::eventFilter(obj, event);
 }
@@ -138,7 +158,7 @@ void BabeGrid::adjustGrid()
     auto gridSize = this->size().width()-scrollSize;
     auto amount = gridSize/(static_cast<int>(this->albumSize+this->albumSpacing));
     auto leftSpace = gridSize-amount*static_cast<int>(this->albumSize);
-//    qDebug()<<"ther's space for: "<< amount <<" in "<<gridSize<<" and space left is"<<leftSpace;
+    //    qDebug()<<"ther's space for: "<< amount <<" in "<<gridSize<<" and space left is"<<leftSpace;
     if(gridSize>static_cast<int>(this->albumSize))
         this->setGridSize(QSize(static_cast<int>(this->albumSize)+(leftSpace/amount),static_cast<int>(this->albumSize+this->albumSpacing)));
 }
@@ -169,18 +189,11 @@ void BabeGrid::setUpActions()
     {
         if (hideLabels->text().contains("Hide titles"))
         {
-            for(auto album: albumsMap.values())
-                album->showTitle(false);
-
-            hideLabels->setText("Show titles");
-            this->hiddenLabels = !this->hiddenLabels ;
+            this->showLabels(false);
         }
         else
         {
-            for(auto album: albumsMap.values())
-                album->showTitle(true);
-            hideLabels->setText("Hide titles");
-            this->hiddenLabels = !this->hiddenLabels ;
+            this->showLabels(true);
         }
 
     });

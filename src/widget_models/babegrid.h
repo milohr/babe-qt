@@ -16,14 +16,20 @@ class BabeGrid : public QListWidget
     Q_OBJECT
 
 public:
-    explicit BabeGrid(const double &factor, const Bae::AlbumSizeHint &deafultValue, QWidget *parent= nullptr);
+    explicit BabeGrid(const double &factor, const Bae::AlbumSizeHint &deafultValue, const uint8_t &albumRadius = 4, QWidget *parent= nullptr);
     ~BabeGrid() override;
     void addAlbum(const Bae::DB &albumMap);
     void flushGrid();
     void setAlbumsSize(const uint &value);
     void setAlbumsSpacing(const uint &space);
+    void showLabels(const bool &state);
     QHash<Bae::DB,BabeAlbum*> albumsMap;
     QList<QListWidgetItem*> itemsList;
+
+    bool autoAdjust = true;
+    bool albumShadows = true;
+    bool hiddenLabels = false;
+
 
 private:
     QAction *order;
@@ -31,8 +37,8 @@ private:
     double albumFactor;
     Bae::AlbumSizeHint defaultAlbumValue;
     bool ascending=true;
-    bool hiddenLabels=false;
     uint albumSpacing = 25;
+    uint8_t albumRadius = 4;
 
     void adjustGrid();
     void setUpActions();

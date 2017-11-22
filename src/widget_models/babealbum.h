@@ -27,7 +27,7 @@ class BabeAlbum : public QLabel
     Q_OBJECT
 
 public:
-    explicit BabeAlbum(const DB &info, const AlbumSizeHint &widgetSize, const uint &widgetRadius=0, const bool &isDraggable=false,QWidget *parent = nullptr);
+    explicit BabeAlbum(const DB &info, const AlbumSizeHint &widgetSize, const uint8_t &widgetRadius=0, const bool &isDraggable=false,QWidget *parent = nullptr);
     ~BabeAlbum() override;
 
     void setArtist(const QString &artistTitle);

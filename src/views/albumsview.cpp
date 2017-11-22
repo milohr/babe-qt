@@ -10,7 +10,7 @@ AlbumsView::AlbumsView(const bool &extraList, QWidget *parent) :
     layout->setMargin(0);
     layout->setSpacing(0);
     this->setAcceptDrops(false);
-    this->grid = new BabeGrid(Bae::MEDIUM_ALBUM_FACTOR, Bae::AlbumSizeHint::MEDIUM_ALBUM,this);
+    this->grid = new BabeGrid(Bae::MEDIUM_ALBUM_FACTOR, Bae::AlbumSizeHint::MEDIUM_ALBUM,4,this);
     connect(grid, &BabeGrid::albumReady, [this](){albumLoader.next();});
     connect(&albumLoader, &AlbumLoader::albumReady, this, &AlbumsView::addAlbum);
     connect(&albumLoader, &AlbumLoader::finished, [this]()

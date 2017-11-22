@@ -1,7 +1,7 @@
 #include "babealbum.h"
 
 
-BabeAlbum::BabeAlbum(const DB &info, const AlbumSizeHint &widgetSize, const uint &widgetRadius, const bool &isDraggable, QWidget *parent) : QLabel(parent)
+BabeAlbum::BabeAlbum(const DB &info, const AlbumSizeHint &widgetSize, const uint8_t &widgetRadius, const bool &isDraggable, QWidget *parent) : QLabel(parent)
 {
 
     connect(this,&BabeAlbum::changedArt,&connection,&CollectionDB::insertArtwork);

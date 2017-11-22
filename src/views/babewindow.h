@@ -62,9 +62,16 @@ public:
     explicit BabeWindow(const QStringList &files={}, QWidget *parent = nullptr);
     ~BabeWindow();
 
-    enum views
+    enum VIEWS
     {
-        COLLECTION,ALBUMS,ARTISTS,PLAYLISTS,INFO,SETTINGS,RESULTS
+        COLLECTION = 0,
+        ALBUMS = 1,
+        ARTISTS = 2,
+        PLAYLISTS = 3,
+        INFO = 4,
+        RABBIT = 5,
+        SETTINGS = 6,
+        RESULTS =7
     };
 
     enum playlistViews
