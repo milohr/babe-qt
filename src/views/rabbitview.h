@@ -34,14 +34,13 @@ public:
 
     void flushSuggestions(suggestionsTables = ALL);
     BabeTable * getTable() { return this->generalSuggestion; }
-
-
-private:
-
-    uint ALBUM_SIZE_MEDIUM = Bae::getWidgetSizeHint(Bae::MEDIUM_ALBUM_FACTOR,Bae::AlbumSizeHint::MEDIUM_ALBUM);
-    CollectionDB connection;
     BabeGrid *artistSuggestion;
     BabeTable *generalSuggestion;
+
+private:
+    uint ALBUM_SIZE_MEDIUM = Bae::getWidgetSizeHint(Bae::MEDIUM_ALBUM_FACTOR,Bae::AlbumSizeHint::MEDIUM_ALBUM);
+    CollectionDB connection;
+
 
 public slots:
 

@@ -1080,28 +1080,6 @@
      </item>
     </layout>
    </widget>
-   <widget class="QFrame" name="vLine">
-    <property name="geometry">
-     <rect>
-      <x>420</x>
-      <y>20</y>
-      <width>1</width>
-      <height>80</height>
-     </rect>
-    </property>
-    <property name="maximumSize">
-     <size>
-      <width>1</width>
-      <height>16777215</height>
-     </size>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::VLine</enum>
-    </property>
-    <property name="frameShadow">
-     <enum>QFrame::Raised</enum>
-    </property>
-   </widget>
    <widget class="QFrame" name="frame">
     <property name="geometry">
      <rect>

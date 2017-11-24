@@ -54,20 +54,29 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
     connect(this->tagList, &QListWidget::clicked,[this](QModelIndex index)
     {
         auto tag = index.data().toString();
+        this->table->flushTable();
+        Bae::DB_LIST mapList;
 
         if(this->list->currentIndex().data().toString()=="Tags")
         {
             QSqlQuery query(QString("select * from tracks where url in (select url from tracks_tags where tag = '%1')").arg(tag));
-            auto mapList = connection.getDBData(query);
-            this->table->flushTable();
-            this->table->populateTableView(mapList);
+            mapList = connection.getDBData(query);
         }else if(this->list->currentIndex().data().toString()=="Relationships")
         {
             QSqlQuery query(QString("select * from tracks where artist in (select artist from artists_tags where tag = '%1')").arg(tag));
-            auto mapList = connection.getDBData(query);
-            this->table->flushTable();
-            this->table->populateTableView(mapList);
+            mapList = connection.getDBData(query);
+        }else if( this->list->currentIndex().data().toString()=="Popular")
+        {
+            QSqlQuery query (QString("select t.* from tracks t "
+                                     "inner join tracks_tags tt on tt.url = t.url "
+                                     "where tt.context = 'track_stat' and t.artist = '%1' "
+                                     "group by tt.url order by sum(tag) desc limit 250").arg(tag));
+
+            mapList = connection.getDBData(query);
         }
+
+        this->table->populateTableView(mapList);
+
 
     });
     tagList->setAlternatingRowColors(true);
@@ -328,15 +337,20 @@ void PlaylistsView::populatePlaylist(const QModelIndex &index)
 
     }else if (currentPlaylist == "Popular")
     {
-        // table->showColumn(BabeTable::PLAYED);
         this->removeFromPlaylist->setVisible(false);
         removeBtn->setEnabled(false);
+        this->tagList->setVisible(true);
+        this->line_v2->setVisible(true);
+
+        this->populateTagList("select artist as tag from artists order by artist");
+
         QSqlQuery query ("select t.* from tracks t "
                          "inner join tracks_tags tt on tt.url = t.url "
                          "where tt.context = 'track_stat' "
                          "group by tt.url order by sum(tag) desc limit 250");
 
         mapList = connection.getDBData(query);
+
     } else if(!currentPlaylist.isEmpty())
     {
         removeBtn->setEnabled(true);

@@ -29,6 +29,12 @@ RabbitView::RabbitView(QWidget *parent) : QWidget(parent)
     artistSuggestion->setSpacing(0);
     artistSuggestion->setResizeMode(QListView::ResizeMode::Fixed);
     artistSuggestion->setWrapping(false);
+
+    connect(this->artistSuggestion, &BabeGrid::playAlbum, [this] (const Bae::DB &map)
+    {
+       emit this->playAlbum(map);
+    });
+
     generalSuggestion = new BabeTable(this);
 //    generalSuggestion->hideColumn(static_cast<int>(Bae::KEY::ALBUM));
     //    generalSuggestion->hideColumn(static_cast<int>(Bae::KEY::ARTIST));

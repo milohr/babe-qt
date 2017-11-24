@@ -347,15 +347,16 @@ void BabeWindow::setUpViews()
 
     this->rabbitTable = new RabbitView(this);
     connect(rabbitTable,&RabbitView::playAlbum,this,&BabeWindow::putAlbumOnPlay);
-    connect(rabbitTable->getTable(), &BabeTable::tableWidget_doubleClicked, [this] (Bae::DB_LIST list) { addToPlaylist(list,false,APPENDBOTTOM);});
-    connect(rabbitTable->getTable(), &BabeTable::queueIt_clicked, this, &BabeWindow::addToQueue);
-    connect(rabbitTable->getTable(), &BabeTable::babeIt_clicked, this, &BabeWindow::babeIt);
-    connect(rabbitTable->getTable(), &BabeTable::infoIt_clicked, this, &BabeWindow::infoIt);
-    connect(rabbitTable->getTable(), &BabeTable::previewStarted, this, &BabeWindow::pause);
-    connect(rabbitTable->getTable(), &BabeTable::previewFinished, this ,&BabeWindow::play);
-    connect(rabbitTable->getTable(), &BabeTable::playItNow, this, &BabeWindow::playItNow);
-    connect(rabbitTable->getTable(), &BabeTable::appendIt, [this] (Bae::DB_LIST list) { addToPlaylist(list,false,APPENDAFTER);});
-    connect(rabbitTable->getTable(), &BabeTable::saveToPlaylist, playlistTable,&PlaylistsView::saveToPlaylist);
+    connect(rabbitTable->generalSuggestion, &BabeTable::tableWidget_doubleClicked, [this] (Bae::DB_LIST list) { addToPlaylist(list,false,APPENDBOTTOM);});
+    connect(rabbitTable->generalSuggestion, &BabeTable::queueIt_clicked, this, &BabeWindow::addToQueue);
+    connect(rabbitTable->generalSuggestion, &BabeTable::babeIt_clicked, this, &BabeWindow::babeIt);
+    connect(rabbitTable->generalSuggestion, &BabeTable::infoIt_clicked, this, &BabeWindow::infoIt);
+    connect(rabbitTable->generalSuggestion, &BabeTable::previewStarted, this, &BabeWindow::pause);
+    connect(rabbitTable->generalSuggestion, &BabeTable::previewFinished, this ,&BabeWindow::play);
+    connect(rabbitTable->generalSuggestion, &BabeTable::playItNow, this, &BabeWindow::playItNow);
+    connect(rabbitTable->generalSuggestion, &BabeTable::appendIt, [this] (Bae::DB_LIST list) { addToPlaylist(list,false,APPENDAFTER);});
+    connect(rabbitTable->generalSuggestion, &BabeTable::saveToPlaylist, playlistTable,&PlaylistsView::saveToPlaylist);
+    connect(rabbitTable->artistSuggestion, &BabeGrid::playAlbum, this,&BabeWindow::putAlbumOnPlay);
 
 
     settings_widget->readSettings();
@@ -395,7 +396,7 @@ void BabeWindow::setUpCollectionViewer()
 
     leftFrame = new QFrame(this);
     leftFrame->setObjectName("leftFrame");
-    leftFrame->setFrameShape(QFrame::NoFrame);
+    leftFrame->setFrameShape(QFrame::StyledPanel);
     leftFrame->setFrameShadow(QFrame::Raised);
     leftFrame->setLayout(leftFrame_layout);
 
@@ -452,11 +453,11 @@ void BabeWindow::setUpCollectionViewer()
 
 
     mainLayout->addWidget(leftFrame);
-    mainLayout->addWidget(ui->vLine);
+//    mainLayout->addWidget(ui->vLine);
     mainLayout->addWidget(rightFrame);
     mainLayout->setContentsMargins(0,0,0,0);
-    mainLayout->setMargin(0);
-    mainLayout->setSpacing(0);
+//    mainLayout->setMargin(0);
+//    mainLayout->setSpacing(0);
 
     this->mainWidget= new QWidget(this);
     this->mainWidget->setLayout(mainLayout);
@@ -544,7 +545,7 @@ void BabeWindow::setUpPlaylist()
 
 
     auto controlsColor = this->palette().color(QPalette::Window);
-    ui->controls->setStyleSheet(QString("QWidget#controls{background:qlineargradient(spread:pad, x1:0, y1:0.17, x2:0, y2:1, stop:0 rgba(%1,%2,%3,100%),stop:1 rgba(%1,%2,%3,40%))}").arg(QString::number(controlsColor.red()),QString::number(controlsColor.green()),QString::number(controlsColor.blue())));
+    ui->controls->setStyleSheet(QString("QWidget#controls{background:qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(%1,%2,%3,100%),stop:1 rgba(%1,%2,%3,40%))}").arg(QString::number(controlsColor.red()),QString::number(controlsColor.green()),QString::number(controlsColor.blue())));
     ui->miniPlaybackBtn->setVisible(false);
 
     seekBar = new QSlider(this);
@@ -639,16 +640,16 @@ void BabeWindow::movePanel(const position &pos)
     {
     case RIGHT:
         this->mainLayout->removeWidget(rightFrame);
-        this->mainLayout->insertWidget(2,rightFrame);
-        this->mainLayout->removeWidget(ui->vLine);
-        this->mainLayout->insertWidget(1,ui->vLine);
+        this->mainLayout->insertWidget(1,rightFrame);
+//        this->mainLayout->removeWidget(ui->vLine);
+//        this->mainLayout->insertWidget(1,ui->vLine);
         playlistPos=RIGHT;
         break;
     case LEFT:
         this->mainLayout->removeWidget(rightFrame);
         this->mainLayout->insertWidget(0,rightFrame);
-        this->mainLayout->removeWidget(ui->vLine);
-        this->mainLayout->insertWidget(1,ui->vLine);
+//        this->mainLayout->removeWidget(ui->vLine);
+//        this->mainLayout->insertWidget(1,ui->vLine);
         playlistPos=LEFT;
         break;
     case OUT:
@@ -661,15 +662,15 @@ void BabeWindow::movePanel(const position &pos)
         rightFrame->setMinimumHeight(static_cast<int>(ALBUM_SIZE)*2);
         rightFrame->window()->setFixedWidth(rightFrame->minimumSizeHint().width());
         rightFrame->window()->move(position.x()+this->size().width()-rightFrame->size().width(),this->pos().y());
-        ui->vLine->setVisible(false);
+//        ui->vLine->setVisible(false);
         playlistSta=OUT;
         break;
     case IN:
         rightFrame->setWindowFlags(Qt::Widget);
-        this->mainLayout->insertWidget(playlistPos==RIGHT?2:0,rightFrame);
+        this->mainLayout->insertWidget(playlistPos==RIGHT?1:0,rightFrame);
         rightFrame->setFixedWidth(rightFrame->minimumSizeHint().width());
         rightFrame->setMinimumHeight(0);
-        ui->vLine->setVisible(true);
+//        ui->vLine->setVisible(true);
 
         rightFrame->show();
         playlistSta=IN;
@@ -707,7 +708,7 @@ void BabeWindow::setUpRightFrame()
     rightFrame->setAcceptDrops(true);
     rightFrame->setLayout(rightFrame_layout);
     rightFrame->setFrameShadow(QFrame::Raised);
-    rightFrame->setFrameShape(QFrame::NoFrame);
+    rightFrame->setFrameShape(QFrame::StyledPanel);
     rightFrame->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Expanding);
     //    rightFrame->setMinimumHeight(ALBUM_SIZE*2);
     rightFrame_layout->addWidget(this->playlistWidget,0,0);
@@ -1272,7 +1273,7 @@ void BabeWindow::expand()
     }
 
     ui->tracks_view_2->setVisible(false);
-    ui->vLine->setVisible(true);
+//    ui->vLine->setVisible(true);
     if(!leftFrame->isVisible()) leftFrame->setVisible(true);
     if(!ui->frame_4->isVisible()) ui->frame_4->setVisible(true);
     if(!mainList->isVisible()) mainListView->setVisible(true);
@@ -1375,7 +1376,7 @@ void BabeWindow::go_playlistMode()
         }
         ui->tracks_view_2->setIcon(QIcon::fromTheme(icon));
 
-        ui->vLine->setVisible(false);
+//        ui->vLine->setVisible(false);
         if(!ui->frame_4->isVisible()) ui->frame_4->setVisible(true);
         if(!mainList->isVisible()) mainListView->setVisible(true);
         if(!ui->frame_5->isVisible()) ui->frame_5->setVisible(true);
@@ -2177,7 +2178,6 @@ Bae::DB_LIST BabeWindow::searchFor(const QStringList &queries)
 
     for(auto searchQuery : queries)
     {
-
         if(searchQuery.contains(Bae::SearchTMap[Bae::SearchT::LIKE]+":") || searchQuery.startsWith("#"))
         {
             if(searchQuery.startsWith("#"))
