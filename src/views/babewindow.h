@@ -84,7 +84,7 @@ public:
         FULLMODE, PLAYLISTMODE, MINIMODE
     };
 
-    enum playModes
+    enum PLAY_MODE
     {
         REGULAR, SHUFFLE, REPEAT
     };
@@ -94,7 +94,7 @@ public:
         APPENDTOP,APPENDBOTTOM, APPENDAFTER, APPENDBEFORE, APPENDINDEX
     };
 
-    enum position
+    enum POSITION
     {
         RIGHT,LEFT, IN, OUT
     };
@@ -109,9 +109,6 @@ public:
 
 
 protected:
-
-    virtual void enterEvent(QEvent *event) Q_DECL_OVERRIDE;
-    virtual void leaveEvent(QEvent *event) Q_DECL_OVERRIDE;
     virtual void closeEvent(QCloseEvent *event) Q_DECL_OVERRIDE;
     virtual void resizeEvent(QResizeEvent* event) Q_DECL_OVERRIDE;
     virtual void keyPressEvent(QKeyEvent *event) Q_DECL_OVERRIDE;
@@ -132,7 +129,6 @@ public slots:
     void expand();
     void go_mini();
     void go_playlistMode();
-    void dummy();
 
 private slots:
 
@@ -169,7 +165,6 @@ private slots:
     void refreshTables(const QMap<Bae::TABLE, bool> &tableReset);
     void addToPlayed(const QString &url);
     void on_goBackBtn_clicked();
-    void on_addAll_clicked();
     void saveResultsTo();
 
     void removeSong(const int &index);
@@ -195,8 +190,8 @@ private:
     uint ALBUM_SIZE;
     uint iconSize = 22;
 
-    int playlistPos = RIGHT;
-    int playlistSta = IN;
+    POSITION playlistPos = RIGHT;
+    POSITION playlistSta = IN;
 
     CollectionDB connection;
 
@@ -258,7 +253,7 @@ private:
     void expandAlbumList(const QString &artist);
     void blurWidget(BabeAlbum &widget, const int &radius );
     void babedIcon(const bool &state);
-    void movePanel(const position &pos);
+    void movePanel(const POSITION &pos);
     void loadStyle();
 
     /*the streaming */
@@ -271,25 +266,21 @@ private:
     QMap<QString,Bae::DB> queued_songs;
     int prev_queued_song_pos = -1;
 
-    Bae::DB_LIST currentList;
-
     Bae::DB current_song;
-    int current_song_pos=0;
+    int current_song_pos = 0;
 
     Bae::DB prev_song;
-    int prev_song_pos=0;
+    int prev_song_pos = 0;
 
-    int  shuffle_state = REGULAR;
+    PLAY_MODE  shuffle_state = REGULAR;
 
     bool repeat = false;
-    bool shuffle = false;
-    bool stopped = false;
+    bool stopped = true;
     bool miniPlayback =false;
 
 signals:
     void finishedPlayingSong(QString url);
     void collectionChecked(const QMap<TABLE,bool> &reset);
-    void fetchCover(const Bae::DB &song);
     void finishRefresh();
 };
 #endif // BAEWINDOW_H

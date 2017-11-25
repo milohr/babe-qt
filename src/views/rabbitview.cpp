@@ -10,37 +10,35 @@ RabbitView::RabbitView(QWidget *parent) : QWidget(parent)
     suggestionWidget_layout->setContentsMargins(0,0,0,0);
     suggestionWidget_layout->setSpacing(0);
 
-     artistSuggestion = new BabeGrid(Bae::SMALL_ALBUM_FACTOR,Bae::AlbumSizeHint::SMALL_ALBUM,0,this);
-    artistSuggestion->autoAdjust = false;
-    artistSuggestion->albumShadows = false;
-    artistSuggestion->setAlbumsSpacing(0);
-    artistSuggestion->setFixedWidth(static_cast<int>(artistSuggestion->albumSize));
-    artistSuggestion->setContentsMargins(0,0,0,0);
-    artistSuggestion->hiddenLabels = true;
-    artistSuggestion->setFlow(QListView::TopToBottom);
-    artistSuggestion->setSizePolicy(QSizePolicy ::Fixed , QSizePolicy ::Expanding);
-    artistSuggestion->setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
-    artistSuggestion->setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
-    artistSuggestion->setSpacing(0);
-    artistSuggestion->setResizeMode(QListView::ResizeMode::Fixed);
-    artistSuggestion->setWrapping(false);
+    this->artistSuggestion = new BabeGrid(Bae::SMALL_ALBUM_FACTOR,Bae::AlbumSizeHint::SMALL_ALBUM,0,this);
+    connect(this->artistSuggestion, &BabeGrid::albumReady, [this](){albumLoader.next();});
+    connect(&this->albumLoader, &AlbumLoader::albumReady, this, &RabbitView::addArtistSuggestion);
 
-    connect(this->artistSuggestion, &BabeGrid::playAlbum, [this] (const Bae::DB &map)
-    {
-       emit this->playAlbum(map);
-    });
+    this->artistSuggestion->autoAdjust = false;
+    this->artistSuggestion->albumShadows = false;
+    this->artistSuggestion->setAlbumsSpacing(0);
+    this->artistSuggestion->setFixedWidth(static_cast<int>(artistSuggestion->albumSize));
+    this->artistSuggestion->setContentsMargins(0,0,0,0);
+    this->artistSuggestion->hiddenLabels = true;
+    this->artistSuggestion->setFlow(QListView::TopToBottom);
+    this->artistSuggestion->setSizePolicy(QSizePolicy ::Fixed , QSizePolicy ::Expanding);
+    this->artistSuggestion->setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
+    this->artistSuggestion->setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
+    this->artistSuggestion->setSpacing(0);
+    this->artistSuggestion->setResizeMode(QListView::ResizeMode::Fixed);
+    this->artistSuggestion->setWrapping(false);
 
-    generalSuggestion = new BabeTable(this);
-    generalSuggestion->setFrameShape(QFrame::StyledPanel);
-    generalSuggestion->setFrameShadow(QFrame::Sunken);
+    this->generalSuggestion = new BabeTable(this);
+    this->generalSuggestion->setFrameShape(QFrame::StyledPanel);
+    this->generalSuggestion->setFrameShadow(QFrame::Sunken);
     //    generalSuggestion->hideColumn(static_cast<int>(Bae::KEY::ALBUM));
     //    generalSuggestion->hideColumn(static_cast<int>(Bae::KEY::ARTIST));
-    generalSuggestion->hideColumn(static_cast<int>(Bae::KEY::DURATION));
+    this->generalSuggestion->hideColumn(static_cast<int>(Bae::KEY::DURATION));
 //    generalSuggestion->horizontalHeader()->setVisible(false);
-    generalSuggestion->enableRowColoring(true);
-    generalSuggestion->enableRowDragging(true);
+    this->generalSuggestion->enableRowColoring(true);
+    this->generalSuggestion->enableRowDragging(true);
     //    generalSuggestion->passStyle("QHeaderView::section { background-color:#333; color:white; }");
-    generalSuggestion->setAddMusicMsg("\nCouldn't find similar music","face-quiet");
+    this->generalSuggestion->setAddMusicMsg("\nCouldn't find similar music","face-quiet");
 
     auto bgcolor= QColor(generalSuggestion->palette().color(QPalette::Background).name()).dark(200).name();
     //    artistSuggestion->setStyleSheet(QString("QListWidget {background:%1; padding-top:10px; padding-left:15px; }").arg(bgcolor));
@@ -61,6 +59,8 @@ RabbitView::RabbitView(QWidget *parent) : QWidget(parent)
 
     this->setLayout(suggestionWidget_layout);
 
+
+
 }
 
 RabbitView::~RabbitView()
@@ -73,25 +73,11 @@ void RabbitView::seed(const DB &track)
     this->flushSuggestions();
     auto queryTxt = QUERY[TABLE::TRACKS][W::SIMILAR];
     QSqlQuery query(queryTxt.replace("?", track[KEY::URL]));
-    this->populateGeneralSuggestion(connection.getDBData(query));
+    this->generalSuggestion->populateTableView(query);
 
     queryTxt = QUERY[TABLE::ARTISTS][W::SIMILAR];
-    query.prepare(queryTxt.replace("?", track[KEY::URL]));
-    this->populateArtistSuggestion(connection.getDBData(query));
+    this->albumLoader.requestAlbums(queryTxt.replace("?", track[KEY::URL]));
 
-}
-
-
-void RabbitView::populateArtistSuggestion(const Bae::DB_LIST &mapList)
-{
-    for(auto artist : mapList)
-        this->artistSuggestion->addAlbum(artist);
-}
-
-void RabbitView::populateGeneralSuggestion(const Bae::DB_LIST &mapList)
-{
-    generalSuggestion->populateTableView(mapList);
-    //    generalSuggestion->removeRepeated();
 }
 
 void RabbitView::flushSuggestions(RabbitView::suggestionsTables list)
@@ -103,6 +89,11 @@ void RabbitView::flushSuggestions(RabbitView::suggestionsTables list)
     case ALL:  generalSuggestion->flushTable(); artistSuggestion->flushGrid(); break;
     }
 
+}
+
+void RabbitView::addArtistSuggestion(const DB &albumMap)
+{
+   this->artistSuggestion->addAlbum(albumMap);
 }
 
 void RabbitView::filterByArtist(const Bae::DB &mapList)

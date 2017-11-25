@@ -327,6 +327,6 @@ void BabeAlbum::leaveEvent(QEvent *event)
 
 void BabeAlbum::showTitle(const bool &state)
 {
-    this->visibleTitle=state;
+    this->visibleTitle = state;
     this->widget->setVisible(this->visibleTitle);
 }

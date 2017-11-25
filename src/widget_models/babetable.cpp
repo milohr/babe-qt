@@ -469,7 +469,6 @@ void BabeTable::populateTableView(const Bae::DB_LIST &mapList)
         this->setSortingEnabled(true);
         emit finishedPopulating();
     }
-
 }
 
 void BabeTable::populateTableView(QSqlQuery &query)

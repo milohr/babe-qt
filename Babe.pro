@@ -87,7 +87,8 @@ HEADERS += \
     src/settings/fileloader.h \
     src/views/babewindow.h \
     src/pulpo/enums.h \
-    src/db/rabbithole.h
+    src/db/rabbithole.h \
+    src/utils/albumloader.h
 
 SOURCES += \
     src/data_models/track.cpp \

@@ -53,12 +53,6 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>60</height>
-          </size>
-         </property>
          <property name="font">
           <font>
            <italic>true</italic>
@@ -89,12 +83,6 @@ background-color:transparent;
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>60</height>
-          </size>
          </property>
          <property name="styleSheet">
           <string notr="true">QTextBrowser

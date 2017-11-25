@@ -81,7 +81,6 @@ AlbumsView::AlbumsView(const bool &extraList, QWidget *parent) :
     line->setFrameShadow(QFrame::Sunken);
     line->setMaximumWidth(1);
 
-
     if(this->extraList)
     {
         this->artistList=new QListWidget(this);

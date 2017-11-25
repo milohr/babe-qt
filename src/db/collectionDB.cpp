@@ -472,14 +472,16 @@ bool CollectionDB::trackPlaylist(const QString &url, const QString &playlist)
 DB_LIST CollectionDB::getDBData(const QStringList &urls)
 {
     DB_LIST mapList;
+    QSqlQuery query;
 
-    for(auto url:urls)
+    for(auto url : urls)
     {
-        QSqlQuery query;
+
         auto queryTxt = QString("SELECT * FROM %1 WHERE %2 = \"%3\"").arg(TABLEMAP[TABLE::TRACKS],
                 KEYMAP[KEY::URL],url);
         query.prepare(queryTxt);
-        mapList<<getDBData(query);
+
+        mapList << getDBData(query);
     }
 
     return mapList;
@@ -527,7 +529,6 @@ DB_LIST CollectionDB::getArtistTracks(const QString &artist, const KEY &orderBy,
     QSqlQuery query(queryTxt);
 
     return getDBData(query);
-
 }
 
 QStringList CollectionDB::getArtistAlbums(const QString &artist)

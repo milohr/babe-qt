@@ -15,7 +15,7 @@
 #include "../widget_models/babealbum.h"
 #include "../widget_models/babetable.h"
 #include "../pulpo/pulpo.h"
-
+#include "../utils/albumloader.h"
 
 class RabbitView : public QWidget
 {
@@ -31,26 +31,20 @@ public:
     };
 
     void seed (const Bae::DB &track);
-
     void flushSuggestions(suggestionsTables = ALL);
     BabeTable * getTable() { return this->generalSuggestion; }
     BabeGrid *artistSuggestion;
     BabeTable *generalSuggestion;
+    void addArtistSuggestion(const Bae::DB &albumMap);
 
 private:
     uint ALBUM_SIZE_MEDIUM = Bae::getWidgetSizeHint(Bae::MEDIUM_ALBUM_FACTOR,Bae::AlbumSizeHint::MEDIUM_ALBUM);
     CollectionDB connection;
-
+    AlbumLoader albumLoader;
 
 public slots:
-
-    void populateArtistSuggestion(const DB_LIST &mapList);
-    void populateGeneralSuggestion(const Bae::DB_LIST &mapList);
-
     void filterByArtist(const Bae::DB &albumMap);
 
-signals:
-    void playAlbum(const Bae::DB &info);
 };
 
 #endif // RABITVIEW_H

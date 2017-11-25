@@ -418,13 +418,18 @@ bool settings::checkCollection()
 {
     if (Bae::fileExists(Bae::CollectionDBPath + collectionDBName))
     {
-        qDebug() << "The CollectionDB does exists.";
+        qDebug() << "The CollectionDB does exists";
 
         collection_db.setUpCollection(Bae::CollectionDBPath + collectionDBName);
         collectionWatcher();
-        if(this->ui->pulpoBrainz_checkBox->isChecked())this->brainDeamon.start();
+
+        if(this->ui->pulpoBrainz_checkBox->isChecked())
+            this->brainDeamon.start();
+
         return true;
-    } else return false;
+    }
+
+    return false;
 }
 
 

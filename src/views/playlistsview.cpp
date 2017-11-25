@@ -58,30 +58,25 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
     {
         auto tag = index.data().toString();
         this->table->flushTable();
-        Bae::DB_LIST mapList;
-
+        QSqlQuery query;
         if(this->list->currentIndex().data().toString()=="Tags")
         {
-            QSqlQuery query(QString("select * from tracks where url in (select url from tracks_tags where tag = '%1')").arg(tag));
-            mapList = connection.getDBData(query);
+            query.prepare(QString("select * from tracks where url in (select url from tracks_tags where tag = '%1')").arg(tag));
         }else if(this->list->currentIndex().data().toString()=="Relationships")
         {
-            QSqlQuery query(QString("select * from tracks where artist in (select artist from artists_tags where tag = '%1')").arg(tag));
-            mapList = connection.getDBData(query);
+            query.prepare(QString("select * from tracks where artist in (select artist from artists_tags where tag = '%1')").arg(tag));
         }else if( this->list->currentIndex().data().toString()=="Popular")
         {
-            QSqlQuery query (QString("select t.* from tracks t "
+            query.prepare(QString("select t.* from tracks t "
                                      "inner join tracks_tags tt on tt.url = t.url "
                                      "where tt.context = 'track_stat' and t.artist = '%1' "
                                      "group by tt.url order by sum(tag) desc limit 250").arg(tag));
 
-            mapList = connection.getDBData(query);
         }
 
-        this->table->populateTableView(mapList);
-
-
+        this->table->populateTableView(query);
     });
+
     tagList->setAlternatingRowColors(true);
     tagList->setFrameShape(QFrame::NoFrame);
     tagList->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);

@@ -50,7 +50,7 @@ public:
     bool moodTrack(const QString &path, const QString &value);
     bool artTrack(const QString &path, const QString &value);
     bool lyricsTrack(const Bae::DB &track, const QString &value);
-    bool playedTrack(const QString &url, const int &increment=1);
+    bool playedTrack(const QString &url, const int &increment = 1);
 
     bool wikiTrack(const Bae::DB &track, const QString &value);
     bool tagsTrack(const Bae::DB &track, const QString &value, const QString &context);
