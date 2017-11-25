@@ -14,7 +14,7 @@ BabeGrid::BabeGrid(const double &factor, const Bae::AlbumSizeHint &deafultValue,
     this->setWrapping(true);
     this->setAcceptDrops(false);
     this->setDragDropMode(QAbstractItemView::DragOnly);
-    this->setFrameShape(QFrame::NoFrame);
+//    this->setFrameShape(QFrame::NoFrame);
     this->setSizePolicy(QSizePolicy ::Expanding , QSizePolicy ::Expanding );
     this->setSizeAdjustPolicy(QListWidget::AdjustToContentsOnFirstShow);
 
@@ -154,8 +154,9 @@ bool BabeGrid::eventFilter(QObject *obj, QEvent *event)
 
 void BabeGrid::adjustGrid()
 {
+    qDebug()<<"frameWidth:"<<this->frameWidth();
     auto scrollSize = this->verticalScrollBar()->size().width()+1;
-    auto gridSize = this->size().width()-scrollSize;
+    auto gridSize = this->size().width()-scrollSize-(this->frameWidth()*2);
     auto amount = gridSize/(static_cast<int>(this->albumSize+this->albumSpacing));
     auto leftSpace = gridSize-amount*static_cast<int>(this->albumSize);
     //    qDebug()<<"ther's space for: "<< amount <<" in "<<gridSize<<" and space left is"<<leftSpace;

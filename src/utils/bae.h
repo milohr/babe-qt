@@ -9,6 +9,8 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QTime>
+#include <QSettings>
+
 #include <cmath>
 using namespace std;
 
@@ -206,6 +208,8 @@ inline uint getWidgetSizeHint(const double &factor, const AlbumSizeHint &deafult
     case AlbumSizeHint::MEDIUM_ALBUM:  return ALBUM_SIZE > MAX_MID_ALBUM_SIZE? MAX_MID_ALBUM_SIZE : ALBUM_SIZE;
     case AlbumSizeHint::SMALL_ALBUM:  return ALBUM_SIZE > MAX_MIN_ALBUM_SIZE ? MAX_MIN_ALBUM_SIZE :ALBUM_SIZE;
     }
+
+    return MAX_BIG_ALBUM_SIZE;
 }
 
 inline QString transformTime(const qint64 &value)
@@ -360,6 +364,25 @@ inline void saveArt(DB &track, const QByteArray &array, const QString &path)
             track.insert(Bae::KEY::ARTWORK,path + name + ".jpg");
         else  qDebug() << "couldn't save artwork";
     }else qDebug()<<"array is empty";
+}
+
+inline void saveSettings(const QString &key, const QVariant &value, const QString &group)
+{
+    QSettings setting("Babe","babe");
+    setting.beginGroup(group);
+    setting.setValue(key,value);
+    setting.endGroup();
+}
+
+inline QVariant loadSettings(const QString &key, const QString &group, const QVariant &defaultValue)
+{
+    QVariant variant;
+    QSettings setting("Babe","babe");
+    setting.beginGroup(group);
+    variant = setting.value(key,defaultValue);
+    setting.endGroup();
+
+    return variant;
 }
 
 }

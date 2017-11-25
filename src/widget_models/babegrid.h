@@ -29,11 +29,11 @@ public:
     bool autoAdjust = true;
     bool albumShadows = true;
     bool hiddenLabels = false;
-
+    uint albumSize;
 
 private:
     QAction *order;
-    uint albumSize;
+
     double albumFactor;
     Bae::AlbumSizeHint defaultAlbumValue;
     bool ascending=true;

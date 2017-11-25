@@ -9,6 +9,8 @@ AlbumsView::AlbumsView(const bool &extraList, QWidget *parent) :
     auto layout = new QGridLayout;
     layout->setMargin(0);
     layout->setSpacing(0);
+    //    layout->setContentsMargins(0,6,0,6);
+
     this->setAcceptDrops(false);
     this->grid = new BabeGrid(Bae::MEDIUM_ALBUM_FACTOR, Bae::AlbumSizeHint::MEDIUM_ALBUM,4,this);
     connect(grid, &BabeGrid::albumReady, [this](){albumLoader.next();});
@@ -38,15 +40,6 @@ AlbumsView::AlbumsView(const bool &extraList, QWidget *parent) :
 
     connect(grid, &BabeGrid::dragAlbum, this, &AlbumsView::hideAlbumFrame);
 
-    auto utilsLayout = new QHBoxLayout;
-    utilsLayout->setContentsMargins(0,0,0,0);
-    utilsLayout->setSpacing(0);
-
-    this->utilsFrame = new QFrame(this);
-    this->utilsFrame->setLayout(utilsLayout);
-    this->utilsFrame->setFrameShape(QFrame::NoFrame);
-    this->utilsFrame->setFrameShadow(QFrame::Plain);
-    this->utilsFrame->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
     this->albumTable = new BabeTable(this);
     this->albumTable->setFrameShape(QFrame::NoFrame);
@@ -59,13 +52,11 @@ AlbumsView::AlbumsView(const bool &extraList, QWidget *parent) :
     albumBox->setContentsMargins(0,0,0,0);
     albumBox->setSpacing(0);
 
-    this->albumBox_frame = new QWidget(this);
+    this->albumBox_frame = new QFrame(this);
+    albumBox_frame->setFrameShape(QFrame::StyledPanel);
+    albumBox_frame->setFrameShadow(QFrame::Sunken);
     this->albumBox_frame->setLayout(albumBox);
 
-    this->line_h = new QFrame(this);
-    this->line_h->setFrameShape(QFrame::HLine);
-    this->line_h->setFrameShadow(QFrame::Plain);
-    this->line_h->setMaximumHeight(1);
 
     this->cover = new BabeAlbum({{Bae::KEY::ARTWORK, ":Data/data/cover.svg"}}, Bae::AlbumSizeHint::MEDIUM_ALBUM, 0, true, this);
     connect(this->cover,&BabeAlbum::playAlbum,[this] (const Bae::DB &info) { emit this->playAlbum(info); });
@@ -125,19 +116,18 @@ AlbumsView::AlbumsView(const bool &extraList, QWidget *parent) :
     auto *splitter = new QSplitter(parent);
     splitter->setChildrenCollapsible(false);
     splitter->setOrientation(Qt::Vertical);
-
+//    splitter->setContentsMargins(6,6,6,6);
     //    splitter->addWidget(spacer);
     splitter->addWidget(this->grid);
-    splitter->addWidget(this->line_h);
     splitter->addWidget(this->albumBox_frame);
 
     layout->addWidget(splitter);
 
-    albumBox_frame->hide(); line_h->hide();
+    albumBox_frame->hide();
 
-    splitter->setSizes({0,0,0});
+    splitter->setSizes({0,0});
     splitter->setStretchFactor(0, 1);
-    splitter->setStretchFactor(2, 0);
+    splitter->setStretchFactor(1, 0);
 
     this->setLayout(layout);
 }
@@ -160,7 +150,6 @@ void AlbumsView::hideAlbumFrame()
 {
     albumTable->flushTable();
     albumBox_frame->hide();
-    line_h->hide();
 }
 
 void AlbumsView::filterAlbum(QModelIndex index)
@@ -247,7 +236,6 @@ void AlbumsView::populateExtraList(const QStringList &albums)
 void AlbumsView::showAlbumInfo(const Bae::DB &albumMap)
 {
     albumBox_frame->setVisible(true);
-    line_h->setVisible(true);
     albumTable->flushTable();
 
     auto type = Bae::albumType(albumMap);

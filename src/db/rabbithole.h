@@ -55,13 +55,13 @@ static const Q QUERY =
              "OR at.context = 'artist_similar' "
              "OR at.context = 'tag') ) "
 
-             "OR at.tag COLLATE NOCASE "
-             "IN (select at.tag "
-             "FROM artists_tags at "
-             "INNER join tracks t ON t.url = \"?\" "
-             "AND t.artist = at.artist AND  at.context = 'tag') "
-             "ORDER BY at.context "
-             "LIMIT 10;"
+//             "OR at.tag COLLATE NOCASE "
+//             "IN (select at.tag "
+//             "FROM artists_tags at "
+//             "INNER join tracks t ON t.url = \"?\" "
+//             "AND t.artist = at.artist AND  at.context = 'tag') "
+//             "ORDER BY at.context "
+             "LIMIT 20;"
             },
         }
     }

@@ -79,7 +79,7 @@ public:
         MAINPLAYLIST, FILTERLIST
     };
 
-    enum viewModes
+    enum VIEW_MODE
     {
         FULLMODE, PLAYLISTMODE, MINIMODE
     };
@@ -168,7 +168,7 @@ private slots:
 
     void refreshTables(const QMap<Bae::TABLE, bool> &tableReset);
     void addToPlayed(const QString &url);
-    void on_tracks_view_2_clicked();
+    void on_goBackBtn_clicked();
     void on_addAll_clicked();
     void saveResultsTo();
 
@@ -183,8 +183,6 @@ private slots:
     void loadMood();
     bool removeQueuedTrack(const Bae::DB &track, const int &pos);
     void removequeuedTracks();
-    void on_filterBtn_clicked();
-    void on_filter_textChanged(const QString &arg1);
     void infoIt(const  Bae::DB &track);
     void albumDoubleClicked(const Bae::DB &info);
     void on_playAll_clicked();
@@ -204,20 +202,19 @@ private:
 
     const QString stylePath = Bae::SettingPath+"style.qss";
 
-    int viewMode = FULLMODE;
+    VIEW_MODE viewMode = VIEW_MODE::FULLMODE;
     QRect defaultGeometry;
     int prevIndex;
 
     Qt::WindowFlags defaultWindowFlags;
     Notify *nof;
 
+    QToolBar *mainToolbar;
+    QToolBar *secondaryToolbar;
     QWidget *mainWidget;
     QHBoxLayout * mainLayout;
     QStackedWidget *views;
     QStackedWidget *mainListView;
-
-    QFrame *leftFrame;
-    QGridLayout *leftFrame_layout;
 
     QFrame *rightFrame;
     QFrame *line;
@@ -261,17 +258,14 @@ private:
     void expandAlbumList(const QString &artist);
     void blurWidget(BabeAlbum &widget, const int &radius );
     void babedIcon(const bool &state);
-    void saveSettings(const QString &key, const QVariant &value,const QString &group);
     void movePanel(const position &pos);
     void loadStyle();
-    QVariant loadSettings(const QString &key, const QString &group, const QVariant &defaultValue = QVariant());
 
     /*the streaming */
     QMediaPlayer *player;
     QTimer *updater = new QTimer(this);
 
     QSlider *seekBar;
-    QMenu *calibrateBtn_menu;
     QTimer *searchTimer;
 
     QMap<QString,Bae::DB> queued_songs;

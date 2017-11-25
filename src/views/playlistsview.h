@@ -37,7 +37,6 @@ public:
     void populateTagList(const QString &query);
 
     QFrame *line_v;
-    QFrame *line_v2;
     QWidget *btnContainer;
     QString currentPlaylist;
     QStringList playlists;

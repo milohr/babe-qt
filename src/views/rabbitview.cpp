@@ -10,16 +10,11 @@ RabbitView::RabbitView(QWidget *parent) : QWidget(parent)
     suggestionWidget_layout->setContentsMargins(0,0,0,0);
     suggestionWidget_layout->setSpacing(0);
 
-    auto line = new QFrame(this);
-    line->setFrameShape(QFrame::HLine);
-    line->setFrameShadow(QFrame::Plain);
-    line->setMaximumHeight(1);
-
-    artistSuggestion = new BabeGrid(Bae::SMALL_ALBUM_FACTOR,Bae::AlbumSizeHint::SMALL_ALBUM,0,this);
+     artistSuggestion = new BabeGrid(Bae::SMALL_ALBUM_FACTOR,Bae::AlbumSizeHint::SMALL_ALBUM,0,this);
     artistSuggestion->autoAdjust = false;
     artistSuggestion->albumShadows = false;
     artistSuggestion->setAlbumsSpacing(0);
-    artistSuggestion->setFixedWidth(static_cast<int>(Bae::AlbumSizeHint::SMALL_ALBUM));
+    artistSuggestion->setFixedWidth(static_cast<int>(artistSuggestion->albumSize));
     artistSuggestion->setContentsMargins(0,0,0,0);
     artistSuggestion->hiddenLabels = true;
     artistSuggestion->setFlow(QListView::TopToBottom);
@@ -36,7 +31,9 @@ RabbitView::RabbitView(QWidget *parent) : QWidget(parent)
     });
 
     generalSuggestion = new BabeTable(this);
-//    generalSuggestion->hideColumn(static_cast<int>(Bae::KEY::ALBUM));
+    generalSuggestion->setFrameShape(QFrame::StyledPanel);
+    generalSuggestion->setFrameShadow(QFrame::Sunken);
+    //    generalSuggestion->hideColumn(static_cast<int>(Bae::KEY::ALBUM));
     //    generalSuggestion->hideColumn(static_cast<int>(Bae::KEY::ARTIST));
     generalSuggestion->hideColumn(static_cast<int>(Bae::KEY::DURATION));
 //    generalSuggestion->horizontalHeader()->setVisible(false);
@@ -52,7 +49,7 @@ RabbitView::RabbitView(QWidget *parent) : QWidget(parent)
     splitter->setChildrenCollapsible(false);
     splitter->setOrientation(Qt::Horizontal);
 
-    splitter->setStyleSheet("QSplitter::handle {background-color:black;} QSplitter::handle:horizontal { width: 1px; }");
+//    splitter->setStyleSheet("QSplitter::handle {background-color:black;} QSplitter::handle:horizontal { width: 1px; }");
     splitter->addWidget(generalSuggestion);
     splitter->addWidget(artistSuggestion);
 

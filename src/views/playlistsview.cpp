@@ -22,12 +22,15 @@
 PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
 {
 
+
     this->nof = new Notify(this);
     layout = new QGridLayout;
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
 
     table = new BabeTable(this);
+    table->setFrameShape(QFrame::StyledPanel);
+    table->setFrameShadow(QFrame::Sunken);
     table->setAddMusicMsg("\nPlaylist is empty...","face-hug-right");
 
     list = new QListWidget(this);
@@ -84,10 +87,6 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
     tagList->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     tagList->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-    table->setFrameShape(QFrame::NoFrame);
-    frame = new QFrame(this);
-    frame->setFrameShadow(QFrame::Raised);
-    frame->setFrameShape(QFrame::NoFrame);
 
     addBtn = new QToolButton(this);
     removeBtn = new QToolButton(this);
@@ -122,11 +121,7 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
     line_v->setFrameShape(QFrame::VLine);
     line_v->setFrameShadow(QFrame::Plain);
     line_v->setFixedWidth(1);
-
-    line_v2 = new QFrame(this);
-    line_v2->setFrameShape(QFrame::VLine);
-    line_v2->setFrameShadow(QFrame::Plain);
-    line_v2->setFixedWidth(1);
+    line_v->setVisible(false);
 
     auto line_h = new QFrame(this);
     line_h->setFrameShape(QFrame::HLine);
@@ -137,7 +132,6 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
     line_h2->setFrameShape(QFrame::HLine);
     line_h2->setFrameShadow(QFrame::Plain);
     line_h2->setFixedHeight(1);
-
 
     moodWidget = new QWidget(this);
     moodWidget->setAutoFillBackground(true);
@@ -161,20 +155,35 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
     playlistsWidget_layout->addWidget(line_h);
     playlistsWidget_layout->addWidget(moodWidget);
 
+    frame = new QFrame(this);
+    frame->setFrameShadow(QFrame::Raised);
+    frame->setFrameShape(QFrame::StyledPanel);
+
+    auto frameLayout = new QHBoxLayout;
+    frameLayout->setContentsMargins(0,0,0,0);
+    frameLayout->setSpacing(0);
+    frameLayout->setMargin(0);
+
+    this->frame->setLayout(frameLayout);
+
+    QSplitter *splitterList = new QSplitter(parent);
+    splitterList->setChildrenCollapsible(false);
+
+    splitterList->addWidget(playlistsWidget);
+    splitterList->addWidget(line_v);
+    splitterList->addWidget(tagList);
+
+    frameLayout->addWidget(splitterList);
 
     QSplitter *splitter = new QSplitter(parent);
     splitter->setChildrenCollapsible(false);
 
-    splitter->addWidget(playlistsWidget);
-    splitter->addWidget(line_v);
-    splitter->addWidget(tagList);
-    splitter->addWidget(line_v2);
+    splitter->addWidget(frame);
     splitter->addWidget(table);
 
-    splitter->setSizes({0,0,0,0,0});
+    splitter->setSizes({0,0});
     splitter->setStretchFactor(0, 0);
-    splitter->setStretchFactor(2, 0);
-    splitter->setStretchFactor(4, 1);
+    splitter->setStretchFactor(1, 1);
 
     layout->addWidget(splitter, 0, 0);
 
@@ -199,7 +208,6 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
 
     this->setLayout(layout);
 
-    this->line_v2->setVisible(false);
     this->tagList->setVisible(false);
 
 }
@@ -270,7 +278,6 @@ void PlaylistsView::populatePlaylist(const QModelIndex &index)
     this->currentPlaylist = index.data().toString();
     this->table->flushTable();
     this->tagList->setVisible(false);
-    this->line_v2->setVisible(false);
 
 
     if (currentPlaylist == "Most Played")
@@ -311,8 +318,6 @@ void PlaylistsView::populatePlaylist(const QModelIndex &index)
         // table->showColumn(BabeTable::PLAYED);
         this->removeFromPlaylist->setVisible(false);
         removeBtn->setEnabled(false);
-        this->tagList->setVisible(true);
-        this->line_v2->setVisible(true);
         QString query = "select distinct tag from tracks_tags "
                         "where context = 'tag' "
                         "and tag collate nocase not in "
@@ -328,8 +333,6 @@ void PlaylistsView::populatePlaylist(const QModelIndex &index)
         // table->showColumn(BabeTable::PLAYED);
         this->removeFromPlaylist->setVisible(false);
         removeBtn->setEnabled(false);
-        this->tagList->setVisible(true);
-        this->line_v2->setVisible(true);
 
         this->populateTagList("select distinct tag from tags "
                               "where context = 'artist_similar' "
@@ -339,8 +342,6 @@ void PlaylistsView::populatePlaylist(const QModelIndex &index)
     {
         this->removeFromPlaylist->setVisible(false);
         removeBtn->setEnabled(false);
-        this->tagList->setVisible(true);
-        this->line_v2->setVisible(true);
 
         this->populateTagList("select artist as tag from artists order by artist");
 
@@ -419,6 +420,9 @@ void PlaylistsView::refreshCurrentPlaylist()
 void PlaylistsView::populateTagList(const QString &queryTxt)
 {
     this->tagList->clear();
+    this->line_v->setVisible(true);
+    this->tagList->setVisible(true);
+
     QSqlQuery query(queryTxt);
     auto tags = connection.getDBData(query);
 

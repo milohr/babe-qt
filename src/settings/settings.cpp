@@ -26,6 +26,12 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
     // QFrame frame = new QFrame();
 
     // collectionDBPath=QDir().absolutePath()+collectionDBPath;
+
+    /*LOAD SAVED SETTINGS*/
+
+    this->ui->pulpoBrainz_checkBox->setChecked(Bae::loadSettings("BRAINZ","SETTINGS",true).toBool());
+    this->ui->pulpoBrainz_spinBox->setValue(Bae::loadSettings("BRAINZ_INTERVAL","SETTINGS",15).toInt());
+
     qDebug() << "Getting collectionDB info from: " << Bae::CollectionDBPath;
     qDebug() << "Getting settings info from: " << Bae::SettingPath;
     qDebug() << "Getting artwork files from: " << Bae::CachePath;
@@ -81,7 +87,13 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
     connect(this->ui->pulpoBrainz_spinBox, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](const int &value)
     {
         qDebug()<<"interval changed to:"<<value;
-        this->brainDeamon.setInterval(static_cast<uint>(value));
+        Bae::saveSettings("BRAINZ_INTERVAL",value,"SETTINGS");
+
+    });
+
+    connect(this->ui->pulpoBrainz_checkBox,static_cast<void (QCheckBox::*)(bool)>(&QCheckBox::toggled), [this](const bool &value)
+    {
+        Bae::saveSettings("BRAINZ",value,"SETTINGS");
     });
 
     connect(this, &settings::getArtwork, this, &settings::fetchArt);
@@ -410,7 +422,7 @@ bool settings::checkCollection()
 
         collection_db.setUpCollection(Bae::CollectionDBPath + collectionDBName);
         collectionWatcher();
-        this->brainDeamon.start();
+        if(this->ui->pulpoBrainz_checkBox->isChecked())this->brainDeamon.start();
         return true;
     } else return false;
 }

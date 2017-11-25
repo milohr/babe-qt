@@ -128,7 +128,6 @@ public:
 
     void filter(const Bae::DB_LIST &filter, const Bae::KEY &type);
 
-    QFrame *utilsFrame;
     BabeTable *albumTable;
     BabeGrid *grid;
     QToolButton *expandBtn;
@@ -137,8 +136,7 @@ private:
     AlbumLoader albumLoader;
     bool extraList=false;
 
-    QWidget *albumBox_frame;
-    QFrame *line_h;
+    QFrame *albumBox_frame;
     BabeAlbum *cover;
     CollectionDB connection;
     QListWidget *artistList;
