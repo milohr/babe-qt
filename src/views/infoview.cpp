@@ -286,21 +286,16 @@ void InfoView::clearInfoViews()
     ui->albumText->clear();
 
     ui->splitter->setSizes({ui->splitter->sizes().first(), 0});
-     ui->lyricsText->clear();
+    ui->lyricsText->clear();
 
 }
 
 void InfoView::on_toolButton_clicked()
 {
-    //    QString artist=ui->artistLine->text();
-    //    QString title=ui->titleLine->text();
-    //    Pulpo info({{Bae::KEY::TITLE,title},{Bae::KEY::ARTIST,artist}});
-    //    connect(&info, &Pulpo::trackLyricsReady, this, &InfoView::setLyrics, Qt::UniqueConnection);
-
-    //    info.fetchTrackInfo(Pulpo::NoneTrackInfo,Pulpo::LyricWikia,Pulpo::NoneInfoService);
-
+    auto artist=ui->artistLine->text();
+    auto title=ui->titleLine->text();
+    this->getTrackInfo({{Bae::KEY::TITLE,title},{Bae::KEY::ARTIST,artist}});
 }
-
 
 void InfoView::on_tagsInfo_anchorClicked(const QUrl &arg1)
 {

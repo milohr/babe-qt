@@ -213,16 +213,14 @@ void settings::on_remove_clicked()
     }
 }
 
-void settings::refreshCollectionPaths() {
+void settings::refreshCollectionPaths()
+{
     ui->collectionPath->clear();
     ui->collectionPath->addItems(collectionPaths);
 }
 
-
-
-
-void settings::on_toolbarIconSize_activated(const QString &arg1) {
-    // qDebug () <<arg1;
+void settings::on_toolbarIconSize_activated(const QString &arg1)
+{
     iconSize = arg1.toInt();
     emit toolbarIconSizeChanged(iconSize);
 }
@@ -414,6 +412,26 @@ void settings::setToolbarIconSize(const int &iconSize)
 
 }
 
+void settings::setToolbarPosition(const Qt::ToolBarArea &area)
+{
+    switch(area)
+    {
+    case Qt::TopToolBarArea:
+        this->ui->comboBox->setCurrentIndex(0);
+        break;
+    case Qt::BottomToolBarArea:
+        this->ui->comboBox->setCurrentIndex(1);
+        break;
+    case Qt::LeftToolBarArea:
+        this->ui->comboBox->setCurrentIndex(2);
+        break;
+    case Qt::RightToolBarArea:
+        this->ui->comboBox->setCurrentIndex(3);
+        break;
+    default:break;
+    }
+}
+
 bool settings::checkCollection()
 {
     if (Bae::fileExists(Bae::CollectionDBPath + collectionDBName))
@@ -481,11 +499,22 @@ void settings::on_debugBtn_clicked()
 
 void settings::on_checkBox_stateChanged(int arg1)
 {
-    if(arg1==0)
-    {
-        ui->frame_4->setEnabled(false);
-    }else
-    {
-        ui->frame_4->setEnabled(true);
-    }
+    if(arg1 == 0) ui->frame_4->setEnabled(false);
+    else ui->frame_4->setEnabled(true);
+}
+
+void settings::on_comboBox_activated(const QString &arg1)
+{
+    Qt::ToolBarArea area;
+
+    if(arg1 == "Top")
+        area = Qt::ToolBarArea::TopToolBarArea;
+    else if(arg1 == "Bottom")
+        area = Qt::ToolBarArea::BottomToolBarArea;
+    else if(arg1 == "Right")
+        area = Qt::ToolBarArea::RightToolBarArea;
+    else
+        area = Qt::ToolBarArea::LeftToolBarArea;
+
+    emit toolbarPositionChanged(area);
 }

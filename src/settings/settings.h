@@ -47,6 +47,7 @@ public:
 
     int getToolbarIconSize()  {return iconSize;}
     void setToolbarIconSize(const int &iconSize);
+    void setToolbarPosition(const Qt::ToolBarArea &area);
 
     void setSettings(QStringList setting);
     void readSettings();
@@ -75,6 +76,8 @@ private slots:
 
     void on_debugBtn_clicked();
     void on_checkBox_stateChanged(int arg1);
+
+    void on_comboBox_activated(const QString &arg1);
 
 public slots:
 
@@ -111,7 +114,8 @@ private:
 
 signals:
 
-    void toolbarIconSizeChanged(int newSize);
+    void toolbarIconSizeChanged(const int &newSize);
+    void toolbarPositionChanged(const Qt::ToolBarArea &pos);
     void collectionPathChanged(QString newPath);
     void collectionDBFinishedAdding();
     void refreshTables(const QMap<Bae::TABLE,bool> &reset);

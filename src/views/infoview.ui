@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>806</width>
-    <height>444</height>
+    <height>586</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -150,7 +150,7 @@ background-color:transparent;
         <number>0</number>
        </property>
        <item>
-        <widget class="QWidget" name="customsearch" native="true">
+        <widget class="QFrame" name="customsearch">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
            <horstretch>0</horstretch>
@@ -162,6 +162,12 @@ background-color:transparent;
            <width>0</width>
            <height>0</height>
           </size>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Sunken</enum>
          </property>
          <layout class="QGridLayout" name="gridLayout">
           <property name="leftMargin">
@@ -179,51 +185,17 @@ background-color:transparent;
           <property name="spacing">
            <number>0</number>
           </property>
-          <item row="0" column="1">
-           <widget class="QFrame" name="frame_3">
-            <property name="maximumSize">
-             <size>
-              <width>1</width>
-              <height>16777215</height>
-             </size>
+          <item row="0" column="4">
+           <widget class="QToolButton" name="toolButton">
+            <property name="text">
+             <string>...</string>
             </property>
-            <property name="frameShape">
-             <enum>QFrame::VLine</enum>
+            <property name="icon">
+             <iconset theme="edit-find-replace">
+              <normaloff>.</normaloff>.</iconset>
             </property>
-            <property name="frameShadow">
-             <enum>QFrame::Raised</enum>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0" colspan="5">
-           <widget class="QFrame" name="frame">
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>1</height>
-             </size>
-            </property>
-            <property name="frameShape">
-             <enum>QFrame::HLine</enum>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Raised</enum>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="3">
-           <widget class="QFrame" name="frame_6">
-            <property name="maximumSize">
-             <size>
-              <width>1</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="frameShape">
-             <enum>QFrame::VLine</enum>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Raised</enum>
+            <property name="autoRaise">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -259,17 +231,35 @@ background-color:transparent;
             </property>
            </widget>
           </item>
-          <item row="0" column="4">
-           <widget class="QToolButton" name="toolButton">
-            <property name="text">
-             <string>...</string>
+          <item row="0" column="3">
+           <widget class="QFrame" name="frame_6">
+            <property name="maximumSize">
+             <size>
+              <width>1</width>
+              <height>16777215</height>
+             </size>
             </property>
-            <property name="icon">
-             <iconset theme="edit-find-replace">
-              <normaloff>.</normaloff>.</iconset>
+            <property name="frameShape">
+             <enum>QFrame::VLine</enum>
             </property>
-            <property name="autoRaise">
-             <bool>true</bool>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QFrame" name="frame_3">
+            <property name="maximumSize">
+             <size>
+              <width>1</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::VLine</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
             </property>
            </widget>
           </item>

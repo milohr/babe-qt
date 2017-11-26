@@ -144,6 +144,7 @@ void BabeWindow::setUpViews()
 {
     this->settings_widget = new settings(this); //this needs to go first
     this->settings_widget->setToolbarIconSize(Bae::loadSettings("TOOLBAR_ICON_SIZE", "MAINWINDOW", QVariant(16)).toInt());
+    this->settings_widget->setToolbarPosition(static_cast<Qt::ToolBarArea>(Bae::loadSettings("TOOLBAR_POS", "MAINWINDOW", Qt::ToolBarArea::LeftToolBarArea).toInt()));
     connect(&connection, &CollectionDB::trackInserted, [this]()
     {
         this->settings_widget->collectionWatcher();
@@ -335,6 +336,12 @@ void BabeWindow::setUpViews()
 
     this->settings_widget->readSettings();
     connect(this->settings_widget, &settings::toolbarIconSizeChanged, this, &BabeWindow::setToolbarIconSize);
+    connect(this->settings_widget, &settings::toolbarPositionChanged, [this](const Qt::ToolBarArea &pos)
+    {
+        this->removeToolBar(this->mainToolbar);
+        this->addToolBar(pos, this->mainToolbar);
+        this->mainToolbar->show();
+    });
     connect(this->settings_widget, &settings::refreshTables, this, &BabeWindow::refreshTables);
 
     /* THE BUTTONS VIEWS */
@@ -363,6 +370,7 @@ void BabeWindow::setUpCollectionViewer()
     this->mainLayout = new QHBoxLayout;
 
     this->mainToolbar = new QToolBar("Views", this);
+    this->mainToolbar->setMovable(false);
     connect(this->mainToolbar, &QToolBar::topLevelChanged, [this](bool topLevel)
     {
         Q_UNUSED(topLevel);
@@ -643,7 +651,6 @@ void BabeWindow::setUpMenuBar()
     cleanIt->setShortcut(QKeySequence("Ctrl+c"));
     cleanIt->setToolTip("Remove repeated tracks");
     connect(cleanIt, &QAction::triggered, [this]() { mainList->removeRepeated(); /*this->removequeuedTracks();*/ });
-    this->addAction(cleanIt);
 
     auto open = new QAction("Open...", this);
     open->setShortcut(QKeySequence("Ctrl+o"));
@@ -659,6 +666,7 @@ void BabeWindow::setUpMenuBar()
     panelMenu->addSeparator();
     panelMenu->addAction(refreshIt);
     panelMenu->addAction(clearIt);
+    panelMenu->addAction(cleanIt);
     panelMenu->addAction(refreshIt);
 
 }
@@ -1778,9 +1786,7 @@ bool BabeWindow::babeTrack(const Bae::DB &track)
             ui->fav_btn->setEnabled(true);
             return true;
         }
-
     }
-
 }
 
 void BabeWindow::loadInfo(const Bae::DB &track)
