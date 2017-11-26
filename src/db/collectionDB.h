@@ -30,7 +30,6 @@ public:
 
     explicit CollectionDB();
     //CollectionDB(bool connect);
-    ~CollectionDB(){}
     bool execQuery(QSqlQuery &query) const;
     bool execQuery(const QString &queryTxt);
 

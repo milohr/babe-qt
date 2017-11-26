@@ -30,20 +30,6 @@ BabeWindow::BabeWindow(const QStringList &files, QWidget *parent) : QMainWindow(
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     this->defaultWindowFlags = this->windowFlags();
 
-    this->setMinimumSize(this->minimumSizeHint().width(),0);
-    this->defaultGeometry = (QStyle::alignedRect(
-                                 Qt::LeftToRight,
-                                 Qt::AlignCenter,
-                                 qApp->desktop()->availableGeometry().size()*0.7,
-                                 qApp->desktop()->availableGeometry()
-                                 ));
-
-    this->setGeometry( Bae::loadSettings("GEOMETRY", "MAINWINDOW", defaultGeometry).toRect());
-    Bae::saveSettings("GEOMETRY", this->geometry(), "MAINWINDOW");
-
-    connect(this, &BabeWindow::finishedPlayingSong, this, &BabeWindow::addToPlayed);
-    connect(this, &BabeWindow::collectionChecked, this,&BabeWindow::refreshTables);
-
     this->player = new QMediaPlayer(this);
     this->player->setVolume(100);
 
@@ -58,6 +44,22 @@ BabeWindow::BabeWindow(const QStringList &files, QWidget *parent) : QMainWindow(
     this->album_art->setTitleGeometry(0, 0, static_cast<int>(ALBUM_SIZE), static_cast<int>(ALBUM_SIZE*0.15));
     this->album_art->showTitle(false);
     this->album_art->showPlayBtn = false;
+
+
+    this->setMinimumSize(this->minimumSizeHint().width(),0);
+    this->defaultGeometry = (QStyle::alignedRect(
+                                 Qt::LeftToRight,
+                                 Qt::AlignCenter,
+                                 qApp->desktop()->availableGeometry().size()*0.7,
+                                 qApp->desktop()->availableGeometry()
+                                 ));
+
+    this->setGeometry( Bae::loadSettings("GEOMETRY", "MAINWINDOW", defaultGeometry).toRect());
+    Bae::saveSettings("GEOMETRY", this->geometry(), "MAINWINDOW");
+
+    connect(this, &BabeWindow::finishedPlayingSong, this, &BabeWindow::addToPlayed);
+    connect(this, &BabeWindow::collectionChecked, this,&BabeWindow::refreshTables);
+
 
     //* SETUP BABE PARTS *//
     this->setUpViews();
@@ -76,14 +78,11 @@ BabeWindow::BabeWindow(const QStringList &files, QWidget *parent) : QMainWindow(
 
     connect(this->updater, &QTimer::timeout, this, &BabeWindow::update);
 
-    this->start();
-
     //* LOAD OPENED FILES*/
     if(!files.isEmpty())
     {
         this->appendFiles(files, APPENDTOP);
         this->current_song_pos = 0;
-
     }
 
     if(Bae::loadSettings("MINIPLAYBACK","MAINWINDOW",false).toBool())
@@ -100,6 +99,7 @@ BabeWindow::BabeWindow(const QStringList &files, QWidget *parent) : QMainWindow(
 BabeWindow::~BabeWindow()
 {
     qDebug()<<"DELETING BABEWINDOW";
+    this->connection.closeConnection();
     delete ui;
 }
 
@@ -852,7 +852,7 @@ bool BabeWindow::eventFilter(QObject *object, QEvent *event)
 }
 
 void BabeWindow::closeEvent(QCloseEvent* event)
-{    
+{
     if(this->settings_widget->brainDeamon.isRunning())
     {
         QMessageBox msgBox;
@@ -1031,7 +1031,7 @@ void BabeWindow::setToolbarIconSize(const uint &iconSize)
 }
 
 void BabeWindow::collectionView()
-{    
+{
     if(this->resultsTable->rowCount() > 0) this->views->setCurrentIndex(RESULTS);
 
     else this->views->setCurrentIndex(COLLECTION);
@@ -1161,7 +1161,7 @@ void BabeWindow::go_mini()
 }
 
 void BabeWindow::go_playlistMode()
-{    
+{
     this->setMinimumSize(this->minimumSizeHint().width(),0);
 
     if(playlistSta != OUT)
@@ -1699,7 +1699,7 @@ bool BabeWindow::unbabeIt(const Bae::DB &track)
 }
 
 bool BabeWindow::babeTrack(const Bae::DB &track)
-{    
+{
     auto url = track[Bae::KEY::URL];
     if(this->isBabed(track))
     {
@@ -1778,7 +1778,7 @@ void  BabeWindow::infoIt(const Bae::DB &track)
 
 
 void BabeWindow::addToPlaylist(const Bae::DB_LIST &mapList, const bool &notRepeated, const appendPos &pos)
-{   
+{
     if(!mapList.isEmpty())
     {
         if(notRepeated)
@@ -1875,7 +1875,7 @@ void  BabeWindow::clearCurrentList()
 }
 
 void BabeWindow::runSearch()
-{            
+{
     if(!ui->search->text().isEmpty())
     {
         qDebug()<<"Looking for";

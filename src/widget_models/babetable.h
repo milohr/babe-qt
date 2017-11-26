@@ -52,7 +52,7 @@ public:
 
     ~TrackLoader()
     {
-        go=false;
+        this->go = false;
         t.quit();
         t.wait();
     }

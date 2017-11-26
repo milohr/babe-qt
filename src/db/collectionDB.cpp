@@ -45,6 +45,7 @@ CollectionDB::CollectionDB() {}
 
 void CollectionDB::closeConnection()
 {
+    qDebug()<<"CLOSING COLLECTIONDB";
     m_db.close();
 }
 
