@@ -95,7 +95,6 @@ class BabeTable : public QTableWidget
     Q_OBJECT
 
 private:
-
     TrackLoader trackLoader;
     CollectionDB connection;
 
@@ -109,7 +108,6 @@ private:
     bool rowDragging=false;
     bool rowPreview=true;
 
-    QMenu *contextMenu;
     QMenu *sendToMenu;
 
     QMap<QString,QString> devices;
@@ -163,6 +161,8 @@ public:
     QMap<QString, QString> getKdeConnectDevices();
     QStringList getTableColumnContent(const Bae::KEY &column);
     Bae::DB_LIST getAllTableContent();
+
+    QMenu *contextMenu;
 
 protected:
     virtual void enterEvent(QEvent *event);

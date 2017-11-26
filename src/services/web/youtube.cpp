@@ -85,7 +85,6 @@ void YouTube::fetch(const QStringList &files)
 
         if(!this->ids.contains(infoMap[KEY::ID]))
         {
-
             this->ids<<infoMap[KEY::ID];
 
             auto process = new QProcess(this);

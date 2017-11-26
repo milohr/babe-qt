@@ -78,7 +78,6 @@ HEADERS += \
     src/widget_models/babetable.h \
     src/data_models/tracklist.h \
     src/services/local/taginfo.h \
-    src/services/web/web_jgm90.h \
     src/services/web/youtube.h \
     src/widget_models/scrolltext.h \
     src/utils/bae.h \
@@ -115,7 +114,6 @@ SOURCES += \
     src/widget_models/babetable.cpp \
     src/main.cpp \
     src/services/local/taginfo.cpp \
-    src/services/web/web_jgm90.cpp \
     src/services/web/youtube.cpp \
     src/widget_models/scrolltext.cpp \
     src/data_models/tracklist.cpp \

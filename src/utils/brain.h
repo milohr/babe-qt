@@ -398,7 +398,7 @@ public slots:
     {
         if(!go) return;
 
-        auto services = {SERVICES::LastFm,SERVICES::Spotify,SERVICES::MusicBrainz};
+        auto services = {SERVICES::LastFm, SERVICES::Spotify, SERVICES::MusicBrainz};
         auto ontology = ONTOLOGY::ALBUM;
 
         qDebug()<<"getting missing album artworks";
@@ -406,8 +406,14 @@ public slots:
                 KEYMAP[KEY::ARTIST],TABLEMAP[TABLE::ALBUMS],KEYMAP[KEY::ARTWORK]);
         QSqlQuery query (queryTxt);
         auto artworks = connection.getDBData(query);
-        this->setInfo(artworks, ontology, services, INFO::ARTWORK, RECURSIVE::OFF, nullptr);
 
+        /* BEFORE FETCHING ONLINE LOOK UP IN THE CACHE FOR THE IMAGE */
+        for(auto album : artworks)
+            if(Bae::artworkCache(album, KEY::ALBUM))
+                connection.insertArtwork(album);
+
+        artworks = connection.getDBData(query);
+        this->setInfo(artworks, ontology, services, INFO::ARTWORK, RECURSIVE::OFF, nullptr);
 
         //select album, artist from albums where  album  not in (select album from albums_tags) and artist  not in (select  artist from albums_tags)
         qDebug()<<"getting missing album tags";
@@ -426,10 +432,7 @@ public slots:
             connection.wikiAlbum(track,SLANG[W::NONE]);
         });
 
-        if(!artworks.isEmpty())
-            emit this->done(TABLE::ALBUMS);
-
-
+        emit this->done(TABLE::ALBUMS);
     }
 
     void artistInfo()
@@ -445,6 +448,13 @@ public slots:
                 TABLEMAP[TABLE::ARTISTS],KEYMAP[KEY::ARTWORK]);
         QSqlQuery query (queryTxt);
         auto artworks = connection.getDBData(query);
+
+        /* BEFORE FETCHING ONLINE LOOK UP IN THE CACHE FOR THE IMAGE */
+        for(auto artist : artworks)
+            if(Bae::artworkCache(artist, KEY::ARTIST))
+                connection.insertArtwork(artist);
+
+        artworks = connection.getDBData(query);
         this->setInfo(artworks, ontology, services, INFO::ARTWORK, RECURSIVE::OFF, nullptr);
 
         //select artist from artists where  artist  not in (select album from albums_tags)
@@ -464,9 +474,7 @@ public slots:
             connection.wikiArtist(track,SLANG[W::NONE]);
         });
 
-        if(!artworks.isEmpty())
-            emit this->done(TABLE::ARTISTS);
-
+        emit this->done(TABLE::ARTISTS);
     }
 
 

@@ -210,6 +210,8 @@ void CollectionDB::addTrack(const DB &track)
         auto babe = track[KEY::BABE];
         auto trackNumber = track[KEY::TRACK];
 
+        auto artwork = track[KEY::ARTWORK];
+
         qDebug()<< "writting to db: "<<title<<artist;
         /* first needs to insert album and artist*/
         QVariantMap sourceMap {{KEYMAP[KEY::URL],sourceUrl},
@@ -218,14 +220,14 @@ void CollectionDB::addTrack(const DB &track)
         insert(TABLEMAP[TABLE::SOURCES],sourceMap);
 
         QVariantMap artistMap {{KEYMAP[KEY::ARTIST], artist},
-                               {KEYMAP[KEY::ARTWORK],""},
+                               {KEYMAP[KEY::ARTWORK], ""},
                                {KEYMAP[KEY::WIKI],""}};
 
         insert(TABLEMAP[TABLE::ARTISTS],artistMap);
 
-        QVariantMap albumMap {{KEYMAP[KEY::ALBUM],album},
-                              {KEYMAP[KEY::ARTIST],artist},
-                              {KEYMAP[KEY::ARTWORK],""},
+        QVariantMap albumMap {{KEYMAP[KEY::ALBUM], album},
+                              {KEYMAP[KEY::ARTIST], artist},
+                              {KEYMAP[KEY::ARTWORK], artwork},
                               {KEYMAP[KEY::WIKI],""}};
         insert(TABLEMAP[TABLE::ALBUMS],albumMap);
 

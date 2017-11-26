@@ -29,6 +29,7 @@ BabeWindow::BabeWindow(const QStringList &files, QWidget *parent) : QMainWindow(
     this->setWindowIconText("Babe...");
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     this->defaultWindowFlags = this->windowFlags();
+    this->setContextMenuPolicy(Qt::ActionsContextMenu);
 
     this->player = new QMediaPlayer(this);
     this->player->setVolume(100);
@@ -66,6 +67,7 @@ BabeWindow::BabeWindow(const QStringList &files, QWidget *parent) : QMainWindow(
     this->setUpPlaylist();
     this->setUpRightFrame();
     this->setUpCollectionViewer();
+    this->setUpMenuBar();
 
     this->nof = new Notify(this);
     connect(nof,&Notify::babeSong,[this](const Bae::DB &track)
@@ -87,7 +89,6 @@ BabeWindow::BabeWindow(const QStringList &files, QWidget *parent) : QMainWindow(
 
     if(Bae::loadSettings("MINIPLAYBACK","MAINWINDOW",false).toBool())
         emit ui->miniPlaybackBtn->clicked();
-    else ui->controls->setVisible(false);
 
     this->movePanel(static_cast<POSITION>(Bae::loadSettings("PANEL_POS","MAINWINDOW", RIGHT).toInt()));
     this->setToolbarIconSize(static_cast<uint>(Bae::loadSettings("TOOLBAR_ICON_SIZE", "MAINWINDOW", QVariant(16)).toInt()));
@@ -115,8 +116,8 @@ void BabeWindow::start()
         if(!savedList.isEmpty())
         {
             this->addToPlaylist(connection.getDBData(savedList), false, APPENDBOTTOM);
-        }
-        else this->populateMainList();
+
+        }else this->populateMainList();
 
         emit collectionChecked({{TABLE::TRACKS, true}, {TABLE::ALBUMS, true}, {TABLE::ARTISTS, true}, {TABLE::PLAYLISTS, true}});
 
@@ -131,7 +132,11 @@ void BabeWindow::start()
     }else if(this->collectionTable->rowCount() > 0)
         this->collectionView();
 
-    else this->settingsView();
+    else
+    {
+        this->stop();
+        this->settingsView();
+    }
 }
 
 //*HERE THE MAIN VIEWS GET SETUP WITH THEIR SIGNALS AND SLOTS**//
@@ -139,6 +144,12 @@ void BabeWindow::setUpViews()
 {
     this->settings_widget = new settings(this); //this needs to go first
     this->settings_widget->setToolbarIconSize(Bae::loadSettings("TOOLBAR_ICON_SIZE", "MAINWINDOW", QVariant(16)).toInt());
+    connect(&connection, &CollectionDB::trackInserted, [this]()
+    {
+        this->settings_widget->collectionWatcher();
+        emit this->settings_widget->refreshTables({{TABLE::TRACKS, true},{TABLE::ALBUMS, false},{TABLE::ARTISTS, false},{TABLE::PLAYLISTS, true}});
+        emit this->settings_widget->getArtwork();
+    });
 
     this->playlistTable = new PlaylistsView(this);
     connect(this->playlistTable->table, &BabeTable::tableWidget_doubleClicked, [this] (const Bae::DB_LIST &list) { this->addToPlaylist(list,false,APPENDBOTTOM);});
@@ -158,10 +169,10 @@ void BabeWindow::setUpViews()
     this->collectionTable->showColumn(static_cast<int>(Bae::KEY::STARS));
     this->collectionTable->showColumn(static_cast<int>(Bae::KEY::GENRE));
     connect(this->collectionTable,&BabeTable::tableWidget_doubleClicked, [this] (Bae::DB_LIST list) { this->addToPlaylist(list,false,APPENDBOTTOM);});
-//    connect(this->collectionTable,&BabeTable::finishedPopulating,[this]()
-//    {
-//        this->collectionTable->sortByColumn(static_cast<int>(Bae::KEY::ARTIST), Qt::AscendingOrder);
-//    });
+    //    connect(this->collectionTable,&BabeTable::finishedPopulating,[this]()
+    //    {
+    //        this->collectionTable->sortByColumn(static_cast<int>(Bae::KEY::ARTIST), Qt::AscendingOrder);
+    //    });
     connect(this->collectionTable, &BabeTable::removeIt_clicked, this, &BabeWindow::removeSong);
     connect(this->collectionTable, &BabeTable::babeIt_clicked, this, &BabeWindow::babeIt);
     connect(this->collectionTable, &BabeTable::queueIt_clicked, this, &BabeWindow::addToQueue);
@@ -388,6 +399,8 @@ void BabeWindow::setUpCollectionViewer()
     this->mainToolbar->addWidget(this->ui->settings_view);
 
     this->secondaryToolbar = new QToolBar("Search", this);
+    this->secondaryToolbar->setAllowedAreas(Qt::ToolBarArea::AllToolBarAreas);
+    this->secondaryToolbar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     this->secondaryToolbar->setMovable(false);
     this->secondaryToolbar->addWidget(this->ui->goBackBtn);
     this->secondaryToolbar->addWidget(this->ui->search);
@@ -428,68 +441,13 @@ void BabeWindow::setUpPlaylist()
 
     ui->miniPlaybackBtn->setVisible(false);
 
-    this->ui->controls->setContextMenuPolicy(Qt::ActionsContextMenu);
     this->ui->controls->setMinimumSize(static_cast<int>(ALBUM_SIZE), static_cast<int>(ALBUM_SIZE));
     this->ui->controls->setMaximumSize(static_cast<int>(ALBUM_SIZE), static_cast<int>(ALBUM_SIZE));
     this->ui->controls->installEventFilter(this);
+    this->ui->controls->setVisible(false);
 
     auto controlsColor = this->palette().color(QPalette::Window);
     this->ui->controls->setStyleSheet(QString("QWidget#controls{background:qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(%1,%2,%3,100%),stop:1 rgba(%1,%2,%3,40%))}").arg(QString::number(controlsColor.red()),QString::number(controlsColor.green()),QString::number(controlsColor.blue())));
-
-    auto moveIt= new QAction("Move to left", this);
-    moveIt->setShortcut(QKeySequence("Ctrl+m"));
-    connect(moveIt, &QAction::triggered,[=]()
-    {
-        if(this->playlistSta == OUT) emit ui->controls->actions().at(1)->triggered();
-
-        if(this->playlistPos == RIGHT)
-        {
-            this->movePanel(LEFT);
-            moveIt->setText("Move to right");
-
-        }else if(this->playlistPos == LEFT)
-        {
-            this->movePanel(RIGHT);
-            moveIt->setText("Move to left");
-
-        }
-
-    });
-    ui->controls->addAction(moveIt);
-
-    auto popPanel = new QAction("Pop panel out", this);
-    popPanel->setShortcut(QKeySequence("Ctrl+p"));
-    connect(popPanel, &QAction::triggered, [popPanel, this]()
-    {
-        if(this->playlistSta == OUT)
-        {
-            this->movePanel(IN);
-            popPanel->setText("Pop panel out");
-        }
-        else if (this->playlistSta == IN)
-        {
-            this->movePanel(OUT);
-            popPanel->setText("Pop panel in");
-        }
-    });
-    ui->controls->addAction(popPanel);
-
-    auto hideTimeLabels = new QAction("Hide time labels", this);
-    connect (hideTimeLabels, &QAction::triggered, [hideTimeLabels, this]()
-    {
-        if(ui->time->isVisible() && ui->duration->isVisible())
-        {
-            ui->time->setVisible(false);
-            ui->duration->setVisible(false);
-            hideTimeLabels->setText("Show time labels");
-        }else
-        {
-            ui->time->setVisible(true);
-            ui->duration->setVisible(true);
-            hideTimeLabels->setText("Hide time labels");
-        }
-    });
-    ui->controls->addAction(hideTimeLabels);
 
     this->seekBar = new QSlider(this);
     this->seekBar->installEventFilter(this);
@@ -510,33 +468,6 @@ void BabeWindow::setUpPlaylist()
 
     ui->hide_sidebar_btn->setToolTip("Go Mini");
     ui->shuffle_btn->setToolTip("Shuffle");
-
-    auto refreshIt = new QAction("Calibrate...", this);
-    refreshIt->setToolTip("Clean & play Babe'd tracks");
-    connect(refreshIt, &QAction::triggered, [this]() { calibrateMainList(); });
-    ui->controls->addAction(refreshIt);
-
-    auto clearIt = new QAction("Clear...", this);
-    clearIt->setToolTip("Remove unselected tracks");
-    connect(clearIt, &QAction::triggered, [this]()
-    {
-        this->clearMainList();
-        if(this->mainList->rowCount() > 0)
-        {
-            this->mainList->setCurrentCell(this->current_song_pos, static_cast<int>(Bae::KEY::TITLE));
-            this->mainList->getItem(this->current_song_pos, Bae::KEY::TITLE)->setIcon(QIcon::fromTheme("media-playback-start"));
-        }
-    });
-    ui->controls->addAction(clearIt);
-
-    auto cleanIt = new QAction("Clean...",this);
-    cleanIt->setToolTip("Remove repeated tracks");
-    connect(cleanIt, &QAction::triggered, [this]() { mainList->removeRepeated(); /*this->removequeuedTracks();*/ });
-    ui->controls->addAction(cleanIt);
-
-    auto open = new QAction("Open...", this);
-    connect(open, &QAction::triggered, this, &BabeWindow::on_open_btn_clicked);
-    ui->controls->addAction(open);
 
     playlistWidget_layout->addWidget(album_art, 0,0,Qt::AlignTop);
     playlistWidget_layout->addWidget(ui->controls, 0,0,Qt::AlignTop);
@@ -637,6 +568,101 @@ void BabeWindow::setUpRightFrame()
 
 }
 
+void BabeWindow::setUpMenuBar()
+{
+    auto moveIt= new QAction("Move to left", this);
+    moveIt->setShortcut(QKeySequence("Ctrl+m"));
+    connect(moveIt, &QAction::triggered,[=]()
+    {
+        if(this->playlistSta == OUT) emit ui->controls->actions().at(1)->triggered();
+
+        if(this->playlistPos == RIGHT)
+        {
+            this->movePanel(LEFT);
+            moveIt->setText("Move to right");
+
+        }else if(this->playlistPos == LEFT)
+        {
+            this->movePanel(RIGHT);
+            moveIt->setText("Move to left");
+
+        }
+    });
+
+    auto popPanel = new QAction("Pop panel out", this);
+    popPanel->setShortcut(QKeySequence("Ctrl+p"));
+    connect(popPanel, &QAction::triggered, [popPanel, this]()
+    {
+        if(this->playlistSta == OUT)
+        {
+            this->movePanel(IN);
+            popPanel->setText("Pop panel out");
+        }
+        else if (this->playlistSta == IN)
+        {
+            this->movePanel(OUT);
+            popPanel->setText("Pop panel in");
+        }
+    });
+
+    auto hideTimeLabels = new QAction("Hide time labels", this);
+    connect (hideTimeLabels, &QAction::triggered, [hideTimeLabels, this]()
+    {
+        if(ui->time->isVisible() && ui->duration->isVisible())
+        {
+            ui->time->setVisible(false);
+            ui->duration->setVisible(false);
+            hideTimeLabels->setText("Show time labels");
+        }else
+        {
+            ui->time->setVisible(true);
+            ui->duration->setVisible(true);
+            hideTimeLabels->setText("Hide time labels");
+        }
+    });
+
+    auto refreshIt = new QAction("Calibrate...", this);
+    refreshIt->setShortcut(QKeySequence("Ctrl+b"));
+    refreshIt->setToolTip("Clean & play Babe'd tracks");
+    connect(refreshIt, &QAction::triggered, [this]() { calibrateMainList(); });
+
+    auto clearIt = new QAction("Clear out...", this);
+    clearIt->setShortcut(QKeySequence("Ctrl+e"));
+    clearIt->setToolTip("Remove unselected tracks");
+    connect(clearIt, &QAction::triggered, [this]()
+    {
+        this->clearMainList();
+        if(this->mainList->rowCount() > 0)
+        {
+            this->mainList->setCurrentCell(this->current_song_pos, static_cast<int>(Bae::KEY::TITLE));
+            this->mainList->getItem(this->current_song_pos, Bae::KEY::TITLE)->setIcon(QIcon::fromTheme("media-playback-start"));
+        }
+    });
+
+    auto cleanIt = new QAction("Clean...",this);
+    cleanIt->setShortcut(QKeySequence("Ctrl+c"));
+    cleanIt->setToolTip("Remove repeated tracks");
+    connect(cleanIt, &QAction::triggered, [this]() { mainList->removeRepeated(); /*this->removequeuedTracks();*/ });
+    this->addAction(cleanIt);
+
+    auto open = new QAction("Open...", this);
+    open->setShortcut(QKeySequence("Ctrl+o"));
+    connect(open, &QAction::triggered, this, &BabeWindow::on_open_btn_clicked);
+
+    auto fileMenu = this->menuBar()->addMenu(tr("&File"));
+    fileMenu->addAction(open);
+
+    auto panelMenu = this->menuBar()->addMenu(tr("&Playlist"));
+    panelMenu->addAction(moveIt);
+    panelMenu->addAction(popPanel);
+    panelMenu->addAction(hideTimeLabels);
+    panelMenu->addSeparator();
+    panelMenu->addAction(refreshIt);
+    panelMenu->addAction(clearIt);
+    panelMenu->addAction(refreshIt);
+
+}
+
 void BabeWindow::albumDoubleClicked(const Bae::DB &info)
 {
     auto artist = info[Bae::KEY::ARTIST];
@@ -655,7 +681,7 @@ void BabeWindow::albumDoubleClicked(const Bae::DB &info)
     default: break;
     }
 
-   addToPlaylist(mapList, false, APPENDBOTTOM);
+    addToPlaylist(mapList, false, APPENDBOTTOM);
 }
 
 void BabeWindow::playItNow(const Bae::DB_LIST &list)
@@ -989,7 +1015,6 @@ void BabeWindow::keyPressEvent(QKeyEvent *event) //TODO
 
 }
 
-
 void BabeWindow::showControls(const bool &state)
 {
     if(state)
@@ -1011,16 +1036,42 @@ void BabeWindow::showControls(const bool &state)
     }
 }
 
-void BabeWindow::setCoverArt(const Bae::DB &song) //TODO
+void BabeWindow::fetchCoverArt(Bae::DB &song)
 {
-    Q_UNUSED(song);
-    //    qDebug()<<"Trying to retieve the cover art from Pulpo for"<< title << artist << album;
-    //    Pulpo coverArt(song);
-    //    connect(&coverArt,&Pulpo::albumArtReady,this,&MainWindow::putPixmap);
-    //    if (coverArt.fetchAlbumInfo(Pulpo::AlbumArt,Pulpo::LastFm)) qDebug()<<"using lastfm";
-    //    else if(coverArt.fetchAlbumInfo(Pulpo::AlbumArt,Pulpo::Spotify)) qDebug()<<"using spotify";
-    //    else if(coverArt.fetchAlbumInfo(Pulpo::AlbumArt,Pulpo::GeniusInfo)) qDebug()<<"using genius";
-    //    else coverArt.albumArtReady(QByteArray());
+    if(Bae::artworkCache(song, KEY::ALBUM)) return;
+
+    if(Bae::artworkCache(song, KEY::ARTIST)) return;
+
+    Pulpo pulpo;
+    pulpo.registerServices({SERVICES::LastFm, SERVICES::Spotify, SERVICES::MusicBrainz});
+    pulpo.setOntology(PULPO::ONTOLOGY::ALBUM);
+    pulpo.setInfo(PULPO::INFO::ARTWORK);
+
+    QEventLoop loop;
+
+    QTimer timer;
+    timer.setSingleShot(true);
+    timer.setInterval(1000);
+
+    connect(&timer, &QTimer::timeout, &loop, &QEventLoop::quit);
+
+    connect(&pulpo, &Pulpo::infoReady, [&](const Bae::DB &track,const PULPO::RESPONSE  &res)
+    {
+        Q_UNUSED(track);
+        if(!res[PULPO::ONTOLOGY::ALBUM][PULPO::INFO::ARTWORK].isEmpty())
+        {
+            auto artwork = res[PULPO::ONTOLOGY::ALBUM][PULPO::INFO::ARTWORK][PULPO::CONTEXT::IMAGE].toByteArray();
+            Bae::saveArt(song,artwork, Bae::CachePath);
+        }
+
+        loop.quit();
+    });
+
+    pulpo.feed(song, PULPO::RECURSIVE::OFF);
+
+    timer.start();
+    loop.exec();
+    timer.stop();
 }
 
 void BabeWindow::setToolbarIconSize(const uint &iconSize)
@@ -1259,7 +1310,7 @@ void BabeWindow::appendFiles(const QStringList &paths,const appendPos &pos)
     if(!paths.isEmpty())
     {
         QStringList trackList;
-        for(auto url  : paths)
+        for(auto url : paths)
         {
             if(QFileInfo(url).isDir())
             {
@@ -1268,7 +1319,7 @@ void BabeWindow::appendFiles(const QStringList &paths,const appendPos &pos)
                 while (it.hasNext()) trackList<<it.next();
 
             }else if (QFileInfo(url).isFile())
-                trackList<<url;
+                trackList << url;
         }
 
         Tracklist tracks;
@@ -1291,7 +1342,6 @@ void BabeWindow::updateList()
     for(auto list: currentList)
         this->mainList->addRow(list);
 }
-
 
 void BabeWindow::on_mainList_clicked(const Bae::DB_LIST &list)
 {
@@ -1340,11 +1390,11 @@ void BabeWindow::loadTrack()
     if(this->prev_song_pos < this->mainList->rowCount() && this->mainList->getItem(current_song_pos,Bae::KEY::TITLE)->icon().name() != "clock")
         this->mainList->getItem(prev_song_pos,Bae::KEY::TITLE)->setIcon(QIcon());
 
-    this->current_song_pos = this->mainList->getIndex();
+    this->current_song_pos = this->mainList->getIndex() >= 0 ? this->mainList->getIndex() : 0 ;
     this->current_song = this->mainList->getRowData(this->current_song_pos);
-
-    if(this->mainList->getItem(current_song_pos,Bae::KEY::TITLE)->icon().name()!="clock")
-        this->mainList->getItem(current_song_pos,Bae::KEY::TITLE)->setIcon(QIcon::fromTheme("media-playback-start"));
+    qDebug()<<this->current_song_pos;
+    if(this->mainList->getItem(this->current_song_pos,Bae::KEY::TITLE)->icon().name()!="clock")
+        this->mainList->getItem(this->current_song_pos,Bae::KEY::TITLE)->setIcon(QIcon::fromTheme("media-playback-start"));
 
     this->mainList->scrollTo(this->mainList->model()->index(this->current_song_pos, static_cast<int>(Bae::KEY::TITLE)));
 
@@ -1357,14 +1407,13 @@ void BabeWindow::loadTrack()
 
         this->album_art->setTitle(this->current_song[Bae::KEY::ARTIST], this->current_song[Bae::KEY::ALBUM]);
 
-        //CHECK IF THE SONG IS BABED IT
         this->babedIcon(this->isBabed(this->current_song));
-
-        this->loadMood();
-        this->loadCover(this->current_song);
 
         if(!this->isActiveWindow())
             this->nof->notifySong(current_song,QPixmap(current_song[Bae::KEY::ARTWORK]));
+
+        this->loadMood();
+        this->loadCover(this->current_song);
 
         if(this->miniPlayback)
         {
@@ -1402,7 +1451,6 @@ void BabeWindow::loadMood()
 
 }
 
-
 bool BabeWindow::loadCover(DB &track) //tofix separte getalbumcover from get artisthead
 {
     auto artist = track[Bae::KEY::ARTIST];
@@ -1418,19 +1466,22 @@ bool BabeWindow::loadCover(DB &track) //tofix separte getalbumcover from get art
 
     }else this->infoTable->setArtistArt(QString(":Data/data/cover.svg"));
 
-    this->current_song.insert(Bae::KEY::ARTWORK, this->connection.getAlbumArt(album, artist));
+    auto albumArt = this->connection.getAlbumArt(album, artist);
+
+    this->current_song.insert(Bae::KEY::ARTWORK,albumArt.isEmpty()? "" : albumArt);
 
     if(!this->current_song[Bae::KEY::ARTWORK].isEmpty())
         this->album_art->putPixmap(this->current_song[Bae::KEY::ARTWORK]);
+
     else if (!artistHead.isEmpty())
     {
         this->current_song.insert(Bae::KEY::ARTWORK, artistHead);
         this->album_art->putPixmap(this->current_song[Bae::KEY::ARTWORK]);
-    }
-    else{
 
-        this->setCoverArt(track);
-        return false;
+    }else
+    {
+        this->fetchCoverArt(track);
+        this->album_art->putPixmap(this->current_song[Bae::KEY::ARTWORK]);
     }
 
     return true;
@@ -1499,7 +1550,6 @@ void BabeWindow::update()
     }
 }
 
-
 bool BabeWindow::removeQueuedTrack(const Bae::DB &track, const int &pos)
 {
     if(this->queued_songs.contains(track[Bae::KEY::URL]))
@@ -1553,7 +1603,6 @@ void BabeWindow::next()
 
     this->loadTrack();
 }
-
 
 void BabeWindow::back()
 {
@@ -1609,7 +1658,6 @@ void BabeWindow::stop()
     ui->frame_4->setVisible(false);
     this->seekBar->setVisible(false);
     ui->frame_5->setVisible(false);
-    //    ui->frame_6->setVisible(false);
 
     this->current_song.clear();
     this->prev_song = current_song;
@@ -1743,25 +1791,13 @@ void BabeWindow::loadInfo(const Bae::DB &track)
     auto artistWiki = this->connection.getArtistWiki(track[Bae::KEY::ARTIST]);
     auto artistTags = this->connection.getArtistTags(track[Bae::KEY::ARTIST]);
 
-
     this->infoTable->setTrack(track);
 
-    if(!lyrics.isEmpty())
-        this->infoTable->setLyrics(lyrics);
-
-    if(!albumWiki.isEmpty())
-        this->infoTable->setAlbumInfo(albumWiki);
-
-    if(!artistWiki.isEmpty())
-        this->infoTable->setArtistInfo(artistWiki);
-
-    if(!artistWiki.isEmpty())
-        this->infoTable->setArtistTags(artistTags);
-
-    if(!albumTags.isEmpty())
-        this->infoTable->setAlbumTags(albumTags);
-
-
+    this->infoTable->setLyrics(lyrics);
+    this->infoTable->setAlbumInfo(albumWiki);
+    this->infoTable->setArtistInfo(artistWiki);
+    this->infoTable->setArtistTags(artistTags);
+    this->infoTable->setAlbumTags(albumTags);
 }
 
 void BabeWindow::babeIt(const Bae::DB_LIST &tracks)
@@ -1775,7 +1811,6 @@ void  BabeWindow::infoIt(const Bae::DB &track)
     infoView();
     this->loadInfo(track);
 }
-
 
 void BabeWindow::addToPlaylist(const Bae::DB_LIST &mapList, const bool &notRepeated, const appendPos &pos)
 {
@@ -1823,7 +1858,7 @@ void BabeWindow::addToPlaylist(const Bae::DB_LIST &mapList, const bool &notRepea
 
         }else
         {
-            for(auto track:mapList)
+            for(auto track : mapList)
                 switch(pos)
                 {
                 case APPENDBOTTOM:
@@ -1856,18 +1891,18 @@ void BabeWindow::addToPlaylist(const Bae::DB_LIST &mapList, const bool &notRepea
 
         if(stopped)
         {
+            qDebug()<<this->current_song_pos;
             this->mainList->setCurrentCell(this->current_song_pos, static_cast<int>(Bae::KEY::TITLE));
             this->album_art->setVisible(true);
+            ui->controls->setVisible(true);
             ui->frame_4->setVisible(true);
             this->seekBar->setVisible(true);
             ui->frame_5->setVisible(true);
-            ui->controls->setVisible(true);
             this->loadTrack();
             this->stopped = !this->stopped;
         }
     }
 }
-
 
 void  BabeWindow::clearCurrentList()
 {
@@ -2032,8 +2067,6 @@ Bae::DB_LIST BabeWindow::searchFor(const QStringList &queries)
     return mapList;
 }
 
-
-
 void BabeWindow::on_rowInserted(QModelIndex model ,int x,int y)
 {
     Q_UNUSED(model);
@@ -2041,7 +2074,6 @@ void BabeWindow::on_rowInserted(QModelIndex model ,int x,int y)
     mainList->scrollTo(mainList->model()->index(x,static_cast<int>(Bae::KEY::TITLE)),QAbstractItemView::PositionAtCenter);
 
 }
-
 
 void BabeWindow::clearMainList()
 {
@@ -2066,78 +2098,6 @@ void BabeWindow::on_goBackBtn_clicked()
     expand();
 }
 
-
-void BabeWindow::saveResultsTo()
-{
-    switch(views->currentIndex())
-    {
-    case COLLECTION: emit collectionTable->saveToPlaylist(collectionTable->getAllTableContent()); break;
-    case ALBUMS: emit albumsTable->albumTable->saveToPlaylist(albumsTable->albumTable->getAllTableContent()); break;
-    case ARTISTS: emit artistsTable->albumTable->saveToPlaylist(artistsTable->albumTable->getAllTableContent()); break;
-    case PLAYLISTS: emit playlistTable->table->saveToPlaylist(playlistTable->table->getAllTableContent()); break;
-    case RESULTS: emit resultsTable->saveToPlaylist(resultsTable->getAllTableContent()); break;
-
-    }
-}
-
-//void BabeWindow::on_filterBtn_clicked()
-//{
-//    if(ui->filterBtn->isChecked())
-//    {
-//        ui->filterBtn->setChecked(true);
-//        ui->filterBox->setVisible(true);
-//        ui->calibrateBtn->setVisible(false);
-//        ui->rabbit_view->setVisible(false);
-//        if(ui->goBackBtn->isVisible()) ui->goBackBtn->setVisible(false);
-//        mainListView->setCurrentIndex(FILTERLIST);
-//        ui->filter->setFocus();
-//    }else
-//    {
-//        ui->filterBtn->setChecked(false);
-//        ui->filterBox->setVisible(false);
-//        ui->calibrateBtn->setVisible(true);
-//        ui->rabbit_view->setVisible(true);
-
-//        if(!ui->goBackBtn->isVisible() && viewMode==PLAYLISTMODE)ui->goBackBtn->setVisible(true);
-//        mainListView->setCurrentIndex(MAINPLAYLIST);
-
-//    }
-
-//}
-
-//void BabeWindow::on_filter_textChanged(const QString &arg1)
-//{
-
-//    QString query = arg1;
-//    if(!query.isEmpty())
-//    {
-//        mainListView->setCurrentIndex(FILTERLIST);
-
-//        QStringList searchList=query.split(",");
-
-//        auto searchResults = searchFor(searchList);
-//        filterList->flushTable();
-//        if(!searchResults.isEmpty())
-//        {
-//            qDebug()<<"GOT SEARCH RESULTS";
-//            filterList->populateTableView(searchResults);
-//        }
-
-
-
-//    }else
-//    {
-//        filterList->flushTable();
-//        ui->filterBtn->setChecked(false);
-//        emit  ui->filterBtn->clicked();
-//        ui->filterBox->setVisible(false);
-//        mainListView->setCurrentIndex(MAINPLAYLIST);
-//    }
-
-
-
-//}
-
 void BabeWindow::calibrateMainList()
 {
     clearMainList();
@@ -2158,31 +2118,35 @@ void BabeWindow::on_playAll_clicked()
     switch(views->currentIndex())
     {
     case COLLECTION:
-        putOnPlay(collectionTable->getAllTableContent()); break;
+        this->putOnPlay(collectionTable->getAllTableContent()); break;
     case ALBUMS:
-        putOnPlay(albumsTable->albumTable->getAllTableContent()); break;
+        this->putOnPlay(albumsTable->albumTable->getAllTableContent()); break;
     case ARTISTS:
-        putOnPlay(artistsTable->albumTable->getAllTableContent()); break;
+        this->putOnPlay(artistsTable->albumTable->getAllTableContent()); break;
     case PLAYLISTS:
-        putOnPlay(playlistTable->table->getAllTableContent()); break;
+        this->putOnPlay(playlistTable->table->getAllTableContent()); break;
     case RESULTS:
-        putOnPlay(resultsTable->getAllTableContent()); break;
+        this->putOnPlay(resultsTable->getAllTableContent()); break;
     }
 }
 
 void BabeWindow::on_miniPlaybackBtn_clicked()
 {
-    auto controlsColor = this->palette().color(QPalette::Window);
-
-    if(!miniPlayback)
+    if(!this->miniPlayback)
     {
-        if(!ui->miniPlaybackBtn->isVisible()) ui->miniPlaybackBtn->setVisible(true);
+        if(!ui->controls->isVisible())
+            ui->controls->setVisible(true);
+
+        if(!ui->miniPlaybackBtn->isVisible())
+            ui->miniPlaybackBtn->setVisible(true);
+
         ui->controls->setFixedHeight(ui->controls->minimumSizeHint().height()-40);
-        album_art->setFixedHeight(ui->controls->minimumSizeHint().height()-40);
+        this->album_art->setFixedHeight(ui->controls->minimumSizeHint().height()-40);
         ui->miniPlaybackBtn->setIcon(QIcon::fromTheme("go-bottom"));
-        miniPlayback=!miniPlayback;
-        this->blurWidget(*album_art,28);
-        album_art->saturatePixmap(100);
+
+        this->miniPlayback = !this->miniPlayback;
+        this->blurWidget(*this->album_art, 28);
+        this->album_art->saturatePixmap(100);
 
         if(viewMode==MINIMODE)  this->setMaximumHeight(ui->controls->minimumSizeHint().height()-40);
 
@@ -2190,20 +2154,18 @@ void BabeWindow::on_miniPlaybackBtn_clicked()
     }else
     {
         ui->controls->setFixedHeight(static_cast<int>(ALBUM_SIZE));
-        album_art->setFixedHeight(static_cast<int>(ALBUM_SIZE));
+        this->album_art->setFixedHeight(static_cast<int>(ALBUM_SIZE));
         ui->miniPlaybackBtn->setIcon(QIcon::fromTheme("go-top"));
-        miniPlayback=!miniPlayback;
-        this->blurWidget(*album_art,15);
-        album_art->restoreSaturation();
+        this->miniPlayback = !this->miniPlayback;
 
-        if(viewMode==MINIMODE) this->setMaximumHeight(ui->controls->height());
+        this->blurWidget(*this->album_art,15);
+        this->album_art->restoreSaturation();
 
-
+        if(this->viewMode == MINIMODE) this->setMaximumHeight(ui->controls->height());
     }
 
     ui->controls->update();
 }
-
 
 void BabeWindow::blurWidget(BabeAlbum &widget, const int &radius )
 {

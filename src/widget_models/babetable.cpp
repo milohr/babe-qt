@@ -84,7 +84,7 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent)
     this->hideColumn(static_cast<int>(Bae::KEY::LYRICS));
 
 
-    contextMenu = new QMenu(this);
+    this->contextMenu = new QMenu(this);
 
     // this->horizontalHeaderItem(0);
     // this->horizontalHeader()->setHighlightSections(true);
@@ -215,7 +215,7 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent)
 
 BabeTable::~BabeTable()
 {
- qDebug()<<"DELETING BABETABLE";
+    qDebug()<<"DELETING BABETABLE";
 }
 
 
@@ -380,15 +380,13 @@ void BabeTable::enableRowDragging(const bool &state)
 void BabeTable::addMenuItem(QAction *item)
 {
     item->setParent(contextMenu);
-    contextMenu->addAction(item);
+    this->contextMenu->addAction(item);
 }
-
-
 
 void BabeTable::addRow(const Bae::DB &map)
 {
     this->insertRow(this->rowCount());
-
+    qDebug()<<map[Bae::KEY::TITLE];
     this->putItem(this->rowCount() - 1,Bae::KEY::TRACK, new QTableWidgetItem(map[Bae::KEY::TRACK]));
     this->putItem(this->rowCount() - 1,Bae::KEY::TITLE, new QTableWidgetItem(map[Bae::KEY::TITLE]));
     this->putItem(this->rowCount() - 1,Bae::KEY::ARTIST, new QTableWidgetItem(map[Bae::KEY::ARTIST]));

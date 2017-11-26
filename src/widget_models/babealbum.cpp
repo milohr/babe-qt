@@ -48,7 +48,7 @@ BabeAlbum::BabeAlbum(const DB &info, const AlbumSizeHint &widgetSize, const uint
     widget->setStyleSheet( QString(" background: rgba(0,0,0,150); border-top: 1px solid rgba(%1,%1,%1,150); border-top-left-radius:0; border-top-right-radius:0; border-bottom-right-radius:%2px; border-bottom-left-radius:%3px;").arg( QString::number(0), QString::number(border_radius-1),QString::number(border_radius-1)));
     this->title = new ScrollText(this);
 
-    title->setMaxSize(size+10);
+    title->setMaxSize(size-10);
     title->setStyleSheet("QLabel{background:transparent; color:white; border:none;}");
 
     layout->addStretch();
@@ -73,7 +73,7 @@ BabeAlbum::BabeAlbum(const DB &info, const AlbumSizeHint &widgetSize, const uint
 
 BabeAlbum::~BabeAlbum()
 {
-    qDebug()<<"DELETING BABEALBUM";
+//    qDebug()<<"DELETING BABEALBUM";
 }
 
 void BabeAlbum::setUpMenu()
@@ -195,7 +195,6 @@ void BabeAlbum::paintEvent(QPaintEvent *event)
     if(!borderColor) painter.setPen(Qt::NoPen);
     painter.drawRoundedRect(0,0,static_cast<int>(size),static_cast<int>(size), border_radius, border_radius);
 }
-
 
 void BabeAlbum::putPixmap(const QString &path)
 {   

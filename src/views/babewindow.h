@@ -36,6 +36,7 @@
 #include <QSqlQuery>
 #include <QFileInfo>
 #include <QObject>
+#include <QMenuBar>
 
 #include "../widget_models/babetable.h"
 #include "../widget_models/babealbum.h"
@@ -160,13 +161,12 @@ private slots:
     void runSearch();
 
     //void on_resultsPLaylist_clicked();
-    void setCoverArt(const Bae::DB &song);
+    void fetchCoverArt(DB &song);
     void on_rowInserted(QModelIndex model ,int x,int y);
 
     void refreshTables(const QMap<Bae::TABLE, bool> &tableReset);
     void addToPlayed(const QString &url);
     void on_goBackBtn_clicked();
-    void saveResultsTo();
 
     void removeSong(const int &index);
     void putAlbumOnPlay(const Bae::DB &info);
@@ -241,6 +241,7 @@ private:
     void setUpCollectionViewer();
     void setUpPlaylist();
     void setUpRightFrame();
+    void setUpMenuBar();
 
     int shuffleNumber();
 

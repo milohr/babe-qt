@@ -50,7 +50,7 @@ public slots:
     QStringList getTags();
     QStringList getSimilarArtistTags();
     void hideArtistInfo();
-    void getTrackInfo(const bool &album, const bool &artist, const bool &lyrics, const bool &tags);
+    void getTrackInfo(const Bae::DB &track);
     void on_searchBtn_clicked();
 
 signals:

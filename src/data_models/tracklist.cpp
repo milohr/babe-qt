@@ -30,11 +30,10 @@ bool Tracklist::isMusic(const QString &file)
 
     mimeType = mimeDatabase.mimeTypeForFile(QFileInfo(file));
     // mp4 mpg4
+    qDebug()<<mimeType.aliases()<<mimeType.name();
 
     if (mimeType.inherits("audio/mp4"))
         return true;
-
-    // mpeg mpg mpe
     else if (mimeType.inherits("audio/mpeg"))
         return true;
     else if (mimeType.inherits("video/mp4"))
@@ -46,7 +45,7 @@ bool Tracklist::isMusic(const QString &file)
     else if (mimeType.inherits("audio/m4a"))
         return true;
     else if (mimeType.inherits("audio/mp3"))
-        return false;
+        return true;
     else if (mimeType.inherits("audio/ogg"))
         return true;
     else if (mimeType.inherits("audio/wav"))
@@ -64,37 +63,38 @@ Bae::DB_LIST Tracklist::getTracks()
 
 void Tracklist::add(const QStringList &files)
 {
-
     for (auto file : files)
     {
+        qDebug()<<"FILE<<"<<file;
         if (isMusic(file))
         {
             TagInfo info(file);
 
             // qDebug()<<QString::fromStdWString(file.tag()->title().toWString());
-            QString title = info.getTitle();
-            QString artist = info.getArtist();
-            QString album = info.getAlbum();
-            QString artwork = ""; // here needs to get the artwork;
-            int track_n = info.getTrack();
-            QString genre = info.getGenre();
+            auto title = info.getTitle();
+            auto artist = info.getArtist();
+            auto album = info.getAlbum();
+            auto artwork = ""; // here needs to get the artwork;
+            auto track_n = info.getTrack();
+            auto genre = info.getGenre();
 
             title = !title.isEmpty() ? title : info.fileName();
             artist = !artist.isEmpty()  ? artist : SLANG[W::UNKNOWN];
             album = !album.isEmpty() ? album : title;
 
             Bae::DB track = {
-                {Bae::KEY::TITLE,title},
-                {Bae::KEY::ARTIST,artist},
-                {Bae::KEY::ALBUM,album},
-                {Bae::KEY::URL,file},
-                {Bae::KEY::GENRE,genre},
+                {Bae::KEY::TITLE, title},
+                {Bae::KEY::ARTIST, artist},
+                {Bae::KEY::ALBUM, album},
+                {Bae::KEY::URL, file},
+                {Bae::KEY::GENRE, genre},
                 {Bae::KEY::TRACK,QString::number(track_n)},
-                {Bae::KEY::ARTWORK,artwork}
+                {Bae::KEY::ARTWORK, artwork}
             };
 
-            this->tracks<<track;
-        } qDebug() << "file not valid: " << file;
+            this->tracks << track;
+
+        }else qDebug() << "file not valid: " << file;
 
     }
 }

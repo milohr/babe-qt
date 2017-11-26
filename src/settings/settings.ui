@@ -78,15 +78,15 @@
         <property name="frameShadow">
          <enum>QFrame::Raised</enum>
         </property>
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
-         <item>
+        <layout class="QGridLayout" name="gridLayout_4">
+         <item row="0" column="0">
           <widget class="QLabel" name="label_8">
            <property name="text">
             <string>Icon size</string>
            </property>
           </widget>
          </item>
-         <item>
+         <item row="0" column="1">
           <widget class="QComboBox" name="toolbarIconSize">
            <property name="currentText">
             <string>16</string>
@@ -104,6 +104,37 @@
            <item>
             <property name="text">
              <string>32</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_9">
+           <property name="text">
+            <string>Position</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QComboBox" name="comboBox">
+           <item>
+            <property name="text">
+             <string>Top</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Bottom</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Left</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Right</string>
             </property>
            </item>
           </widget>
@@ -374,7 +405,7 @@
          </font>
         </property>
         <property name="text">
-         <string>youtube-dl Extension</string>
+         <string>Extension</string>
         </property>
        </widget>
       </item>

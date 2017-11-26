@@ -10,6 +10,7 @@
 #include <QDesktopWidget>
 #include <QTime>
 #include <QSettings>
+#include <QDirIterator>
 
 #include <cmath>
 using namespace std;
@@ -356,7 +357,7 @@ inline void saveArt(DB &track, const QByteArray &array, const QString &path)
 
         QImage img;
         img.loadFromData(array);
-        QString name = !track[Bae::KEY::ALBUM].isEmpty()? track[Bae::KEY::ARTIST] + "_" + track[Bae::KEY::ALBUM] : track[Bae::KEY::ARTIST];
+        QString name = !track[Bae::KEY::ALBUM].isEmpty() ? track[Bae::KEY::ARTIST] + "_" + track[Bae::KEY::ALBUM] : track[Bae::KEY::ARTIST];
         name.replace("/", "-");
         name.replace("&", "-");
         QString format = "JPEG";
@@ -385,6 +386,36 @@ inline QVariant loadSettings(const QString &key, const QString &group, const QVa
     return variant;
 }
 
+inline bool artworkCache(DB &track, const KEY &type = KEY::NONE)
+{
+    QDirIterator it(CachePath, QDir::Files, QDirIterator::NoIteratorFlags);
+    while (it.hasNext())
+    {
+        auto file = it.next();
+        auto fileName = QFileInfo(file).fileName();
+        switch(type)
+        {
+        case KEY::ALBUM:
+            if(fileName == track[KEY::ARTIST]+"_"+track[KEY::ALBUM]+".jpg")
+            {
+                track.insert(KEY::ARTWORK,file);
+                return true;
+            }
+            break;
+
+        case KEY::ARTIST:
+            if(fileName == track[KEY::ARTIST]+".jpg")
+            {
+                track.insert(KEY::ARTWORK,file);
+                return true;
+            }
+            break;
+        default: break;
+        }
+    }
+
+    return false;
+}
 }
 
 
