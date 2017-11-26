@@ -18,7 +18,6 @@
 
 #include "babewindow.h"
 #include "ui_babewindow.h"
-#include "../pulpo/services/geniusService.h"
 
 BabeWindow::BabeWindow(const QStringList &files, QWidget *parent) : QMainWindow(parent),
     ui(new Ui::BabeWindow)
@@ -53,12 +52,12 @@ BabeWindow::BabeWindow(const QStringList &files, QWidget *parent) : QMainWindow(
     connect(this->album_art, &BabeAlbum::playAlbum, this, &BabeWindow::putAlbumOnPlay);
     connect(this->album_art, &BabeAlbum::babeAlbum, this, &BabeWindow::babeAlbum);
 
+    this->ALBUM_SIZE = album_art->getSize();
+
     this->album_art->setFixedSize(static_cast<int>(ALBUM_SIZE), static_cast<int>(ALBUM_SIZE));
     this->album_art->setTitleGeometry(0, 0, static_cast<int>(ALBUM_SIZE), static_cast<int>(ALBUM_SIZE*0.15));
     this->album_art->showTitle(false);
     this->album_art->showPlayBtn = false;
-
-    this->ALBUM_SIZE = album_art->getSize();
 
     //* SETUP BABE PARTS *//
     this->setUpViews();
@@ -735,7 +734,7 @@ void BabeWindow::addToPlayed(const QString &url)
 }
 
 bool BabeWindow::eventFilter(QObject *object, QEvent *event)
-{    
+{
     if(object == this->ui->controls)
     {
         if(event->type() == QEvent::Enter)

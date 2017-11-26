@@ -35,6 +35,7 @@
 #include <QDirIterator>
 #include <QSqlQuery>
 #include <QFileInfo>
+#include <QObject>
 
 #include "../widget_models/babetable.h"
 #include "../widget_models/babealbum.h"
