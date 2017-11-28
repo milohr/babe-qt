@@ -210,7 +210,7 @@ void CollectionDB::addTrack(const DB &track)
         auto babe = track[KEY::BABE];
         auto trackNumber = track[KEY::TRACK];
 
-        auto artwork = track[KEY::ARTWORK];
+        auto artwork = track[KEY::ARTWORK].isEmpty()? "" : track[KEY::ARTWORK];
 
         qDebug()<< "writting to db: "<<title<<artist;
         /* first needs to insert album and artist*/

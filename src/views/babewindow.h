@@ -133,7 +133,6 @@ public slots:
     void go_playlistMode();
 
 private slots:
-
     void on_hide_sidebar_btn_clicked();
     void on_shuffle_btn_clicked();
     void on_open_btn_clicked();
@@ -181,7 +180,6 @@ private slots:
     void removequeuedTracks();
     void infoIt(const  Bae::DB &track);
     void albumDoubleClicked(const Bae::DB &info);
-    void on_playAll_clicked();
 
     void on_miniPlaybackBtn_clicked();
 

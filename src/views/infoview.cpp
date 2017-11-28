@@ -169,17 +169,17 @@ void InfoView::setAlbumTags(const QStringList &tags)
         QString htmlTags;
         for(auto tag : tags) htmlTags+= "<a href=\""+tag+"\"> "+tag+"</a> , ";
         ui->tagsInfo->setHtml(htmlTags);
-    } ui->tagsInfo->setVisible(false);
+    } else ui->tagsInfo->setVisible(false);
 
 }
 
-void InfoView::setAlbumInfo(QString info)
+void InfoView::setAlbumInfo(const QString &info)
 {
     if (!info.isEmpty())
     {
         ui->albumText->setVisible(true);
         ui->albumText->setHtml(info);
-    } ui->albumText->setVisible(false);
+    }else ui->albumText->setVisible(false);
 }
 
 void InfoView::setAlbumArt(QByteArray array) {Q_UNUSED(array)}
@@ -191,7 +191,7 @@ void InfoView::setArtistInfo(const QString &info)
     {
         ui->artistText->setVisible(true);
         ui->artistText->setHtml(info);
-    } ui->artistText->setVisible(false);
+    }else ui->artistText->setVisible(false);
 
 }
 
@@ -213,10 +213,9 @@ void InfoView::setLyrics(const QString &lyrics)
         ui->splitter->setSizes({static_cast<int>(Bae::AlbumSizeHint::BIG_ALBUM),static_cast<int>(Bae::AlbumSizeHint::BIG_ALBUM)});
         ui->lyricsText->setHtml(lyrics);
         ui->lyricsLayout->setAlignment(Qt::AlignCenter);
-    }else
-    {
-        this->getTrackInfo(this->track);
-    }
+
+    }else this->getTrackInfo(this->track);
+
 }
 
 

@@ -40,7 +40,7 @@ public slots:
 
     void clearInfoViews();
     void setAlbumArt(QByteArray array);
-    void setAlbumInfo(QString info);
+    void setAlbumInfo(const QString &info);
     void setArtistArt(const QByteArray &array);
     void setArtistArt(const QString &url);
     void setLyrics(const QString &lyrics);

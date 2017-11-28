@@ -427,6 +427,8 @@ void BabeWindow::setUpCollectionViewer()
     this->mainLayout->setContentsMargins(0, 0, 0, 0);
 
     this->mainWidget= new QWidget(this);
+    this->mainWidget->setMinimumHeight(static_cast<int>(ALBUM_SIZE)*2);
+
     this->mainWidget->setLayout(mainLayout);
 
     this->addToolBar(static_cast<Qt::ToolBarArea>(Bae::loadSettings("TOOLBAR_POS","MAINWINDOW",Qt::ToolBarArea::LeftToolBarArea).toInt()), this->mainToolbar);
@@ -2115,24 +2117,6 @@ void BabeWindow::calibrateMainList()
         this->mainList->setCurrentCell(current_song_pos,static_cast<int>(Bae::KEY::TITLE));
         this->mainList->getItem(current_song_pos,Bae::KEY::TITLE)->setIcon(QIcon::fromTheme("media-playback-start"));
         this->mainList->removeRepeated();
-    }
-}
-
-void BabeWindow::on_playAll_clicked()
-{
-
-    switch(views->currentIndex())
-    {
-    case COLLECTION:
-        this->putOnPlay(collectionTable->getAllTableContent()); break;
-    case ALBUMS:
-        this->putOnPlay(albumsTable->albumTable->getAllTableContent()); break;
-    case ARTISTS:
-        this->putOnPlay(artistsTable->albumTable->getAllTableContent()); break;
-    case PLAYLISTS:
-        this->putOnPlay(playlistTable->table->getAllTableContent()); break;
-    case RESULTS:
-        this->putOnPlay(resultsTable->getAllTableContent()); break;
     }
 }
 
