@@ -1,10 +1,10 @@
 #include "babegrid.h"
 
-BabeGrid::BabeGrid(const double &factor, const Bae::AlbumSizeHint &deafultValue, const uint8_t &albumRadius, QWidget *parent) : QListWidget(parent)
+BabeGrid::BabeGrid(const ALBUM_FACTOR &factor, const AlbumSizeHint &deafultValue, const uint8_t &albumRadius, QWidget *parent) : QListWidget(parent)
 {
-    this->albumFactor= factor;
+    this->albumFactor = factor;
     this->defaultAlbumValue= deafultValue;
-    this->albumSize = Bae::getWidgetSizeHint(factor,deafultValue);
+    this->albumSize = Bae::getWidgetSizeHint(factor, deafultValue);
     this->albumRadius = albumRadius;
     this->installEventFilter(this);
     //    this->setObjectName("grid");

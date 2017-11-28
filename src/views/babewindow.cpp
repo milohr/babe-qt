@@ -427,7 +427,7 @@ void BabeWindow::setUpCollectionViewer()
     this->mainLayout->setContentsMargins(0, 0, 0, 0);
 
     this->mainWidget= new QWidget(this);
-    this->mainWidget->setMinimumHeight(static_cast<int>(ALBUM_SIZE)*2);
+    this->views->setMinimumHeight(static_cast<int>(ALBUM_SIZE)*2);
 
     this->mainWidget->setLayout(mainLayout);
 

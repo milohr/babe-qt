@@ -16,7 +16,7 @@ class BabeGrid : public QListWidget
     Q_OBJECT
 
 public:
-    explicit BabeGrid(const double &factor, const Bae::AlbumSizeHint &deafultValue, const uint8_t &albumRadius = 4, QWidget *parent= nullptr);
+    explicit BabeGrid(const Bae::ALBUM_FACTOR &factor, const Bae::AlbumSizeHint &deafultValue, const uint8_t &albumRadius = 4, QWidget *parent= nullptr);
     ~BabeGrid() override;
     void addAlbum(const Bae::DB &albumMap);
     void flushGrid();

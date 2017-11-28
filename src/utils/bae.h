@@ -187,16 +187,18 @@ static const uint MAX_BIG_ALBUM_SIZE = 300;
 static const uint MAX_MID_ALBUM_SIZE = 200;
 static const uint MAX_MIN_ALBUM_SIZE = 100;
 
-static const double BIG_ALBUM_FACTOR = 0.039;
-static const double BIG_ALBUM_FACTOR_SUBWIDGET = 0.27;
+typedef double ALBUM_FACTOR;
 
-static const double MEDIUM_ALBUM_FACTOR = 0.013;
-static const double MEDIUM_ALBUM_FACTOR_SUBWIDGET = 0.4;
+static const ALBUM_FACTOR BIG_ALBUM_FACTOR = 0.039;
+static const ALBUM_FACTOR BIG_ALBUM_FACTOR_SUBWIDGET = 0.27;
 
-static const double SMALL_ALBUM_FACTOR = 0.006;
-static const double SMALL_ALBUM_FACTOR_SUBWIDGET = 0.5;
+static const ALBUM_FACTOR MEDIUM_ALBUM_FACTOR = 0.013;
+static const ALBUM_FACTOR MEDIUM_ALBUM_FACTOR_SUBWIDGET = 0.4;
 
-inline uint getWidgetSizeHint(const double &factor, const AlbumSizeHint &deafultValue)
+static const ALBUM_FACTOR SMALL_ALBUM_FACTOR = 0.006;
+static const ALBUM_FACTOR SMALL_ALBUM_FACTOR_SUBWIDGET = 0.5;
+
+inline uint getWidgetSizeHint(const ALBUM_FACTOR &factor, const AlbumSizeHint &deafultValue)
 {
     auto ALBUM_SIZE = static_cast<uint>(deafultValue);
     auto screenSize = QApplication::desktop()->availableGeometry().size();
