@@ -254,6 +254,7 @@ const QString CachePath = QStandardPaths::writableLocation(QStandardPaths::Gener
 const QString YoutubeCachePath = QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation)+"/babe/youtube/";
 const QString ExtensionFetchingPath = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
 const QString NotifyDir = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
+const QString BabePort = "8483";
 
 const QStringList MoodColors = {"#F0FF01","#01FF5B","#3DAEFD","#B401FF","#E91E63"};
 

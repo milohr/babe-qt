@@ -1,123 +1,182 @@
-document.addEventListener('DOMContentLoaded', function () {
+
+var wsUri = "ws://localhost:8483";
+var websocket = null;
+
+document.addEventListener('DOMContentLoaded', function()
+{
     var babeBtn = document.getElementById('babe');
     var addBtn = document.getElementById('add');
 
-    chrome.tabs.getSelected(null, function (tab) {
+    chrome.tabs.getSelected(null, function (tab)
+    {
+        var d = document;
+        var url = tab.url;
+        var ydoc = tab.title;
 
-        var babeTitle = document.getElementById('title');
-        var babeArtist = document.getElementById('artist');
-        var babeAlbum = document.getElementById('album');
+        console.log(ydoc);
+        if (url.includes("youtube.com/watch?v"))
+        {
+            initWebSocket();
 
-        var pageUrl = tab.url;
-        var pageTitle = tab.title;
+            var babeTitle = document.getElementById('title');
+            var babeArtist = document.getElementById('artist');
+            var babeAlbum = document.getElementById('album');
 
-        if (pageUrl.includes("youtube.com/watch?v")) {
-            var regex = / *\([^)]*\) */g;
-            var title = pageTitle.split("-");
-            babeTitle.value = title[1].replace(regex, " ").trim();
-            babeArtist.value = title[0].replace(regex, " ").trim();
-            chrome.browserAction.setIcon({
-                path: "icon_done.png"
+            var pageUrl = tab.url;
+            var pageTitle = tab.title;
+
+            if (pageUrl.includes("youtube.com/watch?v"))
+            {
+                var regex;
+                var titleArray = pageTitle.split("-");
+                var newTitle = titleArray[1];
+                var newArtist = titleArray[0];
+
+                if(pageTitle.indexOf(')')>-1)
+                {
+                    regex = / *\([^)]*\) */g;
+                    newTitle = newTitle.replace(regex, "").trim();
+                    newArtist = newArtist.replace(regex, "").trim();
+                }
+
+                if(pageTitle.indexOf('[')>-1)
+                {
+                    regex = / *\[[^)]*\] */g;
+                    newTitle = newTitle.replace(regex, "").trim();
+                    newArtist = newArtist.replace(regex, "").trim();
+                }
+
+                babeTitle.value = newTitle;
+                babeArtist.value = newArtist;
+
+                chrome.browserAction.setIcon({ path: "icon_done.png" });
+            } else
+                chrome.browserAction.setIcon({ path: "icon_1.png" });
+
+
+            var id = url.substring(url.lastIndexOf("watch?v=") + "watch?v=".length, url.length);
+
+            if (id.includes("&"))
+                id = id.substring(0, id.indexOf("&"));
+
+            if (id.includes("#"))
+                id = id.substring(0, id.indexOf("#"));
+
+            pageUrl = tab.url.replace("- YouTube", "");
+            var title = document.getElementById('title').value;
+            var artist = document.getElementById('artist').value;
+            var album = document.getElementById('album').value;
+
+            var json = {
+                title: title,
+                artist: artist,
+                album:album,
+                babe: 1,
+                id: id,
+                page: pageTitle
+            }
+
+            babeBtn.addEventListener('click', function()
+            {
+                sendData(json);
             });
-        } else {
 
-            chrome.browserAction.setIcon({
-                path: "icon_1.png"
-            });
-        }
 
+        }else
+            document.getElementById("warning").innerHTML += "This isn't a YouTube url";
     });
 
-    babeBtn.addEventListener('click', function () {
+});
 
-        chrome.tabs.getSelected(null, function (tab) {
-            d = document;
-            var url = tab.url;
-            var ydoc = tab.title;
-            console.log(ydoc);
-            if (url.includes("youtube.com/watch?v")) {
-                var id = url.substring(url.lastIndexOf("watch?v=") + 8, url.length);
+function sendData(json)
+{
+    console.log(json);
 
-                if (id.includes("&")) {
-                    console.log("the string inclues ambersan");
-                    id = id.substring(0, id.indexOf("&"));
-                } else if (id.includes("#")) {
-                    console.log("the string inclues #");
-                    id = id.substring(0, id.indexOf("#"));
+    if ( websocket != null )
+        websocket.send( json );
 
-                }
+}
 
+function initWebSocket()
+{
+    try
+    {
+        if (typeof MozWebSocket == 'function')
+            WebSocket = MozWebSocket;
+        if ( websocket && websocket.readyState == 1 )
+            websocket.close();
+        websocket = new WebSocket( wsUri );
+        websocket.onopen = function (evt)
+        {
+            console.log("CONNECTED");
+        };
+        websocket.onclose = function (evt)
+        {
+            console.log("DISCONNECTED");
+        };
+        websocket.onmessage = function (evt)
+        {
+            console.log( "Message received :", evt.data );
+            console.log( evt.data );
+        };
+        websocket.onerror = function (evt)
+        {
+             document.getElementById("warning").innerHTML = 'SERVER ERROR: ' + evt.data;
+        };
+    }catch (exception)
+    {
+        document.getElementById("warning").innerHTML = 'SERVER ERROR: ' + exception;
+    }
+}
 
-                var pageUrl = tab.url.replace("- YouTube", "");
-                var pageTitle = tab.title;
-                var title = document.getElementById('title').value;
-                var artist = document.getElementById('artist').value;
-                var album = document.getElementById('album').value;
-                var info = "[title] = " + title + "\n[artist] = " + artist + "\n[album] = " + album + "\n[babe] = 1" + "\n[id] = " + id + "\n[page] = " + pageTitle;
+function stopWebSocket()
+{
+    if (websocket)
+        websocket.close();
+}
 
-                download(info, id + '.babe', 'text/plain');
+function checkSocket()
+{
+    if (websocket != null)
+    {
+        var stateStr;
+        switch (websocket.readyState)
+        {
+        case 0:
+            stateStr = "CONNECTING";
+            break;
 
+        case 1:
+            stateStr = "OPEN";
+            break;
 
-            } else {
-                console.log("url does not contains yuotube");
+        case 2:
+            stateStr = "CLOSING";
+            break;
 
-                document.getElementById("warning").innerHTML += "This isn't a YouTube url";
-            }
+        case 3:
+            stateStr = "CLOSED";
+            break;
 
-        });
-    }, false);
+        default:
+            stateStr = "UNKNOW";
+            break;
+        }
 
-    addBtn.addEventListener('click', function () {
+        console.log("WebSocket state = " + websocket.readyState + " ( " + stateStr + " )");
+    }else
+        console.log("WebSocket is null");
 
-        chrome.tabs.getSelected(null, function (tab) {
-            d = document;
-            var url = tab.url;
-            var ydoc = tab.title;
-            console.log(ydoc);
-            if (url.includes("youtube.com/watch?v")) {
-                var id = url.substring(url.lastIndexOf("watch?v=") + 8, url.length);
+}
 
-                if (id.includes("&")) {
-                    console.log("the string inclues ambersan");
-                    id = newStr.substring(0, id.indexOf("&"));
-                } else if (id.includes("#")) {
-                    console.log("the string inclues #");
-                    id = newStr.substring(0, id.indexOf("#"));
-
-                }
-
-                var pageUrl = tab.url;
-                var pageTitle = tab.title;
-                var title = document.getElementById('title').value;
-                var artist = document.getElementById('artist').value;
-                var album = document.getElementById('album').value;
-                var info = "[title] = " + title + "\n[artist] = " + artist + "\n[album] = " + album + "\n[babe] = 0" + "\n[id] = " + id + "\n[page] = " + pageTitle;
-
-                download(info, id + '.babe', 'text/plain');
-
-
-            } else {
-                console.log("url does not contains yuotube");
-
-                document.getElementById("warning").innerHTML += "This isn't a YouTube url";
-            }
-
-        });
-    }, false);
-
-
-}, false);
-
-
-
-
-function download(strData, strFileName, strMimeType) {
+function download(strData, strFileName, strMimeType)
+{
     var D = document,
-        A = arguments,
-        a = D.createElement("a"),
-        d = A[0],
-        n = A[1],
-        t = A[2] || "text/plain";
+            A = arguments,
+            a = D.createElement("a"),
+            d = A[0],
+            n = A[1],
+            t = A[2] || "text/plain";
 
     //build download link:
     a.href = "data:" + strMimeType + "charset=utf-8," + escape(strData);

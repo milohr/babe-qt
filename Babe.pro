@@ -15,6 +15,7 @@ DEPENDPATH += $$PWD/3rdparty/taglib-1.9.1/taglib/Headers
 QT       += core gui
 QT       += multimedia
 QT       += sql
+QT       += websockets
 QT       += network
 QT       += xml
 QT       += dbus
@@ -87,7 +88,43 @@ HEADERS += \
     src/views/babewindow.h \
     src/pulpo/enums.h \
     src/db/rabbithole.h \
-    src/utils/albumloader.h
+    src/utils/albumloader.h \
+    src/services/local/socket.h \
+    src/data_models/track.h \
+    src/data_models/tracklist.h \
+    src/db/collectionDB.h \
+    src/db/rabbithole.h \
+    src/dialogs/about.h \
+    src/dialogs/metadataform.h \
+    src/dialogs/playlistform.h \
+    src/kde/mpris2.h \
+    src/kde/notify.h \
+    src/pulpo/services/geniusService.h \
+    src/pulpo/services/lastfmService.h \
+    src/pulpo/services/lyricwikiaService.h \
+    src/pulpo/services/musicbrainzService.h \
+    src/pulpo/services/spotifyService.h \
+    src/pulpo/enums.h \
+    src/pulpo/htmlparser.h \
+    src/pulpo/pulpo.h \
+    src/pulpo/webengine.h \
+    src/services/local/socket.h \
+    src/services/local/taginfo.h \
+    src/services/web/youtube.h \
+    src/settings/fileloader.h \
+    src/settings/settings.h \
+    src/utils/albumloader.h \
+    src/utils/bae.h \
+    src/utils/brain.h \
+    src/views/albumsview.h \
+    src/views/babewindow.h \
+    src/views/infoview.h \
+    src/views/playlistsview.h \
+    src/views/rabbitview.h \
+    src/widget_models/babealbum.h \
+    src/widget_models/babegrid.h \
+    src/widget_models/babetable.h \
+    src/widget_models/scrolltext.h
 
 SOURCES += \
     src/data_models/track.cpp \
@@ -118,4 +155,47 @@ SOURCES += \
     src/widget_models/scrolltext.cpp \
     src/data_models/tracklist.cpp \
     src/dialogs/metadataform.cpp \
-    src/views/babewindow.cpp
+    src/views/babewindow.cpp \
+    src/services/local/socket.cpp \
+    src/data_models/track.cpp \
+    src/data_models/tracklist.cpp \
+    src/db/collectionDB.cpp \
+    src/dialogs/about.cpp \
+    src/dialogs/metadataform.cpp \
+    src/dialogs/playlistform.cpp \
+    src/kde/mpris2.cpp \
+    src/kde/notify.cpp \
+    src/pulpo/services/geniusService.cpp \
+    src/pulpo/services/lastfmService.cpp \
+    src/pulpo/services/lyricwikiaService.cpp \
+    src/pulpo/services/musicbrainzService.cpp \
+    src/pulpo/services/spotifyService.cpp \
+    src/pulpo/htmlparser.cpp \
+    src/pulpo/pulpo.cpp \
+    src/pulpo/webengine.cpp \
+    src/services/local/socket.cpp \
+    src/services/local/taginfo.cpp \
+    src/services/web/youtube.cpp \
+    src/settings/settings.cpp \
+    src/views/albumsview.cpp \
+    src/views/babewindow.cpp \
+    src/views/infoview.cpp \
+    src/views/playlistsview.cpp \
+    src/views/rabbitview.cpp \
+    src/widget_models/babealbum.cpp \
+    src/widget_models/babegrid.cpp \
+    src/widget_models/babetable.cpp \
+    src/widget_models/scrolltext.cpp \
+    src/main.cpp
+
+DISTFILES += \
+    extra/extension/background.js \
+    extra/extension/popup.js \
+    extra/extension/manifest.json \
+    extra/extension/icon_1.png \
+    extra/extension/icon_2.png \
+    extra/extension/icon_done.png \
+    extra/extension/icon_1.svg \
+    extra/extension/icon_push.svg \
+    extra/extension/style.css \
+    extra/extension/popup.html

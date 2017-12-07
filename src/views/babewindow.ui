@@ -496,7 +496,7 @@
      <bool>true</bool>
     </property>
     <property name="toolButtonStyle">
-     <enum>Qt::ToolButtonIconOnly</enum>
+     <enum>Qt::ToolButtonFollowStyle</enum>
     </property>
     <property name="autoRaise">
      <bool>true</bool>
@@ -537,7 +537,7 @@
      <bool>true</bool>
     </property>
     <property name="toolButtonStyle">
-     <enum>Qt::ToolButtonIconOnly</enum>
+     <enum>Qt::ToolButtonFollowStyle</enum>
     </property>
     <property name="autoRaise">
      <bool>true</bool>
@@ -581,7 +581,7 @@
      <bool>true</bool>
     </property>
     <property name="toolButtonStyle">
-     <enum>Qt::ToolButtonIconOnly</enum>
+     <enum>Qt::ToolButtonFollowStyle</enum>
     </property>
     <property name="autoRaise">
      <bool>true</bool>
@@ -622,7 +622,7 @@
      <bool>true</bool>
     </property>
     <property name="toolButtonStyle">
-     <enum>Qt::ToolButtonIconOnly</enum>
+     <enum>Qt::ToolButtonFollowStyle</enum>
     </property>
     <property name="autoRaise">
      <bool>true</bool>
@@ -666,7 +666,7 @@
      <bool>true</bool>
     </property>
     <property name="toolButtonStyle">
-     <enum>Qt::ToolButtonIconOnly</enum>
+     <enum>Qt::ToolButtonFollowStyle</enum>
     </property>
     <property name="autoRaise">
      <bool>true</bool>
@@ -710,7 +710,7 @@
      <bool>true</bool>
     </property>
     <property name="toolButtonStyle">
-     <enum>Qt::ToolButtonIconOnly</enum>
+     <enum>Qt::ToolButtonFollowStyle</enum>
     </property>
     <property name="autoRaise">
      <bool>true</bool>
@@ -757,7 +757,7 @@
      <bool>true</bool>
     </property>
     <property name="toolButtonStyle">
-     <enum>Qt::ToolButtonIconOnly</enum>
+     <enum>Qt::ToolButtonFollowStyle</enum>
     </property>
     <property name="autoRaise">
      <bool>true</bool>

@@ -395,6 +395,7 @@ void BabeWindow::setUpCollectionViewer()
 
     this->mainToolbar->setContentsMargins(0, 0, 0, 0);
     this->mainToolbar->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+    this->mainToolbar->setToolButtonStyle(Qt::ToolButtonStyle::ToolButtonIconOnly);
 
     this->mainToolbar->addWidget(this->ui->info_view);
     this->mainToolbar->addWidget(ui->spacer1);
@@ -670,6 +671,28 @@ void BabeWindow::setUpMenuBar()
     panelMenu->addAction(clearIt);
     panelMenu->addAction(cleanIt);
     panelMenu->addAction(refreshIt);
+
+    auto toolBarText = new QAction("Show text", this);
+    connect(toolBarText, &QAction::triggered, [toolBarText,this]()
+    {
+        switch(this->mainToolbar->toolButtonStyle())
+        {
+        case Qt::ToolButtonStyle::ToolButtonIconOnly:
+            this->mainToolbar->setToolButtonStyle(Qt::ToolButtonStyle::ToolButtonTextBesideIcon);
+            toolBarText->setText("Hide text");
+            break;
+        case Qt::ToolButtonStyle::ToolButtonTextBesideIcon:
+            this->mainToolbar->setToolButtonStyle(Qt::ToolButtonStyle::ToolButtonIconOnly);
+            toolBarText->setText("Show text");
+            break;
+        default:break;
+        }
+
+        this->mainToolbar->update();
+    });
+
+    auto toolBarMenu = this->menuBar()->addMenu(tr("&Toolbar"));
+    toolBarMenu->addAction(toolBarText);
 
 }
 

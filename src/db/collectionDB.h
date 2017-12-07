@@ -21,8 +21,6 @@ class CollectionDB : public QObject
 {
     Q_OBJECT
 public:
-
-
     enum sourceTypes
     {
         LOCAL, ONLINE, DEVICE

@@ -28,17 +28,6 @@ YouTube::YouTube(QObject *parent) : QObject(parent)
 
 YouTube::~YouTube(){   }
 
-void YouTube::searchPendingFiles()
-{
-    QDirIterator it(extensionFetchingPath, QStringList() << "*.babe", QDir::Files);
-    while (it.hasNext())
-
-        this->urls<<it.next();
-
-    if (!urls.isEmpty()) fetch(urls);
-
-}
-
 void YouTube::fetch(const QStringList &files)
 {
     for(auto file: files)

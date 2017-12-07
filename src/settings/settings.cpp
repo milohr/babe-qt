@@ -142,7 +142,6 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
     connect(ytFetch,&YouTube::youtubeTrackReady, this, &settings::populateDB);
 
     //    connect(ytFetch,&YouTube::youtubeTrackReady,[this](){ emit collectionPathChanged(youtubeCachePath);});
-    ytFetch->searchPendingFiles();
     extensionWatcher = new QFileSystemWatcher(this);
     extensionWatcher->addPath(Bae::ExtensionFetchingPath);
     connect(extensionWatcher, SIGNAL(directoryChanged(QString)), this,

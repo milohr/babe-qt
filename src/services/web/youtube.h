@@ -29,7 +29,6 @@ public:
     explicit YouTube(QObject *parent = nullptr);
     ~YouTube();
     void fetch(const QStringList &files);
-    void searchPendingFiles();
     QStringList ids;
     QStringList urls;
 
