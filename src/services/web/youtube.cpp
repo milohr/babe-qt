@@ -150,14 +150,10 @@ void YouTube::processFinished_totally(const int &state,const DB &info,const QPro
 
             qDebug()<<"need to delete the id="<<doneId;
             qDebug()<<"ids left to process: "<<ids;
-
-            if(ids.isEmpty()) emit youtubeTrackReady(this->cachePath);
         }
     }
 
-
-
-
+    if(ids.isEmpty()) emit youtubeTrackReady(this->cachePath);
 }
 
 

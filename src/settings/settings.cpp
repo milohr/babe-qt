@@ -86,7 +86,6 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
     {
         qDebug()<<"interval changed to:"<<value;
         Bae::saveSettings("BRAINZ_INTERVAL",value,"SETTINGS");
-
     });
 
     connect(this->ui->pulpoBrainz_checkBox,static_cast<void (QCheckBox::*)(bool)>(&QCheckBox::toggled), [this](const bool &value)
@@ -103,25 +102,22 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
     });
     connect(&fileSaver,&FileLoader::collectionSize,[this](int size)
     {
-        qDebug()<<"COLLECTION SIZE"<<size;
         if(size>0)
         {
             ui->progressBar->setValue(1);
             ui->progressBar->setMaximum(size);
             ui->progressBar->show();
+
         }else
         {
             this->dirs.clear();
             this->collectionWatcher();
             this->watcher->removePaths(watcher->directories());
-
         }
     });
 
     connect(&fileSaver,&FileLoader::finished,[this]()
     {
-        qDebug()<<"FINISHED fileSaver";
-        //        nof.notify("Songs added to collection","finished writting new songs to the collection :)");
         ui->progressBar->hide();
         ui->progressBar->setValue(0);
 
@@ -437,17 +433,13 @@ void settings::createCollectionDB()
 
 }
 
-
-
 void settings::populateDB(const QString &path)
 {
-
     qDebug() << "Function Name: " << Q_FUNC_INFO
              << "new path for database action: " << path;
     fileSaver.requestPath(path);
     this->ui->sourcesFrame->setEnabled(false);
 }
-
 
 void settings::fetchArt()
 {

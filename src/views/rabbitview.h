@@ -1,21 +1,22 @@
 #ifndef RABITVIEW_H
 #define RABITVIEW_H
 
-#include <QObject>
-#include <QListWidget>
-#include <QListWidgetItem>
-#include <QDebug>
-#include <QString>
-#include <QStringList>
-#include <QFrame>
-#include <QSplitter>
-
-#include "../widget_models/babegrid.h"
-#include "../db/collectionDB.h"
-#include "../widget_models/babealbum.h"
-#include "../widget_models/babetable.h"
-#include "../pulpo/pulpo.h"
+#include "../utils/bae.h"
 #include "../utils/albumloader.h"
+#include "../db/collectionDB.h"
+
+class BabeGrid;
+class BabeAlbum;
+class BabeTable;
+class Pulpo;
+
+class QListWidget;
+class QObject;
+class QListWidgetItem;
+class QStringList;
+class QFrame;
+class QSplitter;
+
 
 class RabbitView : public QWidget
 {
@@ -27,23 +28,22 @@ public:
 
     enum suggestionsTables
     {
-        SIMILAR,GENERAL,ALL
+        SIMILAR,
+        GENERAL,
+        ALL
     };
 
     void seed (const Bae::DB &track);
     void flushSuggestions(suggestionsTables = ALL);
-    BabeTable * getTable() { return this->generalSuggestion; }
     BabeGrid *artistSuggestion;
     BabeTable *generalSuggestion;
+    BabeTable *filterList;
     void addArtistSuggestion(const Bae::DB &albumMap);
 
 private:
-    uint ALBUM_SIZE_MEDIUM = Bae::getWidgetSizeHint(Bae::MEDIUM_ALBUM_FACTOR,Bae::AlbumSizeHint::MEDIUM_ALBUM);
+    uint ALBUM_SIZE_MEDIUM = Bae::getWidgetSizeHint(Bae::MEDIUM_ALBUM_FACTOR, Bae::AlbumSizeHint::MEDIUM_ALBUM);
     CollectionDB connection;
     AlbumLoader albumLoader;
-
-public slots:
-    void filterByArtist(const Bae::DB &albumMap);
 
 };
 

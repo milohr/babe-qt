@@ -24,6 +24,7 @@ find_package (
    Widgets
    Xml
    WebEngineWidgets
+   WebSockets
    )
 
 # Find the required KDE Frameworks
@@ -64,6 +65,7 @@ set(babe_SRCS
     src/widget_models/babetable.cpp
     src/main.cpp
     src/services/local/taginfo.cpp
+    src/services/local/socket.cpp
     src/services/web/youtube.cpp
     src/widget_models/scrolltext.cpp
     src/data_models/tracklist.cpp

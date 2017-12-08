@@ -82,6 +82,7 @@ void BabeAlbum::setUpMenu()
     connect(babeIt, SIGNAL(triggered()), this, SLOT(babeIt_action()));
     this->addAction(babeIt);
 
+
     auto removeIt = new QAction("Remove",this->contextMenu);
     connect(removeIt, SIGNAL(triggered()), this, SLOT(removeIt_action()));
     this->addAction(removeIt);

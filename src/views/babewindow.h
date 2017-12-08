@@ -91,7 +91,7 @@ public:
         REGULAR, SHUFFLE, REPEAT
     };
 
-    enum appendPos //TODO: move to baetable
+    enum APPEND //TODO: move to baetable
     {
         APPENDTOP,APPENDBOTTOM, APPENDAFTER, APPENDBEFORE, APPENDINDEX
     };
@@ -103,7 +103,7 @@ public:
 
 
     void start();
-    void appendFiles(const QStringList &paths, const appendPos &pos = APPENDBOTTOM);
+    void appendFiles(const QStringList &paths, const APPEND &pos = APPENDBOTTOM);
     void loadTrack();
     bool babeTrack(const Bae::DB &track);
     void loadInfo(const Bae::DB &track);
@@ -118,7 +118,7 @@ protected:
 
 public slots:
 
-    void addToPlaylist(const Bae::DB_LIST &mapList, const bool &notRepeated=false, const appendPos &pos = APPENDBOTTOM);
+    void addToPlaylist(const Bae::DB_LIST &mapList, const bool &notRepeated=false, const APPEND &pos = APPENDBOTTOM);
     void populateResultsTable(const Bae::DB_LIST &mapList);
     void addToQueue(const Bae::DB_LIST &tracks);
 
@@ -176,8 +176,9 @@ private slots:
     void babeIt(const Bae::DB_LIST &tracks);
     bool unbabeIt(const Bae::DB &track);
     void loadMood();
-    bool removeQueuedTrack(const Bae::DB &track, const int &pos);
+    void removeQueuedTrack(const int &pos);
     void removequeuedTracks();
+    void playQueuedTrack(const int &pos);
     void infoIt(const  Bae::DB &track);
     void albumDoubleClicked(const Bae::DB &info);
 
@@ -219,6 +220,7 @@ private:
 
     /*the views*/
     BabeTable *mainList;
+    BabeTable *queueList;
     BabeTable *filterList;
     BabeTable *collectionTable;
     BabeTable *resultsTable;
@@ -234,8 +236,6 @@ private:
     void keepOnTop(bool state);
 
     void setUpViews();
-    void setUpWidgets();
-    void setUpSidebar();
     void setUpCollectionViewer();
     void setUpPlaylist();
     void setUpRightFrame();
@@ -262,9 +262,6 @@ private:
 
     QSlider *seekBar;
     QTimer *searchTimer;
-
-    QMap<QString,Bae::DB> queued_songs;
-    int prev_queued_song_pos = -1;
 
     Bae::DB current_song;
     int current_song_pos = 0;

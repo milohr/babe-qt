@@ -218,9 +218,6 @@ BabeTable::~BabeTable()
     qDebug()<<"DELETING BABETABLE";
 }
 
-
-
-
 void BabeTable::dropEvent(QDropEvent *event)
 {
     if(event->source() == this && !event->isAccepted() && rowDragging)
@@ -228,56 +225,50 @@ void BabeTable::dropEvent(QDropEvent *event)
         int newRow = this->indexAt(event->pos()).row();
         auto insertionRow = newRow;
 
-        if(this->getItem(insertionRow,Bae::KEY::TITLE)->icon().name()!="clock")
-        {
-            qDebug()<<"new row position"<< newRow;
-            auto list = this->getSelectedRows(false);
+        qDebug()<<"new row position"<< newRow;
+        auto list = this->getSelectedRows(false);
 
-            Bae::DB_LIST tracks;
-            QList<int> newList;
+        Bae::DB_LIST tracks;
+        QList<int> newList;
 
-            for(auto track : list)
+        for(auto track : list)
+            if(this->getItem(track,Bae::KEY::TITLE)->icon().name() != "media-playback-start")
             {
-                if(this->getItem(track,Bae::KEY::TITLE)->icon().name().isEmpty())
-                {
-                    tracks<<this->getRowData(track);
-                    newList<<track;
-                }
-
+                tracks<<this->getRowData(track);
+                newList<<track;
             }
 
-            if(!newList.isEmpty())
+
+        if(!newList.isEmpty())
+        {
+            int i=0;
+            int j=0;
+
+            std::sort(newList.begin(),newList.end());
+
+            for(auto track:newList)
             {
-                int i=0;
-                int j=0;
-
-                std::sort(newList.begin(),newList.end());
-
-                for(auto track:newList)
+                if(track>=newRow)
                 {
-                    if(track>=newRow)
-                    {
-                        this->removeRow(track-i-j);
-                        i++;
-                    }else
-                    {
-                        this->removeRow(track-j);
-                        j++;
-                        newRow--;
-                    }
-                }
-
-                i=0;
-
-                for(auto track : tracks)
-                {
-                    this->addRowAt(newRow+i+1,track);
-                    qDebug()<<"indexes moved "<< newList.at(i)<<insertionRow<<newRow;
-
-                    emit indexesMoved(newList.at(i),insertionRow);
+                    this->removeRow(track-i-j);
                     i++;
+                }else
+                {
+                    this->removeRow(track-j);
+                    j++;
+                    newRow--;
                 }
+            }
 
+            i=0;
+
+            for(auto track : tracks)
+            {
+                this->addRowAt(newRow+i+1,track);
+                qDebug()<<"indexes moved "<< newList.at(i)<<insertionRow<<newRow;
+
+                emit indexesMoved(newList.at(i),insertionRow);
+                i++;
             }
         }
     }
@@ -386,7 +377,6 @@ void BabeTable::addMenuItem(QAction *item)
 void BabeTable::addRow(const Bae::DB &map)
 {
     this->insertRow(this->rowCount());
-    qDebug()<<map[Bae::KEY::TITLE];
     this->putItem(this->rowCount() - 1,Bae::KEY::TRACK, new QTableWidgetItem(map[Bae::KEY::TRACK]));
     this->putItem(this->rowCount() - 1,Bae::KEY::TITLE, new QTableWidgetItem(map[Bae::KEY::TITLE]));
     this->putItem(this->rowCount() - 1,Bae::KEY::ARTIST, new QTableWidgetItem(map[Bae::KEY::ARTIST]));

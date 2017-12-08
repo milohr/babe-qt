@@ -201,16 +201,10 @@ void BabeWindow::setUpViews()
             this->current_song_pos++;
             this->prev_song_pos++;
 
-            if(this->prev_queued_song_pos != -1)
-                this->prev_queued_song_pos++;
-
         }else if(row < this->current_song_pos && newRow >= this->current_song_pos)
         {
             this->current_song_pos--;
             this->prev_song_pos--;
-
-            if(this->prev_queued_song_pos != -1)
-                this->prev_queued_song_pos--;
         }
     });
 
@@ -220,8 +214,7 @@ void BabeWindow::setUpViews()
         {
             this->current_song_pos--;
             this->prev_song_pos--;
-            if(this->prev_queued_song_pos != -1)
-                this->prev_queued_song_pos--;
+
         }
 
     });
@@ -233,6 +226,28 @@ void BabeWindow::setUpViews()
     connect(this->mainList, &BabeTable::moodIt_clicked, this->mainList, &BabeTable::colorizeRow);
     connect(this->mainList, &BabeTable::infoIt_clicked, this, &BabeWindow::infoIt);
     connect(this->mainList, &BabeTable::saveToPlaylist, this->playlistTable, &PlaylistsView::saveToPlaylist);
+
+    this->queueList = new BabeTable(this);
+    auto bgcolor= QColor(this->queueList->palette().color(QPalette::Background).name()).dark(130).name();
+
+    this->queueList->setStyleSheet(QString("QTableView{background-color: %1}").arg(bgcolor));
+    this->queueList->setVisible(false);
+    this->queueList->setObjectName("queueList");
+    this->queueList->hideColumn(static_cast<int>(Bae::KEY::ALBUM));
+    this->queueList->hideColumn(static_cast<int>(Bae::KEY::ARTIST));
+    this->queueList->hideColumn(static_cast<int>(Bae::KEY::DURATION));
+    this->queueList->horizontalHeader()->setVisible(false);
+    this->queueList->enableRowColoring(true);
+    this->queueList->enableRowDragging(true);
+    this->queueList->enablePreview(false);
+    this->queueList->setAddMusicMsg("\nQueue list","face-ninja");
+
+    connect(this->queueList, &BabeTable::tableWidget_doubleClicked, [this] (Bae::DB_LIST list) { this->playQueuedTrack(this->queueList->getIndex()); this->next();});
+    connect(this->queueList, &BabeTable::removeIt_clicked, this, &BabeWindow::removeSong);
+    connect(this->queueList, &BabeTable::babeIt_clicked, this, &BabeWindow::babeIt);
+    connect(this->queueList, &BabeTable::moodIt_clicked, this->mainList, &BabeTable::colorizeRow);
+    connect(this->queueList, &BabeTable::infoIt_clicked, this, &BabeWindow::infoIt);
+    connect(this->queueList, &BabeTable::saveToPlaylist, this->playlistTable, &PlaylistsView::saveToPlaylist);
 
     this->filterList = new BabeTable(this);
     this->filterList->hideColumn(static_cast<int>(Bae::KEY::ALBUM));
@@ -262,7 +277,18 @@ void BabeWindow::setUpViews()
     this->mainListView = new QStackedWidget(this);
     this->mainListView->setFrameShape(QFrame::NoFrame);
 
-    this->mainListView->addWidget(this->mainList);
+    auto splitter = new QSplitter(this);
+    splitter->setChildrenCollapsible(false);
+    splitter->setOrientation(Qt::Vertical);
+
+    splitter->addWidget(this->queueList);
+    splitter->addWidget(this->mainList);
+
+    splitter->setSizes({0,0});
+    splitter->setStretchFactor(0, 0);
+    splitter->setStretchFactor(1, 1);
+
+    this->mainListView->addWidget(splitter);
     this->mainListView->addWidget(this->filterList);
 
     this->resultsTable = new BabeTable(this);
@@ -333,6 +359,15 @@ void BabeWindow::setUpViews()
     connect(this->rabbitTable->generalSuggestion, &BabeTable::appendIt, [this] (Bae::DB_LIST list) { addToPlaylist(list,false,APPENDAFTER);});
     connect(this->rabbitTable->generalSuggestion, &BabeTable::saveToPlaylist, playlistTable,&PlaylistsView::saveToPlaylist);
     connect(this->rabbitTable->artistSuggestion, &BabeGrid::playAlbum, this,&BabeWindow::putAlbumOnPlay);
+    connect(this->rabbitTable->filterList, &BabeTable::tableWidget_doubleClicked, [this] (Bae::DB_LIST list) { addToPlaylist(list,false,APPENDBOTTOM);});
+    connect(this->rabbitTable->filterList, &BabeTable::babeIt_clicked, this, &BabeWindow::babeIt);
+    connect(this->rabbitTable->filterList, &BabeTable::queueIt_clicked, this, &BabeWindow::addToQueue);
+    connect(this->rabbitTable->filterList, &BabeTable::infoIt_clicked, this, &BabeWindow::infoIt);
+    connect(this->rabbitTable->filterList, &BabeTable::previewStarted, this, &BabeWindow::pause);
+    connect(this->rabbitTable->filterList, &BabeTable::previewFinished, this, &BabeWindow::play);
+    connect(this->rabbitTable->filterList, &BabeTable::playItNow, this, &BabeWindow::playItNow);
+    connect(this->rabbitTable->filterList, &BabeTable::appendIt, [this] (Bae::DB_LIST list) { addToPlaylist(list,false,APPENDAFTER);});
+    connect(this->rabbitTable->filterList, &BabeTable::saveToPlaylist,playlistTable,&PlaylistsView::saveToPlaylist);
 
     this->settings_widget->readSettings();
     connect(this->settings_widget, &settings::toolbarIconSizeChanged, this, &BabeWindow::setToolbarIconSize);
@@ -425,7 +460,7 @@ void BabeWindow::setUpCollectionViewer()
 
     this->mainLayout->addWidget(this->views);
     this->mainLayout->addWidget(this->rightFrame);
-//    this->mainLayout->setContentsMargins(0, 0, 0, 0);
+    //    this->mainLayout->setContentsMargins(0, 0, 0, 0);
     this->mainLayout->setSpacing(6);
 
     this->mainWidget= new QWidget(this);
@@ -656,6 +691,13 @@ void BabeWindow::setUpMenuBar()
     cleanIt->setToolTip("Remove repeated tracks");
     connect(cleanIt, &QAction::triggered, [this]() { mainList->removeRepeated(); /*this->removequeuedTracks();*/ });
 
+    auto clearQueue = new QAction("Clear Queue...", this);
+    clearQueue->setToolTip("Remove queued tracks");
+    connect(clearQueue, &QAction::triggered, [this]()
+    {
+        this->removequeuedTracks();
+    });
+
     auto open = new QAction("Open...", this);
     open->setShortcut(QKeySequence("Ctrl+o"));
     connect(open, &QAction::triggered, this, &BabeWindow::on_open_btn_clicked);
@@ -663,15 +705,18 @@ void BabeWindow::setUpMenuBar()
     auto fileMenu = this->menuBar()->addMenu(tr("&File"));
     fileMenu->addAction(open);
 
-    auto panelMenu = this->menuBar()->addMenu(tr("&Playlist"));
+    auto panelMenu = this->menuBar()->addMenu(tr("&Panel"));
     panelMenu->addAction(moveIt);
     panelMenu->addAction(popPanel);
     panelMenu->addAction(hideTimeLabels);
-    panelMenu->addSeparator();
-    panelMenu->addAction(refreshIt);
-    panelMenu->addAction(clearIt);
-    panelMenu->addAction(cleanIt);
-    panelMenu->addAction(refreshIt);
+
+    auto playlistMenu = this->menuBar()->addMenu(tr("&Playlist"));
+    playlistMenu->addAction(refreshIt);
+    playlistMenu->addAction(clearIt);
+    playlistMenu->addAction(cleanIt);
+    playlistMenu->addAction(refreshIt);
+    playlistMenu->addAction(clearQueue);
+
 
     auto toolBarText = new QAction("Show text", this);
     connect(toolBarText, &QAction::triggered, [toolBarText,this]()
@@ -1338,7 +1383,7 @@ void BabeWindow::on_open_btn_clicked()
     if(!files.isEmpty()) this->appendFiles(files);
 }
 
-void BabeWindow::appendFiles(const QStringList &paths,const appendPos &pos)
+void BabeWindow::appendFiles(const QStringList &paths, const APPEND &pos)
 {
     if(!paths.isEmpty())
     {
@@ -1390,16 +1435,7 @@ void BabeWindow::removeSong(const int &index)//TODO
     {
         if(obj == mainList)
         {
-            if(removeQueuedTrack(mainList->getRowData(index),index))
-            {
-                qDebug()<<"removedQueued track";
-                if(current_song_pos>index) current_song_pos--;
-            }
-            else
-            {
-                mainList->removeRow(index);
-                if(current_song_pos>index) current_song_pos--;
-            }
+
         }
     }
 }
@@ -1420,14 +1456,13 @@ void BabeWindow::loadTrack()
     this->prev_song = this->current_song;
     this->prev_song_pos = this->current_song_pos;
 
-    if(this->prev_song_pos < this->mainList->rowCount() && this->mainList->getItem(current_song_pos,Bae::KEY::TITLE)->icon().name() != "clock")
+    if(this->prev_song_pos < this->mainList->rowCount())
         this->mainList->getItem(prev_song_pos,Bae::KEY::TITLE)->setIcon(QIcon());
 
     this->current_song_pos = this->mainList->getIndex() >= 0 ? this->mainList->getIndex() : 0 ;
     this->current_song = this->mainList->getRowData(this->current_song_pos);
-    qDebug()<<this->current_song_pos;
-    if(this->mainList->getItem(this->current_song_pos,Bae::KEY::TITLE)->icon().name()!="clock")
-        this->mainList->getItem(this->current_song_pos,Bae::KEY::TITLE)->setIcon(QIcon::fromTheme("media-playback-start"));
+
+    this->mainList->getItem(this->current_song_pos,Bae::KEY::TITLE)->setIcon(QIcon::fromTheme("media-playback-start"));
 
     this->mainList->scrollTo(this->mainList->model()->index(this->current_song_pos, static_cast<int>(Bae::KEY::TITLE)));
 
@@ -1522,31 +1557,16 @@ bool BabeWindow::loadCover(DB &track) //tofix separte getalbumcover from get art
 
 void BabeWindow::addToQueue(const Bae::DB_LIST &tracks)
 {
-    this->prev_queued_song_pos = current_song_pos;
-
-    QStringList queuedList;
-
     for(auto track : tracks)
-    {
-        if(!this->queued_songs.contains(track[Bae::KEY::URL]))
-        {
-            this->mainList->addRowAt(this->queued_songs.size(),track);
-            this->mainList->getItem(this->queued_songs.size(),Bae::KEY::TITLE)->setIcon(QIcon::fromTheme("clock"));
-            this->mainList->colorizeRow({this->queued_songs.size()},"#333");
+        this->queueList->addRow(track);
 
-            this->queued_songs.insert(track[Bae::KEY::URL],track);
-            queuedList<<track[Bae::KEY::TITLE]+" by "+track[Bae::KEY::ARTIST];
-            this->current_song_pos++;
-        }
 
-    }
-    //mainList->addRowAt(current_song_pos+1,track,true);
-    qDebug()<<"saving track pos to restore after queued is empty"<<prev_queued_song_pos;
 
-    this->mainList->scrollToItem(mainList->getItem(0,Bae::KEY::TITLE),QAbstractItemView::PositionAtTop);
+    this->queueList->setVisible(true);
+    this->queueList->scrollToBottom();
 
-    this->nof->notify("Song added to Queue",queuedList.join("\n"));
-
+    if(tracks.size() == 1)
+        this->nof->notify("Song added to Queue",tracks[0][KEY::TITLE]);
 }
 
 void BabeWindow::on_seekBar_sliderMoved(const int &position)
@@ -1569,8 +1589,6 @@ void BabeWindow::update()
 
         if(this->player->state() == QMediaPlayer::StoppedState)
         {
-            if(!this->queued_songs.isEmpty()) this->removeQueuedTrack(this->current_song, this->current_song_pos);
-
             this->prev_song = this->current_song;
             emit this->finishedPlayingSong(prev_song[Bae::KEY::URL]);
             this->next();
@@ -1583,56 +1601,40 @@ void BabeWindow::update()
     }
 }
 
-bool BabeWindow::removeQueuedTrack(const Bae::DB &track, const int &pos)
+void BabeWindow::removeQueuedTrack(const int &pos)
 {
-    if(this->queued_songs.contains(track[Bae::KEY::URL]))
-        if(this->mainList->getItem(pos,Bae::KEY::TITLE)->icon().name()=="clock")
-        {
-            this->mainList->removeRow(pos);
-            this->queued_songs.remove(track[Bae::KEY::URL]);
-            return true;
-        }
-
-    return false;
+    this->queueList->removeRow(pos);
+    if(this->queueList->rowCount()<1)
+        this->queueList->setVisible(false);
 }
 
 void BabeWindow::removequeuedTracks()
 {
-    QList<QMap<int, QString>> newList;
+    this->queueList->flushTable();
+    this->queueList->setVisible(false);
+}
 
-    for(auto row = 0; row < this->mainList->rowCount(); row++)
-
-        if(this->mainList->getItem(row,Bae::KEY::TITLE)->icon().name()=="clock")
-        {
-            this->mainList->removeRow(row);
-            this->queued_songs.remove(this->mainList->getRowData(row)[Bae::KEY::URL]);
-            this->current_song_pos--;
-        }
+void BabeWindow::playQueuedTrack(const int &pos)
+{
+    this->addToPlaylist({this->queueList->getRowData(pos)}, false, APPEND::APPENDAFTER);
+    this->removeQueuedTrack(pos);
 }
 
 void BabeWindow::next()
 {
     int nextSong=0;
 
-    if(!this->queued_songs.isEmpty())
-    {
-        this->removeQueuedTrack(this->current_song, this->current_song_pos);
-        nextSong = this->current_song_pos;
+    if(this->queueList->rowCount()>0)
+        this->playQueuedTrack(0);
 
-    }else nextSong= this->current_song_pos+1;
 
-    if(this->queued_songs.isEmpty() && this->prev_queued_song_pos != -1)
-    {
-        nextSong= this->prev_queued_song_pos+1;
-        this->prev_queued_song_pos=-1;
-    }
+    qDebug()<<"Tracks on queue:"<<this->queueList->rowCount();
+
+    nextSong = this->current_song_pos+1;
 
     if(nextSong >= this->mainList->rowCount()) nextSong = 0;
 
-    if(!this->queued_songs.isEmpty())
-        nextSong=0;
-
-    this->mainList->setCurrentCell((this->shuffle_state == SHUFFLE && this->queued_songs.isEmpty()) ? this->shuffleNumber(): nextSong, static_cast<int>(Bae::KEY::TITLE));
+    this->mainList->setCurrentCell(this->shuffle_state == SHUFFLE ? this->shuffleNumber(): nextSong, static_cast<int>(Bae::KEY::TITLE));
 
     this->loadTrack();
 }
@@ -1843,7 +1845,7 @@ void  BabeWindow::infoIt(const Bae::DB &track)
     this->loadInfo(track);
 }
 
-void BabeWindow::addToPlaylist(const Bae::DB_LIST &mapList, const bool &notRepeated, const appendPos &pos)
+void BabeWindow::addToPlaylist(const Bae::DB_LIST &mapList, const bool &notRepeated, const APPEND &pos)
 {
     if(!mapList.isEmpty())
     {

@@ -55,7 +55,7 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView)
 
     infoUtils = new QWidget();
     infoUtils->setLayout(infoUtils_layout);
-    infoUtils->setMaximumHeight(22);
+    infoUtils->setFixedHeight(22);
 
     auto similarBtn = new QToolButton(this);
     connect(similarBtn, &QToolButton::clicked, [this]()
@@ -101,8 +101,16 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView)
     infoUtils_layout->addWidget(moreBtn);
     infoUtils_layout->addWidget(searchBtn);
 
-    ui->artistLayout->insertWidget(0, artistContainer);
-    ui->artistLayout->insertWidget(1,infoUtils);
+    ui->splitter->insertWidget(0, artistContainer);
+    ui->splitter->insertWidget(1, infoUtils);
+
+    ui->splitter->setSizes({0,0,0,0,0,0});
+    ui->splitter->setStretchFactor(0, 0);
+    ui->splitter->setStretchFactor(1, 0);
+    ui->splitter->setStretchFactor(2, 1);
+    ui->splitter->setStretchFactor(3, 1);
+    ui->splitter->setStretchFactor(4, 1);
+    ui->splitter->setStretchFactor(5, 1);
 
     ui->customsearch->setVisible(false);
 
