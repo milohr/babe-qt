@@ -32,6 +32,8 @@
 
 namespace Ui {class settings;}
 
+class Socket;
+
 class settings : public QWidget
 {
     Q_OBJECT
@@ -75,7 +77,6 @@ private slots:
     void on_remove_clicked();
 
     void on_debugBtn_clicked();
-    void on_checkBox_stateChanged(int arg1);
 
     void on_comboBox_activated(const QString &arg1);
 
@@ -83,8 +84,6 @@ public slots:
 
     void populateDB(const QString &path);
     void fetchArt();
-    void handleDirectoryChanged_extension();
-
 
 private:
     Ui::settings *ui;
@@ -109,7 +108,7 @@ private:
     QStringList files;
     QStringList dirs;
     QFileSystemWatcher *watcher;
-    QFileSystemWatcher *extensionWatcher;
+    Socket *babeSocket;
     QTimer *cacheTimer;
 
 signals:

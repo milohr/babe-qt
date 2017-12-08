@@ -26,84 +26,69 @@ YouTube::YouTube(QObject *parent) : QObject(parent)
     this->nof = new Notify(this);
 }
 
-YouTube::~YouTube(){   }
+YouTube::~YouTube(){ }
 
-void YouTube::fetch(const QStringList &files)
+void YouTube::fetch(const QString &json)
 {
-    for(auto file: files)
+    QJsonParseError jsonParseError;
+    QJsonDocument jsonResponse = QJsonDocument::fromJson(json.toUtf8(), &jsonParseError);
+
+    if (jsonParseError.error != QJsonParseError::NoError)
+        return;
+    if (!jsonResponse.isObject())
+        return;
+
+    QJsonObject mainJsonObject(jsonResponse.object());
+    auto data = mainJsonObject.toVariantMap();
+
+    auto id = data.value("id").toString().trimmed();
+    auto title = data.value("title").toString().trimmed();
+    auto artist = data.value("artist").toString().trimmed();
+    auto album = data.value("album").toString().trimmed();
+    auto page = data.value("page").toString().replace('"',"").trimmed();
+
+    qDebug()<<id<<title<<artist;
+
+    DB infoMap;
+    infoMap.insert(KEY::TITLE,title);
+    infoMap.insert(KEY::ARTIST,artist);
+    infoMap.insert(KEY::ALBUM,album);
+    infoMap.insert(KEY::URL,page);
+    infoMap.insert(KEY::ID,id);
+
+    if(!this->ids.contains(infoMap[KEY::ID]))
     {
-        qDebug()<<file;
+        this->ids<<infoMap[KEY::ID];
 
-        QString title,artist,album,id,page;
-
-
-        std::ifstream info(file.toStdString());
-        std::string line;
-
-        while (std::getline(info, line))
+        auto process = new QProcess(this);
+        process->setWorkingDirectory(cachePath);
+        //connect(process, SIGNAL(readyReadStandardOutput()), this, SLOT(processFinished()));
+        //connect(process, SIGNAL(finished(int)), this, SLOT(processFinished_totally(int)));
+        connect(process, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
+                [infoMap,this](int exitCode, QProcess::ExitStatus exitStatus)
         {
-            auto infoLine = QString::fromStdString(line);
+            //                qDebug()<<"processFinished_totally"<<exitCode<<exitStatus;
+            processFinished_totally(exitCode,infoMap,exitStatus);
 
-            if (infoLine.contains("[title] ="))
-                title = infoLine.replace("[title] =", "").trimmed();
+        });
 
-            else if(infoLine.contains("[artist] ="))
-                artist = infoLine.replace("[artist] =", "").trimmed();
+        nof->notify("Song received!", infoMap[KEY::TITLE]+ " - "+ infoMap[KEY::ARTIST]+".\nWait a sec while the track is added to your collection :)");
+        auto command = ydl;
 
-            else if (infoLine.contains("[album] ="))
-                album = infoLine.replace("[album] =", "").trimmed();
-
-            else if (infoLine.contains("[id] ="))
-                id = infoLine.replace("[id] =", "").trimmed();
-
-            else if (infoLine.contains("[page] ="))
-                page = infoLine.replace("[page] =", "").trimmed();
-
-        }
-
-        if(QFile(file).remove()) qDebug()<<"removing file"<<file;
-
-        DB infoMap;
-        infoMap.insert(KEY::TITLE,title);
-        infoMap.insert(KEY::ARTIST,artist);
-        infoMap.insert(KEY::ALBUM,album);
-        infoMap.insert(KEY::URL,page);
-        infoMap.insert(KEY::ID,id);
-
-        //qDebug()<<infoMap;
-
-        if(!this->ids.contains(infoMap[KEY::ID]))
-        {
-            this->ids<<infoMap[KEY::ID];
-
-            auto process = new QProcess(this);
-            process->setWorkingDirectory(cachePath);
-            //connect(process, SIGNAL(readyReadStandardOutput()), this, SLOT(processFinished()));
-            //connect(process, SIGNAL(finished(int)), this, SLOT(processFinished_totally(int)));
-            connect(process, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
-                    [infoMap,this](int exitCode, QProcess::ExitStatus exitStatus)
-            {
-
-                //                qDebug()<<"processFinished_totally"<<exitCode<<exitStatus;
-                processFinished_totally(exitCode,infoMap,exitStatus);
-
-            });
-
-            nof->notify("Song received!", infoMap[KEY::TITLE]+ " - "+ infoMap[KEY::ARTIST]+".\nWait a sec while the track is added to your collection :)");
-            auto command = ydl;
-
-            command = command.replace("$$$",infoMap[KEY::URL])+" "+infoMap[KEY::ID];
-            qDebug()<<command;
-            process->start(command);
-        }
+        command = command.replace("$$$",infoMap[KEY::URL])+" "+infoMap[KEY::ID];
+        qDebug()<<command;
+        process->start(command);
     }
 }
 
 void YouTube::processFinished_totally(const int &state,const DB &info,const QProcess::ExitStatus &exitStatus)
 {
-    QString file =this->cachePath+info[KEY::URL]+".m4a";
-
     auto track = info;
+
+    auto doneId = track[KEY::ID];
+    auto file = this->cachePath+track[KEY::URL]+".m4a";
+
+    ids.removeAll(doneId);
     track.insert(KEY::URL,file);
 
     qDebug()<<track[KEY::ID]<<track[KEY::TITLE]<<track[KEY::ARTIST]<<track[KEY::URL];
@@ -119,7 +104,7 @@ void YouTube::processFinished_totally(const int &state,const DB &info,const QPro
             tag.setTitle(track[KEY::TITLE]);
             tag.setAlbum(track[KEY::ALBUM]);
             tag.setComment(track[KEY::URL]);
-
+            qDebug()<<"trying tocollect metadata of downloaded track";
             Pulpo pulpo;
             pulpo.registerServices({PULPO::SERVICES::LastFm, PULPO::SERVICES::Spotify});
             pulpo.setOntology(PULPO::ONTOLOGY::TRACK);
@@ -160,16 +145,19 @@ void YouTube::processFinished_totally(const int &state,const DB &info,const QPro
             timer.start();
             loop.exec();
             timer.stop();
-            QString doneId = track[KEY::ID];
+
             qDebug()<<"process finished totally for"<<state<<doneId<<exitStatus;
 
             qDebug()<<"need to delete the id="<<doneId;
-            ids.removeAll(doneId);
             qDebug()<<"ids left to process: "<<ids;
 
             if(ids.isEmpty()) emit youtubeTrackReady(this->cachePath);
         }
     }
+
+
+
+
 }
 
 

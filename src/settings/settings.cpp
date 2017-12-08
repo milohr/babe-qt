@@ -18,6 +18,7 @@
 
 #include "settings.h"
 #include "ui_settings.h"
+#include "../services/local/socket.h"
 
 settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
 {
@@ -35,10 +36,7 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
     qDebug() << "Getting collectionDB info from: " << Bae::CollectionDBPath;
     qDebug() << "Getting settings info from: " << Bae::SettingPath;
     qDebug() << "Getting artwork files from: " << Bae::CachePath;
-    qDebug() << "Getting extension files files from: " <<Bae::ExtensionFetchingPath;
 
-    ui->ytLineEdit->setText(Bae::ExtensionFetchingPath);
-    ui->frame_4->setEnabled(false);
 
     if(!Bae::fileExists(notifyDir+"/Babe.notifyrc"))
     {
@@ -136,17 +134,11 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
 
     connect(this, &settings::collectionPathChanged, this, &settings::populateDB);
 
-
-    ui->ytLineEdit->setText(Bae::ExtensionFetchingPath);
     this->ytFetch = new YouTube(this);
     connect(ytFetch,&YouTube::youtubeTrackReady, this, &settings::populateDB);
 
-    //    connect(ytFetch,&YouTube::youtubeTrackReady,[this](){ emit collectionPathChanged(youtubeCachePath);});
-    extensionWatcher = new QFileSystemWatcher(this);
-    extensionWatcher->addPath(Bae::ExtensionFetchingPath);
-    connect(extensionWatcher, SIGNAL(directoryChanged(QString)), this,
-            SLOT(handleDirectoryChanged_extension()));
-
+    this->babeSocket = new Socket(static_cast<quint16>(Bae::BabePort.toInt()),this);
+    connect(babeSocket, &Socket::message, ytFetch, &YouTube::fetch);
 
     ui->remove->setEnabled(false);
     ui->progressBar->hide();
@@ -171,21 +163,6 @@ settings::~settings()
     //    delete fileSaver;
     //    delete this->brainDeamon;
 }
-
-
-
-void settings::handleDirectoryChanged_extension()
-{
-    QStringList urls;
-
-    QDirIterator it(Bae::ExtensionFetchingPath, QStringList() << "*.babe", QDir::Files);
-
-    while (it.hasNext()) urls<< it.next();
-
-    if (!urls.isEmpty()) ytFetch->fetch(urls);
-
-}
-
 
 
 void settings::on_collectionPath_clicked(const QModelIndex &index) {
@@ -494,12 +471,6 @@ void settings::on_debugBtn_clicked()
     qDebug()<<"Current dirs being watched:";
     for(auto dir: watcher->directories()) qDebug()<<dir;
 
-}
-
-void settings::on_checkBox_stateChanged(int arg1)
-{
-    if(arg1 == 0) ui->frame_4->setEnabled(false);
-    else ui->frame_4->setEnabled(true);
 }
 
 void settings::on_comboBox_activated(const QString &arg1)

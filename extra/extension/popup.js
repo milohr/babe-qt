@@ -46,6 +46,14 @@ document.addEventListener('DOMContentLoaded', function()
                     newArtist = newArtist.replace(regex, "").trim();
                 }
 
+                regex = /"/g
+                if(newTitle.indexOf('"')>-1)
+                    newTitle = newTitle.replace(regex,"").trim();
+
+                if(newArtist.indexOf('"')>-1)
+                    newArtist = newTitle.replace(regex,"").trim();
+
+
                 babeTitle.value = newTitle;
                 babeArtist.value = newArtist;
 
@@ -68,12 +76,12 @@ document.addEventListener('DOMContentLoaded', function()
             var album = document.getElementById('album').value;
 
             var json = {
-                title: title,
-                artist: artist,
-                album:album,
+                title: title.trim(),
+                artist: artist.trim(),
+                album:album.trim(),
                 babe: 1,
-                id: id,
-                page: pageTitle
+                id: id.trim(),
+                page: pageTitle.trim()
             }
 
             babeBtn.addEventListener('click', function()
@@ -92,8 +100,8 @@ function sendData(json)
 {
     console.log(json);
 
-    if ( websocket != null )
-        websocket.send( json );
+    if (websocket != null)
+        websocket.send( JSON.stringify(json) );
 
 }
 

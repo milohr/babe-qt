@@ -425,7 +425,8 @@ void BabeWindow::setUpCollectionViewer()
 
     this->mainLayout->addWidget(this->views);
     this->mainLayout->addWidget(this->rightFrame);
-    this->mainLayout->setContentsMargins(0, 0, 0, 0);
+//    this->mainLayout->setContentsMargins(0, 0, 0, 0);
+    this->mainLayout->setSpacing(6);
 
     this->mainWidget= new QWidget(this);
     this->views->setMinimumHeight(static_cast<int>(ALBUM_SIZE)*2);
@@ -1274,15 +1275,14 @@ void BabeWindow::go_playlistMode()
         this->mainToolbar->setVisible(false);
         this->secondaryToolbar->actions().at(0)->setVisible(true);
 
-        this->setMaximumWidth(rightFrame->minimumSizeHint().width());
-        this->setMinimumWidth(rightFrame->minimumSizeHint().width());
+        this->setFixedWidth(rightFrame->minimumSizeHint().width()+12);
 
         auto animation = new QPropertyAnimation(this, "maximumWidth",this);
         connect(animation, &QPropertyAnimation::finished, animation, &QPropertyAnimation::deleteLater);
 
         animation->setDuration(200);
         animation->setStartValue(this->size().width());
-        animation->setEndValue(rightFrame->minimumSizeHint().width());
+        animation->setEndValue(rightFrame->minimumSizeHint().width()+12);
 
         animation->start();
 

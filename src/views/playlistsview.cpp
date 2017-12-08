@@ -176,6 +176,7 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
     splitter->addWidget(frame);
     splitter->addWidget(table);
 
+    splitter->setHandleWidth(6);
     splitter->setSizes({0,0});
     splitter->setStretchFactor(0, 0);
     splitter->setStretchFactor(1, 1);

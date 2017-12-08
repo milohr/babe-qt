@@ -115,8 +115,7 @@ AlbumsView::AlbumsView(const bool &extraList, QWidget *parent) :
     auto *splitter = new QSplitter(parent);
     splitter->setChildrenCollapsible(false);
     splitter->setOrientation(Qt::Vertical);
-//    splitter->setContentsMargins(6,6,6,6);
-    //    splitter->addWidget(spacer);
+    splitter->setHandleWidth(6);
     splitter->addWidget(this->grid);
     splitter->addWidget(this->albumBox_frame);
 
