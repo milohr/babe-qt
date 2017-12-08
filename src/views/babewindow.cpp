@@ -18,6 +18,7 @@
 
 #include "babewindow.h"
 #include "ui_babewindow.h"
+#include "../dialogs/moodform.h"
 
 BabeWindow::BabeWindow(const QStringList &files, QWidget *parent) : QMainWindow(parent),
     ui(new Ui::BabeWindow)
@@ -214,9 +215,7 @@ void BabeWindow::setUpViews()
         {
             this->current_song_pos--;
             this->prev_song_pos--;
-
         }
-
     });
 
     connect(this->mainList, &BabeTable::tableWidget_doubleClicked, this, &BabeWindow::on_mainList_clicked);
@@ -386,7 +385,6 @@ void BabeWindow::setUpViews()
     connect(ui->playlists_view, &QToolButton::clicked, this, &BabeWindow::playlistsView);
     connect(ui->rabbit_view, &QToolButton::clicked, this, &BabeWindow::rabbitView);
     connect(ui->info_view, &QToolButton::clicked, this, &BabeWindow::infoView);
-    connect(ui->settings_view, &QToolButton::clicked, this,&BabeWindow::settingsView);
 
     this->views = new QStackedWidget(this);
     this->views->setFrameShape(QFrame::NoFrame);
@@ -441,6 +439,7 @@ void BabeWindow::setUpCollectionViewer()
     this->mainToolbar->addWidget(ui->spacer2);
     this->mainToolbar->addWidget(this->ui->rabbit_view);
     this->mainToolbar->addWidget(this->ui->settings_view);
+    this->mainToolbar->actions()[8]->setVisible(false);
 
     this->secondaryToolbar = new QToolBar("Search", this);
     this->secondaryToolbar->setAllowedAreas(Qt::ToolBarArea::AllToolBarAreas);
@@ -739,6 +738,22 @@ void BabeWindow::setUpMenuBar()
 
     auto toolBarMenu = this->menuBar()->addMenu(tr("&Toolbar"));
     toolBarMenu->addAction(toolBarText);
+
+    auto moods = new QAction("Assign Moods", this);
+    connect(moods, &QAction::triggered, [this]()
+    {
+        auto moodForm = new MoodForm(this);
+        connect(moodForm, &MoodForm::saved, moodForm, &MoodForm::deleteLater);
+        moodForm->show();
+    });
+
+    auto settings = new QAction("Settings", this);
+    connect(settings, &QAction::triggered, this, &BabeWindow::settingsView);
+
+    auto toolsMenu = this->menuBar()->addMenu(tr("&Tools"));
+    toolsMenu->addAction(moods);
+    toolsMenu->addAction(settings);
+
 
 }
 

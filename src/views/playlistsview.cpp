@@ -68,9 +68,9 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
         }else if( this->list->currentIndex().data().toString()=="Popular")
         {
             query.prepare(QString("select t.* from tracks t "
-                                     "inner join tracks_tags tt on tt.url = t.url "
-                                     "where tt.context = 'track_stat' and t.artist = '%1' "
-                                     "group by tt.url order by sum(tag) desc limit 250").arg(tag));
+                                  "inner join tracks_tags tt on tt.url = t.url "
+                                  "where tt.context = 'track_stat' and t.artist = '%1' "
+                                  "group by tt.url order by sum(tag) desc limit 250").arg(tag));
 
         }
 
@@ -461,7 +461,6 @@ void PlaylistsView::setPlaylists(const QStringList &playlists)
         item->setFlags(item->flags() | Qt::ItemIsEditable);
         list->addItem(item);
     }
-
 }
 
 void PlaylistsView::saveToPlaylist(const Bae::DB_LIST &tracks)
@@ -481,9 +480,7 @@ void PlaylistsView::saveToPlaylist(const Bae::DB_LIST &tracks)
         form->deleteLater();
     });
     form->show();
-
 }
-
 
 void PlaylistsView::addToPlaylist(const QString &playlist,const Bae::DB_LIST &tracks)
 {
@@ -494,15 +491,13 @@ void PlaylistsView::addToPlaylist(const QString &playlist,const Bae::DB_LIST &tr
     emit addedToPlaylist(tracks,playlist);/*tofix*/
 }
 
-
-
-
 void PlaylistsView::setPlaylistsMoods()
 {
 
     auto moodsLayout = new QHBoxLayout;
     auto moodGroup = new QButtonGroup(this->list);
-    connect(moodGroup, static_cast<void(QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked), [this](const int &mood)
+
+    connect(moodGroup, static_cast<void(QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked), [=](const int &mood)
     {
         currentPlaylist = this->moods.at(mood);
         table->flushTable();
@@ -512,6 +507,20 @@ void PlaylistsView::setPlaylistsMoods()
         QString queryTxt = "SELECT * FROM tracks WHERE art = \"" + currentPlaylist + "\"";
         query.prepare(queryTxt);
         table->populateTableView(query);
+
+        auto moodMap = Bae::loadSettings("MOODS", "SETTINGS", QMap<QString, QVariant>()).toMap();
+        QStringList strValues;
+
+        for(auto tag : moodMap[currentPlaylist].toStringList())
+            if(!tag.isEmpty())
+                strValues.append(QString("'%%1%'").arg(tag.trimmed()));
+
+        queryTxt = "SELECT DISTINCT t.* FROM tracks t INNER JOIN tracks_tags tt ON tt.url = t.url WHERE tag LIKE "+strValues.join(" OR tag LIKE ")+" LIMIT 100";
+        qDebug()<<  queryTxt;
+
+        query.prepare(queryTxt);
+        table->populateTableView(query);
+
     });
 
     //    moodsLayout->addStretch();

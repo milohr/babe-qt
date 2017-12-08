@@ -66,7 +66,8 @@ FORMS += \
     src/dialogs/playlistform.ui \
     src/settings/settings.ui \
     src/views/babewindow.ui \
-    src/views/infoview.ui
+    src/views/infoview.ui \
+    src/dialogs/moodform.ui
 
 HEADERS += \
     src/data_models/track.h \
@@ -103,7 +104,8 @@ HEADERS += \
     src/widget_models/babealbum.h \
     src/widget_models/babegrid.h \
     src/widget_models/babetable.h \
-    src/widget_models/scrolltext.h
+    src/widget_models/scrolltext.h \
+    src/dialogs/moodform.h
 
 SOURCES += \
     src/data_models/track.cpp \
@@ -135,5 +137,6 @@ SOURCES += \
     src/widget_models/babegrid.cpp \
     src/widget_models/babetable.cpp \
     src/widget_models/scrolltext.cpp \
-    src/main.cpp
+    src/main.cpp \
+    src/dialogs/moodform.cpp
 
