@@ -165,9 +165,7 @@ private slots:
 
     void refreshTables(const QMap<Bae::TABLE, bool> &tableReset);
     void addToPlayed(const QString &url);
-    void on_goBackBtn_clicked();
 
-    void removeSong(const int &index);
     void putAlbumOnPlay(const Bae::DB &info);
     void putOnPlay(const Bae::DB_LIST &mapList);
     void playItNow(const Bae::DB_LIST &list);
@@ -205,9 +203,9 @@ private:
     Notify *nof;
 
     QToolBar *mainToolbar;
-    QToolBar *secondaryToolbar;
     QWidget *mainWidget;
     QHBoxLayout * mainLayout;
+    QWidget *viewsWidget;
     QStackedWidget *views;
     QStackedWidget *mainListView;
 
@@ -221,7 +219,6 @@ private:
     /*the views*/
     BabeTable *mainList;
     BabeTable *queueList;
-    BabeTable *filterList;
     BabeTable *collectionTable;
     BabeTable *resultsTable;
 
@@ -258,7 +255,7 @@ private:
 
     /*the streaming */
     QMediaPlayer *player;
-    QTimer *updater = new QTimer(this);
+    QTimer *updater;
 
     QSlider *seekBar;
     QTimer *searchTimer;
@@ -276,8 +273,6 @@ private:
     bool miniPlayback =false;
 
 signals:
-    void finishedPlayingSong(QString url);
-    void collectionChecked(const QMap<TABLE,bool> &reset);
     void finishRefresh();
 };
 #endif // BAEWINDOW_H

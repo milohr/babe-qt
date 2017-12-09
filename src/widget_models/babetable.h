@@ -200,7 +200,6 @@ signals:
     void finishedPopulating();
     void rightClicked(const int &row, const int &column);
     void babeIt_clicked(const Bae::DB_LIST &tracks);
-    void removeIt_clicked(const int &index);
     void moodIt_clicked(const QList<int> &rows,const QString &color,const bool &dark);
     void queueIt_clicked(const Bae::DB_LIST &track);
     void infoIt_clicked(const Bae::DB &track);

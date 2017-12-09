@@ -101,16 +101,8 @@ InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView)
     infoUtils_layout->addWidget(moreBtn);
     infoUtils_layout->addWidget(searchBtn);
 
-    ui->splitter->insertWidget(0, artistContainer);
-    ui->splitter->insertWidget(1, infoUtils);
-
-    ui->splitter->setSizes({0,0,0,0,0,0});
-    ui->splitter->setStretchFactor(0, 0);
-    ui->splitter->setStretchFactor(1, 0);
-    ui->splitter->setStretchFactor(2, 1);
-    ui->splitter->setStretchFactor(3, 1);
-    ui->splitter->setStretchFactor(4, 1);
-    ui->splitter->setStretchFactor(5, 1);
+    ui->verticalLayout->insertWidget(0, artistContainer, Qt::AlignTop);
+    ui->verticalLayout->insertWidget(1, infoUtils, Qt::AlignTop);
 
     ui->customsearch->setVisible(false);
 

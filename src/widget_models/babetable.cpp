@@ -207,9 +207,9 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent)
     addMusicTxt_layout->addWidget(addMusicMsgWidget,Qt::AlignCenter); // center alignment
     addMusicTxt_layout->addStretch();
 
-    auto *updater = new QTimer(this);
+    auto updater = new QTimer(this);
     connect(updater, SIGNAL(timeout()), this, SLOT(update()));
-    updater->start(500);
+    updater->start(200);
 
 }
 
@@ -593,10 +593,10 @@ void BabeTable::setUpContextMenu(const int row, const int column)
 
 void BabeTable::keyPressEvent(QKeyEvent *event)
 {
-    switch (event->key()) {
-    case Qt::Key_Return: {
-
-
+    switch (event->key())
+    {
+    case Qt::Key_Return:
+    {
         Bae::DB_LIST list;
         for(auto row : this->getSelectedRows(false))
         {
@@ -605,13 +605,13 @@ void BabeTable::keyPressEvent(QKeyEvent *event)
             qDebug()<<row;
         }
 
-        stopPreview();
-
+        this->stopPreview();
         emit tableWidget_doubleClicked(list);
-
         break;
     }
-    case Qt::Key_Up: {
+
+    case Qt::Key_Up:
+    {
         QModelIndex index = this->currentIndex();
         int row = index.row() - 1;
         int column = 1;
@@ -622,7 +622,9 @@ void BabeTable::keyPressEvent(QKeyEvent *event)
 
         break;
     }
-    case Qt::Key_Down: {
+
+    case Qt::Key_Down:
+    {
         QModelIndex index = this->currentIndex();
         int row = index.row() + 1;
         int column = 1;
@@ -633,28 +635,29 @@ void BabeTable::keyPressEvent(QKeyEvent *event)
 
         break;
     }
+
     case Qt::Key_Space:
     {
-        if(rowPreview)
+        if(this->rowPreview)
         {
             if(preview->state()==QMediaPlayer::PlayingState) this->stopPreview();
             else
             {
-                previewRow= this->getIndex();
+                this->previewRow= this->getIndex();
                 this->startPreview(this->getRowData(previewRow)[Bae::KEY::URL]);
             }
         }
-
         break;
     }
 
     case Qt::Key_Delete	:
     {
         auto rows = this->getSelectedRows(false);
-        int i=0;
+        auto i = 0;
         for(auto row:rows)
         {
-            emit removeIt_clicked(row-i);
+            this->removeRow(row-i);
+            emit indexRemoved(row-i);
             i++;
         }
         break;
@@ -662,7 +665,6 @@ void BabeTable::keyPressEvent(QKeyEvent *event)
 
     case Qt::Key_Right:
     {
-
         if(preview->state()==QMediaPlayer::PlayingState)
         {
             auto newPos = preview->position()+1000;
@@ -670,7 +672,6 @@ void BabeTable::keyPressEvent(QKeyEvent *event)
                 this->stopPreview();
             else
                 preview->setPosition(newPos);
-
         }
         break;
     }
@@ -709,7 +710,6 @@ void BabeTable::keyPressEvent(QKeyEvent *event)
         break;
     }
 
-
     case Qt::Key_S :
     {
         Bae::DB_LIST mapList;
@@ -722,7 +722,6 @@ void BabeTable::keyPressEvent(QKeyEvent *event)
     }
 
     case Qt::Key_I:
-
     {
         auto url =  this->getRowData(this->getIndex())[Bae::KEY::URL];
         emit infoIt_clicked(this->connection.getDBData(QStringList(url)).first());
@@ -759,36 +758,31 @@ void BabeTable::keyPressEvent(QKeyEvent *event)
         this->rateGroup(5,false);
         break;
     }
-
-
-    default: {
+    default:
+    {
         QTableWidget::keyPressEvent(event);
         break;
     }
+
     }
 }
 
 void BabeTable::mousePressEvent(QMouseEvent *evt)
 {
-
     if (evt->button() == Qt::RightButton)
     {
-        qDebug() << "table right clicked";
         evt->accept();
         int row = this->indexAt(evt->pos()).row();
         int column= this->indexAt(evt->pos()).column();
-        qDebug()<<row << column;
-
         if(row != -1) emit rightClicked(row, column);
     }
 
     QTableWidget::mousePressEvent(evt);
-
 }
 
 void BabeTable::enablePreview(const bool state)
 {
-    this->rowPreview=state;
+    this->rowPreview = state;
 }
 
 void BabeTable::startPreview(const QString &url)
@@ -898,10 +892,6 @@ void BabeTable::on_tableWidget_doubleClicked(const QModelIndex &index)
     Bae::DB_LIST list;
     auto track = getRowData(this->getIndex());
     list<<track;
-    qDebug()
-            << "BabeTable doubleClicked item<<"
-            << track[Bae::KEY::URL];
-
     emit tableWidget_doubleClicked(list);
 }
 
@@ -971,7 +961,13 @@ void BabeTable::infoIt_action()
 
 void BabeTable::removeIt_action()
 {
-    emit removeIt_clicked(rRow);
+    auto i = 0;
+    for(auto row : this->getSelectedRows(true))
+    {
+        this->removeRow(row-i);
+        emit this->indexRemoved(row-i);
+        i++;
+    }
 }
 
 void BabeTable::moodIt_action(const QString &color)
@@ -1061,7 +1057,6 @@ Bae::DB_LIST BabeTable::getAllTableContent()
 
 void BabeTable::removeRepeated()//tofix
 {
-
     QStringList index;
     //    int rows =;
     for(auto row=0;row<this->rowCount();row++)
@@ -1075,16 +1070,10 @@ void BabeTable::removeRepeated()//tofix
             this->removeRow(row);
             emit indexRemoved(row);
             row--;
-
-        }
-        else
+        }else
         {
             qDebug()<<"adding to index:"<<track[Bae::KEY::TITLE]<<row;
-
             index<<trackInfo;
         }
-
-
     }
-
 }

@@ -310,7 +310,6 @@ inline QString ucfirst(const QString &str)/*uppercase first letter*/
 
 inline QString fixString (const QString &str)
 {
-
     //title.remove(QRegExp(QString::fromUtf8("[·-`~!@#$%^&*()_—+=|:;<>«»,.?/{}\'\"\\\[\\\]\\\\]")));
     QString title=str;
     title=title.remove(QChar::Null);
@@ -329,7 +328,7 @@ inline QString fixString (const QString &str)
     title=title.contains("|")?removeSubstring(title, "|"):title;
     title=title.contains('"')?title.replace('"',""):title;
     title=title.contains(":")?title.replace(":",""):title;
-    title=title.contains("&")? title.replace("&", "and"):title;
+//    title=title.contains("&")? title.replace("&", "and"):title;
     //qDebug()<<"fixed string:"<<title;
 
     return ucfirst(title).simplified();

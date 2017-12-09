@@ -47,10 +47,6 @@ public:
 
     Deamon::Brain brainDeamon;
 
-    int getToolbarIconSize()  {return iconSize;}
-    void setToolbarIconSize(const int &iconSize);
-    void setToolbarPosition(const Qt::ToolBarArea &area);
-
     void setSettings(QStringList setting);
     void readSettings();
     void removeSettings(QStringList setting);
@@ -70,7 +66,6 @@ public:
 
 private slots:
     void on_open_clicked();
-    void on_toolbarIconSize_activated(const QString &arg1);
     void on_pushButton_clicked();
     void handleDirectoryChanged(const QString &dir);
     void on_collectionPath_clicked(const QModelIndex &index);
@@ -78,7 +73,6 @@ private slots:
 
     void on_debugBtn_clicked();
 
-    void on_comboBox_activated(const QString &arg1);
 
 public slots:
 
@@ -98,7 +92,6 @@ private:
     Notify nof;
     YouTube *ytFetch;
 
-    int iconSize = 16;
     QStringList collectionPaths={};
     QMovie *movie;
     QString pathToRemove;
@@ -113,8 +106,6 @@ private:
 
 signals:
 
-    void toolbarIconSizeChanged(const int &newSize);
-    void toolbarPositionChanged(const Qt::ToolBarArea &pos);
     void collectionPathChanged(QString newPath);
     void collectionDBFinishedAdding();
     void refreshTables(const QMap<Bae::TABLE,bool> &reset);
