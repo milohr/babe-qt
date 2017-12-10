@@ -81,7 +81,7 @@ BabeWindow::BabeWindow(const QStringList &files, QWidget *parent) : QMainWindow(
     //* LOAD OPENED FILES*/
     if(!files.isEmpty())
     {
-        this->appendFiles(files, APPENDTOP);
+        this->appendFiles(files, APPEND::APPENDTOP);
         this->current_song_pos = 0;
 
     }else this->current_song_pos = Bae::loadSettings("PLAYLIST_POS","MAINWINDOW",QVariant(0)).toInt();
@@ -111,7 +111,7 @@ void BabeWindow::start()
         auto savedList = Bae::loadSettings("PLAYLIST","MAINWINDOW",{}).toStringList();
 
         if(!savedList.isEmpty())
-            this->addToPlaylist(connection.getDBData(savedList), false, APPENDBOTTOM);
+            this->addToPlaylist(connection.getDBData(savedList), false, APPEND::APPENDBOTTOM);
         else this->populateMainList();
 
         this->refreshTables({{TABLE::TRACKS, true}, {TABLE::ALBUMS, true}, {TABLE::ARTISTS, true}, {TABLE::PLAYLISTS, true}});
@@ -153,18 +153,18 @@ void BabeWindow::setUpViews()
 
     connect(&this->connection, &CollectionDB::artistsCleaned, [this](int amount)
     {
-       this->nof->notify(QString::number(amount)+" Artists cleaned up", "");
+        this->nof->notify(QString::number(amount)+" Artists cleaned up", "");
     });
 
     connect(&this->connection, &CollectionDB::albumsCleaned, [this](int amount)
     {
-       this->nof->notify(QString::number(amount)+" Albums cleaned up", "");
+        this->nof->notify(QString::number(amount)+" Albums cleaned up", "");
     });
 
     this->playlistTable = new PlaylistsView(this);
     connect(this->playlistTable->table, &BabeTable::tableWidget_doubleClicked, [this] (const Bae::DB_LIST &list)
     {
-        this->addToPlaylist(list,false,APPENDBOTTOM);
+        this->addToPlaylist(list, false, APPEND::APPENDBOTTOM);
     });
     connect(this->playlistTable->table, &BabeTable::babeIt_clicked, this, &BabeWindow::babeIt);
     connect(this->playlistTable->table, &BabeTable::queueIt_clicked, this, &BabeWindow::addToQueue);
@@ -174,7 +174,7 @@ void BabeWindow::setUpViews()
     connect(this->playlistTable->table, &BabeTable::playItNow, this, &BabeWindow::playItNow);
     connect(this->playlistTable->table, &BabeTable::appendIt, [this] (const Bae::DB_LIST &list)
     {
-        this->addToPlaylist(list, false, APPENDAFTER);
+        this->addToPlaylist(list, false, APPEND::APPENDAFTER);
     });
     connect(this->playlistTable->table, &BabeTable::saveToPlaylist, this->playlistTable, &PlaylistsView::saveToPlaylist);
 
@@ -185,7 +185,7 @@ void BabeWindow::setUpViews()
     this->collectionTable->showColumn(static_cast<int>(Bae::KEY::GENRE));
     connect(this->collectionTable,&BabeTable::tableWidget_doubleClicked, [this] (Bae::DB_LIST list)
     {
-        this->addToPlaylist(list,false,APPENDBOTTOM);
+        this->addToPlaylist(list, false, APPEND::APPENDBOTTOM);
     });
     connect(this->collectionTable, &BabeTable::babeIt_clicked, this, &BabeWindow::babeIt);
     connect(this->collectionTable, &BabeTable::queueIt_clicked, this, &BabeWindow::addToQueue);
@@ -195,7 +195,7 @@ void BabeWindow::setUpViews()
     connect(this->collectionTable, &BabeTable::playItNow, this, &BabeWindow::playItNow);
     connect(this->collectionTable, &BabeTable::appendIt, [this] (const Bae::DB_LIST &list)
     {
-        this->addToPlaylist(list,false, APPENDAFTER);
+        this->addToPlaylist(list, false, APPEND::APPENDAFTER);
     });
     connect(this->collectionTable, &BabeTable::saveToPlaylist, this->playlistTable, &PlaylistsView::saveToPlaylist);
 
@@ -293,7 +293,7 @@ void BabeWindow::setUpViews()
 
     connect(this->resultsTable, &BabeTable::tableWidget_doubleClicked, [this] (Bae::DB_LIST list)
     {
-        this->addToPlaylist(list, false, APPENDBOTTOM);
+        this->addToPlaylist(list, false, APPEND::APPENDBOTTOM);
     });
 
     connect(this->resultsTable, &BabeTable::babeIt_clicked, this, &BabeWindow::babeIt);
@@ -304,14 +304,14 @@ void BabeWindow::setUpViews()
     connect(this->resultsTable, &BabeTable::playItNow, this, &BabeWindow::playItNow);
     connect(this->resultsTable, &BabeTable::appendIt, [this] (Bae::DB_LIST list)
     {
-        this->addToPlaylist(list, false, APPENDAFTER);
+        this->addToPlaylist(list, false, APPEND::APPENDAFTER);
     });
     connect(this->resultsTable, &BabeTable::saveToPlaylist, playlistTable, &PlaylistsView::saveToPlaylist);
 
     this->albumsTable = new AlbumsView(false, this);
     connect(this->albumsTable->albumTable, &BabeTable::tableWidget_doubleClicked, [this] (Bae::DB_LIST list)
     {
-        this->addToPlaylist(list, false, APPENDBOTTOM);
+        this->addToPlaylist(list, false, APPEND::APPENDBOTTOM);
     });
     connect(this->albumsTable->albumTable, &BabeTable::babeIt_clicked, this, &BabeWindow::babeIt);
     connect(this->albumsTable->albumTable, &BabeTable::queueIt_clicked, this, &BabeWindow::addToQueue);
@@ -321,20 +321,27 @@ void BabeWindow::setUpViews()
     connect(this->albumsTable->albumTable, &BabeTable::playItNow, this, &BabeWindow::playItNow);
     connect(this->albumsTable->albumTable, &BabeTable::appendIt, [this] (Bae::DB_LIST list)
     {
-        this->addToPlaylist(list, false, APPENDAFTER);
+        this->addToPlaylist(list, false, APPEND::APPENDAFTER);
     });
     connect(this->albumsTable->albumTable, &BabeTable::saveToPlaylist, playlistTable, &PlaylistsView::saveToPlaylist);
     connect(this->albumsTable, &AlbumsView::playAlbum, this, &BabeWindow::putAlbumOnPlay);
     connect(this->albumsTable, &AlbumsView::babeAlbum, this, &BabeWindow::babeAlbum);
     connect(this->albumsTable, &AlbumsView::albumDoubleClicked, this, &BabeWindow::albumDoubleClicked);
-    connect(this->albumsTable, &AlbumsView::expandTo, this, &BabeWindow::expandAlbumList);
+    connect(this->albumsTable, &AlbumsView::expandTo, [this] (const QString &artist)
+    {
+        if(!artist.isEmpty())
+        {
+            emit ui->artists_view->clicked();
+            this->artistsTable->showAlbumInfo({{Bae::KEY::ARTIST,artist}});
+        }
+    });
 
     this->artistsTable = new AlbumsView(true, this);
     this->artistsTable->expandBtn->setVisible(false);
     this->artistsTable->albumTable->showColumn(static_cast<int>(Bae::KEY::ALBUM));
     connect(this->artistsTable->albumTable, &BabeTable::tableWidget_doubleClicked, [this] (Bae::DB_LIST list)
     {
-        this->addToPlaylist(list, false, APPENDBOTTOM);
+        this->addToPlaylist(list, false, APPEND::APPENDBOTTOM);
     });
     connect(this->artistsTable->albumTable, &BabeTable::babeIt_clicked, this, &BabeWindow::babeIt);
     connect(this->artistsTable->albumTable, &BabeTable::queueIt_clicked, this, &BabeWindow::addToQueue);
@@ -344,7 +351,7 @@ void BabeWindow::setUpViews()
     connect(this->artistsTable->albumTable, &BabeTable::playItNow, this, &BabeWindow::playItNow);
     connect(this->artistsTable->albumTable, &BabeTable::appendIt, [this] (Bae::DB_LIST list)
     {
-        this->addToPlaylist(list,false,APPENDAFTER);
+        this->addToPlaylist(list, false, APPEND::APPENDAFTER);
     });
     connect(this->artistsTable->albumTable, &BabeTable::saveToPlaylist,playlistTable,&PlaylistsView::saveToPlaylist);
     connect(this->artistsTable, &AlbumsView::playAlbum, this, &BabeWindow::putAlbumOnPlay);
@@ -373,7 +380,7 @@ void BabeWindow::setUpViews()
     this->rabbitTable = new RabbitView(this);
     connect(this->rabbitTable->generalSuggestion, &BabeTable::tableWidget_doubleClicked, [this] (Bae::DB_LIST list)
     {
-        this->addToPlaylist(list, false, APPENDBOTTOM);
+        this->addToPlaylist(list, false, APPEND::APPENDBOTTOM);
     });
     connect(this->rabbitTable->generalSuggestion, &BabeTable::queueIt_clicked, this, &BabeWindow::addToQueue);
     connect(this->rabbitTable->generalSuggestion, &BabeTable::babeIt_clicked, this, &BabeWindow::babeIt);
@@ -383,11 +390,14 @@ void BabeWindow::setUpViews()
     connect(this->rabbitTable->generalSuggestion, &BabeTable::playItNow, this, &BabeWindow::playItNow);
     connect(this->rabbitTable->generalSuggestion, &BabeTable::appendIt, [this] (Bae::DB_LIST list)
     {
-        this->addToPlaylist(list,false,APPENDAFTER);
+        this->addToPlaylist(list, false, APPEND::APPENDAFTER);
     });
     connect(this->rabbitTable->generalSuggestion, &BabeTable::saveToPlaylist, playlistTable, &PlaylistsView::saveToPlaylist);
     connect(this->rabbitTable->artistSuggestion, &BabeGrid::playAlbum, this,&BabeWindow::putAlbumOnPlay);
-    connect(this->rabbitTable->filterList, &BabeTable::tableWidget_doubleClicked, [this] (Bae::DB_LIST list) { addToPlaylist(list,false,APPENDBOTTOM);});
+    connect(this->rabbitTable->filterList, &BabeTable::tableWidget_doubleClicked, [this] (Bae::DB_LIST list)
+    {
+        this->addToPlaylist(list, false, APPEND::APPENDBOTTOM);
+    });
     connect(this->rabbitTable->filterList, &BabeTable::babeIt_clicked, this, &BabeWindow::babeIt);
     connect(this->rabbitTable->filterList, &BabeTable::queueIt_clicked, this, &BabeWindow::addToQueue);
     connect(this->rabbitTable->filterList, &BabeTable::infoIt_clicked, this, &BabeWindow::infoIt);
@@ -396,7 +406,7 @@ void BabeWindow::setUpViews()
     connect(this->rabbitTable->filterList, &BabeTable::playItNow, this, &BabeWindow::playItNow);
     connect(this->rabbitTable->filterList, &BabeTable::appendIt, [this] (Bae::DB_LIST list)
     {
-        this->addToPlaylist(list,false,APPENDAFTER);
+        this->addToPlaylist(list, false, APPEND::APPENDAFTER);
     });
     connect(this->rabbitTable->filterList, &BabeTable::saveToPlaylist,playlistTable,&PlaylistsView::saveToPlaylist);
 
@@ -558,25 +568,25 @@ void BabeWindow::movePanel(const POSITION &pos)
 
     switch(pos)
     {
-    case RIGHT:
+    case POSITION::RIGHT:
     {
-        this->mainLayout->removeWidget(rightFrame);
-        this->mainLayout->insertWidget(1,rightFrame);
+        this->mainLayout->removeWidget(this->rightFrame);
+        this->mainLayout->insertWidget(1,this->rightFrame);
 
-        this->playlistPos = RIGHT;
+        this->playlistPos = POSITION::RIGHT;
         break;
     }
-    case LEFT:
+    case POSITION::LEFT:
     {
-        this->mainLayout->removeWidget(rightFrame);
-        this->mainLayout->insertWidget(0,rightFrame);
+        this->mainLayout->removeWidget(this->rightFrame);
+        this->mainLayout->insertWidget(0,this->rightFrame);
 
-        this->playlistPos = LEFT;
+        this->playlistPos = POSITION::LEFT;
         break;
     }
-    case OUT:
+    case POSITION::OUT:
     {
-        if(this->viewMode != FULLMODE) expand();
+        if(this->viewMode != VIEW_MODE::FULLMODE) expand();
 
         this->mainLayout->removeWidget(this->rightFrame);
 
@@ -585,22 +595,22 @@ void BabeWindow::movePanel(const POSITION &pos)
 
         this->rightFrame->show();
         this->rightFrame->setMinimumHeight(static_cast<int>(ALBUM_SIZE)*2);
-        this->rightFrame->window()->setFixedWidth(rightFrame->minimumSizeHint().width());
-        this->rightFrame->window()->move(position.x()+this->size().width()-rightFrame->size().width(), this->pos().y());
+        this->rightFrame->window()->setFixedWidth(this->rightFrame->minimumSizeHint().width());
+        this->rightFrame->window()->move(position.x()+this->size().width() - this->rightFrame->size().width(), this->pos().y());
 
-        this->playlistSta = OUT;
+        this->playlistSta = POSITION::OUT;
         break;
     }
-    case IN:
+    case POSITION::IN:
     {
         this->rightFrame->setWindowFlags(Qt::Widget);
 
-        this->mainLayout->insertWidget(playlistPos==RIGHT? 1 : 0, rightFrame);
-        this->rightFrame->setFixedWidth(rightFrame->minimumSizeHint().width());
+        this->mainLayout->insertWidget(this->playlistPos == POSITION::RIGHT? 1 : 0, this->rightFrame);
+        this->rightFrame->setFixedWidth(this->rightFrame->minimumSizeHint().width());
         this->rightFrame->setMinimumHeight(0);
 
         this->rightFrame->show();
-        this->playlistSta = IN;
+        this->playlistSta = POSITION::IN;
         break;
     }
     }
@@ -646,19 +656,19 @@ void BabeWindow::setUpRightFrame()
 void BabeWindow::setUpMenuBar()
 {
 
-    auto popPanel = new QAction("Pop panel out", this);
-    popPanel->setShortcut(QKeySequence("Ctrl+p"));
-    connect(popPanel, &QAction::triggered, [popPanel, this]()
+    this->popPanel = new QAction("Pop panel out", this);
+    this->popPanel->setShortcut(QKeySequence("Ctrl+p"));
+    connect(popPanel, &QAction::triggered, [this]()
     {
-        if(this->playlistSta == OUT)
+        if(this->playlistSta == POSITION::OUT)
         {
-            this->movePanel(IN);
-            popPanel->setText("Pop panel out");
+            this->movePanel(POSITION::IN);
+            this->popPanel->setText("Pop panel out");
         }
-        else if (this->playlistSta == IN)
+        else if (this->playlistSta == POSITION::IN)
         {
-            this->movePanel(OUT);
-            popPanel->setText("Pop panel in");
+            this->movePanel(POSITION::OUT);
+            this->popPanel->setText("Pop panel in");
         }
     });
 
@@ -666,16 +676,16 @@ void BabeWindow::setUpMenuBar()
     moveIt->setShortcut(QKeySequence("Ctrl+m"));
     connect(moveIt, &QAction::triggered,[=]()
     {
-        if(this->playlistSta == OUT) emit popPanel->triggered(true);
+        if(this->playlistSta == POSITION::OUT) emit this->popPanel->triggered(true);
 
-        if(this->playlistPos == RIGHT)
+        if(this->playlistPos == POSITION::RIGHT)
         {
-            this->movePanel(LEFT);
+            this->movePanel(POSITION::LEFT);
             moveIt->setText("Move to right");
 
-        }else if(this->playlistPos == LEFT)
+        }else if(this->playlistPos == POSITION::LEFT)
         {
-            this->movePanel(RIGHT);
+            this->movePanel(POSITION::RIGHT);
             moveIt->setText("Move to left");
         }
     });
@@ -717,13 +727,16 @@ void BabeWindow::setUpMenuBar()
     auto cleanIt = new QAction("Clean...",this);
     cleanIt->setShortcut(QKeySequence("Ctrl+c"));
     cleanIt->setToolTip("Remove repeated tracks");
-    connect(cleanIt, &QAction::triggered, [this]() { mainList->removeRepeated(); /*this->removequeuedTracks();*/ });
+    connect(cleanIt, &QAction::triggered, [this]()
+    {
+        this->mainList->removeRepeated();
+    });
 
     auto clearQueue = new QAction("Clear Queue...", this);
     clearQueue->setToolTip("Remove queued tracks");
     connect(clearQueue, &QAction::triggered, [this]()
     {
-        this->removequeuedTracks();
+        this->removeQueuedTracks();
     });
 
     auto open = new QAction("Open...", this);
@@ -782,7 +795,6 @@ void BabeWindow::setUpMenuBar()
         auto size = action->text().toInt();
         this->setToolbarIconSize(static_cast<uint>(size));
     });
-
 
     auto position = toolBarMenu->addMenu("Position");
     auto top = new QAction("Top", this);
@@ -886,7 +898,7 @@ void BabeWindow::albumDoubleClicked(const Bae::DB &info)
     default: break;
     }
 
-    addToPlaylist(mapList, false, APPENDBOTTOM);
+    this->addToPlaylist(mapList, false, APPEND::APPENDBOTTOM);
 }
 
 void BabeWindow::playItNow(const Bae::DB_LIST &list)
@@ -902,13 +914,13 @@ void BabeWindow::playItNow(const Bae::DB_LIST &list)
                 this->mainList->setCurrentCell(pos, static_cast<int>(Bae::KEY::TITLE));
             else
             {
-                this->addToPlaylist(list, false, APPENDBOTTOM);
+                this->addToPlaylist(list, false, APPEND::APPENDBOTTOM);
                 this->mainList->setCurrentCell(mainList->rowCount()-list.size(), static_cast<int>(Bae::KEY::TITLE));
             }
 
         }else
         {
-            this->addToPlaylist(list, false, APPENDBOTTOM);
+            this->addToPlaylist(list, false, APPEND::APPENDBOTTOM);
             this->mainList->setCurrentCell(this->mainList->rowCount()-list.size(), static_cast<int>(Bae::KEY::TITLE));
         }
 
@@ -926,10 +938,10 @@ void BabeWindow::putAlbumOnPlay(const Bae::DB &info)
         switch(Bae::albumType(info))
         {
         case TABLE::ARTISTS:
-            mapList = connection.getArtistTracks(info[Bae::KEY::ARTIST]);
+            mapList = this->connection.getArtistTracks(info[Bae::KEY::ARTIST]);
             break;
         case TABLE::ALBUMS:
-            mapList = connection.getAlbumTracks(info[Bae::KEY::ALBUM], info[Bae::KEY::ARTIST]);
+            mapList = this->connection.getAlbumTracks(info[Bae::KEY::ALBUM], info[Bae::KEY::ARTIST]);
             break;
         default:break;
         }
@@ -944,7 +956,7 @@ void BabeWindow::putOnPlay(const Bae::DB_LIST &mapList)
     if(!mapList.isEmpty())
     {
         this->mainList->flushTable();
-        this->addToPlaylist(mapList, false, APPENDBOTTOM);
+        this->addToPlaylist(mapList, false, APPEND::APPENDBOTTOM);
 
         if(this->mainList->rowCount()>0)
         {
@@ -1058,7 +1070,7 @@ bool BabeWindow::eventFilter(QObject *object, QEvent *event)
                 }else mapList = this->connection.getArtistTracks(info);
 
 
-                this->addToPlaylist(mapList,false,APPENDBOTTOM);
+                this->addToPlaylist(mapList, false, APPEND::APPENDBOTTOM);
 
                 event->accept();
                 return true;
@@ -1115,23 +1127,6 @@ void BabeWindow::closeEvent(QCloseEvent* event)
     QMainWindow::closeEvent(event);
 }
 
-void BabeWindow::resizeEvent(QResizeEvent* event)
-{
-    //    if(this->viewMode==MINIMODE)
-    //    {
-
-    //        this->setMaximumHeight(event->size().width()+5);
-    //        this->setMinimumHeight(event->size().width()+5);
-
-    //        album_art->setSize(event->size().width());
-    //        int ALBUM_SIZE_ = album_art->getSize();
-    //        ui->controls->setMaximumSize(ALBUM_SIZE_,ALBUM_SIZE_);
-    //        ui->controls->setMinimumSize(ALBUM_SIZE_,ALBUM_SIZE_);
-
-    //    }
-    QMainWindow::resizeEvent(event);
-}
-
 void BabeWindow::refreshTables(const QMap<Bae::TABLE, bool> &tableReset)
 {
     nof->notify("Loading collection","this might take some time depending on your colleciton size");
@@ -1176,48 +1171,6 @@ void BabeWindow::refreshTables(const QMap<Bae::TABLE, bool> &tableReset)
 
         default: return;
         }
-
-    emit finishRefresh();
-}
-
-void BabeWindow::keyPressEvent(QKeyEvent *event) //TODO
-{
-    /*switch (event->key())
-    {
-    case Qt::Key_Return :
-    {
-        lCounter = getIndex();
-        if(lCounter != -1)
-        {
-            //ui->play->setChecked(false);
-            ui->play_btn->setIcon(QIcon(":Data/data/media-playback-pause.svg"));
-            ui->search->clear();
-            loadTrack();
-        }
-        break;
-    }
-    case Qt::Key_Up :
-    {
-        int ind = getIndex() - 1;if(ind < 0)ind = ui->listWidget->count() - 1;
-        ui->listWidget->setCurrentRow(ind);
-        break;
-    }
-    case Qt::Key_Down :
-    {
-        int ind = getIndex() + 1;if(ind >= ui->listWidget->count())ind = 0;
-        ui->listWidget->setCurrentRow(ind);
-        break;
-    }
-    default :
-    {
-        //ui->search->setFocusPolicy(Qt::StrongFocus);
-        //ui->search->setFocus();
-        qDebug()<<"trying to focus the serachbar";
-        break;
-    }
-    }*/
-    QMainWindow::keyPressEvent(event);
-
 }
 
 void BabeWindow::showControls(const bool &state)
@@ -1290,28 +1243,28 @@ void BabeWindow::collectionView()
 {
     if(this->resultsTable->rowCount() > 0) this->views->setCurrentIndex(RESULTS);
 
-    else this->views->setCurrentIndex(COLLECTION);
+    else this->views->setCurrentIndex(VIEWS::COLLECTION);
     ui->tracks_view->setChecked(true);
 
-    if(this->viewMode != FULLMODE) this->expand();
+    if(this->viewMode != VIEW_MODE::FULLMODE) this->expand();
     this->prevIndex = this->views->currentIndex();
 }
 
 void BabeWindow::albumsView()
 {
-    this->views->setCurrentIndex(ALBUMS);
+    this->views->setCurrentIndex(VIEWS::ALBUMS);
     ui->albums_view->setChecked(true);
 
-    if(this->viewMode != FULLMODE) this->expand();
+    if(this->viewMode != VIEW_MODE::FULLMODE) this->expand();
     this->prevIndex = this->views->currentIndex();
 }
 
 void BabeWindow::playlistsView()
 {
-    this->views->setCurrentIndex(PLAYLISTS);
+    this->views->setCurrentIndex(VIEWS::PLAYLISTS);
     ui->playlists_view->setChecked(true);
 
-    if(this->viewMode != FULLMODE) this->expand();
+    if(this->viewMode != VIEW_MODE::FULLMODE) this->expand();
 
     if(this->playlistTable->list->currentRow() == 0)
     {
@@ -1324,37 +1277,37 @@ void BabeWindow::playlistsView()
 
 void BabeWindow::rabbitView()
 {
-    this->views->setCurrentIndex(RABBIT);
+    this->views->setCurrentIndex(VIEWS::RABBIT);
     ui->rabbit_view->setChecked(true);
 
-    if(this->viewMode != FULLMODE) this->expand();
+    if(this->viewMode != VIEW_MODE::FULLMODE) this->expand();
     this->prevIndex = this->views->currentIndex();
 }
 
 void BabeWindow::infoView()
 {
-    this->views->setCurrentIndex(INFO);
+    this->views->setCurrentIndex(VIEWS::INFO);
     ui->info_view->setChecked(true);
 
-    if(this->viewMode != FULLMODE) this->expand();
+    if(this->viewMode != VIEW_MODE::FULLMODE) this->expand();
     this->prevIndex = views->currentIndex();
 }
 
 void BabeWindow::artistsView()
 {
-    this->views->setCurrentIndex(ARTISTS);
+    this->views->setCurrentIndex(VIEWS::ARTISTS);
     ui->artists_view->setChecked(true);
 
-    if(this->viewMode != FULLMODE) this->expand();
+    if(this->viewMode != VIEW_MODE::FULLMODE) this->expand();
     this->prevIndex = this->views->currentIndex();
 }
 
 void BabeWindow::settingsView()
 {
-    this->views->setCurrentIndex(SETTINGS);
+    this->views->setCurrentIndex(VIEWS::SETTINGS);
     ui->settings_view->setChecked(true);
 
-    if(this->viewMode != FULLMODE) this->expand();
+    if(this->viewMode != VIEW_MODE::FULLMODE) this->expand();
     this->prevIndex = this->views->currentIndex();
 }
 
@@ -1362,7 +1315,7 @@ void BabeWindow::expand()
 {
     this->setMinimumSize(this->minimumSizeHint().width(),0);
 
-    this->viewMode = FULLMODE;
+    this->viewMode = VIEW_MODE::FULLMODE;
 
     if(!this->views->isVisible()) this->viewsWidget->setVisible(true);
     if(!this->ui->frame_4->isVisible()) ui->frame_4->setVisible(true);
@@ -1392,7 +1345,7 @@ void BabeWindow::go_mini()
     this->setMinimumSize(this->minimumSizeHint().width(), 0);
     this->setFixedWidth(rightFrame->minimumSizeHint().width()+12);
 
-    this->viewMode = MINIMODE;
+    this->viewMode = VIEW_MODE::MINIMODE;
 
     this->mainToolbar->setVisible(false);
     this->viewsWidget->setVisible(false);
@@ -1420,10 +1373,10 @@ void BabeWindow::go_playlistMode()
     this->setMinimumHeight(0);
     this->setMinimumSize(this->minimumSizeHint().width(), 0);
 
-    if(playlistSta != OUT)
+    if(playlistSta != POSITION::OUT)
     {
         Bae::saveSettings("GEOMETRY",this->geometry(),"MAINWINDOW");
-        this->viewMode=PLAYLISTMODE;
+        this->viewMode = VIEW_MODE::PLAYLISTMODE;
 
         if(!ui->frame_4->isVisible()) ui->frame_4->setVisible(true);
         if(!mainList->isVisible()) mainListView->setVisible(true);
@@ -1457,34 +1410,34 @@ void BabeWindow::keepOnTop(bool state)
 
 void BabeWindow::on_hide_sidebar_btn_clicked()
 {
-    if(playlistSta == OUT) emit ui->controls->actions().at(1)->triggered();
+    if(playlistSta == POSITION::OUT) emit this->popPanel->triggered(true);
 
     switch(this->viewMode)
     {
-    case FULLMODE:
+    case VIEW_MODE::FULLMODE:
         this->go_playlistMode(); break;
 
-    case PLAYLISTMODE:
+    case VIEW_MODE::PLAYLISTMODE:
         this->go_mini(); break;
 
-    case MINIMODE:
+    case VIEW_MODE::MINIMODE:
         this->expand(); break;
     }
 }
 
 void BabeWindow::on_shuffle_btn_clicked() //TODO
 {
-    if(this->shuffle_state == REGULAR)
+    if(this->shuffle_state == PLAY_MODE::REGULAR)
     {
         ui->shuffle_btn->setIcon(QIcon::fromTheme("media-playlist-shuffle"));
         ui->shuffle_btn->setToolTip("Repeat");
-        this->shuffle_state = SHUFFLE;
+        this->shuffle_state = PLAY_MODE::SHUFFLE;
 
-    }else if (this->shuffle_state == SHUFFLE)
+    }else if (this->shuffle_state == PLAY_MODE::SHUFFLE)
     {
         ui->shuffle_btn->setIcon(QIcon::fromTheme("media-playlist-repeat"));
         ui->shuffle_btn->setToolTip("Consecutive");
-        this->shuffle_state = REGULAR;
+        this->shuffle_state = PLAY_MODE::REGULAR;
     }
 }
 
@@ -1524,27 +1477,10 @@ void BabeWindow::populateMainList()
     this->mainList->resizeRowsToContents();
 }
 
-void BabeWindow::updateList()
-{
-    auto currentList = this->mainList->getAllTableContent();
-    this->mainList->flushTable();
-    for(auto list: currentList)
-        this->mainList->addRow(list);
-}
-
 void BabeWindow::on_mainList_clicked(const Bae::DB_LIST &list)
 {
     Q_UNUSED(list);
     this->loadTrack();
-}
-
-void BabeWindow::expandAlbumList(const QString &artist)
-{
-    if(!artist.isEmpty())
-    {
-        emit ui->artists_view->clicked();
-        this->artistsTable->showAlbumInfo({{Bae::KEY::ARTIST,artist}});
-    }
 }
 
 void BabeWindow::loadTrack()
@@ -1706,7 +1642,7 @@ void BabeWindow::removeQueuedTrack(const int &pos)
         this->queueList->setVisible(false);
 }
 
-void BabeWindow::removequeuedTracks()
+void BabeWindow::removeQueuedTracks()
 {
     this->queueList->flushTable();
     this->queueList->setVisible(false);
@@ -1732,7 +1668,7 @@ void BabeWindow::next()
 
     if(nextSong >= this->mainList->rowCount()) nextSong = 0;
 
-    this->mainList->setCurrentCell(this->shuffle_state == SHUFFLE ? this->shuffleNumber(): nextSong, static_cast<int>(Bae::KEY::TITLE));
+    this->mainList->setCurrentCell(this->shuffle_state == PLAY_MODE::SHUFFLE ? this->shuffleNumber(): nextSong, static_cast<int>(Bae::KEY::TITLE));
 
     this->loadTrack();
 }
@@ -1744,7 +1680,7 @@ void BabeWindow::back()
     if(lCounter < 0)
         lCounter =  this->mainList->rowCount() - 1;
 
-    this->mainList->setCurrentCell(this->shuffle_state != SHUFFLE ? lCounter :  this->shuffleNumber(), static_cast<int>(Bae::KEY::TITLE));
+    this->mainList->setCurrentCell(this->shuffle_state != PLAY_MODE::SHUFFLE ? lCounter :  this->shuffleNumber(), static_cast<int>(Bae::KEY::TITLE));
 
     this->loadTrack();
 }
@@ -1895,7 +1831,7 @@ bool BabeWindow::babeTrack(const Bae::DB &track)
             if(this->connection.babeTrack(url,true))
             {
                 this->nof->notify("Song Babe'd",track[Bae::KEY::TITLE]+" by "+track[Bae::KEY::ARTIST]);
-                this->addToPlaylist({track},true,APPENDBOTTOM);
+                this->addToPlaylist({track}, true, APPEND::APPENDBOTTOM);
                 return true;
             }
 
@@ -1960,27 +1896,27 @@ void BabeWindow::addToPlaylist(const Bae::DB_LIST &mapList, const bool &notRepea
                     newList<<track;
                     switch(pos)
                     {
-                    case APPENDBOTTOM:
+                    case APPEND::APPENDBOTTOM:
                         this->mainList->addRow(track);
                         this->mainList->scrollToBottom();
 
                         break;
-                    case APPENDTOP:
+                    case APPEND::APPENDTOP:
                         this->mainList->addRowAt(0, track);
                         this->mainList->scrollToItem(this->mainList->getItem(0, Bae::KEY::TITLE), QAbstractItemView::PositionAtTop);
 
                         break;
-                    case APPENDAFTER:
+                    case APPEND::APPENDAFTER:
                         this->mainList->addRowAt(current_song_pos+1, track);
                         this->mainList->scrollToItem(this->mainList->getItem(current_song_pos+1, Bae::KEY::TITLE), QAbstractItemView::PositionAtTop);
 
                         break;
-                    case APPENDBEFORE:
+                    case APPEND::APPENDBEFORE:
                         this->mainList->addRowAt(current_song_pos, track);
                         this->mainList->scrollToItem(this->mainList->getItem(current_song_pos, Bae::KEY::TITLE), QAbstractItemView::PositionAtTop);
 
                         break;
-                    case APPENDINDEX:
+                    case APPEND::APPENDINDEX:
                         this->mainList->addRowAt(this->mainList->getIndex(), track);
                         this->mainList->scrollToItem(this->mainList->getItem(this->mainList->getIndex(), Bae::KEY::TITLE), QAbstractItemView::PositionAtTop);
 
@@ -1994,27 +1930,27 @@ void BabeWindow::addToPlaylist(const Bae::DB_LIST &mapList, const bool &notRepea
             for(auto track : mapList)
                 switch(pos)
                 {
-                case APPENDBOTTOM:
+                case APPEND::APPENDBOTTOM:
                     this->mainList->addRow(track);
                     this->mainList->scrollToBottom();
 
                     break;
-                case APPENDTOP:
+                case APPEND::APPENDTOP:
                     this->mainList->addRowAt(0,track);
                     this->mainList->scrollToItem(this->mainList->getItem(0, Bae::KEY::TITLE), QAbstractItemView::PositionAtTop);
 
                     break;
-                case APPENDAFTER:
+                case APPEND::APPENDAFTER:
                     this->mainList->addRowAt(this->current_song_pos+1, track);
                     this->mainList->scrollToItem(this->mainList->getItem(this->current_song_pos+1, Bae::KEY::TITLE), QAbstractItemView::PositionAtTop);
 
                     break;
-                case APPENDBEFORE:
+                case APPEND::APPENDBEFORE:
                     this->mainList->addRowAt(this->current_song_pos, track);
                     this->mainList->scrollToItem(this->mainList->getItem(this->current_song_pos, Bae::KEY::TITLE), QAbstractItemView::PositionAtTop);
 
                     break;
-                case APPENDINDEX:
+                case APPEND::APPENDINDEX:
                     this->mainList->addRowAt(this->mainList->getIndex(), track);
                     this->mainList->scrollToItem(this->mainList->getItem(mainList->getIndex(),Bae::KEY::TITLE),QAbstractItemView::PositionAtTop);
 
@@ -2024,7 +1960,6 @@ void BabeWindow::addToPlaylist(const Bae::DB_LIST &mapList, const bool &notRepea
 
         if(stopped)
         {
-            qDebug()<<this->current_song_pos;
             this->mainList->setCurrentCell(this->current_song_pos, static_cast<int>(Bae::KEY::TITLE));
             this->album_art->setVisible(true);
             ui->controls->setVisible(true);
@@ -2169,7 +2104,7 @@ void BabeWindow::clearMainList()
         mapList<<mainList->getRowData(row);
 
     this->mainList->flushTable();
-    this->addToPlaylist(mapList,true,APPENDBOTTOM);
+    this->addToPlaylist(mapList, true, APPEND::APPENDBOTTOM);
     mainList->removeRepeated();
 
     this->current_song_pos=0;

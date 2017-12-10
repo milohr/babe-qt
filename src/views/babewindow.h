@@ -54,6 +54,49 @@
 
 #include "../data_models/tracklist.h"
 
+enum VIEWS
+{
+    COLLECTION = 0,
+    ALBUMS = 1,
+    ARTISTS = 2,
+    PLAYLISTS = 3,
+    INFO = 4,
+    RABBIT = 5,
+    SETTINGS = 6,
+    RESULTS =7
+};
+
+enum VIEW_MODE
+{
+    FULLMODE,
+    PLAYLISTMODE,
+    MINIMODE
+};
+
+enum PLAY_MODE
+{
+    REGULAR,
+    SHUFFLE,
+    REPEAT
+};
+
+enum APPEND
+{
+    APPENDTOP,
+    APPENDBOTTOM,
+    APPENDAFTER,
+    APPENDBEFORE,
+    APPENDINDEX
+};
+
+enum POSITION
+{
+    RIGHT,
+    LEFT,
+    IN,
+    OUT
+};
+
 namespace Ui { class BabeWindow;}
 
 class BabeWindow : public QMainWindow
@@ -61,63 +104,22 @@ class BabeWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit BabeWindow(const QStringList &files={}, QWidget *parent = nullptr);
-    ~BabeWindow();
-
-    enum VIEWS
-    {
-        COLLECTION = 0,
-        ALBUMS = 1,
-        ARTISTS = 2,
-        PLAYLISTS = 3,
-        INFO = 4,
-        RABBIT = 5,
-        SETTINGS = 6,
-        RESULTS =7
-    };
-
-    enum playlistViews
-    {
-        MAINPLAYLIST, FILTERLIST
-    };
-
-    enum VIEW_MODE
-    {
-        FULLMODE, PLAYLISTMODE, MINIMODE
-    };
-
-    enum PLAY_MODE
-    {
-        REGULAR, SHUFFLE, REPEAT
-    };
-
-    enum APPEND //TODO: move to baetable
-    {
-        APPENDTOP,APPENDBOTTOM, APPENDAFTER, APPENDBEFORE, APPENDINDEX
-    };
-
-    enum POSITION
-    {
-        RIGHT,LEFT, IN, OUT
-    };
-
+    explicit BabeWindow(const QStringList &files = {}, QWidget *parent = nullptr);
+    ~BabeWindow() override;
 
     void start();
     void appendFiles(const QStringList &paths, const APPEND &pos = APPENDBOTTOM);
     void loadTrack();
     bool babeTrack(const Bae::DB &track);
     void loadInfo(const Bae::DB &track);
-    Bae::DB_LIST searchFor(const QStringList &queries);
 
+    Bae::DB_LIST searchFor(const QStringList &queries);
 
 protected:
     virtual void closeEvent(QCloseEvent *event) Q_DECL_OVERRIDE;
-    virtual void resizeEvent(QResizeEvent* event) Q_DECL_OVERRIDE;
-    virtual void keyPressEvent(QKeyEvent *event) Q_DECL_OVERRIDE;
     virtual bool eventFilter(QObject * watched, QEvent * event) Q_DECL_OVERRIDE;
 
 public slots:
-
     void addToPlaylist(const Bae::DB_LIST &mapList, const bool &notRepeated=false, const APPEND &pos = APPENDBOTTOM);
     void populateResultsTable(const Bae::DB_LIST &mapList);
     void addToQueue(const Bae::DB_LIST &tracks);
@@ -175,7 +177,7 @@ private slots:
     bool unbabeIt(const Bae::DB &track);
     void loadMood();
     void removeQueuedTrack(const int &pos);
-    void removequeuedTracks();
+    void removeQueuedTracks();
     void playQueuedTrack(const int &pos);
     void infoIt(const  Bae::DB &track);
     void albumDoubleClicked(const Bae::DB &info);
@@ -183,7 +185,6 @@ private slots:
     void on_miniPlaybackBtn_clicked();
 
 private:
-
     Ui::BabeWindow *ui;
     uint ALBUM_SIZE;
     uint iconSize = 22;
@@ -205,14 +206,12 @@ private:
     QToolBar *mainToolbar;
     QWidget *mainWidget;
     QHBoxLayout * mainLayout;
+
     QWidget *viewsWidget;
     QStackedWidget *views;
     QStackedWidget *mainListView;
 
     QFrame *rightFrame;
-    QFrame *line;
-    QFrame *lineV;
-
     BabeAlbum *album_art;
     QWidget *playlistWidget;
 
@@ -230,6 +229,8 @@ private:
     settings *settings_widget;
     RabbitView *rabbitTable;
 
+    QAction *popPanel;
+
     void keepOnTop(bool state);
 
     void setUpViews();
@@ -244,10 +245,8 @@ private:
     void clearCurrentList();
     void calibrateMainList();
 
-    void updateList();
     void populateMainList();
     int isBabed(const Bae::DB &track);
-    void expandAlbumList(const QString &artist);
     void blurWidget(BabeAlbum &widget, const int &radius );
     void babedIcon(const bool &state);
     void movePanel(const POSITION &pos);
@@ -266,13 +265,11 @@ private:
     Bae::DB prev_song;
     int prev_song_pos = 0;
 
-    PLAY_MODE  shuffle_state = REGULAR;
+    PLAY_MODE shuffle_state = PLAY_MODE::REGULAR;
 
     bool repeat = false;
     bool stopped = true;
     bool miniPlayback =false;
 
-signals:
-    void finishRefresh();
 };
 #endif // BAEWINDOW_H
