@@ -41,7 +41,7 @@ public:
     void insertArtwork(const Bae::DB &track);
 
     void addTrack(const Bae::DB &track);
-
+    bool updateTrack(const Bae::DB &track);
     bool rateTrack(const QString &path, const int &value);
     bool babeTrack(const QString &path, const bool &value);
     bool moodTrack(const QString &path, const QString &value);
@@ -111,6 +111,7 @@ private:
     QSqlDatabase m_db;
     /*basic actions*/
     bool insert(const QString &tableName, const QVariantMap &insertData);
+    bool update(const QString &tableName, const Bae::DB &updateData, const QVariantMap &where);
     bool update(const QString &table, const QString &column, const QVariant &newValue, const QVariant &op, const QString &id);
     bool remove();
     bool openDB();

@@ -233,7 +233,7 @@ void BabeWindow::setUpViews()
     this->queueList = new BabeTable(this);
     this->queueList->setVisible(false);
 
-    auto bgcolor= QColor(this->queueList->palette().color(QPalette::Background).name()).dark(180).name();
+    auto bgcolor= QColor(this->queueList->palette().color(QPalette::Background).name()).dark(200).name();
     this->queueList->setStyleSheet(QString("QTableView{background-color: %1}").arg(bgcolor));
 
     this->queueList->setObjectName("queueList");
@@ -820,14 +820,32 @@ void BabeWindow::setUpMenuBar()
         moodForm->show();
     });
 
+    auto pulpoDeamon = new QAction("Run Pulpo Deamon", this);
+    connect(pulpoDeamon, &QAction::triggered, this->settings_widget, &settings::fetchArt);
+
+    auto refreshCollection = new QAction("Refresh Collection", this);
+    connect(refreshCollection, &QAction::triggered, [this]
+    {
+        this->refreshTables({{TABLE::TRACKS, true}, {TABLE::ALBUMS, true}, {TABLE::ARTISTS, true}, {TABLE::PLAYLISTS, true}});
+
+    });
+
+    auto cleanCollection = new QAction("Clean up Collection", this);
+    connect(cleanCollection, &QAction::triggered, [this]
+    {
+        if(this->connection.cleanAlbums())
+            this->connection.cleanArtists();
+    });
+
     auto settings = new QAction("Settings", this);
     connect(settings, &QAction::triggered, this, &BabeWindow::settingsView);
 
     auto toolsMenu = this->menuBar()->addMenu(tr("&Tools"));
     toolsMenu->addAction(moods);
+    toolsMenu->addAction(pulpoDeamon);
+    toolsMenu->addAction(refreshCollection);
+    toolsMenu->addAction(cleanCollection);
     toolsMenu->addAction(settings);
-
-
 }
 
 void BabeWindow::albumDoubleClicked(const Bae::DB &info)

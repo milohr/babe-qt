@@ -56,7 +56,6 @@ void CollectionDB::setUpCollection(const QString &path)
     openDB();
 }
 
-
 void CollectionDB::prepareCollectionDB()
 {
     QSqlQuery query;
@@ -150,7 +149,7 @@ bool CollectionDB::insert(const QString &tableName, const QVariantMap &insertDat
         strValues.append("?");
 
 
-    QString sqlQueryString = "INSERT INTO " + tableName + "(" + QString(fields.join(",")) + ") VALUES(" + QString(strValues.join(",")) + ")";
+    QString sqlQueryString = "INSERT INTO " + tableName + " (" + QString(fields.join(",")) + ") VALUES(" + QString(strValues.join(",")) + ")";
     QSqlQuery query;
     query.prepare(sqlQueryString);
 
@@ -160,6 +159,33 @@ bool CollectionDB::insert(const QString &tableName, const QVariantMap &insertDat
 
     return this->execQuery(query);
 
+}
+
+bool CollectionDB::update(const QString &tableName, const Bae::DB &updateData, const QVariantMap &where)
+{
+    if (tableName.isEmpty())
+    {
+        qDebug()<<QStringLiteral("Fatal error on insert! The table name is empty!");
+        return false;
+    } else if (updateData.isEmpty())
+    {
+        qDebug()<<QStringLiteral("Fatal error on insert! The insertData is empty!");
+        return false;
+    }
+
+    QStringList set;
+    for (auto key : updateData.keys())
+        set.append(KEYMAP[key]+" = '"+updateData[key]+"'");
+
+    QStringList condition;
+    for (auto key : where.keys())
+        condition.append(key+" = '"+where[key].toString()+"'");
+
+    QString sqlQueryString = "UPDATE " + tableName + " SET " + QString(set.join(",")) + " WHERE " + QString(condition.join(",")) ;
+    QSqlQuery query;
+    query.prepare(sqlQueryString);
+    qDebug()<<sqlQueryString;
+    return this->execQuery(query);
 }
 
 bool CollectionDB::update(const QString &table,const QString &column,const QVariant &newValue,const QVariant &op, const QString &id)
@@ -253,6 +279,33 @@ void CollectionDB::addTrack(const DB &track)
     }
 
     emit trackInserted();
+}
+
+bool CollectionDB::updateTrack(const DB &track)
+{
+    if(this->check_existance(TABLEMAP[TABLE::TRACKS], KEYMAP[KEY::URL], track[KEY::URL]))
+    {
+        QVariantMap artistMap {{KEYMAP[KEY::ARTIST], track[KEY::ARTIST]},
+                               {KEYMAP[KEY::ARTWORK], ""},
+                               {KEYMAP[KEY::WIKI],""}};
+
+        insert(TABLEMAP[TABLE::ARTISTS],artistMap);
+
+        QVariantMap albumMap {{KEYMAP[KEY::ALBUM], track[KEY::ALBUM]},
+                              {KEYMAP[KEY::ARTIST], track[KEY::ARTIST]},
+                              {KEYMAP[KEY::ARTWORK], ""},
+                              {KEYMAP[KEY::WIKI],""}};
+        insert(TABLEMAP[TABLE::ALBUMS],albumMap);
+
+        QVariantMap condition {{KEYMAP[KEY::URL], track[KEY::URL]}};
+
+        if(this->update(TABLEMAP[TABLE::TRACKS], track, condition))
+            if(cleanAlbums()) cleanArtists();
+
+        return true;
+    }
+
+    return false;
 }
 
 bool CollectionDB::rateTrack(const QString &path, const int &value)

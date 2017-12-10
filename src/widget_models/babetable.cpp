@@ -105,9 +105,6 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent)
     auto editIt = new QAction("Edit", contextMenu);
     contextMenu->addAction(editIt);
 
-    auto saveIt = new QAction("Save to... ", contextMenu);
-    contextMenu->addAction(saveIt);
-
     auto removeIt = new QAction("Remove", contextMenu);
     contextMenu->addAction(removeIt);
 
@@ -124,7 +121,6 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent)
     connect(infoIt, &QAction::triggered, this, &BabeTable::infoIt_action);
     connect(editIt,&QAction::triggered, this, &BabeTable::editIt_action);
     connect(removeIt,&QAction::triggered, this, &BabeTable::removeIt_action);
-
 
     auto starsWidget = new QWidget(contextMenu);
     auto starsWidget_layout = new QHBoxLayout;
@@ -273,9 +269,6 @@ void BabeTable::dropEvent(QDropEvent *event)
         }
     }
 }
-
-
-
 
 void BabeTable::setAddMusicMsg(const QString &msg,const QString &icon)
 {
@@ -556,8 +549,6 @@ QMap<QString,QString> BabeTable::getKdeConnectDevices()
 
 }
 
-
-
 void BabeTable::setUpContextMenu(const int row, const int column)
 {
     qDebug() << "setUpContextMenu";
@@ -587,9 +578,7 @@ void BabeTable::setUpContextMenu(const int row, const int column)
 
         contextMenu->exec(QCursor::pos());
     }
-
 }
-
 
 void BabeTable::keyPressEvent(QKeyEvent *event)
 {
@@ -847,8 +836,10 @@ Bae::DB BabeTable::getRowData(const int &row)
     QString url = this->model()->data(this->model()->index(row,static_cast<int>(Bae::KEY::URL))).toString();
 
     if(connection.check_existance(Bae::TABLEMAP[Bae::TABLE::TRACKS],Bae::TracksColsMap[Bae::KEY::URL],url))
-        return connection.getDBData(QStringList(url)).first();
-    else
+    {
+        auto data = connection.getDBData(QStringList(url));
+        return data.size() > 0 ? data.first() : Bae::DB();
+    }else
     {
         QString track = this->model()->data(this->model()->index(row,static_cast<int>(Bae::KEY::TRACK))).toString();
         QString title = this->model()->data(this->model()->index(row,static_cast<int>(Bae::KEY::TITLE))).toString();
@@ -935,13 +926,14 @@ void BabeTable::sendIt_action(QAction *device)
 
 void BabeTable::editIt_action()
 {
-    //editing=true;
-    // emit this->edit(this->model()->index(rRow,rColumn));
+    auto infoForm = new metadataForm(getRowData(rRow), this);
+    connect(infoForm, &metadataForm::infoModified, [=](Bae::DB track)
+    {
+        this->itemEdited(track);
+        infoForm->deleteLater();
+    });
 
-    auto infoForm = new metadataForm(getRowData(rRow),this);
-    connect(infoForm, &metadataForm::infoModified,this,&BabeTable::itemEdited);
     infoForm->show();
-
 }
 
 void BabeTable::itemEdited(const Bae::DB &map)
@@ -952,6 +944,11 @@ void BabeTable::itemEdited(const Bae::DB &map)
     this->getItem(rRow,Bae::KEY::ARTIST)->setText(map[Bae::KEY::ARTIST]);
     this->getItem(rRow,Bae::KEY::ALBUM)->setText(map[Bae::KEY::ALBUM]);
     this->getItem(rRow,Bae::KEY::GENRE)->setText(map[Bae::KEY::GENRE]);
+
+    auto updatedTrack = map;
+    updatedTrack.remove(KEY::LYRICS);
+    updatedTrack.remove(KEY::WIKI);
+    this->connection.updateTrack(updatedTrack);
 }
 
 void BabeTable::infoIt_action()

@@ -24,11 +24,7 @@ private slots:
 
 private:
     Ui::metadataForm *ui;
-    QString track;
-    QString title;
-    QString artist;
-    QString album;
-    QString genre;
+    Bae::DB trackMap;
 
 signals:
     void infoModified(const Bae::DB &map);
