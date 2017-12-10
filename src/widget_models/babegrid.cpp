@@ -61,10 +61,6 @@ void BabeGrid::addAlbum(const Bae::DB &albumMap)
         album->setUpMenu();
         album->showTitle(!hiddenLabels);
 
-        auto sendIt = new QAction("Send it to phone",this);
-
-        album->addAction(sendIt);
-
         connect(album,&BabeAlbum::albumCoverDoubleClicked, [this] (const Bae::DB &albumMap)
         {
             emit this->albumDoubleClicked(albumMap);

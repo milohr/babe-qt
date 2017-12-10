@@ -101,7 +101,6 @@ public slots:
     void putDefaultPixmap();
     void babeIt_action();
     void artIt_action();
-    void removeIt_action();
 
 protected:
     virtual void mousePressEvent (QMouseEvent * event) Q_DECL_OVERRIDE;

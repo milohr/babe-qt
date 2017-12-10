@@ -479,6 +479,7 @@ void PlaylistsView::saveToPlaylist(const Bae::DB_LIST &tracks)
 
         form->deleteLater();
     });
+
     form->show();
 }
 

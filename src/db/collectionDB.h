@@ -124,7 +124,8 @@ signals:
     void trackInserted();
     void artworkInserted(const Bae::DB &albumMap);
     void DBactionFinished();
-
+    void albumsCleaned(const int &amount);
+    void artistsCleaned(const int &amount);
 };
 
 

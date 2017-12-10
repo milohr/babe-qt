@@ -21,19 +21,16 @@
 
 int main(int argc, char *argv[])
 {
-
     QStringList files;
 
     if(argc>1)
         for (int i = 1; i < argc; ++i)
             files << argv[i];
 
-
-
     QApplication a(argc, argv);
     a.setApplicationName("Babe");
     a.setDesktopFileName("Babe");
-    a.setApplicationVersion("0.5 Beta");
+    a.setApplicationVersion("1.0");
     BabeWindow w(files);
     w.start();
     w.show();

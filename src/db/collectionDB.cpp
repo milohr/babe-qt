@@ -1032,7 +1032,7 @@ bool CollectionDB::removePlaylist(const QString &playlist)
             KEYMAP[KEY::PLAYLIST],playlist);
 
     query.prepare(queryTxt);
-    if(!query.exec()) return false;
+    if(!this->execQuery(query)) return false;
 
     queryTxt = QString("DELETE FROM %1 WHERE %2 = \"%3\"").arg(TABLEMAP[TABLE::PLAYLISTS],
             KEYMAP[KEY::PLAYLIST],playlist);
@@ -1046,8 +1046,8 @@ bool CollectionDB::removeArtist(const QString &artist)
     auto queryTxt = QString("DELETE FROM %1 WHERE %2 = \"%3\" ").arg(TABLEMAP[TABLE::ARTISTS],
             KEYMAP[KEY::ARTIST],artist);
     QSqlQuery query(queryTxt);
-    if(!query.exec()) return false;
-    return true;
+
+    return this->execQuery(query);
 }
 
 bool CollectionDB::cleanArtists()
@@ -1061,8 +1061,8 @@ bool CollectionDB::cleanArtists()
     qDebug()<<queryTxt;
 
     QSqlQuery query(queryTxt);
-
-    return query.exec();
+    emit this->artistsCleaned(query.numRowsAffected());
+    return this->execQuery(query);
 }
 
 bool CollectionDB::removeAlbum(const QString &album, const QString &artist)
@@ -1084,7 +1084,7 @@ bool CollectionDB::cleanAlbums()
             );
     qDebug()<<queryTxt;
     QSqlQuery query(queryTxt);
-
+    emit albumsCleaned(query.numRowsAffected());
     return this->execQuery(query);
 }
 

@@ -148,7 +148,17 @@ void BabeWindow::setUpViews()
     {
         this->settings_widget->collectionWatcher();
         emit this->settings_widget->refreshTables({{TABLE::TRACKS, true},{TABLE::ALBUMS, false},{TABLE::ARTISTS, false},{TABLE::PLAYLISTS, true}});
-        emit this->settings_widget->getArtwork();
+        this->settings_widget->fetchArt();
+    });
+
+    connect(&this->connection, &CollectionDB::artistsCleaned, [this](int amount)
+    {
+       this->nof->notify(QString::number(amount)+" Artists cleaned up", "");
+    });
+
+    connect(&this->connection, &CollectionDB::albumsCleaned, [this](int amount)
+    {
+       this->nof->notify(QString::number(amount)+" Albums cleaned up", "");
     });
 
     this->playlistTable = new PlaylistsView(this);
@@ -233,7 +243,7 @@ void BabeWindow::setUpViews()
     this->queueList = new BabeTable(this);
     this->queueList->setVisible(false);
 
-    auto bgcolor= QColor(this->queueList->palette().color(QPalette::Background).name()).dark(200).name();
+    auto bgcolor= QColor(this->queueList->palette().color(QPalette::Background).name()).dark(120).name();
     this->queueList->setStyleSheet(QString("QTableView{background-color: %1}").arg(bgcolor));
 
     this->queueList->setObjectName("queueList");
@@ -846,6 +856,16 @@ void BabeWindow::setUpMenuBar()
     toolsMenu->addAction(refreshCollection);
     toolsMenu->addAction(cleanCollection);
     toolsMenu->addAction(settings);
+
+    auto aboutBabe = new QAction("About Babe", this);
+    connect(aboutBabe, &QAction::triggered, this->settings_widget->about_ui, &About::show);
+
+    auto aboutQt = new QAction("About Qt", this);
+    connect(aboutQt, &QAction::triggered,  qApp, &QApplication::aboutQt);
+
+    auto helpMenu = this->menuBar()->addMenu(tr("&Help"));
+    helpMenu->addAction(aboutBabe);
+    helpMenu->addAction(aboutQt);
 }
 
 void BabeWindow::albumDoubleClicked(const Bae::DB &info)

@@ -90,13 +90,12 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
         Bae::saveSettings("BRAINZ",value,"SETTINGS");
     });
 
-    connect(this, &settings::getArtwork, this, &settings::fetchArt);
-
-    connect(&collection_db,&CollectionDB::trackInserted,[this]()
+    connect(&collection_db, &CollectionDB::trackInserted, [this]()
     {
         fileSaver.nextTrack();
         this->ui->progressBar->setValue(this->ui->progressBar->value()+1);
     });
+
     connect(&fileSaver,&FileLoader::collectionSize,[this](int size)
     {
         if(size>0)
@@ -120,10 +119,10 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
 
         collectionWatcher();
         emit refreshTables({{TABLE::TRACKS, true},{TABLE::ALBUMS, false},{TABLE::ARTISTS, false},{TABLE::PLAYLISTS, true}});
-        emit getArtwork();
+        this->fetchArt();
     });
 
-    connect(&fileSaver,&FileLoader::trackReady,&collection_db, &CollectionDB::addTrack);
+    connect(&fileSaver, &FileLoader::trackReady, &collection_db, &CollectionDB::addTrack);
 
     connect(this, &settings::collectionPathChanged, this, &settings::populateDB);
 
@@ -135,7 +134,7 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
 
     ui->remove->setEnabled(false);
     ui->progressBar->hide();
-    about_ui = new About(this);
+    this->about_ui = new About(this);
 
     movie = new QMovie(this);
     movie->setFileName(":Data/data/ajax-loader.gif");
@@ -158,20 +157,21 @@ settings::~settings()
 }
 
 
-void settings::on_collectionPath_clicked(const QModelIndex &index) {
+void settings::on_collectionPath_clicked(const QModelIndex &index)
+{
     ui->remove->setEnabled(true);
-    pathToRemove = index.data().toString();
+    this->pathToRemove = index.data().toString();
 }
 
 void settings::on_remove_clicked()
 {
-    qDebug() << pathToRemove;
-    if (!pathToRemove.isEmpty())
+    qDebug() << this->pathToRemove;
+    if (!this->pathToRemove.isEmpty())
     {
-        if(collection_db.removeSource(pathToRemove))
+        if(collection_db.removeSource(this->pathToRemove))
         {
-            removeSettings({"collectionPath=", pathToRemove});
-            collectionPaths.removeAll(pathToRemove);
+            removeSettings({"collectionPath=", this->pathToRemove});
+            collectionPaths.removeAll(this->pathToRemove);
 
             refreshCollectionPaths();
             this->dirs.clear();
@@ -400,18 +400,4 @@ void settings::fetchArt()
     movie->start();
 }
 
-void settings::on_pushButton_clicked()
-{
-    // QMessageBox::about(this, "Babe Tiny Music Player","Version: 0.0
-    // Alpha\nWritten and designed\nby: Camilo Higuita");
-    about_ui->show();
-}
 
-void settings::on_debugBtn_clicked()
-{
-    /*qDebug()<<"Current files being watched:";
-    for(auto file: watcher->files()) qDebug()<<file;*/
-    qDebug()<<"Current dirs being watched:";
-    for(auto dir: watcher->directories()) qDebug()<<dir;
-
-}

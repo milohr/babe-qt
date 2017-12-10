@@ -82,11 +82,6 @@ void BabeAlbum::setUpMenu()
     connect(babeIt, SIGNAL(triggered()), this, SLOT(babeIt_action()));
     this->addAction(babeIt);
 
-
-    auto removeIt = new QAction("Remove",this->contextMenu);
-    connect(removeIt, SIGNAL(triggered()), this, SLOT(removeIt_action()));
-    this->addAction(removeIt);
-
     auto artIt = new QAction("Change art...",this->contextMenu);
     connect(artIt, SIGNAL(triggered()), this, SLOT(artIt_action()));
     this->addAction(artIt);
@@ -124,12 +119,6 @@ void BabeAlbum::artIt_action()
         emit changedArt(this->albumMap);
     }
 }
-
-void BabeAlbum::removeIt_action()
-{
-    qDebug()<<"Remove album"<<this->artist<<this->album;
-}
-
 
 uint BabeAlbum::getSize()
 {

@@ -39,9 +39,11 @@ class settings : public QWidget
     Q_OBJECT
 
 public:
-
     explicit settings(QWidget *parent = nullptr);
     ~settings();
+
+    const About *about_ui;
+
     bool checkCollection();
     void createCollectionDB();
 
@@ -53,39 +55,25 @@ public:
     void refreshCollectionPaths();
     void collectionWatcher();
     void addToWatcher(QStringList paths);
-    QStringList getCollectionPath() {return collectionPaths;}
-    CollectionDB collection_db;
-    bool youtubeTrackDone=false;
 
-    enum iconSizes
-    {
-        s16,s22,s24
-    };
-    //enum albums { ALBUM_TITLE, ARTIST, ART};
-    // enum artists { ARTIST_TITLE, ART};
+    QStringList getCollectionPath() {return collectionPaths;}
 
 private slots:
     void on_open_clicked();
-    void on_pushButton_clicked();
     void handleDirectoryChanged(const QString &dir);
     void on_collectionPath_clicked(const QModelIndex &index);
     void on_remove_clicked();
 
-    void on_debugBtn_clicked();
-
-
 public slots:
-
     void populateDB(const QString &path);
     void fetchArt();
 
 private:
     Ui::settings *ui;
     FileLoader fileSaver;
+    CollectionDB collection_db;
 
-    bool busy =false;
-
-    const QString notifyDir= Bae::NotifyDir;
+    const QString notifyDir = Bae::NotifyDir;
     const QString collectionDBName = "collection.db";
     const QString settingsName = "settings.conf";
 
@@ -95,23 +83,14 @@ private:
     QStringList collectionPaths={};
     QMovie *movie;
     QString pathToRemove;
-    // QFileSystemWatcher watcher;
-    //QThread* thread;
-    About *about_ui;
-    QStringList files;
+
     QStringList dirs;
     QFileSystemWatcher *watcher;
     Socket *babeSocket;
-    QTimer *cacheTimer;
 
 signals:
-
     void collectionPathChanged(QString newPath);
-    void collectionDBFinishedAdding();
     void refreshTables(const QMap<Bae::TABLE,bool> &reset);
-    void finishedTracksInsertion();
-    void refreshAlbumsView();
-    void getArtwork();
     void albumArtReady(const DB &album);
 
 };
