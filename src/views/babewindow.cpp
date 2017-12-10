@@ -1628,7 +1628,7 @@ bool BabeWindow::loadCover(DB &track) //tofix separte getalbumcover from get art
     if(!artistHead.isEmpty())
     {
         this->infoTable->setArtistArt(artistHead);
-        this->infoTable->artist->setArtist(artist);
+        this->infoTable->artist->setTitle(artist, "");
 
     }else this->infoTable->setArtistArt(QString(":Data/data/cover.svg"));
 

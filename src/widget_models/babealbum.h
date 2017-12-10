@@ -30,11 +30,9 @@ public:
     explicit BabeAlbum(const DB &info, const AlbumSizeHint &widgetSize, const uint8_t &widgetRadius=0, const bool &isDraggable=false,QWidget *parent = nullptr);
     ~BabeAlbum() override;
 
-    void setArtist(const QString &artistTitle);
-    void setAlbum(const QString &albumTitle);
-    void setTitle(const QString &artistTitle = "", const QString &albumTitle = "");
-
     void setUpMenu();
+
+    void setTitle(const QString &artistTitle = "", const QString &albumTitle = "");
     void setTitleGeometry(const int &x, const int &y, const int &w, const int &h);
     void setSize(const uint &value);
 
@@ -51,27 +49,22 @@ public:
     QString getTitle();
     QString getArtist();
     QString getAlbum();
-    QString getBGcolor();
     DB getAlbumMap();
-
 
     void showTitle(const bool &state);
     bool showPlayBtn = true;
 
 private:
-
     QMenu *contextMenu;
 
     DB albumMap;
     bool draggable;
 
     QString imagePath;
-    QString artist="";
-    QString album="";
-    QString bgColor="";
+    QString artist = "";
+    QString album = "";
 
     ScrollText *title;
-    QColor borderQColor;
     QPoint oldPos;
     QPoint startPos;
     QToolButton *playBtn;
@@ -79,7 +72,6 @@ private:
     uint border_radius=0;
 
     CollectionDB connection;
-
     void performDrag();
 
 signals:
@@ -110,7 +102,6 @@ protected:
     virtual void leaveEvent(QEvent *event) Q_DECL_OVERRIDE;
     virtual void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
     virtual bool eventFilter(QObject * watched, QEvent * event) Q_DECL_OVERRIDE;
-    // virtual void  mouseMoveEvent(QMouseEvent *evt);
 };
 
 #endif // ALBUM_H

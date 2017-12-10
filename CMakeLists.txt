@@ -45,6 +45,7 @@ set(babe_SRCS
     src/db/collectionDB.cpp
     src/dialogs/about.cpp
     src/dialogs/playlistform.cpp
+    src/dialogs/moodform.cpp
     src/kde/mpris2.cpp
     src/kde/notify.cpp
     src/pulpo/services/geniusService.cpp
@@ -71,7 +72,6 @@ set(babe_SRCS
     src/data_models/tracklist.cpp
     src/dialogs/metadataform.cpp
     src/views/babewindow.cpp
-
 )
 
 ki18n_wrap_ui(babe_SRCS

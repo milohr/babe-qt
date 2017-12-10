@@ -38,17 +38,16 @@ BabeAlbum::BabeAlbum(const DB &info, const AlbumSizeHint &widgetSize, const uint
     this->setFixedSize(static_cast<int>(size), static_cast<int>(size));
     this->border_radius = widgetRadius;
     this->draggable = isDraggable;
-    this->borderQColor = this->palette().color(QPalette::BrightText).name();
 
     auto layout = new QHBoxLayout;
-    widget = new QWidget(this);
-    widget->setLayout(layout);
+    this->widget = new QWidget(this);
+    this->widget->setLayout(layout);
 
     //    widget->setStyleSheet( QString(" background: rgba(0,0,0,150); border-top: 1px solid rgba(%1,%1,%1,120); border-top-left-radius:0; border-top-right-radius:0; border-bottom-right-radius:%2px; border-bottom-left-radius:%3px;").arg( QString::number(this->palette().color(QPalette::WindowText).blue()), QString::number(border_radius-1),QString::number(border_radius-1)));
-    widget->setStyleSheet( QString(" background: rgba(0,0,0,150); border-top: 1px solid rgba(%1,%1,%1,150); border-top-left-radius:0; border-top-right-radius:0; border-bottom-right-radius:%2px; border-bottom-left-radius:%3px;").arg( QString::number(0), QString::number(border_radius-1),QString::number(border_radius-1)));
+    this->widget->setStyleSheet( QString(" background: rgba(0,0,0,150); border-top: 1px solid rgba(%1,%1,%1,150); border-top-left-radius:0; border-top-right-radius:0; border-bottom-right-radius:%2px; border-bottom-left-radius:%3px;").arg( QString::number(0), QString::number(border_radius-1),QString::number(border_radius-1)));
     this->title = new ScrollText(this);
 
-    title->setMaxSize(size-10);
+    this->title->setMaxSize(size-10);
     title->setStyleSheet("QLabel{background:transparent; color:white; border:none;}");
 
     layout->addStretch();
@@ -162,12 +161,15 @@ void BabeAlbum::restoreSaturation()
 
 void BabeAlbum::setSize(const uint &value)
 {
-    this->size=value;
-    this->setFixedSize(static_cast<int>(size),static_cast<int>(size));
-    this->widget->setMinimumWidth(static_cast<int>(size-2)>=0?static_cast<int>(size-2):0);
-    this->widget->setGeometry(0,static_cast<int>(size-30),static_cast<int>(size),30);
-    this->playBtn->setIconSize(QSize(static_cast<int>(size*subSize),static_cast<int>(size*subSize)));
-    this->playBtn->setGeometry(static_cast<int>(size/2)-static_cast<int>((size*subSize)/2),static_cast<int>(size/2)-static_cast<int>((size*subSize)/2),playBtn->iconSize().width(),playBtn->iconSize().width());
+    this->size = value;
+    this->setFixedSize(static_cast<int>(size), static_cast<int>(size));
+    this->widget->setMinimumWidth(static_cast<int>(size-2) >= 0 ? static_cast<int>(size-2) : 0);
+    this->widget->setGeometry(0, static_cast<int>(size-30), static_cast<int>(size), 30);
+    this->playBtn->setIconSize(QSize(static_cast<int>(size*subSize), static_cast<int>(size*subSize)));
+    this->playBtn->setGeometry(static_cast<int>(size/2)-static_cast<int>((size*subSize)/2),
+                               static_cast<int>(size/2)-static_cast<int>((size*subSize)/2),
+                               this->playBtn->iconSize().width(),
+                               this->playBtn->iconSize().width());
 }
 
 void BabeAlbum::paintEvent(QPaintEvent *event)
@@ -206,13 +208,7 @@ QString BabeAlbum::getArtist() { return this->artist; }
 
 QString BabeAlbum::getAlbum() { return this->album; }
 
-QString BabeAlbum::getBGcolor() { return this->bgColor; }
-
 Bae::DB BabeAlbum::getAlbumMap() { return this->albumMap; }
-
-void BabeAlbum::setArtist(const QString &artistTitle) { this->artist=artistTitle; }
-
-void BabeAlbum::setAlbum(const QString &albumTitle) { this->album=albumTitle; }
 
 void BabeAlbum::setTitle(const QString &artistTitle, const QString &albumTitle)
 {
