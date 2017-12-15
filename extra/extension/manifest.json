@@ -10,5 +10,12 @@
         "default_icon": "icon_1.png",
         "default_popup": "popup.html"
     },
-    "permissions": [ "activeTab" ]
+    "permissions": [ "activeTab" ],
+    "applications":
+    {
+        "gecko": 
+        {
+            "id": "babe@babe.org"
+        }
+    }
 }

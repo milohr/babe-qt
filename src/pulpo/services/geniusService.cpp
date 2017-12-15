@@ -318,21 +318,10 @@ bool genius::extractLyrics(const QByteArray &array)
     parser.setHtml(array);
 
     auto lyricsList = parser.parseTag("div", "class=\"lyrics\"");
-    qDebug()<<lyricsList;
 
     if(!lyricsList.isEmpty())
         lyrics=lyricsList.first();
-
-    //    QString content = QString::fromUtf8(array.constData());
-    //    //    content.replace("&lt;", "<");
-    //    QRegExp lyrics_regexp("<div class=\"lyrics\">(.*)</div>");
-    //    lyrics_regexp.indexIn(content);
     QString text;
-    //    QString lyrics = lyrics_regexp.cap(1);
-    //    qDebug()<<lyrics;
-    //    lyrics = lyrics.trimmed();
-    //    lyrics.replace("\n", "<br>");
-
     if(!lyrics.isEmpty())
     {
         text = "<h2 align='center' >" + this->track[Bae::KEY::TITLE] + "</h2>";
@@ -341,7 +330,8 @@ bool genius::extractLyrics(const QByteArray &array)
         text= "<div align='center'>"+text+"</div>";
     }
 
-    emit this->infoReady(this->track, this->packResponse(ONTOLOGY::TRACK, INFO::LYRICS,CONTEXT::LYRIC,text));
+    emit this->infoReady(this->track, this->packResponse(ONTOLOGY::TRACK, INFO::LYRICS, CONTEXT::LYRIC, text));
+    return true;
 }
 
 

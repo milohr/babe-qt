@@ -2038,9 +2038,9 @@ Bae::DB_LIST BabeWindow::searchFor(const QStringList &queries)
             searchQuery=searchQuery.trimmed();
             if(!searchQuery.isEmpty())
             {
-                mapList += this->connection.getSearchedTracks(Bae::KEY::WIKI,searchQuery);
-                mapList += this->connection.getSearchedTracks(Bae::KEY::TAG,searchQuery);
-                mapList += this->connection.getSearchedTracks(Bae::KEY::LYRICS,searchQuery);
+                mapList += this->connection.getSearchedTracks(Bae::KEY::WIKI, searchQuery);
+                mapList += this->connection.getSearchedTracks(Bae::KEY::TAG, searchQuery);
+                mapList += this->connection.getSearchedTracks(Bae::KEY::LYRICS, searchQuery);
             }
 
         }else if(searchQuery.contains((Bae::SearchTMap[Bae::SearchT::SIMILAR]+":")))
@@ -2066,7 +2066,7 @@ Bae::DB_LIST BabeWindow::searchFor(const QStringList &queries)
                 }
             }
 
-            searchQuery=searchQuery.trimmed();
+            searchQuery = searchQuery.trimmed();
             qDebug()<<"Searching for: "<<searchQuery;
 
             if(!searchQuery.isEmpty())
@@ -2075,7 +2075,7 @@ Bae::DB_LIST BabeWindow::searchFor(const QStringList &queries)
                     mapList += this->connection.getSearchedTracks(key,searchQuery);
                 else
                 {
-                    auto queryTxt = "SELECT * FROM tracks WHERE title LIKE \"%"+searchQuery+"%\" OR artist LIKE \"%"+searchQuery+"%\" OR album LIKE \"%"+searchQuery+"%\"OR genre LIKE \"%"+searchQuery+"%\"OR url LIKE \"%"+searchQuery+"%\"";
+                    auto queryTxt = "SELECT * FROM tracks WHERE title LIKE \"%"+searchQuery+"%\" OR artist LIKE \"%"+searchQuery+"%\" OR album LIKE \"%"+searchQuery+"%\"OR genre LIKE \"%"+searchQuery+"%\"OR url LIKE \"%"+searchQuery+"%\" LIMIT 1000";
                     QSqlQuery query(queryTxt);
                     mapList += this->connection.getDBData(query);
                 }

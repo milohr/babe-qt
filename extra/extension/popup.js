@@ -7,11 +7,11 @@ document.addEventListener('DOMContentLoaded', function()
     var babeBtn = document.getElementById('babe');
     var addBtn = document.getElementById('add');
 
-    chrome.tabs.getSelected(null, function (tab)
+    chrome.tabs.query({ currentWindow: true, active: true }, function (tab)
     {
         var d = document;
-        var url = tab.url;
-        var ydoc = tab.title;
+        var url = tab[0].url;
+        var ydoc = tab[0].title;
 
         console.log(ydoc);
         if (url.includes("youtube.com/watch?v"))
@@ -22,8 +22,8 @@ document.addEventListener('DOMContentLoaded', function()
             var babeArtist = document.getElementById('artist');
             var babeAlbum = document.getElementById('album');
 
-            var pageUrl = tab.url;
-            var pageTitle = tab.title;
+            var pageUrl = tab[0].url;
+            var pageTitle = tab[0].title;
 
             if (pageUrl.includes("youtube.com/watch?v"))
             {
@@ -35,15 +35,15 @@ document.addEventListener('DOMContentLoaded', function()
                 if(pageTitle.indexOf(')')>-1)
                 {
                     regex = / *\([^)]*\) */g;
-                    newTitle = newTitle.replace(regex, "").trim();
-                    newArtist = newArtist.replace(regex, "").trim();
+                    newTitle = newTitle.replace(regex, " ").trim();
+                    newArtist = newArtist.replace(regex, " ").trim();
                 }
 
                 if(pageTitle.indexOf('[')>-1)
                 {
                     regex = / *\[[^)]*\] */g;
-                    newTitle = newTitle.replace(regex, "").trim();
-                    newArtist = newArtist.replace(regex, "").trim();
+                    newTitle = newTitle.replace(regex, " ").trim();
+                    newArtist = newArtist.replace(regex, " ").trim();
                 }
 
                 regex = /"/g
@@ -70,7 +70,8 @@ document.addEventListener('DOMContentLoaded', function()
             if (id.includes("#"))
                 id = id.substring(0, id.indexOf("#"));
 
-            pageUrl = tab.url.replace("- YouTube", "");
+            pageUrl = tab[0].url.replace("- YouTube", "");
+            
             var title = document.getElementById('title').value;
             var artist = document.getElementById('artist').value;
             var album = document.getElementById('album').value;
