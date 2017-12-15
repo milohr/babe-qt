@@ -28,7 +28,7 @@ public:
 
     explicit CollectionDB();
     //CollectionDB(bool connect);
-    bool execQuery(QSqlQuery &query) const;
+    bool execQuery(QSqlQuery &query);
     bool execQuery(const QString &queryTxt);
 
     /*basic public actions*/
@@ -64,7 +64,7 @@ public:
     bool trackPlaylist(const QString &url, const QString &playlist);
 
     Bae::DB_LIST getDBData(const QStringList &urls);
-    Bae::DB_LIST getDBData(QSqlQuery &query) const;
+    Bae::DB_LIST getDBData(const QString &query);
 
     Bae::DB_LIST getAlbumTracks(const QString &album, const QString &artist, const Bae::KEY &orderBy = Bae::KEY::TRACK, const Bae::W &order = Bae::W::ASC);
     Bae::DB_LIST getArtistTracks(const QString &artist, const Bae::KEY &orderBy = Bae::KEY::ALBUM, const Bae::W &order = Bae::W::ASC);

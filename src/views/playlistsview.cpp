@@ -58,19 +58,19 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
     {
         auto tag = index.data().toString();
         this->table->flushTable();
-        QSqlQuery query;
+        QString query;
         if(this->list->currentIndex().data().toString()=="Tags")
         {
-            query.prepare(QString("select * from tracks where url in (select url from tracks_tags where tag = '%1')").arg(tag));
+            query = QString("select * from tracks where url in (select url from tracks_tags where tag = '%1')").arg(tag);
         }else if(this->list->currentIndex().data().toString()=="Relationships")
         {
-            query.prepare(QString("select * from tracks where artist in (select artist from artists_tags where tag = '%1')").arg(tag));
+            query = QString("select * from tracks where artist in (select artist from artists_tags where tag = '%1')").arg(tag);
         }else if( this->list->currentIndex().data().toString()=="Popular")
         {
-            query.prepare(QString("select t.* from tracks t "
+            query = QString("select t.* from tracks t "
                                   "inner join tracks_tags tt on tt.url = t.url "
                                   "where tt.context = 'track_stat' and t.artist = '%1' "
-                                  "group by tt.url order by sum(tag) desc limit 250").arg(tag));
+                                  "group by tt.url order by sum(tag) desc limit 250").arg(tag);
 
         }
 
@@ -341,7 +341,7 @@ void PlaylistsView::populatePlaylist(const QModelIndex &index)
 
         this->populateTagList("select artist as tag from artists order by artist");
 
-        QSqlQuery query ("select t.* from tracks t "
+        QString query ("select t.* from tracks t "
                          "inner join tracks_tags tt on tt.url = t.url "
                          "where tt.context = 'track_stat' "
                          "group by tt.url order by sum(tag) desc limit 250");
@@ -418,9 +418,7 @@ void PlaylistsView::populateTagList(const QString &queryTxt)
     this->tagList->clear();
     this->line_v->setVisible(true);
     this->tagList->setVisible(true);
-
-    QSqlQuery query(queryTxt);
-    auto tags = connection.getDBData(query);
+    auto tags = connection.getDBData(queryTxt);
 
     for( auto tag :  tags )
         this->tagList->addItem(tag[Bae::KEY::TAG]);
@@ -451,9 +449,9 @@ void PlaylistsView::playlistName(QListWidgetItem *item) {
 
 void PlaylistsView::on_removeBtn_clicked() {}
 
-void PlaylistsView::setPlaylists(const QStringList &playlists)
+void PlaylistsView::setPlaylists()
 {
-    this->playlists=playlists;
+    this->playlists = this->connection.getPlaylists();
     for (auto playlist : this->playlists)
     {
         auto item = new QListWidgetItem;
@@ -504,10 +502,8 @@ void PlaylistsView::setPlaylistsMoods()
         table->flushTable();
         removeBtn->setEnabled(true);
         table->hideColumn(static_cast<int>(Bae::KEY::PLAYED));
-        QSqlQuery query;
         QString queryTxt = "SELECT * FROM tracks WHERE art = \"" + currentPlaylist + "\"";
-        query.prepare(queryTxt);
-        table->populateTableView(query);
+        table->populateTableView(queryTxt);
 
         auto moodMap = Bae::loadSettings("MOODS", "SETTINGS", QMap<QString, QVariant>()).toMap();
         QStringList strValues;
@@ -518,9 +514,7 @@ void PlaylistsView::setPlaylistsMoods()
 
         queryTxt = "SELECT DISTINCT t.* FROM tracks t INNER JOIN tracks_tags tt ON tt.url = t.url WHERE tag LIKE "+strValues.join(" OR tag LIKE ")+" LIMIT 100";
         qDebug()<<  queryTxt;
-
-        query.prepare(queryTxt);
-        table->populateTableView(query);
+        table->populateTableView(queryTxt);
 
     });
 

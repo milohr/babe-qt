@@ -171,10 +171,10 @@ void  AlbumsView::flushView()
     this->hideAlbumFrame();
 }
 
-void AlbumsView::populate(QSqlQuery &query)
+void AlbumsView::populate(const QString &query)
 {
     qDebug()<<"POPULATING ALBUMS WAS CALLED";
-    albumLoader.requestAlbums(query.lastQuery());
+    albumLoader.requestAlbums(query);
 }
 
 void AlbumsView::populate(const DB_LIST &albums)

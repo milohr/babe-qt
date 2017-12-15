@@ -31,7 +31,7 @@ RabbitView::RabbitView(QWidget *parent) : QWidget(parent)
     {
         this->filterList->flushTable();
         this->filterList->setVisible(true);
-        QSqlQuery query(QString("select * from tracks where artist = '%1'").arg(albumMap[KEY::ARTIST]));
+        auto query = QString("select * from tracks where artist = '%1'").arg(albumMap[KEY::ARTIST]);
         this->filterList->populateTableView(query);
     });
 
@@ -106,8 +106,7 @@ void RabbitView::seed(const DB &track)
 {
     this->flushSuggestions();
     auto queryTxt = QUERY[TABLE::TRACKS][W::SIMILAR];
-    QSqlQuery query(queryTxt.replace("?", track[KEY::URL]));
-    this->generalSuggestion->populateTableView(query);
+    this->generalSuggestion->populateTableView(queryTxt.replace("?", track[KEY::URL]));
 
     queryTxt = QUERY[TABLE::ARTISTS][W::SIMILAR];
     this->albumLoader.requestAlbums(queryTxt.replace("?", track[KEY::URL]));
@@ -131,7 +130,6 @@ void RabbitView::flushSuggestions(RabbitView::suggestionsTables list)
         this->filterList->setVisible(false);
         break;
     }
-
 }
 
 void RabbitView::addArtistSuggestion(const DB &albumMap)

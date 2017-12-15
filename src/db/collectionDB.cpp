@@ -196,9 +196,8 @@ bool CollectionDB::update(const QString &table,const QString &column,const QVari
 
 }
 
-bool CollectionDB::execQuery(QSqlQuery &query) const
+bool CollectionDB::execQuery(QSqlQuery &query)
 {
-
     if(query.exec()) return true;
     qDebug()<<"ERROR ON EXEC QUERY";
     qDebug()<<query.lastError()<<query.lastQuery();
@@ -380,9 +379,8 @@ bool CollectionDB::albumTrack(const DB &track, const QString &value)
 
     auto queryTxt = QString("SELECT * %1 WHERE %2 = %3 AND %4 = %5").arg(TABLEMAP[TABLE::ALBUMS],
             KEYMAP[KEY::ALBUM],album, KEYMAP[KEY::ARTIST], artist);
-    QSqlQuery query(queryTxt);
 
-    auto result = getDBData(query);
+    auto result = this->getDBData(queryTxt);
     if(result.isEmpty())  return false;
 
     auto oldAlbum = result.first();
@@ -397,6 +395,7 @@ bool CollectionDB::albumTrack(const DB &track, const QString &value)
     queryTxt = QString("UPDATE %1 SET %2 = %3 AND %4 = %5 WHERE %2 = %6 AND %4 = %5").arg(TABLEMAP[TABLE::TRACKS],
             KEYMAP[KEY::ALBUM],value,
             KEYMAP[KEY::ARTIST], oldAlbum[KEY::ARTIST],oldAlbum[KEY::ALBUM]);
+    QSqlQuery query;
     query.prepare(queryTxt);
 
     if(!execQuery(query)) return false;
@@ -528,38 +527,39 @@ bool CollectionDB::trackPlaylist(const QString &url, const QString &playlist)
 DB_LIST CollectionDB::getDBData(const QStringList &urls)
 {
     DB_LIST mapList;
-    QSqlQuery query;
 
     for(auto url : urls)
     {
-
         auto queryTxt = QString("SELECT * FROM %1 WHERE %2 = \"%3\"").arg(TABLEMAP[TABLE::TRACKS],
                 KEYMAP[KEY::URL],url);
-        query.prepare(queryTxt);
 
-        mapList << getDBData(query);
+        mapList << this->getDBData(queryTxt);
     }
 
     return mapList;
 }
 
-DB_LIST CollectionDB::getDBData(QSqlQuery &query) const
+DB_LIST CollectionDB::getDBData(const QString &query)
 {
     DB_LIST mapList;
+    qDebug()<<"MY DEBUG2"<<query;
 
-    if(this->execQuery(query))
+    QSqlQuery qq(query);
+
+    if(this->execQuery(qq))
     {
-        while(query.next())
+        qDebug()<<"MY DEBUG1"<<query;
+        while(qq.next())
         {
             DB data;
             for(auto key : KEYMAP.keys())
-                if(query.record().indexOf(KEYMAP[key])>-1)
-                    data.insert(key,query.value(KEYMAP[key]).toString());
+                if(qq.record().indexOf(KEYMAP[key])>-1)
+                    data.insert(key, qq.value(KEYMAP[key]).toString());
 
             mapList<< data;
         }
-    }else
-        qDebug()<< query.lastError()<< query.lastQuery();
+
+    }else     qDebug()<< qq.lastError()<< qq.lastQuery();
 
 
     qDebug()<<"MAPLIST SIZE:"<<mapList.size();
@@ -572,9 +572,8 @@ DB_LIST CollectionDB::getAlbumTracks(const QString &album, const QString &artist
 {
     auto queryTxt = QString("SELECT * FROM %1 WHERE %2 = \"%3\" AND %4 = \"%5\" ORDER by %6 %7").arg(TABLEMAP[TABLE::TRACKS],
             KEYMAP[KEY::ARTIST],artist,KEYMAP[KEY::ALBUM],album,KEYMAP[orderBy], SLANG[order]);
-    QSqlQuery query(queryTxt);
 
-    return getDBData(query);
+    return this->getDBData(queryTxt);
 }
 
 DB_LIST CollectionDB::getArtistTracks(const QString &artist, const KEY &orderBy, const Bae::W &order)
@@ -582,9 +581,7 @@ DB_LIST CollectionDB::getArtistTracks(const QString &artist, const KEY &orderBy,
     auto queryTxt = QString("SELECT * FROM %1 WHERE %2 = \"%3\" ORDER by %4 %5, %6 %5").arg(TABLEMAP[TABLE::TRACKS],
             KEYMAP[KEY::ARTIST],artist,KEYMAP[orderBy],SLANG[order],KEYMAP[KEY::TRACK]);
 
-    QSqlQuery query(queryTxt);
-
-    return getDBData(query);
+    return this->getDBData(queryTxt);
 }
 
 QStringList CollectionDB::getArtistAlbums(const QString &artist)
@@ -607,9 +604,7 @@ DB_LIST CollectionDB::getBabedTracks(const KEY &orderBy, const Bae::W &order)
     auto queryTxt= QString("SELECT * FROM %1 WHERE %2 = 1 ORDER by %3 %4").arg(TABLEMAP[TABLE::TRACKS],
             KEYMAP[KEY::BABE],
             KEYMAP[orderBy], SLANG[order]);
-    QSqlQuery query(queryTxt);
-
-    return getDBData(query);
+    return this->getDBData(queryTxt);
 }
 
 DB_LIST CollectionDB::getSearchedTracks(const KEY &where, const QString &search)
@@ -663,9 +658,7 @@ DB_LIST CollectionDB::getSearchedTracks(const KEY &where, const QString &search)
 
     qDebug()<<"SEARCH QUERY:"<<queryTxt;
 
-    QSqlQuery query(queryTxt);
-
-    return getDBData(query);
+    return this->getDBData(queryTxt);
 
 }
 
@@ -676,9 +669,7 @@ DB_LIST CollectionDB::getPlaylistTracks(const QString &playlist, const KEY &orde
             KEYMAP[KEY::PLAYLIST],
             playlist,KEYMAP[orderBy],SLANG[order],KEYMAP[KEY::TRACK] );
 
-    QSqlQuery query(queryTxt);
-
-    return getDBData(query);
+    return this->getDBData(queryTxt);
 }
 
 DB_LIST CollectionDB::getFavTracks(const int &stars, const int &limit, const KEY &orderBy, const Bae::W &order)
@@ -687,9 +678,7 @@ DB_LIST CollectionDB::getFavTracks(const int &stars, const int &limit, const KEY
             KEYMAP[KEY::STARS], QString::number(stars),
             KEYMAP[orderBy],SLANG[order],QString::number(limit));
 
-    QSqlQuery query(queryTxt);
-
-    return getDBData(query);
+    return this->getDBData(queryTxt);
 }
 
 DB_LIST CollectionDB::getRecentTracks(const int &limit, const KEY &orderBy, const Bae::W &order)
@@ -697,9 +686,7 @@ DB_LIST CollectionDB::getRecentTracks(const int &limit, const KEY &orderBy, cons
     auto queryTxt= QString("SELECT * FROM %1 ORDER BY strftime(\"%s\",%2) %3 LIMIT %4" ).arg(TABLEMAP[TABLE::TRACKS],
             KEYMAP[orderBy],SLANG[order],QString::number(limit));
 
-    QSqlQuery query(queryTxt);
-
-    return getDBData(query);
+    return this->getDBData(queryTxt);
 }
 
 DB_LIST CollectionDB::getOnlineTracks(const KEY &orderBy, const Bae::W &order)
@@ -707,9 +694,7 @@ DB_LIST CollectionDB::getOnlineTracks(const KEY &orderBy, const Bae::W &order)
     auto queryTxt= QString("SELECT * FROM %1 WHERE %2 LIKE \"%3%\" ORDER BY %4 %5" ).arg(TABLEMAP[TABLE::TRACKS],
             KEYMAP[KEY::URL],YoutubeCachePath,KEYMAP[orderBy],SLANG[order]);
 
-    QSqlQuery query(queryTxt);
-
-    return getDBData(query);
+    return this->getDBData(queryTxt);
 }
 
 DB_LIST CollectionDB::getMostPlayedTracks(const int &greaterThan, const int &limit, const KEY &orderBy, const Bae::W &order)
@@ -718,9 +703,7 @@ DB_LIST CollectionDB::getMostPlayedTracks(const int &greaterThan, const int &lim
             KEYMAP[KEY::PLAYED], QString::number(greaterThan),
             KEYMAP[orderBy],SLANG[order],QString::number(limit));
 
-    QSqlQuery query(queryTxt);
-
-    return getDBData(query);
+    return this->getDBData(queryTxt);
 }
 
 QString CollectionDB::getTrackLyrics(const QString &url)
@@ -897,18 +880,20 @@ QStringList CollectionDB::getAlbumTags(const QString &album, const QString &arti
 
 QStringList CollectionDB::getPlaylists()
 {
-
     QStringList playlists;
-    QSqlQuery query(QString("SELECT %1, %2 FROM %3 ORDER by %2 desc").arg(KEYMAP[KEY::PLAYLIST],
-                    KEYMAP[KEY::ADD_DATE],
-            TABLEMAP[TABLE::PLAYLISTS]));
+    auto queryTxt = QString("SELECT %1, %2 FROM %3 ORDER by %2 desc").arg(KEYMAP[KEY::PLAYLIST],
+            KEYMAP[KEY::ADD_DATE],
+    TABLEMAP[TABLE::PLAYLISTS]);
+    QSqlQuery query;
+    query.prepare(queryTxt);
+
+    qDebug()<< queryTxt;
 
     if (this->execQuery(query))
         while (query.next())
             playlists << query.value(0).toString();
 
     return playlists;
-
 }
 
 bool CollectionDB::removeTrack(const QString &path)

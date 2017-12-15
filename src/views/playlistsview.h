@@ -26,7 +26,7 @@ public:
     QListWidget *list;
     QListWidget *tagList;
 
-    void setPlaylists(const QStringList &playlists);
+    void setPlaylists();
     void setPlaylistsMoods();
     void setDefaultPlaylists();
     void showPlaylistDialog();

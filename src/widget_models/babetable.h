@@ -67,8 +67,7 @@ public slots:
     {
         qDebug()<<"GETTING TRACKS FROM BABETABLE";
 
-        QSqlQuery mquery(query);
-        auto tracks = this->connection.getDBData(mquery);
+        auto tracks = this->connection.getDBData(query);
         if(tracks.size()>0)
         {
             for(auto trackMap : tracks)
@@ -132,7 +131,7 @@ public:
 
     void insertTrack(const Bae::DB &track);
     void populateTableView(const Bae::DB_LIST &mapList);
-    void populateTableView(QSqlQuery &indication);
+    void populateTableView(const QString &indication);
     void removeMissing(const QString &url);
     void setRating(const int &rate);
     void setTableOrder(int column, Bae::W order);

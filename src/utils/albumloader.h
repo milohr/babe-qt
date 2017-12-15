@@ -72,8 +72,7 @@ public slots:
 
     void getAlbums(QString query)
     {
-        QSqlQuery mquery(query);
-        auto albums = this->connection.getDBData(mquery);
+        auto albums = this->connection.getDBData(query);
         this->placeAlbums(albums);
     }
 

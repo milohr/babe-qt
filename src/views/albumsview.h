@@ -41,7 +41,7 @@ public:
     explicit AlbumsView(const bool &extraList=false, QWidget *parent = nullptr);
     ~AlbumsView();
 
-    void populate(QSqlQuery &query);
+    void populate(const QString &query);
     void populate(const DB_LIST &albums);
 
     void addAlbum(const Bae::DB &albumMap);

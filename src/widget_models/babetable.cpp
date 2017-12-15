@@ -452,11 +452,11 @@ void BabeTable::populateTableView(const Bae::DB_LIST &mapList)
     }
 }
 
-void BabeTable::populateTableView(QSqlQuery &query)
+void BabeTable::populateTableView(const QString &query)
 {
     qDebug() << "ON POPULATE TABLEVIEW";
     this->setSortingEnabled(false);
-    trackLoader.requestTracks(query.lastQuery());
+    trackLoader.requestTracks(query);
 }
 
 

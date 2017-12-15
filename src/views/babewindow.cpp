@@ -1131,33 +1131,32 @@ void BabeWindow::refreshTables(const QMap<Bae::TABLE, bool> &tableReset)
 {
     nof->notify("Loading collection","this might take some time depending on your colleciton size");
 
-    QSqlQuery query;
 
     for (auto table : tableReset.keys())
+    {
+        QString queryTxt;
         switch(table)
         {
         case Bae::TABLE::TRACKS:
         {
             if(tableReset[table]) this->collectionTable->flushTable();
-            query.prepare(QString("SELECT * FROM %1 ORDER BY  %2").arg(Bae::TABLEMAP[Bae::TABLE::TRACKS],Bae::KEYMAP[Bae::KEY::ARTIST]));
-            this->collectionTable->populateTableView(query);
+            queryTxt = QString("SELECT * FROM %1 ORDER BY  %2").arg(Bae::TABLEMAP[Bae::TABLE::TRACKS],Bae::KEYMAP[Bae::KEY::ARTIST]);
+            this->collectionTable->populateTableView(queryTxt);
             break;
         }
         case Bae::TABLE::ALBUMS:
         {
             if(tableReset[table]) this->albumsTable->flushView();
-
-            query.prepare(QString("SELECT * FROM %1 ORDER BY  %2").arg(Bae::TABLEMAP[Bae::TABLE::ALBUMS],Bae::KEYMAP[Bae::KEY::ALBUM]));
-            this->albumsTable->populate(query);
+            queryTxt = QString("SELECT * FROM %1 ORDER BY  %2").arg(Bae::TABLEMAP[Bae::TABLE::ALBUMS],Bae::KEYMAP[Bae::KEY::ALBUM]);
+            this->albumsTable->populate(queryTxt);
             this->albumsTable->hideAlbumFrame();
             break;
         }
         case Bae::TABLE::ARTISTS:
         {
             if(tableReset[table]) this->artistsTable->flushView();
-
-            query.prepare(QString("SELECT * FROM %1 ORDER BY  %2").arg(Bae::TABLEMAP[Bae::TABLE::ARTISTS],Bae::KEYMAP[Bae::KEY::ARTIST]));
-            this->artistsTable->populate(query);
+            queryTxt = QString("SELECT * FROM %1 ORDER BY  %2").arg(Bae::TABLEMAP[Bae::TABLE::ARTISTS],Bae::KEYMAP[Bae::KEY::ARTIST]);
+            this->artistsTable->populate(queryTxt);
             this->artistsTable->hideAlbumFrame();
             break;
         }
@@ -1165,12 +1164,15 @@ void BabeWindow::refreshTables(const QMap<Bae::TABLE, bool> &tableReset)
         {
             this->playlistTable->list->clear();
             this->playlistTable->setDefaultPlaylists();
-            this->playlistTable->setPlaylists(this->connection.getPlaylists());
+            this->playlistTable->setPlaylists();
             break;
         }
 
         default: return;
         }
+    }
+
+
 }
 
 void BabeWindow::showControls(const bool &state)
@@ -2072,12 +2074,11 @@ Bae::DB_LIST BabeWindow::searchFor(const QStringList &queries)
             if(!searchQuery.isEmpty())
             {
                 if(hasKey)
-                    mapList += this->connection.getSearchedTracks(key,searchQuery);
+                    mapList += this->connection.getSearchedTracks(key, searchQuery);
                 else
                 {
-                    auto queryTxt = "SELECT * FROM tracks WHERE title LIKE \"%"+searchQuery+"%\" OR artist LIKE \"%"+searchQuery+"%\" OR album LIKE \"%"+searchQuery+"%\"OR genre LIKE \"%"+searchQuery+"%\"OR url LIKE \"%"+searchQuery+"%\" LIMIT 1000";
-                    QSqlQuery query(queryTxt);
-                    mapList += this->connection.getDBData(query);
+                    auto queryTxt = QString("SELECT * FROM tracks WHERE title LIKE \"%"+searchQuery+"%\" OR artist LIKE \"%"+searchQuery+"%\" OR album LIKE \"%"+searchQuery+"%\"OR genre LIKE \"%"+searchQuery+"%\"OR url LIKE \"%"+searchQuery+"%\" LIMIT 1000");
+                    mapList += this->connection.getDBData(queryTxt);
                 }
             }
         }

@@ -331,8 +331,7 @@ public slots:
                 KEYMAP[KEY::ARTIST],
                 TABLEMAP[TABLE::TRACKS],
                 KEYMAP[KEY::LYRICS]);
-        QSqlQuery query (queryTxt);
-        this->setInfo(connection.getDBData(query), ontology, services, INFO::LYRICS, RECURSIVE::OFF, [](DB track)
+        this->setInfo(connection.getDBData(queryTxt), ontology, services, INFO::LYRICS, RECURSIVE::OFF, [](DB track)
         {
             connection.lyricsTrack(track,SLANG[W::NONE]);
         });
@@ -348,8 +347,7 @@ public slots:
                 TABLEMAP[TABLE::TRACKS],
                 TABLEMAP[TABLE::ALBUMS],
                 KEYMAP[KEY::ARTWORK]);
-        query.prepare(queryTxt);
-        auto artworks = connection.getDBData(query);
+        auto artworks = connection.getDBData(queryTxt);
         this->setInfo(artworks, ontology, services, INFO::ARTWORK, RECURSIVE::OFF, [](DB track)
         {
             connection.insertArtwork(track);
@@ -366,14 +364,12 @@ public slots:
                 KEYMAP[KEY::ALBUM],
                 TABLEMAP[TABLE::TRACKS],
                 TABLEMAP[TABLE::TRACKS_TAGS]);
-        query.prepare(queryTxt);
-        this->setInfo(connection.getDBData(query), ontology, services, INFO::TAGS, RECURSIVE::ON, nullptr);
+        this->setInfo(connection.getDBData(queryTxt), ontology, services, INFO::TAGS, RECURSIVE::ON, nullptr);
 
         qDebug()<<"getting missing track wikis";
         queryTxt =  QString("SELECT %1, %2, %3, %4 FROM %5 WHERE %6 = ''").arg(KEYMAP[KEY::URL],KEYMAP[KEY::TITLE],
                 KEYMAP[KEY::ARTIST],KEYMAP[KEY::ALBUM],TABLEMAP[TABLE::TRACKS],KEYMAP[KEY::WIKI]);
-        query.prepare(queryTxt);
-        this->setInfo(connection.getDBData(query), ontology, services, INFO::WIKI, RECURSIVE::OFF, [](DB track)
+        this->setInfo(connection.getDBData(queryTxt), ontology, services, INFO::WIKI, RECURSIVE::OFF, [](DB track)
         {
             connection.wikiTrack(track,SLANG[W::NONE]);
         });
@@ -404,30 +400,27 @@ public slots:
         qDebug()<<"getting missing album artworks";
         auto queryTxt = QString("SELECT %1, %2 FROM %3 WHERE %4 = ''").arg(KEYMAP[KEY::ALBUM],
                 KEYMAP[KEY::ARTIST],TABLEMAP[TABLE::ALBUMS],KEYMAP[KEY::ARTWORK]);
-        QSqlQuery query (queryTxt);
-        auto artworks = connection.getDBData(query);
+        auto artworks = connection.getDBData(queryTxt);
 
         /* BEFORE FETCHING ONLINE LOOK UP IN THE CACHE FOR THE IMAGE */
         for(auto album : artworks)
             if(Bae::artworkCache(album, KEY::ALBUM))
                 connection.insertArtwork(album);
 
-        artworks = connection.getDBData(query);
+        artworks = connection.getDBData(queryTxt);
         this->setInfo(artworks, ontology, services, INFO::ARTWORK, RECURSIVE::OFF, nullptr);
 
         //select album, artist from albums where  album  not in (select album from albums_tags) and artist  not in (select  artist from albums_tags)
         qDebug()<<"getting missing album tags";
         queryTxt =  QString("SELECT %1, %2 FROM %3 WHERE %1 NOT IN ( SELECT %1 FROM %4 ) AND %2 NOT IN ( SELECT %2 FROM %4 )").arg(KEYMAP[KEY::ALBUM],
                 KEYMAP[KEY::ARTIST],TABLEMAP[TABLE::ALBUMS],TABLEMAP[TABLE::ALBUMS_TAGS]);
-        query.prepare(queryTxt);
-        this->setInfo(connection.getDBData(query), ontology, services, INFO::TAGS, RECURSIVE::ON, nullptr);
+        this->setInfo(connection.getDBData(queryTxt), ontology, services, INFO::TAGS, RECURSIVE::ON, nullptr);
 
 
         qDebug()<<"getting missing album wikis";
         queryTxt =  QString("SELECT %1, %2 FROM %3 WHERE %4 = '' ").arg(KEYMAP[KEY::ALBUM],
                 KEYMAP[KEY::ARTIST],TABLEMAP[TABLE::ALBUMS],KEYMAP[KEY::WIKI]);
-        query.prepare(queryTxt);
-        this->setInfo(connection.getDBData(query), ontology, services, INFO::WIKI, RECURSIVE::OFF, [](DB track)
+        this->setInfo(connection.getDBData(queryTxt), ontology, services, INFO::WIKI, RECURSIVE::OFF, [](DB track)
         {
             connection.wikiAlbum(track,SLANG[W::NONE]);
         });
@@ -446,30 +439,27 @@ public slots:
         qDebug()<<"getting missing artist artworks";
         auto queryTxt = QString("SELECT %1 FROM %2 WHERE %3 = ''").arg(KEYMAP[KEY::ARTIST],
                 TABLEMAP[TABLE::ARTISTS],KEYMAP[KEY::ARTWORK]);
-        QSqlQuery query (queryTxt);
-        auto artworks = connection.getDBData(query);
+        auto artworks = connection.getDBData(queryTxt);
 
         /* BEFORE FETCHING ONLINE LOOK UP IN THE CACHE FOR THE IMAGE */
         for(auto artist : artworks)
             if(Bae::artworkCache(artist, KEY::ARTIST))
                 connection.insertArtwork(artist);
 
-        artworks = connection.getDBData(query);
+        artworks = connection.getDBData(queryTxt);
         this->setInfo(artworks, ontology, services, INFO::ARTWORK, RECURSIVE::OFF, nullptr);
 
         //select artist from artists where  artist  not in (select album from albums_tags)
         qDebug()<<"getting missing artist tags";
         queryTxt =  QString("SELECT %1 FROM %2 WHERE %1 NOT IN ( SELECT %1 FROM %3 ) ").arg(KEYMAP[KEY::ARTIST],
                 TABLEMAP[TABLE::ARTISTS],TABLEMAP[TABLE::ARTISTS_TAGS]);
-        query.prepare(queryTxt);
-        this->setInfo(connection.getDBData(query), ontology, services, INFO::TAGS, RECURSIVE::ON, nullptr);
+        this->setInfo(connection.getDBData(queryTxt), ontology, services, INFO::TAGS, RECURSIVE::ON, nullptr);
 
 
         qDebug()<<"getting missing artist wikis";
         queryTxt =  QString("SELECT %1 FROM %2 WHERE %3 = '' ").arg(KEYMAP[KEY::ARTIST],
                 TABLEMAP[TABLE::ARTISTS],KEYMAP[KEY::WIKI]);
-        query.prepare(queryTxt);
-        this->setInfo(connection.getDBData(query), ontology, services, INFO::WIKI, RECURSIVE::OFF,  [](DB track)
+        this->setInfo(connection.getDBData(queryTxt), ontology, services, INFO::WIKI, RECURSIVE::OFF,  [](DB track)
         {
             connection.wikiArtist(track,SLANG[W::NONE]);
         });
