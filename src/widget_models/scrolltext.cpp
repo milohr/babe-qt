@@ -60,9 +60,7 @@ void ScrollText::reset()
 }
 
 ScrollText::~ScrollText()
-{
-    qDebug()<<"DELETING SCROLLTEXT";
-}
+{}
 
 void ScrollText::setAlignment(Qt::Alignment al)
 {

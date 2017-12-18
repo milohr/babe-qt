@@ -4,7 +4,7 @@
 #include <QString>
 #include "../pulpo.h"
 
-using namespace Bae;
+using namespace BAE;
 
 class musicBrainz : public Pulpo
 {

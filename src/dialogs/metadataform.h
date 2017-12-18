@@ -15,7 +15,7 @@ class metadataForm : public QWidget
     Q_OBJECT
 
 public:
-    explicit metadataForm(const Bae::DB &info, QWidget *parent = nullptr);
+    explicit metadataForm(const BAE::DB &info, QWidget *parent = nullptr);
     ~metadataForm();
 
 private slots:
@@ -24,10 +24,10 @@ private slots:
 
 private:
     Ui::metadataForm *ui;
-    Bae::DB trackMap;
+    BAE::DB trackMap;
 
 signals:
-    void infoModified(const Bae::DB &map);
+    void infoModified(const BAE::DB &map);
 
 };
 

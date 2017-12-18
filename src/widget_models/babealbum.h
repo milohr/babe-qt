@@ -16,11 +16,12 @@
 #include <QMimeData>
 #include <QApplication>
 
-#include "../db/collectionDB.h"
 #include "../utils/bae.h"
-#include "scrolltext.h"
 
-using namespace Bae;
+
+class ScrollText;
+
+using namespace BAE;
 
 class BabeAlbum : public QLabel
 {
@@ -71,7 +72,6 @@ private:
 
     uint border_radius=0;
 
-    CollectionDB connection;
     void performDrag();
 
 signals:

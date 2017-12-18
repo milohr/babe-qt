@@ -24,7 +24,7 @@ RabbitView::RabbitView(QWidget *parent) : QWidget(parent)
     suggestionWidget_layout->setContentsMargins(0,0,0,0);
     suggestionWidget_layout->setSpacing(0);
 
-    this->artistSuggestion = new BabeGrid(Bae::SMALL_ALBUM_FACTOR,Bae::AlbumSizeHint::SMALL_ALBUM,0,this);
+    this->artistSuggestion = new BabeGrid(BAE::SMALL_ALBUM_FACTOR,BAE::AlbumSizeHint::SMALL_ALBUM,0,this);
     connect(this->artistSuggestion, &BabeGrid::albumReady, [this](){albumLoader.next();});
     connect(&this->albumLoader, &AlbumLoader::albumReady, this, &RabbitView::addArtistSuggestion);
     connect(this->artistSuggestion, &BabeGrid::albumClicked,[this](const DB &albumMap)
@@ -52,9 +52,9 @@ RabbitView::RabbitView(QWidget *parent) : QWidget(parent)
     this->generalSuggestion = new BabeTable(this);
     this->generalSuggestion->setFrameShape(QFrame::StyledPanel);
     this->generalSuggestion->setFrameShadow(QFrame::Sunken);
-    //    generalSuggestion->hideColumn(static_cast<int>(Bae::KEY::ALBUM));
-    //    generalSuggestion->hideColumn(static_cast<int>(Bae::KEY::ARTIST));
-    this->generalSuggestion->hideColumn(static_cast<int>(Bae::KEY::DURATION));
+    //    generalSuggestion->hideColumn(static_cast<int>(BAE::KEY::ALBUM));
+    //    generalSuggestion->hideColumn(static_cast<int>(BAE::KEY::ARTIST));
+    this->generalSuggestion->hideColumn(static_cast<int>(BAE::KEY::DURATION));
     //    generalSuggestion->horizontalHeader()->setVisible(false);
     this->generalSuggestion->enableRowColoring(true);
     this->generalSuggestion->enableRowDragging(true);
@@ -65,9 +65,9 @@ RabbitView::RabbitView(QWidget *parent) : QWidget(parent)
     this->filterList->setVisible(false);
     this->filterList->setFrameShape(QFrame::StyledPanel);
     this->filterList->setFrameShadow(QFrame::Sunken);
-    //    generalSuggestion->hideColumn(static_cast<int>(Bae::KEY::ALBUM));
-    this->filterList->hideColumn(static_cast<int>(Bae::KEY::ARTIST));
-    this->filterList->hideColumn(static_cast<int>(Bae::KEY::DURATION));
+    //    generalSuggestion->hideColumn(static_cast<int>(BAE::KEY::ALBUM));
+    this->filterList->hideColumn(static_cast<int>(BAE::KEY::ARTIST));
+    this->filterList->hideColumn(static_cast<int>(BAE::KEY::DURATION));
     //    generalSuggestion->horizontalHeader()->setVisible(false);
     this->filterList->enableRowColoring(true);
     //    this->filterList->enableRowDragging(true);
@@ -105,11 +105,11 @@ RabbitView::~RabbitView()
 void RabbitView::seed(const DB &track)
 {
     this->flushSuggestions();
-    auto queryTxt = QUERY[TABLE::TRACKS][W::SIMILAR];
-    this->generalSuggestion->populateTableView(queryTxt.replace("?", track[KEY::URL]));
+    auto queryTxt = QString(QUERY[TABLE::TRACKS][W::SIMILAR]).replace("?", track[KEY::URL]);
+    this->generalSuggestion->populateTableView(queryTxt);
 
-    queryTxt = QUERY[TABLE::ARTISTS][W::SIMILAR];
-    this->albumLoader.requestAlbums(queryTxt.replace("?", track[KEY::URL]));
+    queryTxt = QString(QUERY[TABLE::ARTISTS][W::SIMILAR]).replace("?", track[KEY::URL]);
+    this->albumLoader.requestAlbums(queryTxt);
 
 }
 

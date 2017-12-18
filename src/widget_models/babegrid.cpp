@@ -1,10 +1,12 @@
 #include "babegrid.h"
+#include "babealbum.h"
+
 
 BabeGrid::BabeGrid(const ALBUM_FACTOR &factor, const AlbumSizeHint &deafultValue, const uint8_t &albumRadius, QWidget *parent) : QListWidget(parent)
 {
     this->albumFactor = factor;
     this->defaultAlbumValue= deafultValue;
-    this->albumSize = Bae::getWidgetSizeHint(factor, deafultValue);
+    this->albumSize = BAE::getWidgetSizeHint(factor, deafultValue);
     this->albumRadius = albumRadius;
     this->installEventFilter(this);
     //    this->setObjectName("grid");
@@ -31,16 +33,16 @@ BabeGrid::~BabeGrid()
     qDebug()<<"DELETING BABEGRID";
 }
 
-void BabeGrid::addAlbum(const Bae::DB &albumMap)
+void BabeGrid::addAlbum(const BAE::DB &albumMap)
 {
-    Bae::DB auxMap {{Bae::KEY::ARTIST,albumMap[Bae::KEY::ARTIST]},{Bae::KEY::ALBUM,albumMap[Bae::KEY::ALBUM]}};
+    BAE::DB auxMap {{BAE::KEY::ARTIST,albumMap[BAE::KEY::ARTIST]},{BAE::KEY::ALBUM,albumMap[BAE::KEY::ALBUM]}};
 
     if(!this->albumsMap.contains(auxMap))
     {
         auto album= new BabeAlbum(albumMap,defaultAlbumValue,this->albumRadius,true,this);
         this->albumsMap.insert(auxMap,album);
 
-        connect(album,&BabeAlbum::albumCoverClicked,[this](const Bae::DB &albumMap)
+        connect(album,&BabeAlbum::albumCoverClicked,[this](const BAE::DB &albumMap)
         {
             emit this->albumClicked(albumMap);
         });
@@ -61,13 +63,13 @@ void BabeGrid::addAlbum(const Bae::DB &albumMap)
         album->setUpMenu();
         album->showTitle(!hiddenLabels);
 
-        connect(album,&BabeAlbum::albumCoverDoubleClicked, [this] (const Bae::DB &albumMap)
+        connect(album,&BabeAlbum::albumCoverDoubleClicked, [this] (const BAE::DB &albumMap)
         {
             emit this->albumDoubleClicked(albumMap);
         });
 
-        connect(album,&BabeAlbum::playAlbum, [this] (const Bae::DB info) { emit this->playAlbum(info); });
-        connect(album,&BabeAlbum::babeAlbum,[this] (const Bae::DB info) { emit this->babeAlbum(info); });
+        connect(album,&BabeAlbum::playAlbum, [this] (const BAE::DB info) { emit this->playAlbum(info); });
+        connect(album,&BabeAlbum::babeAlbum,[this] (const BAE::DB info) { emit this->babeAlbum(info); });
         connect(album,&BabeAlbum::albumDragStarted,[this](){emit this->dragAlbum();});
         connect(album,&BabeAlbum::albumCoverEnter,[=]()
         {
@@ -94,7 +96,7 @@ void BabeGrid::addAlbum(const Bae::DB &albumMap)
         this->addItem(item);
         this->setItemWidget(item,album);
 
-    }else this->albumsMap[auxMap]->putPixmap(albumMap[Bae::KEY::ARTWORK]);
+    }else this->albumsMap[auxMap]->putPixmap(albumMap[BAE::KEY::ARTWORK]);
 
     emit this->albumReady();
 }
@@ -200,7 +202,7 @@ void BabeGrid::setUpActions()
     this->addAction(zoomIn);
     connect(zoomIn, &QAction::triggered,[this]()
     {
-        if(albumSize+5<=Bae::MAX_MID_ALBUM_SIZE)
+        if(albumSize+5<=BAE::MAX_MID_ALBUM_SIZE)
         {
             this->setAlbumsSize(this->albumSize+5);
             this->adjustGrid();
@@ -214,7 +216,7 @@ void BabeGrid::setUpActions()
     this->addAction(zoomOut);
     connect(zoomOut, &QAction::triggered,[this]()
     {
-        if(albumSize-5>=Bae::MAX_MIN_ALBUM_SIZE)
+        if(albumSize-5>=BAE::MAX_MIN_ALBUM_SIZE)
         {
             this->setAlbumsSize(this->albumSize-5);
             this->adjustGrid();

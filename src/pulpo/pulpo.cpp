@@ -23,14 +23,14 @@
 #include "services/geniusService.h"
 #include "services/musicbrainzService.h"
 
-Pulpo::Pulpo(const Bae::DB &song,QObject *parent)
+Pulpo::Pulpo(const BAE::DB &song,QObject *parent)
     : QObject(parent), track(song) {}
 
 Pulpo::Pulpo(QObject *parent): QObject(parent) {}
 
 Pulpo::~Pulpo() {}
 
-void Pulpo::feed(const Bae::DB &song, const RECURSIVE &recursive)
+void Pulpo::feed(const BAE::DB &song, const RECURSIVE &recursive)
 {
     this->track = song;
     this->recursive = recursive;
@@ -161,7 +161,7 @@ bool Pulpo::initServices()
     return false;
 }
 
-void Pulpo::passSignal(const Bae::DB &track, const PULPO::RESPONSE &response)
+void Pulpo::passSignal(const BAE::DB &track, const PULPO::RESPONSE &response)
 {
     emit this->infoReady(track, response);
 }

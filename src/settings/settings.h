@@ -20,19 +20,14 @@
 
 #include "../utils/bae.h"
 #include "../utils/brain.h"
-
-#include "../kde/notify.h"
-
-#include "../services/web/youtube.h"
-#include "../dialogs/about.h"
-#include "../db/collectionDB.h"
-#include "../pulpo/pulpo.h"
-
 #include "fileloader.h"
 
-namespace Ui {class settings;}
-
+class Pulpo;
+class YouTube;
 class Socket;
+class About;
+
+namespace Ui { class settings; }
 
 class settings : public QWidget
 {
@@ -42,12 +37,10 @@ public:
     explicit settings(QWidget *parent = nullptr);
     ~settings();
 
-    const About *about_ui;
+    About *about_ui;
+    void checkCollection();
 
-    bool checkCollection();
-    void createCollectionDB();
-
-    Deamon::Brain brainDeamon;
+    Brain brainDeamon;
 
     void setSettings(QStringList setting);
     void readSettings();
@@ -71,16 +64,13 @@ public slots:
 private:
     Ui::settings *ui;
     FileLoader fileSaver;
-    CollectionDB collection_db;
 
-    const QString notifyDir = Bae::NotifyDir;
-    const QString collectionDBName = "collection.db";
+    const QString notifyDir = BAE::NotifyDir;
     const QString settingsName = "settings.conf";
 
-    Notify nof;
     YouTube *ytFetch;
 
-    QStringList collectionPaths={};
+    QStringList collectionPaths = {};
     QMovie *movie;
     QString pathToRemove;
 
@@ -90,7 +80,7 @@ private:
 
 signals:
     void collectionPathChanged(QString newPath);
-    void refreshTables(const QMap<Bae::TABLE,bool> &reset);
+    void refreshTables(const QMap<BAE::TABLE,bool> &reset);
     void albumArtReady(const DB &album);
 
 };

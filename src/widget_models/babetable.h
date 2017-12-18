@@ -27,67 +27,30 @@
 #include <QItemSelectionModel>
 #include <QtMultimedia/QMediaPlayer>
 #include <QThread>
+#include <QObject>
 
-#include "babealbum.h"
-#include "../kde/notify.h"
-#include "../db/collectionDB.h"
-#include "../dialogs/metadataform.h"
+#include "../utils/bae.h"
+#include "../utils/trackloader.h"
 
+class BabeAlbum;
+class Notify;
 
-class TrackLoader : public QObject
+namespace BABETABLE
 {
-    Q_OBJECT
-
-public:
-    TrackLoader() : QObject()
+    enum ACTION
     {
-        qRegisterMetaType<Bae::DB>("Bae::DB");
-        qRegisterMetaType<Qt::SortOrder>("Qt::SortOrder");
-        qRegisterMetaType<QVector<int>>("<QVector<int>");
-        qRegisterMetaType<QList<QPersistentModelIndex>>("QList<QPersistentModelIndex>");
-        qRegisterMetaType<QAbstractItemModel::LayoutChangeHint>("QAbstractItemModel::LayoutChangeHint");
-        moveToThread(&t);
-        t.start();
-    }
-
-    ~TrackLoader()
-    {
-        this->go = false;
-        t.quit();
-        t.wait();
-    }
-
-    void requestTracks(QString query)
-    {
-        QMetaObject::invokeMethod(this, "getTracks", Q_ARG(QString, query));
-    }
-
-public slots:
-    void getTracks(QString query)
-    {
-        qDebug()<<"GETTING TRACKS FROM BABETABLE";
-
-        auto tracks = this->connection.getDBData(query);
-        if(tracks.size()>0)
-        {
-            for(auto trackMap : tracks)
-                if(go) emit trackReady(trackMap);
-                else break;
-        }
-
-        emit finished();
-    }
-
-signals:
-    void trackReady(Bae::DB &trackMap);
-    void finished();
-
-private:
-    QThread t;
-    CollectionDB connection;
-    bool go=true;
-};
-
+        BABEIT = 0,
+        QUEUEIT = 1,
+        INFOIT = 2,
+        EDITIT = 3,
+        SAVETO = 4,
+        REMOVEIT = 5,
+        RATEIT = 6,
+        MOODIT = 7,
+        SENDTO = 8,
+        ADDTO = 9
+    };
+}
 
 class BabeTable : public QTableWidget
 {
@@ -95,11 +58,8 @@ class BabeTable : public QTableWidget
 
 private:
     TrackLoader trackLoader;
-    CollectionDB connection;
-
     QMediaPlayer *preview;
     int previewRow=-1;
-    Notify *nof;
 
     int rRow=0;
     int rColumn=0;
@@ -118,31 +78,24 @@ private:
     QString addMusicMsg = "oops...\n";
     QString addMusicIcon= "face-sleeping";
 
-    const QStringList colors = Bae::MoodColors;
-
 public:    
     explicit BabeTable(QWidget *parent = nullptr);
     ~BabeTable();
 
-    enum menuActions //this order must be followed
-    {
-        BABEIT, QUEUEIT, INFOIT, EDITIT, SAVETO, REMOVEIT, RATEIT, MOODIT, SENDIT, ADDTO
-    };
-
-    void insertTrack(const Bae::DB &track);
-    void populateTableView(const Bae::DB_LIST &mapList);
+    void insertTrack(const BAE::DB &track);
+    void populateTableView(const BAE::DB_LIST &mapList);
     void populateTableView(const QString &indication);
     void removeMissing(const QString &url);
     void setRating(const int &rate);
-    void setTableOrder(int column, Bae::W order);
-    void setVisibleColumn(const Bae::KEY &column);
-    void addRow(const Bae::DB &map);
-    void addRowAt(const int &row, const Bae::DB &map);
+    void setTableOrder(int column, BAE::W order);
+    void setVisibleColumn(const BAE::KEY &column);
+    void addRow(const BAE::DB &map);
+    void addRowAt(const int &row, const BAE::DB &map);
     void passStyle(QString style);
     void setAddMusicMsg(const QString &msg, const QString &icon= "face-sleeping");
     int getIndex();
-    QTableWidgetItem *getItem(const int &row, const Bae::KEY &column);
-    void putItem(const int &row, const Bae::KEY &col, QTableWidgetItem *item);
+    QTableWidgetItem *getItem(const int &row, const BAE::KEY &column);
+    void putItem(const int &row, const BAE::KEY &col, QTableWidgetItem *item);
     void enablePreview(const bool state);
     void startPreview(const QString &url);
     void stopPreview();
@@ -156,10 +109,10 @@ public:
 
     void addMenuItem(QAction *item);
 
-    Bae::DB getRowData(const int &row);
+    BAE::DB getRowData(const int &row);
     QMap<QString, QString> getKdeConnectDevices();
-    QStringList getTableColumnContent(const Bae::KEY &column);
-    Bae::DB_LIST getAllTableContent();
+    QStringList getTableColumnContent(const BAE::KEY &column);
+    BAE::DB_LIST getAllTableContent();
 
     QMenu *contextMenu;
 
@@ -187,28 +140,28 @@ private slots:
     void update();
 
 public slots:
-    void itemEdited(const Bae::DB &map);
+    void itemEdited(const BAE::DB &map);
     void flushTable();
     void colorizeRow(const QList<int> &rows, const QString &color, const bool &dark=false);
 
 signals:
-    void tableWidget_doubleClicked(const Bae::DB_LIST &mapList);
+    void tableWidget_doubleClicked(const BAE::DB_LIST &mapList);
     void songRated(const QStringList &list);
     void enterTable();
     void leaveTable();
     void finishedPopulating();
     void rightClicked(const int &row, const int &column);
-    void babeIt_clicked(const Bae::DB_LIST &tracks);
+    void babeIt_clicked(const BAE::DB_LIST &tracks);
     void moodIt_clicked(const QList<int> &rows,const QString &color,const bool &dark);
-    void queueIt_clicked(const Bae::DB_LIST &track);
-    void infoIt_clicked(const Bae::DB &track);
+    void queueIt_clicked(const BAE::DB_LIST &track);
+    void infoIt_clicked(const BAE::DB &track);
     void indexesMoved(const int &track,const int &newRow);
     void previewStarted();
     void previewFinished();
     void indexRemoved(const int &row);
-    void playItNow(const Bae::DB_LIST &tracks);
-    void appendIt(const Bae::DB_LIST &tracks);
-    void saveToPlaylist(const Bae::DB_LIST &tracks);
+    void playItNow(const BAE::DB_LIST &tracks);
+    void appendIt(const BAE::DB_LIST &tracks);
+    void saveToPlaylist(const BAE::DB_LIST &tracks);
 
 };
 

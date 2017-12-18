@@ -15,32 +15,33 @@ class FileLoader : public QObject
 public:
     FileLoader() : QObject()
     {
-        moveToThread(&t);
+        qRegisterMetaType<BAE::DB>("BAE::DB");
+        qRegisterMetaType<BAE::TABLE>("BAE::TABLE");
+        qRegisterMetaType<QMap<BAE::TABLE, bool>>("QMap<BAE::TABLE,bool>");
 
-        qRegisterMetaType<Bae::DB>("Bae::DB");
-        qRegisterMetaType<Bae::TABLE>("Bae::TABLE");
-        qRegisterMetaType<QMap<Bae::TABLE,bool>>("QMap<Bae::TABLE,bool>");
+        this->con = new CollectionDB(this);
+        this->moveToThread(&t);
         t.start();
     }
 
     ~FileLoader()
     {
-        go=false;
-        t.quit();
-        t.wait();
+        this->go = false;
+        this->t.quit();
+        this->t.wait();
     }
 
     void requestPath(QString path)
     {
-        queue<<path;
+        this->queue << path;
 
-        for(auto url : queue)
+        for(auto url : this->queue)
         {
             if(!go)
             {
-                go = true;
+                this->go = true;
                 QMetaObject::invokeMethod(this, "getTracks", Q_ARG(QString, url));
-                queue.removeOne(url);
+                this->queue.removeOne(url);
             }
         }
     }
@@ -60,7 +61,7 @@ public slots:
 
         if (QFileInfo(path).isDir())
         {
-            QDirIterator it(path, Bae::formats, QDir::Files, QDirIterator::Subdirectories);
+            QDirIterator it(path, BAE::formats, QDir::Files, QDirIterator::Subdirectories);
             while (it.hasNext()) urls<<it.next();
         } else if (QFileInfo(path).isFile()) urls<<path;
 
@@ -71,13 +72,13 @@ public slots:
             for(auto url : urls)
                 if(go)
                 {
-                    if(!connection.check_existance(Bae::TABLEMAP[Bae::TABLE::TRACKS],Bae::KEYMAP[Bae::KEY::URL],url))
+                    if(!con->check_existance(BAE::TABLEMAP[BAE::TABLE::TRACKS],BAE::KEYMAP[BAE::KEY::URL],url))
                     {
                         TagInfo info(url);
-                        auto album = Bae::fixString(info.getAlbum());
+                        auto album = BAE::fixString(info.getAlbum());
                         auto track= info.getTrack();
-                        auto title = Bae::fixString(info.getTitle()); /* to fix*/
-                        auto artist = Bae::fixString(info.getArtist());
+                        auto title = BAE::fixString(info.getTitle()); /* to fix*/
+                        auto artist = BAE::fixString(info.getArtist());
                         auto genre = info.getGenre();
                         auto sourceUrl = QFileInfo(url).dir().path();
                         auto duration = info.getDuration();
@@ -85,17 +86,19 @@ public slots:
 
                         qDebug()<<"FILE LOADER:"<< title << album << artist <<url;
 
-                        Bae::DB trackMap = {
-                            {Bae::KEY::URL,url},
-                            {Bae::KEY::TRACK,QString::number(track)},
-                            {Bae::KEY::TITLE,title},
-                            {Bae::KEY::ARTIST,artist},
-                            {Bae::KEY::ALBUM,album},
-                            {Bae::KEY::DURATION,QString::number(duration)},
-                            {Bae::KEY::GENRE,genre},
-                            {Bae::KEY::SOURCES_URL,sourceUrl},
-                            {Bae::KEY::BABE, url.startsWith(Bae::YoutubeCachePath)?"1":"0"},
-                            {Bae::KEY::RELEASE_DATE,QString::number(year)}};
+                        BAE::DB trackMap =
+                        {
+                            {BAE::KEY::URL,url},
+                            {BAE::KEY::TRACK,QString::number(track)},
+                            {BAE::KEY::TITLE,title},
+                            {BAE::KEY::ARTIST,artist},
+                            {BAE::KEY::ALBUM,album},
+                            {BAE::KEY::DURATION,QString::number(duration)},
+                            {BAE::KEY::GENRE,genre},
+                            {BAE::KEY::SOURCES_URL,sourceUrl},
+                            {BAE::KEY::BABE, url.startsWith(BAE::YoutubeCachePath)?"1":"0"},
+                            {BAE::KEY::RELEASE_DATE,QString::number(year)}
+                        };
 
                         emit trackReady(trackMap);
                         //                            while(this->wait){t.msleep(100);}
@@ -106,23 +109,23 @@ public slots:
 
         }
 
-        t.msleep(100);
-        emit finished();
-        go = false;
+        this->t.msleep(100);
+        emit this->finished();
+        this->go = false;
 
     }
 
 signals:
-    void trackReady(Bae::DB track);
+    void trackReady(BAE::DB track);
     void finished();
     void collectionSize(int size);
 
 private:
     QThread t;
-    CollectionDB connection;
     bool go = false;
     bool wait = true;
     QStringList queue;
+    CollectionDB *con;
 };
 
 

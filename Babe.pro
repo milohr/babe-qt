@@ -1,3 +1,4 @@
+ 
 #-------------------------------------------------
 #
 # Project created by QtCreator 2016-11-16T00:28:36
@@ -24,7 +25,7 @@ QT       += KNotifications
 QT       += KI18n
 QT       += webenginewidgets
 
-CONFIG   += c++14
+CONFIG   += c++17
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -105,7 +106,8 @@ HEADERS += \
     src/widget_models/babegrid.h \
     src/widget_models/babetable.h \
     src/widget_models/scrolltext.h \
-    src/dialogs/moodform.h
+    src/dialogs/moodform.h \
+    src/utils/trackloader.h
 
 SOURCES += \
     src/data_models/track.cpp \
@@ -138,5 +140,5 @@ SOURCES += \
     src/widget_models/babetable.cpp \
     src/widget_models/scrolltext.cpp \
     src/main.cpp \
-    src/dialogs/moodform.cpp
-
+    src/dialogs/moodform.cpp \
+    src/utils/brain.cpp

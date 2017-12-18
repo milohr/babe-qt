@@ -1,38 +1,40 @@
 #include "babealbum.h"
-
+#include "scrolltext.h"
+#include "../db/collectionDB.h"
+#include "../views/babewindow.h"
 
 BabeAlbum::BabeAlbum(const DB &info, const AlbumSizeHint &widgetSize, const uint8_t &widgetRadius, const bool &isDraggable, QWidget *parent) : QLabel(parent)
 {
 
-    connect(this,&BabeAlbum::changedArt,&connection,&CollectionDB::insertArtwork);
+    connect(this, &BabeAlbum::changedArt, BabeWindow::connection, &CollectionDB::insertArtwork);
 
     switch (widgetSize)
     {
-    case Bae::AlbumSizeHint::BIG_ALBUM:
+    case BAE::AlbumSizeHint::BIG_ALBUM:
     {
-        this->size = Bae::getWidgetSizeHint(Bae::BIG_ALBUM_FACTOR,Bae::AlbumSizeHint::BIG_ALBUM);
-        this->subSize = Bae::BIG_ALBUM_FACTOR_SUBWIDGET;
+        this->size = BAE::getWidgetSizeHint(BAE::BIG_ALBUM_FACTOR,BAE::AlbumSizeHint::BIG_ALBUM);
+        this->subSize = BAE::BIG_ALBUM_FACTOR_SUBWIDGET;
         break;
     }
-    case Bae::AlbumSizeHint::MEDIUM_ALBUM:
+    case BAE::AlbumSizeHint::MEDIUM_ALBUM:
     {
-        this->size = Bae::getWidgetSizeHint(Bae::MEDIUM_ALBUM_FACTOR,Bae::AlbumSizeHint::MEDIUM_ALBUM);
-        this->subSize = Bae::MEDIUM_ALBUM_FACTOR_SUBWIDGET;
+        this->size = BAE::getWidgetSizeHint(BAE::MEDIUM_ALBUM_FACTOR,BAE::AlbumSizeHint::MEDIUM_ALBUM);
+        this->subSize = BAE::MEDIUM_ALBUM_FACTOR_SUBWIDGET;
         break;
     }
-    case Bae::AlbumSizeHint::SMALL_ALBUM:
+    case BAE::AlbumSizeHint::SMALL_ALBUM:
     {
-        this->size = Bae::getWidgetSizeHint(Bae::SMALL_ALBUM_FACTOR,Bae::AlbumSizeHint::SMALL_ALBUM);
-        this->subSize = Bae::SMALL_ALBUM_FACTOR_SUBWIDGET;
+        this->size = BAE::getWidgetSizeHint(BAE::SMALL_ALBUM_FACTOR,BAE::AlbumSizeHint::SMALL_ALBUM);
+        this->subSize = BAE::SMALL_ALBUM_FACTOR_SUBWIDGET;
         break;
     }
     }
 
     this->albumMap = info;
 
-    auto artist = this->albumMap[Bae::KEY::ARTIST];
-    auto album = this->albumMap[Bae::KEY::ALBUM];
-    auto artwork = albumMap[Bae::KEY::ARTWORK];
+    auto artist = this->albumMap[BAE::KEY::ARTIST];
+    auto album = this->albumMap[BAE::KEY::ALBUM];
+    auto artwork = albumMap[BAE::KEY::ARTWORK];
 
     this->putPixmap(artwork);
     this->setFixedSize(static_cast<int>(size), static_cast<int>(size));
@@ -110,11 +112,11 @@ void BabeAlbum::babeIt_action() { emit babeAlbum(this->albumMap); }
 void BabeAlbum::artIt_action()
 {
     qDebug()<<"Change art of album"<<this->artist<<this->album;
-    QString path = QFileDialog::getOpenFileName(this, tr("Select Music Files"),Bae::CachePath, tr("Image Files (*.png *.jpg *.bmp)"));
+    QString path = QFileDialog::getOpenFileName(this, tr("Select Music Files"),BAE::CachePath, tr("Image Files (*.png *.jpg *.bmp)"));
     if(!path.isEmpty())
     {
         this->putPixmap(path);
-        this->albumMap.insert(Bae::KEY::ARTWORK,path);
+        this->albumMap.insert(BAE::KEY::ARTWORK,path);
         emit changedArt(this->albumMap);
     }
 }
@@ -208,15 +210,15 @@ QString BabeAlbum::getArtist() { return this->artist; }
 
 QString BabeAlbum::getAlbum() { return this->album; }
 
-Bae::DB BabeAlbum::getAlbumMap() { return this->albumMap; }
+BAE::DB BabeAlbum::getAlbumMap() { return this->albumMap; }
 
 void BabeAlbum::setTitle(const QString &artistTitle, const QString &albumTitle)
 {
     this->artist = artistTitle;
     this->album = albumTitle;
 
-    albumMap.insert(Bae::KEY::ARTIST,this->artist);
-    albumMap.insert(Bae::KEY::ALBUM, this->album);
+    albumMap.insert(BAE::KEY::ARTIST,this->artist);
+    albumMap.insert(BAE::KEY::ALBUM, this->album);
 
     QString str = album.isEmpty()? artist : album+" - "+artist;
     title->setText(str);

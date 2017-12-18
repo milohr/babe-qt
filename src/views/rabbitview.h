@@ -3,7 +3,6 @@
 
 #include "../utils/bae.h"
 #include "../utils/albumloader.h"
-#include "../db/collectionDB.h"
 
 class BabeGrid;
 class BabeAlbum;
@@ -33,16 +32,15 @@ public:
         ALL
     };
 
-    void seed (const Bae::DB &track);
+    void seed (const BAE::DB &track);
     void flushSuggestions(suggestionsTables = ALL);
     BabeGrid *artistSuggestion;
     BabeTable *generalSuggestion;
     BabeTable *filterList;
-    void addArtistSuggestion(const Bae::DB &albumMap);
+    void addArtistSuggestion(const BAE::DB &albumMap);
 
 private:
-    uint ALBUM_SIZE_MEDIUM = Bae::getWidgetSizeHint(Bae::MEDIUM_ALBUM_FACTOR, Bae::AlbumSizeHint::MEDIUM_ALBUM);
-    CollectionDB connection;
+    uint ALBUM_SIZE_MEDIUM = BAE::getWidgetSizeHint(BAE::MEDIUM_ALBUM_FACTOR, BAE::AlbumSizeHint::MEDIUM_ALBUM);
     AlbumLoader albumLoader;
 
 };

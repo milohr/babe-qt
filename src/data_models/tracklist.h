@@ -2,7 +2,6 @@
 #define TRACKLIST_H
 
 #include "vector"
-#include "track.h"
 #include <fstream>
 #include <QDebug>
 #include <QStringList>
@@ -10,9 +9,8 @@
 #include <QMimeDatabase>
 #include <QMimeType>
 #include <QString>
-#include "../services/local/taginfo.h"
-#include "../widget_models/babetable.h"
 #include "../utils/bae.h"
+using namespace BAE;
 
 //#include <QtMultimedia/QMediaPlayer>
 
@@ -29,11 +27,11 @@ public:
 
     bool isMusic(const QString &file);
     QStringList getTracksNameListSimple();
-    Bae::DB_LIST getTracks();
+    BAE::DB_LIST getTracks();
 
 
 private:
-    Bae::DB_LIST tracks;
+    BAE::DB_LIST tracks;
     void setMetaData(QString,QString,QString,QString);
 
 

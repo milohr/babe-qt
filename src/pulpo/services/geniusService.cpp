@@ -2,7 +2,7 @@
 #include <QObject>
 #include "../htmlparser.h"
 
-genius::genius(const Bae::DB &song)
+genius::genius(const BAE::DB &song)
 {
     this->availableInfo.insert(ONTOLOGY::ARTIST, {INFO::ARTWORK, INFO::WIKI, INFO::TAGS});
     this->availableInfo.insert(ONTOLOGY::TRACK, {INFO::TAGS, INFO::WIKI, INFO::ARTWORK, INFO::LYRICS});
@@ -22,10 +22,10 @@ bool genius::setUpService(const PULPO::ONTOLOGY &ontology, const PULPO::INFO &in
 
     auto url = this->API;
 
-    QUrl encodedArtist(this->track[Bae::KEY::ARTIST]);
+    QUrl encodedArtist(this->track[BAE::KEY::ARTIST]);
     encodedArtist.toEncoded(QUrl::FullyEncoded);
 
-    QUrl encodedTrack(this->track[Bae::KEY::TITLE]);
+    QUrl encodedTrack(this->track[BAE::KEY::TITLE]);
     encodedTrack.toEncoded(QUrl::FullyEncoded);
 
     switch(this->ontology)
@@ -200,7 +200,7 @@ bool genius::parseTrack()
             for(auto artist : performance.toMap().value("artists").toList())
                 team<< artist.toMap().value("name").toString();
 
-        qDebug()<<this->track[Bae::KEY::TITLE]<<"CUSTOM PERFORMANCES:"<<team;
+        qDebug()<<this->track[BAE::KEY::TITLE]<<"CUSTOM PERFORMANCES:"<<team;
 
         for(auto feature : itemMap.value("featured_artists").toList())
             team<<feature.toMap().value("name").toString();
@@ -324,7 +324,7 @@ bool genius::extractLyrics(const QByteArray &array)
     QString text;
     if(!lyrics.isEmpty())
     {
-        text = "<h2 align='center' >" + this->track[Bae::KEY::TITLE] + "</h2>";
+        text = "<h2 align='center' >" + this->track[BAE::KEY::TITLE] + "</h2>";
         text += lyrics;
 
         text= "<div align='center'>"+text+"</div>";

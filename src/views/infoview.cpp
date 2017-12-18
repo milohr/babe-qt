@@ -19,13 +19,18 @@
 #include "infoview.h"
 #include "ui_infoview.h"
 
+#include "../widget_models/babealbum.h"
+#include "../pulpo/pulpo.h"
+#include "../views/babewindow.h"
+#include "../db/collectionDB.h"
+
 
 InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView)
 {
     ui->setupUi(this);
 
-    artist = new BabeAlbum(Bae::DB{{Bae::KEY::ARTWORK, ":Data/data/cover.png"}}, Bae::AlbumSizeHint::MEDIUM_ALBUM, 100,false,this);
-    connect(artist,&BabeAlbum::playAlbum,[this](const Bae::DB &info)
+    this->artist = new BabeAlbum(BAE::DB{{BAE::KEY::ARTWORK, ":Data/data/cover.png"}}, BAE::AlbumSizeHint::MEDIUM_ALBUM, 100,false,this);
+    connect(artist,&BabeAlbum::playAlbum,[this](const BAE::DB &info)
     {
         qDebug()<<"head on info view clicked!";
         emit this->playAlbum(info);
@@ -125,12 +130,12 @@ InfoView::~InfoView()
     delete ui;
 }
 
-void InfoView::setTrack(const Bae::DB &track)
+void InfoView::setTrack(const BAE::DB &track)
 {
     this->track=track;
     this->clearInfoViews();
-    ui->titleLine->setText(this->track[Bae::KEY::TITLE]);
-    ui->artistLine->setText(this->track[Bae::KEY::ARTIST]);
+    ui->titleLine->setText(this->track[BAE::KEY::TITLE]);
+    ui->artistLine->setText(this->track[BAE::KEY::ARTIST]);
 }
 
 void InfoView::hideArtistInfo()
@@ -198,7 +203,6 @@ void InfoView::setArtistInfo(const QString &info)
 void InfoView::setArtistArt(const QByteArray &array)
 {
     artist->putPixmap(array);
-
 }
 
 void InfoView::setArtistArt(const QString &url)
@@ -210,12 +214,11 @@ void InfoView::setLyrics(const QString &lyrics)
 {
     if(!lyrics.isEmpty())
     {
-        ui->splitter->setSizes({static_cast<int>(Bae::AlbumSizeHint::BIG_ALBUM),static_cast<int>(Bae::AlbumSizeHint::BIG_ALBUM)});
+        ui->splitter->setSizes({static_cast<int>(BAE::AlbumSizeHint::BIG_ALBUM),static_cast<int>(BAE::AlbumSizeHint::BIG_ALBUM)});
         ui->lyricsText->setHtml(lyrics);
         ui->lyricsLayout->setAlignment(Qt::AlignCenter);
 
     }else this->getTrackInfo(this->track);
-
 }
 
 
@@ -224,12 +227,12 @@ void InfoView::on_searchBtn_clicked()
     if(!customsearch)
     {
         ui->customsearch->setVisible(true);
-        customsearch=!customsearch;
+        customsearch = !customsearch;
     }
     else
     {
         ui->customsearch->setVisible(false);
-        customsearch=!customsearch;
+        customsearch =! customsearch;
     }
 }
 
@@ -249,13 +252,14 @@ void InfoView::getTrackInfo(const DB &track)
 
     connect(&timer, &QTimer::timeout, &loop, &QEventLoop::quit);
 
-    connect(&pulpo, &Pulpo::infoReady, [&](const Bae::DB &track,const PULPO::RESPONSE  &res)
+    connect(&pulpo, &Pulpo::infoReady, [&](const BAE::DB &track,const PULPO::RESPONSE  &res)
     {
         Q_UNUSED(track);
         if(!res[PULPO::ONTOLOGY::TRACK][PULPO::INFO::LYRICS].isEmpty())
         {
             auto lyrics = res[PULPO::ONTOLOGY::TRACK][PULPO::INFO::LYRICS][PULPO::CONTEXT::LYRIC].toString();
             this->setLyrics(lyrics);
+            this->ui->save->setEnabled(true);
         }
 
         loop.quit();
@@ -286,14 +290,14 @@ void InfoView::clearInfoViews()
 
     ui->splitter->setSizes({ui->splitter->sizes().first(), 0});
     ui->lyricsText->clear();
-
 }
 
 void InfoView::on_toolButton_clicked()
 {
-    auto artist=ui->artistLine->text();
-    auto title=ui->titleLine->text();
-    this->getTrackInfo({{Bae::KEY::TITLE,title},{Bae::KEY::ARTIST,artist}});
+    auto artist = ui->artistLine->text();
+    auto title = ui->titleLine->text();
+    this->ui->save->setEnabled(false);
+    this->getTrackInfo({{BAE::KEY::TITLE,title},{BAE::KEY::ARTIST,artist}});
 }
 
 void InfoView::on_tagsInfo_anchorClicked(const QUrl &arg1)
@@ -317,4 +321,9 @@ QStringList InfoView::getSimilarArtistTags()
 {
     return ui->similarArtistInfo->toPlainText().split(",");
 
+}
+
+void InfoView::on_save_clicked()
+{
+    BabeWindow::connection->lyricsTrack(this->track, this->ui->lyricsText->toHtml());
 }

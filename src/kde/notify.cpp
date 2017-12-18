@@ -17,7 +17,9 @@
 
 #include "notify.h"
 
-Notify::Notify(QObject *parent) : QObject(parent) {}
+Notify::Notify(QObject *parent) : QObject(parent)
+{
+}
 
 Notify::~Notify()
 {
@@ -26,25 +28,26 @@ Notify::~Notify()
 
 void Notify::notify(const QString &title, const QString &body)
 {
-    auto notification = new KNotification(QStringLiteral("Notify"),KNotification::CloseOnTimeout, this);
     // notification->setComponentName(QStringLiteral("Babe"));
+    auto notification = new KNotification(QStringLiteral("Notify"),KNotification::CloseOnTimeout, this);
+
     notification->setTitle(QStringLiteral("%1").arg(title));
     notification->setText(QStringLiteral("%1").arg(body));
     notification->sendEvent();
-
 }
 
-void Notify::notifySong(const Bae::DB &trackMap,  const QPixmap &pix)
+void Notify::notifySong(const BAE::DB &trackMap,  const QPixmap &pix)
 {
     this->track = trackMap;
-    auto notification = new KNotification(QStringLiteral("Notify"),KNotification::CloseOnTimeout, this);
     // notification->setComponentName(QStringLiteral("Babe"));
-    notification->setTitle(QStringLiteral("%1").arg(track[Bae::KEY::TITLE]));
-    notification->setText(QStringLiteral("%1\n%2").arg(track[Bae::KEY::ARTIST],track[Bae::KEY::ALBUM]));
+   auto notification = new KNotification(QStringLiteral("Notify"),KNotification::CloseOnTimeout, this);
+
+    notification->setTitle(QStringLiteral("%1").arg(track[BAE::KEY::TITLE]));
+    notification->setText(QStringLiteral("%1\n%2").arg(track[BAE::KEY::ARTIST],track[BAE::KEY::ALBUM]));
     if(!pix.isNull()) notification->setPixmap(pix);
     QStringList actions;
 
-    if(track[Bae::KEY::BABE].toInt()==1) actions<<i18n("Un-Babe it  \xe2\x99\xa1");
+    if(track[BAE::KEY::BABE].toInt()==1) actions<<i18n("Un-Babe it  \xe2\x99\xa1");
     else actions<<i18n("Babe it  \xe2\x99\xa1");
 
     actions<<i18n("Skip");
@@ -53,8 +56,6 @@ void Notify::notifySong(const Bae::DB &trackMap,  const QPixmap &pix)
     connect(notification, SIGNAL(activated(uint)), SLOT(actions(uint)));
 
     notification->sendEvent();
-
-
 }
 
 void Notify::actions(uint id)
@@ -65,5 +66,4 @@ void Notify::actions(uint id)
     case 2: emit this->skipSong(); break;
     default: break;
     }
-
 }

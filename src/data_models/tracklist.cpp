@@ -17,7 +17,8 @@
 
 
 #include "tracklist.h"
-
+#include "../services/local/taginfo.h"
+#include "track.h"
 
 Tracklist::Tracklist() {}
 
@@ -56,7 +57,7 @@ bool Tracklist::isMusic(const QString &file)
 }
 
 
-Bae::DB_LIST Tracklist::getTracks()
+BAE::DB_LIST Tracklist::getTracks()
 {
     return this->tracks;
 }
@@ -82,14 +83,14 @@ void Tracklist::add(const QStringList &files)
             artist = !artist.isEmpty()  ? artist : SLANG[W::UNKNOWN];
             album = !album.isEmpty() ? album : title;
 
-            Bae::DB track = {
-                {Bae::KEY::TITLE, title},
-                {Bae::KEY::ARTIST, artist},
-                {Bae::KEY::ALBUM, album},
-                {Bae::KEY::URL, file},
-                {Bae::KEY::GENRE, genre},
-                {Bae::KEY::TRACK,QString::number(track_n)},
-                {Bae::KEY::ARTWORK, artwork}
+            BAE::DB track = {
+                {BAE::KEY::TITLE, title},
+                {BAE::KEY::ARTIST, artist},
+                {BAE::KEY::ALBUM, album},
+                {BAE::KEY::URL, file},
+                {BAE::KEY::GENRE, genre},
+                {BAE::KEY::TRACK,QString::number(track_n)},
+                {BAE::KEY::ARTWORK, artwork}
             };
 
             this->tracks << track;
@@ -109,7 +110,7 @@ QStringList Tracklist::getTracksNameListSimple()
 {
     QStringList list;
     for (auto track : this->tracks)
-        list<<track[Bae::KEY::TITLE];
+        list<<track[BAE::KEY::TITLE];
 
     return list;
 }
@@ -118,7 +119,7 @@ QStringList Tracklist::getList()
 {
     QStringList list;
     for(auto track : this->tracks)
-        list<<track[Bae::KEY::URL];
+        list<<track[BAE::KEY::URL];
 
     return list;
 }

@@ -1,5 +1,11 @@
 #include "albumsview.h"
 
+#include "../widget_models/babealbum.h"
+#include "../widget_models/babetable.h"
+#include "../widget_models/babegrid.h"
+#include "../views/babewindow.h"
+#include "../db/collectionDB.h"
+
 
 AlbumsView::AlbumsView(const bool &extraList, QWidget *parent) :
     QWidget(parent), extraList(extraList)
@@ -10,9 +16,10 @@ AlbumsView::AlbumsView(const bool &extraList, QWidget *parent) :
     layout->setMargin(0);
     layout->setSpacing(0);
     //    layout->setContentsMargins(0,6,0,6);
+//    this->BabeWindow::connection->openDB();
 
     this->setAcceptDrops(false);
-    this->grid = new BabeGrid(Bae::MEDIUM_ALBUM_FACTOR, Bae::AlbumSizeHint::MEDIUM_ALBUM,4,this);
+    this->grid = new BabeGrid(BAE::MEDIUM_ALBUM_FACTOR, BAE::AlbumSizeHint::MEDIUM_ALBUM,4,this);
     connect(grid, &BabeGrid::albumReady, [this](){albumLoader.next();});
     connect(&albumLoader, &AlbumLoader::albumReady, this, &AlbumsView::addAlbum);
     connect(&albumLoader, &AlbumLoader::finished, [this]()
@@ -22,18 +29,18 @@ AlbumsView::AlbumsView(const bool &extraList, QWidget *parent) :
 
     connect(grid, &BabeGrid::albumClicked, this, &AlbumsView::showAlbumInfo);
 
-    connect(grid, &BabeGrid::albumDoubleClicked, [this](const Bae::DB &albumMap)
+    connect(grid, &BabeGrid::albumDoubleClicked, [this](const BAE::DB &albumMap)
     {
         emit this->albumDoubleClicked(albumMap);
         hideAlbumFrame();
     });
 
-    connect(grid, &BabeGrid::playAlbum, [this](const Bae::DB &albumMap)
+    connect(grid, &BabeGrid::playAlbum, [this](const BAE::DB &albumMap)
     {
         emit this->playAlbum(albumMap);
     });
 
-    connect(grid ,&BabeGrid::babeAlbum, [this](const Bae::DB &albumMap)
+    connect(grid ,&BabeGrid::babeAlbum, [this](const BAE::DB &albumMap)
     {
         emit this->babeAlbum(albumMap);
     });
@@ -43,10 +50,10 @@ AlbumsView::AlbumsView(const bool &extraList, QWidget *parent) :
 
     this->albumTable = new BabeTable(this);
     this->albumTable->setFrameShape(QFrame::NoFrame);
-    this->albumTable->showColumn(static_cast<int>(Bae::KEY::TRACK));
-    this->albumTable->showColumn(static_cast<int>(Bae::KEY::STARS));
-    this->albumTable->hideColumn(static_cast<int>(Bae::KEY::ARTIST));
-    this->albumTable->hideColumn(static_cast<int>(Bae::KEY::ALBUM));
+    this->albumTable->showColumn(static_cast<int>(BAE::KEY::TRACK));
+    this->albumTable->showColumn(static_cast<int>(BAE::KEY::STARS));
+    this->albumTable->hideColumn(static_cast<int>(BAE::KEY::ARTIST));
+    this->albumTable->hideColumn(static_cast<int>(BAE::KEY::ALBUM));
 
     auto albumBox = new QGridLayout;
     albumBox->setContentsMargins(0,0,0,0);
@@ -58,8 +65,8 @@ AlbumsView::AlbumsView(const bool &extraList, QWidget *parent) :
     this->albumBox_frame->setLayout(albumBox);
 
 
-    this->cover = new BabeAlbum({{Bae::KEY::ARTWORK, ":Data/data/cover.svg"}}, Bae::AlbumSizeHint::MEDIUM_ALBUM, 0, true, this);
-    connect(this->cover,&BabeAlbum::playAlbum,[this] (const Bae::DB &info) { emit this->playAlbum(info); });
+    this->cover = new BabeAlbum({{BAE::KEY::ARTWORK, ":Data/data/cover.svg"}}, BAE::AlbumSizeHint::MEDIUM_ALBUM, 0, true, this);
+    connect(this->cover,&BabeAlbum::playAlbum,[this] (const BAE::DB &info) { emit this->playAlbum(info); });
     connect(this->cover, &BabeAlbum::babeAlbum, this, &AlbumsView::babeAlbum);
     this->cover->showTitle(false);
 
@@ -156,10 +163,10 @@ void AlbumsView::filterAlbum(QModelIndex index)
     qDebug()<<album;
 
     albumTable->flushTable();
-    albumTable->populateTableView(connection.getAlbumTracks(album, cover->getArtist()));
+    albumTable->populateTableView(BabeWindow::connection->getAlbumTracks(album, cover->getArtist()));
     cover->setTitle(cover->getArtist(), album);
 
-    cover->putPixmap(connection.getAlbumArt(album, cover->getArtist()));
+    cover->putPixmap(BabeWindow::connection->getAlbumArt(album, cover->getArtist()));
 }
 
 
@@ -182,12 +189,12 @@ void AlbumsView::populate(const DB_LIST &albums)
     qDebug()<<"POPULATING ALBUMS WAS CALLED";
     albumLoader.requestAlbums(albums);
 }
-void AlbumsView::addAlbum(const Bae::DB &albumMap)
+void AlbumsView::addAlbum(const BAE::DB &albumMap)
 {
     this->grid->addAlbum(albumMap);
 }
 
-void AlbumsView::filter(const Bae::DB_LIST &filter, const Bae::KEY &type)
+void AlbumsView::filter(const BAE::DB_LIST &filter, const BAE::KEY &type)
 {
     hide_all(true);
     this->hideAlbumFrame();
@@ -197,11 +204,11 @@ void AlbumsView::filter(const Bae::DB_LIST &filter, const Bae::KEY &type)
     for(auto result : filter)
         switch(type)
         {
-        case Bae::KEY::ALBUM:
-            matches<<grid->findItems(result[Bae::KEY::ALBUM]+" "+result[Bae::KEY::ARTIST], Qt::MatchFlag::MatchContains);
+        case BAE::KEY::ALBUM:
+            matches<<grid->findItems(result[BAE::KEY::ALBUM]+" "+result[BAE::KEY::ARTIST], Qt::MatchFlag::MatchContains);
             break;
-        case Bae::KEY::ARTIST:
-            matches<<grid->findItems(result[Bae::KEY::ARTIST], Qt::MatchFlag::MatchContains);
+        case BAE::KEY::ARTIST:
+            matches<<grid->findItems(result[BAE::KEY::ARTIST], Qt::MatchFlag::MatchContains);
             break;
         default: break;
         }
@@ -231,44 +238,44 @@ void AlbumsView::populateExtraList(const QStringList &albums)
     }
 }
 
-void AlbumsView::showAlbumInfo(const Bae::DB &albumMap)
+void AlbumsView::showAlbumInfo(const BAE::DB &albumMap)
 {
     albumBox_frame->setVisible(true);
     albumTable->flushTable();
 
-    auto type = Bae::albumType(albumMap);
+    auto type = BAE::albumType(albumMap);
 
-    if(type== Bae::TABLE::ALBUMS)
+    if(type== BAE::TABLE::ALBUMS)
     {
-        auto artist = albumMap[Bae::KEY::ARTIST];
-        auto album = albumMap[Bae::KEY::ALBUM];
+        auto artist = albumMap[BAE::KEY::ARTIST];
+        auto album = albumMap[BAE::KEY::ALBUM];
 
         cover->setTitle(artist,album);
         expandBtn->setToolTip("View "+ cover->getArtist());
 
-        albumTable->populateTableView(connection.getAlbumTracks(album, artist));
+        albumTable->populateTableView(BabeWindow::connection->getAlbumTracks(album, artist));
 
-        auto art = connection.getAlbumArt(album,artist);
-        art = art.isEmpty()? connection.getArtistArt(artist) : art;
+        auto art = BabeWindow::connection->getAlbumArt(album,artist);
+        art = art.isEmpty()? BabeWindow::connection->getArtistArt(artist) : art;
 
         cover->putPixmap(art);
 
         if(!art.isEmpty()) cover->putPixmap(art);
         else cover->putDefaultPixmap();
 
-    }else if(type== Bae::TABLE::ARTISTS)
+    }else if(type== BAE::TABLE::ARTISTS)
     {
 
-        auto artist =albumMap[Bae::KEY::ARTIST];
+        auto artist =albumMap[BAE::KEY::ARTIST];
         cover->setTitle(artist);
 
-        albumTable->populateTableView(connection.getArtistTracks(artist));
-        auto art = connection.getArtistArt(artist);
+        albumTable->populateTableView(BabeWindow::connection->getArtistTracks(artist));
+        auto art = BabeWindow::connection->getArtistArt(artist);
         if(!art.isEmpty()) cover->putPixmap(art);
         else cover->putDefaultPixmap();
 
         if(extraList)
-            populateExtraList(connection.getArtistAlbums(artist));
+            populateExtraList(BabeWindow::connection->getArtistAlbums(artist));
 
     }
 

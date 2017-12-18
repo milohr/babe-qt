@@ -18,7 +18,7 @@
 #include "taginfo.h"
 #include "../../utils/bae.h"
 
-using namespace Bae;
+using namespace BAE;
 
 TagInfo::TagInfo(const QString &url)
 {
@@ -65,13 +65,13 @@ QString TagInfo::getGenre()
 
 QString TagInfo::fileName()
 {
-    return Bae::getNameFromLocation(path);
+    return BAE::getNameFromLocation(path);
     //return file.file()->name();
 }
 
 uint TagInfo::getYear()
 {
-    //return Bae::getNameFromLocation(path);
+    //return BAE::getNameFromLocation(path);
     return file.tag()->year();
 }
 

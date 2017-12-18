@@ -20,7 +20,7 @@
 #include "ui_metadataForm.h"
 #include "../services/local/taginfo.h"
 
-metadataForm::metadataForm(const Bae::DB &info, QWidget *parent) :
+metadataForm::metadataForm(const BAE::DB &info, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::metadataForm)
 {
@@ -30,11 +30,11 @@ metadataForm::metadataForm(const Bae::DB &info, QWidget *parent) :
     //mapFromParent(QPoint(100, 100));
     this->trackMap = info;
 
-    ui->trackLine->setText(trackMap[Bae::KEY::TRACK]);
-    ui->titleLine->setText(trackMap[Bae::KEY::TITLE]);
-    ui->genreLine->setText(trackMap[Bae::KEY::GENRE]);
-    ui->artistLine->setText(trackMap[Bae::KEY::ARTIST]);
-    ui->albumLine->setText(trackMap[Bae::KEY::ALBUM]);
+    ui->trackLine->setText(trackMap[BAE::KEY::TRACK]);
+    ui->titleLine->setText(trackMap[BAE::KEY::TITLE]);
+    ui->genreLine->setText(trackMap[BAE::KEY::GENRE]);
+    ui->artistLine->setText(trackMap[BAE::KEY::ARTIST]);
+    ui->albumLine->setText(trackMap[BAE::KEY::ALBUM]);
 
 }
 
@@ -55,34 +55,34 @@ void metadataForm::on_changebtn_clicked()
     QString _album = ui->albumLine->text();
     QString _genre = ui->genreLine->text();
 
-    if(_track!=this->trackMap[Bae::KEY::TRACK]
-            || _title!=this->trackMap[Bae::KEY::TITLE]
-            || _artist!=this->trackMap[Bae::KEY::TRACK]
-            || _album!=this->trackMap[Bae::KEY::ALBUM]
-            || _genre!=this->trackMap[Bae::KEY::GENRE] )
+    if(_track!=this->trackMap[BAE::KEY::TRACK]
+            || _title!=this->trackMap[BAE::KEY::TITLE]
+            || _artist!=this->trackMap[BAE::KEY::TRACK]
+            || _album!=this->trackMap[BAE::KEY::ALBUM]
+            || _genre!=this->trackMap[BAE::KEY::GENRE] )
     {
 
         if(ui->checkBox->isChecked())
         {
-            TagInfo tag(this->trackMap[Bae::KEY::URL]);
+            TagInfo tag(this->trackMap[BAE::KEY::URL]);
 
-            if(_track!=this->trackMap[Bae::KEY::TRACK])
+            if(_track!=this->trackMap[BAE::KEY::TRACK])
                 tag.setTrack(_track.toInt());
-            if(_title!=this->trackMap[Bae::KEY::TITLE])
+            if(_title!=this->trackMap[BAE::KEY::TITLE])
                 tag.setTitle(_title);
-            if(_artist!=this->trackMap[Bae::KEY::TRACK])
+            if(_artist!=this->trackMap[BAE::KEY::TRACK])
                 tag.setArtist(_artist);
-            if(_album!=this->trackMap[Bae::KEY::ALBUM])
+            if(_album!=this->trackMap[BAE::KEY::ALBUM])
                 tag.setAlbum(_album);
-            if(_genre!=this->trackMap[Bae::KEY::GENRE])
+            if(_genre!=this->trackMap[BAE::KEY::GENRE])
                 tag.setGenre(_genre);
         }
 
-        this->trackMap.insert(Bae::KEY::TRACK, _track);
-        this->trackMap.insert(Bae::KEY::TITLE, _title);
-        this->trackMap.insert(Bae::KEY::ARTIST, _artist);
-        this->trackMap.insert(Bae::KEY::ALBUM,_album);
-        this->trackMap.insert(Bae::KEY::GENRE,_genre);
+        this->trackMap.insert(BAE::KEY::TRACK, _track);
+        this->trackMap.insert(BAE::KEY::TITLE, _title);
+        this->trackMap.insert(BAE::KEY::ARTIST, _artist);
+        this->trackMap.insert(BAE::KEY::ALBUM,_album);
+        this->trackMap.insert(BAE::KEY::GENRE,_genre);
 
         emit infoModified(this->trackMap);
     }

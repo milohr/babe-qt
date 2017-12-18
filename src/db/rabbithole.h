@@ -4,7 +4,7 @@
 #endif // RABBITHOLE_H
 #include "../utils/bae.h"
 
-using namespace Bae;
+using namespace BAE;
 
 namespace Query
 {
@@ -20,22 +20,22 @@ static const Q QUERY =
              "WHERE tg.tag COLLATE NOCASE IN "
 
              "(SELECT tag FROM tracks_tags "
-             "WHERE url = \"?\" "
+             "WHERE url = '?' "
              "AND (context = 'track_team' or context = 'tag')) "
 
              "AND ((tg.tag COLLATE NOCASE IN "
              "(SELECT tag FROM albums_tags "
              "WHERE album IN "
              "(SELECT album FROM tracks "
-             "WHERE url = \"?\") "
+             "WHERE url = '?') "
              "AND artist IN "
-             "(SELECT artist FROM tracks WHERE url = \"?\") ) ) "
+             "(SELECT artist FROM tracks WHERE url = '?') ) ) "
 
              "OR (tg.tag COLLATE NOCASE IN "
              "(SELECT tag FROM artists_tags "
              "WHERE artist IN "
              "(SELECT artist FROM tracks "
-             "WHERE url = \"?\") ) ))"
+             "WHERE url = '?') ) ))"
             },
             {W::TAG, "" }
         }
@@ -49,7 +49,7 @@ static const Q QUERY =
              "WHERE at.artist COLLATE NOCASE "
 
              "IN (SELECT at.tag FROM artists_tags at "
-             "INNER JOIN tracks t ON t.url = \"?\" "
+             "INNER JOIN tracks t ON t.url = '?' "
              "AND t.artist = at.artist "
              "AND (at.context = 'artist_team' "
              "OR at.context = 'artist_similar' "

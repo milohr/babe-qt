@@ -19,14 +19,14 @@ class Notify : public QObject
 public:
     explicit Notify(QObject *parent = nullptr);
     ~Notify();
-    void notifySong(const Bae::DB &, const QPixmap &pix);
+    void notifySong(const BAE::DB &, const QPixmap &pix);
     void notify(const QString &title, const QString &body);
 
 private:
-  Bae::DB track;
+  BAE::DB track;
 
 signals:
-    void babeSong(const Bae::DB &track);
+    void babeSong(const BAE::DB &track);
     void skipSong();
 
 public slots:

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>806</width>
-    <height>599</height>
+    <height>616</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -25,7 +25,7 @@
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
         <widget class="QTextBrowser" name="similarArtistInfo">
@@ -126,7 +126,7 @@ background-color:transparent;
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <layout class="QVBoxLayout" name="lyricsLayout">
        <property name="spacing">
         <number>0</number>
@@ -167,7 +167,7 @@ background-color:transparent;
           <property name="spacing">
            <number>0</number>
           </property>
-          <item row="0" column="4">
+          <item row="0" column="5">
            <widget class="QToolButton" name="toolButton">
             <property name="text">
              <string>...</string>
@@ -242,6 +242,19 @@ background-color:transparent;
             </property>
             <property name="frameShadow">
              <enum>QFrame::Raised</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="4">
+           <widget class="QToolButton" name="save">
+            <property name="text">
+             <string>...</string>
+            </property>
+            <property name="icon">
+             <iconset theme="document-save"/>
+            </property>
+            <property name="autoRaise">
+             <bool>true</bool>
             </property>
            </widget>
           </item>

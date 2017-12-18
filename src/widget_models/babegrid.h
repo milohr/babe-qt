@@ -8,22 +8,25 @@
 #include <QAction>
 #include <QGraphicsDropShadowEffect>
 
-#include "babealbum.h"
 #include "../utils/bae.h"
+
+class BabeAlbum;
 
 class BabeGrid : public QListWidget
 {
     Q_OBJECT
 
 public:
-    explicit BabeGrid(const Bae::ALBUM_FACTOR &factor, const Bae::AlbumSizeHint &deafultValue, const uint8_t &albumRadius = 4, QWidget *parent= nullptr);
+    explicit BabeGrid(const BAE::ALBUM_FACTOR &factor, const BAE::AlbumSizeHint &deafultValue, const uint8_t &albumRadius = 4, QWidget *parent= nullptr);
     ~BabeGrid() override;
-    void addAlbum(const Bae::DB &albumMap);
+
+    void addAlbum(const BAE::DB &albumMap);
     void flushGrid();
     void setAlbumsSize(const uint &value);
     void setAlbumsSpacing(const uint &space);
     void showLabels(const bool &state);
-    QHash<Bae::DB,BabeAlbum*> albumsMap;
+
+    QHash<BAE::DB,BabeAlbum*> albumsMap;
     QList<QListWidgetItem*> itemsList;
 
     bool autoAdjust = true;
@@ -33,9 +36,8 @@ public:
 
 private:
     QAction *order;
-
     double albumFactor;
-    Bae::AlbumSizeHint defaultAlbumValue;
+    BAE::AlbumSizeHint defaultAlbumValue;
     bool ascending=true;
     uint albumSpacing = 25;
     uint8_t albumRadius = 4;
@@ -47,17 +49,17 @@ protected:
     virtual bool eventFilter(QObject *obj, QEvent *event) Q_DECL_OVERRIDE;
 
 signals:
-    void albumClicked(const Bae::DB &albumMap);
-    void albumDoubleClicked(const Bae::DB &albumMap);
-    void playAlbum(const Bae::DB &albumMap);
-    void babeAlbum(const Bae::DB &albumMap);
+    void albumClicked(const BAE::DB &albumMap);
+    void albumDoubleClicked(const BAE::DB &albumMap);
+    void playAlbum(const BAE::DB &albumMap);
+    void babeAlbum(const BAE::DB &albumMap);
     void dragAlbum();
     void albumReady();
 };
 
-inline uint qHash(const Bae::DB &key, uint seed)
+inline uint qHash(const BAE::DB &key, uint seed)
 {
-    return qHash(key[Bae::KEY::ALBUM]+" "+key[Bae::KEY::ARTIST], seed) ^ key[Bae::KEY::ARTIST].length();
+    return qHash(key[BAE::KEY::ALBUM]+" "+key[BAE::KEY::ARTIST], seed) ^ static_cast<uint>(key[BAE::KEY::ARTIST].length());
 }
 
 #endif // GRIDVIEW_H

@@ -21,13 +21,13 @@ MoodForm::MoodForm(QWidget *parent) :
     this->setWindowFlags(Qt::Dialog);
     this->setWindowModality(Qt::ApplicationModal);
 
-    auto moodMap = Bae::loadSettings("MOODS", "SETTINGS", QMap<QString, QVariant>()).toMap();
+    auto moodMap = BAE::loadSettings("MOODS", "SETTINGS", QMap<QString, QVariant>()).toMap();
 
     auto moodsLayout = new QGridLayout;
 
     QList<QLineEdit*> edits;
 
-    auto moods = Bae::MoodColors;
+    auto moods = BAE::MoodColors;
 
     for(int i=0; i<moods.size(); i++)
     {
@@ -68,7 +68,7 @@ MoodForm::MoodForm(QWidget *parent) :
             i++;
         }
 
-        Bae::saveSettings("MOODS", map, "SETTINGS");
+        BAE::saveSettings("MOODS", map, "SETTINGS");
         qDebug()<<map;
        emit this->saved();
     });

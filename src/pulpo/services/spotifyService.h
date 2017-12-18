@@ -15,7 +15,7 @@ private:
     const QString CLIENT_SECRET = "b3f1562559f3405dbcde4a435f50089a";
 
 public:
-    explicit spotify(const Bae::DB &song);
+    explicit spotify(const BAE::DB &song);
     virtual bool setUpService(const PULPO::ONTOLOGY &ontology, const PULPO::INFO &infoType);
 
 protected:

@@ -32,33 +32,33 @@ class Pulpo : public QObject
     Q_OBJECT
 
 public:
-    explicit Pulpo(const Bae::DB &song, QObject *parent = nullptr);
+    explicit Pulpo(const BAE::DB &song, QObject *parent = nullptr);
     explicit Pulpo(QObject *parent = nullptr);
     ~Pulpo();
 
-    void feed(const Bae::DB &song, const RECURSIVE &recursive = RECURSIVE::ON );
-    void registerServices(const QList<SERVICES> &services);
-    void setInfo(const INFO &info);
-    void setOntology(const ONTOLOGY &ontology);
-    ONTOLOGY getOntology();
-    void setRecursive(const RECURSIVE &state);
+    void feed(const BAE::DB &song, const PULPO::RECURSIVE &recursive = PULPO::RECURSIVE::ON );
+    void registerServices(const QList<PULPO::SERVICES> &services);
+    void setInfo(const PULPO::INFO &info);
+    void setOntology(const PULPO::ONTOLOGY &ontology);
+    PULPO::ONTOLOGY getOntology();
+    void setRecursive(const PULPO::RECURSIVE &state);
 
 private:
     bool initServices();
-    RECURSIVE recursive = RECURSIVE::ON;
+    PULPO::RECURSIVE recursive = PULPO::RECURSIVE::ON;
     QList<SERVICES> registeredServices = {SERVICES::ALL};
 
-    void passSignal(const Bae::DB &track, const PULPO::RESPONSE &response);
+    void passSignal(const BAE::DB &track, const PULPO::RESPONSE &response);
 
 protected:
     QByteArray array;
-    Bae::DB track;
-    INFO info = INFO::NONE;
-    ONTOLOGY ontology = ONTOLOGY::NONE;
-    AVAILABLE availableInfo;
+    BAE::DB track;
+    PULPO::INFO info = INFO::NONE;
+    PULPO::ONTOLOGY ontology = ONTOLOGY::NONE;
+    PULPO::AVAILABLE availableInfo;
 
-    RESPONSE packResponse(const ONTOLOGY ontology, const INFO &infoKey, const CONTEXT &contextName, const QVariant &value);
-    RESPONSE packResponse(const ONTOLOGY ontology, const PULPO::INFO &infoKey, const VALUE &map);
+    PULPO::RESPONSE packResponse(const PULPO::ONTOLOGY ontology, const PULPO::INFO &infoKey, const PULPO::CONTEXT &contextName, const QVariant &value);
+    PULPO::RESPONSE packResponse(const PULPO::ONTOLOGY ontology, const PULPO::INFO &infoKey, const PULPO::VALUE &map);
 
     QByteArray startConnection(const QString &url, const QMap<QString, QString> &headers = {});
     bool parseArray();
@@ -70,7 +70,7 @@ protected:
     virtual bool parseTrack() {return false;}
 
 signals:
-    void infoReady(Bae::DB track, PULPO::RESPONSE response);
+    void infoReady(BAE::DB track, PULPO::RESPONSE response);
     void serviceFail(const QString &message);
 };
 

@@ -14,22 +14,18 @@
 #include <QShortcut>
 #include <QSplitter>
 #include <QScrollBar>
-#include <QHash>
 #include <QMetaType>
-#include <QThread>
-
+#include <QToolButton>
 //#include <QGraphicsBlurEffect>
 //#include <QGraphicsScene>
 //#include <QGraphicsPixmapItem>
 
-#include "../widget_models/scrolltext.h"
-#include "../widget_models/babealbum.h"
-#include "../widget_models/babetable.h"
-#include "../db/collectionDB.h"
-#include "../widget_models/babegrid.h"
-#include "../kde/notify.h"
 #include "../utils/albumloader.h"
+#include "../utils/bae.h"
 
+class BabeAlbum;
+class BabeTable;
+class BabeGrid;
 
 namespace Ui { class AlbumsView; }
 
@@ -42,14 +38,14 @@ public:
     ~AlbumsView();
 
     void populate(const QString &query);
-    void populate(const DB_LIST &albums);
+    void populate(const BAE::DB_LIST &albums);
 
-    void addAlbum(const Bae::DB &albumMap);
+    void addAlbum(const BAE::DB &albumMap);
     void populateExtraList(const QStringList &albums);
     void flushView();
     void hide_all(bool state);
 
-    void filter(const Bae::DB_LIST &filter, const Bae::KEY &type);
+    void filter(const BAE::DB_LIST &filter, const BAE::KEY &type);
 
     BabeTable *albumTable;
     BabeGrid *grid;
@@ -57,11 +53,10 @@ public:
 
 private:
     AlbumLoader albumLoader;
-    bool extraList=false;
+    bool extraList = false;
 
     QFrame *albumBox_frame;
     BabeAlbum *cover;
-    CollectionDB connection;
     QListWidget *artistList;
     QToolButton *closeBtn;
 
@@ -69,17 +64,17 @@ private:
 public slots:
     void hideAlbumFrame();
     void expandList();
-    void showAlbumInfo(const Bae::DB &albumMap);
+    void showAlbumInfo(const BAE::DB &albumMap);
 
 private slots:
     void albumHover();
     void filterAlbum(QModelIndex index);
 
 signals:
-    void albumDoubleClicked(const Bae::DB info);
+    void albumDoubleClicked(const BAE::DB info);
     void albumOrderChanged(QString order);
-    void playAlbum(const Bae::DB &info);
-    void babeAlbum(const Bae::DB info);
+    void playAlbum(const BAE::DB &info);
+    void babeAlbum(const BAE::DB info);
     void populateFinished();
     void expandTo(const QString &artist);
     void createdAlbum(BabeAlbum *album);

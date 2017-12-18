@@ -2,7 +2,6 @@
 #define BAEWINDOW_H
 
 #include <random>
-
 #include <QMainWindow>
 #include <QGridLayout>
 #include <QtMultimedia/QMediaPlayer>
@@ -37,65 +36,70 @@
 #include <QFileInfo>
 #include <QObject>
 #include <QMenuBar>
+#include <QModelIndex>
 
-#include "../widget_models/babetable.h"
-#include "../widget_models/babealbum.h"
+#include "../utils/bae.h"
 
-#include "../pulpo/pulpo.h"
+class BabeTable;
+class Pulpo;
+class BabeAlbum;
+class PlaylistsView;
+class InfoView;
+class RabbitView;
+class AlbumsView;
+class settings;
+class Notify;
+class CollectionDB;
+class Tracklist;
 
-#include "playlistsview.h"
-#include "infoview.h"
-#include "rabbitview.h"
-#include "albumsview.h"
-
-#include "../kde/notify.h"
-#include "../settings/settings.h"
-#include "../db/collectionDB.h"
-
-#include "../data_models/tracklist.h"
-
-enum VIEWS
+namespace BABEWINDOW
 {
-    COLLECTION = 0,
-    ALBUMS = 1,
-    ARTISTS = 2,
-    PLAYLISTS = 3,
-    INFO = 4,
-    RABBIT = 5,
-    SETTINGS = 6,
-    RESULTS =7
-};
+    enum VIEWS
+    {
+        COLLECTION = 0,
+        ALBUMS = 1,
+        ARTISTS = 2,
+        PLAYLISTS = 3,
+        INFO = 4,
+        RABBIT = 5,
+        SETTINGS = 6,
+        RESULTS =7
+    };
 
-enum VIEW_MODE
-{
-    FULLMODE,
-    PLAYLISTMODE,
-    MINIMODE
-};
+    enum VIEW_MODE
+    {
+        FULLMODE,
+        PLAYLISTMODE,
+        MINIMODE
+    };
 
-enum PLAY_MODE
-{
-    REGULAR,
-    SHUFFLE,
-    REPEAT
-};
+    enum PLAY_MODE
+    {
+        REGULAR,
+        SHUFFLE,
+        REPEAT
+    };
 
-enum APPEND
-{
-    APPENDTOP,
-    APPENDBOTTOM,
-    APPENDAFTER,
-    APPENDBEFORE,
-    APPENDINDEX
-};
+    enum APPEND
+    {
+        APPENDTOP,
+        APPENDBOTTOM,
+        APPENDAFTER,
+        APPENDBEFORE,
+        APPENDINDEX
+    };
 
-enum POSITION
-{
-    RIGHT,
-    LEFT,
-    IN,
-    OUT
-};
+    enum POSITION
+    {
+        RIGHT,
+        LEFT,
+        IN,
+        OUT
+    };
+}
+
+using namespace BAE;
+using namespace BABEWINDOW;
 
 namespace Ui { class BabeWindow;}
 
@@ -106,23 +110,25 @@ class BabeWindow : public QMainWindow
 public:
     explicit BabeWindow(const QStringList &files = {}, QWidget *parent = nullptr);
     ~BabeWindow() override;
+    static CollectionDB *connection;
+    static Notify *nof;
 
     void start();
     void appendFiles(const QStringList &paths, const APPEND &pos = APPENDBOTTOM);
     void loadTrack();
-    bool babeTrack(const Bae::DB &track);
-    void loadInfo(const Bae::DB &track);
+    bool babeTrack(const BAE::DB &track);
+    void loadInfo(const BAE::DB &track);
 
-    Bae::DB_LIST searchFor(const QStringList &queries);
+    BAE::DB_LIST searchFor(const QStringList &queries);
 
 protected:
     virtual void closeEvent(QCloseEvent *event) Q_DECL_OVERRIDE;
     virtual bool eventFilter(QObject * watched, QEvent * event) Q_DECL_OVERRIDE;
 
 public slots:
-    void addToPlaylist(const Bae::DB_LIST &mapList, const bool &notRepeated=false, const APPEND &pos = APPENDBOTTOM);
-    void populateResultsTable(const Bae::DB_LIST &mapList);
-    void addToQueue(const Bae::DB_LIST &tracks);
+    void addToPlaylist(const BAE::DB_LIST &mapList, const bool &notRepeated=false, const APPEND &pos = APPENDBOTTOM);
+    void populateResultsTable(const BAE::DB_LIST &mapList);
+    void addToQueue(const BAE::DB_LIST &tracks);
 
     void pause();
     void play();
@@ -138,7 +144,7 @@ private slots:
     void on_hide_sidebar_btn_clicked();
     void on_shuffle_btn_clicked();
     void on_open_btn_clicked();
-    void on_mainList_clicked(const Bae::DB_LIST &list);
+    void on_mainList_clicked(const BAE::DB_LIST &list);
     void update();
     void on_seekBar_sliderMoved(const int &position);
     void on_play_btn_clicked();
@@ -165,43 +171,42 @@ private slots:
     void fetchCoverArt(DB &song);
     void on_rowInserted(QModelIndex model ,int x,int y);
 
-    void refreshTables(const QMap<Bae::TABLE, bool> &tableReset);
+    void refreshTables(const QMap<BAE::TABLE, bool> &tableReset);
     void addToPlayed(const QString &url);
 
-    void putAlbumOnPlay(const Bae::DB &info);
-    void putOnPlay(const Bae::DB_LIST &mapList);
-    void playItNow(const Bae::DB_LIST &list);
-    void babeAlbum(const Bae::DB &info);
+    void putAlbumOnPlay(const BAE::DB &info);
+    void putOnPlay(const BAE::DB_LIST &mapList);
+    void playItNow(const BAE::DB_LIST &list);
+    void babeAlbum(const BAE::DB &info);
     bool loadCover(DB &track);
-    void babeIt(const Bae::DB_LIST &tracks);
-    bool unbabeIt(const Bae::DB &track);
+    void babeIt(const BAE::DB_LIST &tracks);
+    bool unbabeIt(const BAE::DB &track);
     void loadMood();
     void removeQueuedTrack(const int &pos);
     void removeQueuedTracks();
     void playQueuedTrack(const int &pos);
-    void infoIt(const  Bae::DB &track);
-    void albumDoubleClicked(const Bae::DB &info);
+    void infoIt(const  BAE::DB &track);
+    void albumDoubleClicked(const BAE::DB &info);
 
     void on_miniPlaybackBtn_clicked();
 
 private:
+
     Ui::BabeWindow *ui;
     uint ALBUM_SIZE;
     uint iconSize = 22;
 
+
     POSITION playlistPos = RIGHT;
     POSITION playlistSta = IN;
 
-    CollectionDB connection;
-
-    const QString stylePath = Bae::SettingPath+"style.qss";
+    const QString stylePath = BAE::SettingPath+"style.qss";
 
     VIEW_MODE viewMode = VIEW_MODE::FULLMODE;
     QRect defaultGeometry;
     int prevIndex;
 
     Qt::WindowFlags defaultWindowFlags;
-    Notify *nof;
 
     QToolBar *mainToolbar;
     QWidget *mainWidget;
@@ -246,7 +251,7 @@ private:
     void calibrateMainList();
 
     void populateMainList();
-    int isBabed(const Bae::DB &track);
+    int isBabed(const BAE::DB &track);
     void blurWidget(BabeAlbum &widget, const int &radius );
     void babedIcon(const bool &state);
     void movePanel(const POSITION &pos);
@@ -259,10 +264,10 @@ private:
     QSlider *seekBar;
     QTimer *searchTimer;
 
-    Bae::DB current_song;
+    BAE::DB current_song;
     int current_song_pos = 0;
 
-    Bae::DB prev_song;
+    BAE::DB prev_song;
     int prev_song_pos = 0;
 
     PLAY_MODE shuffle_state = PLAY_MODE::REGULAR;

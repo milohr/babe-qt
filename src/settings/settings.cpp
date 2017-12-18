@@ -20,25 +20,30 @@
 #include "ui_settings.h"
 #include "../services/local/socket.h"
 
+#include "../kde/notify.h"
+
+#include "../dialogs/about.h"
+#include "../services/web/youtube.h"
+#include "../pulpo/pulpo.h"
+#include "../views/babewindow.h"
+#include "../db/collectionDB.h"
+
+
 settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
 {
     ui->setupUi(this);
 
-    // QFrame frame = new QFrame();
-
-    // collectionDBPath=QDir().absolutePath()+collectionDBPath;
-
+    this->about_ui = new About(this);
     /*LOAD SAVED SETTINGS*/
 
-    this->ui->pulpoBrainz_checkBox->setChecked(Bae::loadSettings("BRAINZ","SETTINGS",true).toBool());
-    this->ui->pulpoBrainz_spinBox->setValue(Bae::loadSettings("BRAINZ_INTERVAL","SETTINGS",15).toInt());
+    this->ui->pulpoBrainz_checkBox->setChecked(BAE::loadSettings("BRAINZ","SETTINGS",true).toBool());
+    this->ui->pulpoBrainz_spinBox->setValue(BAE::loadSettings("BRAINZ_INTERVAL","SETTINGS",15).toInt());
 
-    qDebug() << "Getting collectionDB info from: " << Bae::CollectionDBPath;
-    qDebug() << "Getting settings info from: " << Bae::SettingPath;
-    qDebug() << "Getting artwork files from: " << Bae::CachePath;
+    qDebug() << "Getting collectionDB info from: " << BAE::CollectionDBPath;
+    qDebug() << "Getting settings info from: " << BAE::SettingPath;
+    qDebug() << "Getting artwork files from: " << BAE::CachePath;
 
-
-    if(!Bae::fileExists(notifyDir+"/Babe.notifyrc"))
+    if(!BAE::fileExists(notifyDir+"/Babe.notifyrc"))
     {
         qDebug()<<"The Knotify file does not exists, going to create it";
         QFile knotify(":Data/data/Babe.notifyrc");
@@ -47,10 +52,10 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
             qDebug()<<"the knotify file got copied";
     }
 
-    QDir collectionDBPath_dir(Bae::CollectionDBPath);
-    QDir settingsPath_dir(Bae::SettingPath);
-    QDir cachePath_dir(Bae::CachePath);
-    QDir youtubeCache_dir(Bae::YoutubeCachePath);
+    QDir collectionDBPath_dir(BAE::CollectionDBPath);
+    QDir settingsPath_dir(BAE::SettingPath);
+    QDir cachePath_dir(BAE::CachePath);
+    QDir youtubeCache_dir(BAE::YoutubeCachePath);
 
     if (!collectionDBPath_dir.exists())
         collectionDBPath_dir.mkpath(".");
@@ -61,12 +66,7 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
     if (!youtubeCache_dir.exists())
         youtubeCache_dir.mkpath(".");
 
-    connect(&this->brainDeamon, &Deamon::Brain::artworkReady, [this] (const DB &album)
-    {
-        emit this->albumArtReady(album);
-    });
-
-    connect(&this->brainDeamon, &Deamon::Brain::finished, [this]()
+    connect(&this->brainDeamon, &Brain::finished, [this]()
     {
         this->movie->stop();
         ui->label->hide();
@@ -74,7 +74,7 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
 
     });
 
-    connect(&this->brainDeamon, &Deamon::Brain::done, [this](const TABLE type)
+    connect(&this->brainDeamon, &Brain::done, [this](const TABLE type)
     {
         emit this->refreshTables({{type,false}});
     });
@@ -82,15 +82,15 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
     connect(this->ui->pulpoBrainz_spinBox, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](const int &value)
     {
         qDebug()<<"interval changed to:"<<value;
-        Bae::saveSettings("BRAINZ_INTERVAL",value,"SETTINGS");
+        BAE::saveSettings("BRAINZ_INTERVAL",value,"SETTINGS");
     });
 
     connect(this->ui->pulpoBrainz_checkBox,static_cast<void (QCheckBox::*)(bool)>(&QCheckBox::toggled), [this](const bool &value)
     {
-        Bae::saveSettings("BRAINZ",value,"SETTINGS");
+        BAE::saveSettings("BRAINZ",value,"SETTINGS");
     });
 
-    connect(&collection_db, &CollectionDB::trackInserted, [this]()
+    connect(BabeWindow::connection, &CollectionDB::trackInserted, [this]()
     {
         fileSaver.nextTrack();
         this->ui->progressBar->setValue(this->ui->progressBar->value()+1);
@@ -122,26 +122,25 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
         this->fetchArt();
     });
 
-    connect(&fileSaver, &FileLoader::trackReady, &collection_db, &CollectionDB::addTrack);
+    connect(&fileSaver, &FileLoader::trackReady, BabeWindow::connection, &CollectionDB::addTrack);
 
     connect(this, &settings::collectionPathChanged, this, &settings::populateDB);
 
     this->ytFetch = new YouTube(this);
-    connect(ytFetch,&YouTube::youtubeTrackReady, this, &settings::populateDB);
+    connect(ytFetch, &YouTube::youtubeTrackReady, this, &settings::populateDB);
 
-    this->babeSocket = new Socket(static_cast<quint16>(Bae::BabePort.toInt()),this);
-    connect(babeSocket, &Socket::message, ytFetch, &YouTube::fetch);
+    this->babeSocket = new Socket(static_cast<quint16>(BAE::BabePort.toInt()),this);
+    connect(babeSocket, &Socket::message, this->ytFetch, &YouTube::fetch);
 
     ui->remove->setEnabled(false);
     ui->progressBar->hide();
-    this->about_ui = new About(this);
 
-    movie = new QMovie(this);
-    movie->setFileName(":Data/data/ajax-loader.gif");
-    ui->label->setMovie(movie);
+    this->movie = new QMovie(this);
+    this->movie->setFileName(":Data/data/ajax-loader.gif");
+    ui->label->setMovie(this->movie);
     ui->label->hide();
 
-    watcher = new QFileSystemWatcher(this);
+    this->watcher = new QFileSystemWatcher(this);
     // watcher->addPath(youtubeCachePath);
 
     connect(watcher, SIGNAL(directoryChanged(QString)), this,
@@ -168,7 +167,7 @@ void settings::on_remove_clicked()
     qDebug() << this->pathToRemove;
     if (!this->pathToRemove.isEmpty())
     {
-        if(collection_db.removeSource(this->pathToRemove))
+        if(BabeWindow::connection->removeSource(this->pathToRemove))
         {
             removeSettings({"collectionPath=", this->pathToRemove});
             collectionPaths.removeAll(this->pathToRemove);
@@ -209,7 +208,7 @@ void settings::setSettings(QStringList setting) {
     bool replace = false;
     /**/
     // qDebug()<<setting.at(0);
-    std::ifstream settings(Bae::SettingPath.toStdString() +
+    std::ifstream settings(BAE::SettingPath.toStdString() +
                            settingsName.toStdString());
     QStringList newline;
     std::string line;
@@ -227,14 +226,14 @@ void settings::setSettings(QStringList setting) {
     }
 
     if (replace) {
-        std::ofstream write(Bae::SettingPath.toStdString() + settingsName.toStdString());
+        std::ofstream write(BAE::SettingPath.toStdString() + settingsName.toStdString());
 
         for (auto ln : newline) {
             write << ln.toStdString() << std::endl;
         }
 
     } else {
-        std::ofstream write(Bae::SettingPath.toStdString() + settingsName.toStdString(),
+        std::ofstream write(BAE::SettingPath.toStdString() + settingsName.toStdString(),
                             std::ios::app);
         write << strNew << std::endl;
     }
@@ -247,7 +246,7 @@ void settings::removeSettings(QStringList setting) {
     bool replace = false;
     /**/
     // qDebug()<<setting.at(0);
-    std::ifstream settings(Bae::SettingPath.toStdString() +
+    std::ifstream settings(BAE::SettingPath.toStdString() +
                            settingsName.toStdString());
     QStringList newline;
     std::string line;
@@ -266,7 +265,7 @@ void settings::removeSettings(QStringList setting) {
 
     if (replace)
     {
-        std::ofstream write(Bae::SettingPath.toStdString() + settingsName.toStdString());
+        std::ofstream write(BAE::SettingPath.toStdString() + settingsName.toStdString());
 
         for (auto ln : newline)
             write << ln.toStdString() << std::endl;
@@ -274,7 +273,7 @@ void settings::removeSettings(QStringList setting) {
 
     } else
     {
-        std::ofstream write(Bae::SettingPath.toStdString() + settingsName.toStdString(),
+        std::ofstream write(BAE::SettingPath.toStdString() + settingsName.toStdString(),
                             std::ios::app);
         write << strNew << std::endl;
     }
@@ -289,14 +288,15 @@ void settings::addToWatcher(QStringList paths)
 
 void settings::collectionWatcher()
 {
-    auto queryTxt = QString("SELECT %1 FROM %2").arg(Bae::KEYMAP[Bae::KEY::URL],Bae::TABLEMAP[Bae::TABLE::TRACKS]);
-    QSqlQuery query(queryTxt);
-    while (query.next())
+    auto queryTxt = QString("SELECT %1 FROM %2").arg(BAE::KEYMAP[BAE::KEY::URL],BAE::TABLEMAP[BAE::TABLE::TRACKS]);
+
+
+    for (auto track :  BabeWindow::connection->getDBData(queryTxt))
     {
-        QString location = query.value(Bae::KEYMAP[Bae::KEY::URL]).toString();
-        if(!location.startsWith(Bae::YoutubeCachePath,Qt::CaseInsensitive)) //exclude the youtube cache folder
+        auto location = track[BAE::KEY::URL];
+        if(!location.startsWith(BAE::YoutubeCachePath,Qt::CaseInsensitive)) //exclude the youtube cache folder
         {
-            if (!this->dirs.contains(QFileInfo(location).dir().path()) && Bae::fileExists(location)) //check if parent dir isn't already in list and it exists
+            if (!this->dirs.contains(QFileInfo(location).dir().path()) && BAE::fileExists(location)) //check if parent dir isn't already in list and it exists
             {
                 QString dir = QFileInfo(location).dir().path();
                 this->dirs << dir;
@@ -306,7 +306,7 @@ void settings::collectionWatcher()
                 {
                     QString subDir = QFileInfo(it.next()).path();
 
-                    if(QFileInfo(subDir).isDir() && !this->dirs.contains(subDir) && Bae::fileExists(subDir))
+                    if(QFileInfo(subDir).isDir() && !this->dirs.contains(subDir) && BAE::fileExists(subDir))
                         this->dirs <<subDir;
                 }
 
@@ -336,7 +336,7 @@ void settings::handleDirectoryChanged(const QString &dir)
 
 void settings::readSettings()
 {
-    std::ifstream settings(Bae::SettingPath.toStdString() +
+    std::ifstream settings(BAE::SettingPath.toStdString() +
                            settingsName.toStdString());
     std::string line;
     while (std::getline(settings, line))
@@ -355,33 +355,12 @@ void settings::readSettings()
 }
 
 
-bool settings::checkCollection()
-{
-    if (Bae::fileExists(Bae::CollectionDBPath + collectionDBName))
-    {
-        qDebug() << "The CollectionDB does exists";
+void settings::checkCollection()
+{   
+    this->collectionWatcher();
 
-        collection_db.setUpCollection(Bae::CollectionDBPath + collectionDBName);
-        collectionWatcher();
-
-        if(this->ui->pulpoBrainz_checkBox->isChecked())
-            this->brainDeamon.start();
-
-        return true;
-    }
-
-    return false;
-}
-
-
-void settings::createCollectionDB()
-{
-    qDebug() << "The CollectionDB doesn't exists. Going to create the database "
-                "and tables";
-
-    collection_db.setUpCollection(Bae::CollectionDBPath + collectionDBName);
-    collection_db.prepareCollectionDB();
-
+    if(this->ui->pulpoBrainz_checkBox->isChecked())
+        this->brainDeamon.start();
 }
 
 void settings::populateDB(const QString &path)
@@ -395,7 +374,7 @@ void settings::populateDB(const QString &path)
 void settings::fetchArt()
 {
     this->brainDeamon.start();
-    nof.notify("Fetching art","this might take some time depending on your collection size and internet connection speed...");
+    BabeWindow::nof->notify("Fetching art","this might take some time depending on your collection size and internet connection speed...");
     ui->label->show();
     movie->start();
 }
