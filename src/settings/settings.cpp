@@ -358,7 +358,6 @@ void settings::readSettings()
 void settings::checkCollection()
 {   
     this->collectionWatcher();
-
     if(this->ui->pulpoBrainz_checkBox->isChecked())
         this->brainDeamon.start();
 }

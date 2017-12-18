@@ -75,7 +75,7 @@ BabeWindow::BabeWindow(const QStringList &files, QWidget *parent) : QMainWindow(
                                  qApp->desktop()->availableGeometry()
                                  ));
 
-    this->setGeometry( BAE::loadSettings("GEOMETRY", "MAINWINDOW", defaultGeometry).toRect());
+    this->setGeometry(BAE::loadSettings("GEOMETRY", "MAINWINDOW", defaultGeometry).toRect());
 
     BAE::saveSettings("GEOMETRY", this->geometry(), "MAINWINDOW");
 
@@ -91,8 +91,8 @@ BabeWindow::BabeWindow(const QStringList &files, QWidget *parent) : QMainWindow(
     {
         if(this->babeTrack(track))
             this->babedIcon(this->isBabed(track));
-
     });
+
     connect(this->nof,&Notify::skipSong,this,&BabeWindow::next);
 
     this->updater = new QTimer(this);
@@ -172,12 +172,12 @@ void BabeWindow::setUpViews()
 
     connect(this->connection, &CollectionDB::artistsCleaned, [this](int amount)
     {
-        this->nof->notify(QString::number(amount)+" Artists cleaned up", "");
+        this->nof->notify(QString::number(amount)+tr(" Artists cleaned up"), "");
     });
 
     connect(this->connection, &CollectionDB::albumsCleaned, [this](int amount)
     {
-        this->nof->notify(QString::number(amount)+" Albums cleaned up", "");
+        this->nof->notify(QString::number(amount)+tr(" Albums cleaned up"), "");
     });
 
     this->playlistTable = new PlaylistsView(this);
@@ -227,7 +227,7 @@ void BabeWindow::setUpViews()
     this->mainList->enableRowColoring(true);
     this->mainList->enableRowDragging(true);
     this->mainList->enablePreview(false);
-    this->mainList->setAddMusicMsg("\nDrag and drop music here!","face-ninja");
+    this->mainList->setAddMusicMsg(tr("\nDrag and drop music here!"),"face-ninja");
 
     connect(this->mainList,&BabeTable::indexesMoved,[this](const int &row, const int &newRow)
     {
@@ -273,7 +273,7 @@ void BabeWindow::setUpViews()
     this->queueList->enableRowColoring(true);
     this->queueList->enableRowDragging(true);
     this->queueList->enablePreview(true);
-    this->queueList->setAddMusicMsg("\nQueue list","face-ninja");
+    this->queueList->setAddMusicMsg(tr("\nQueue list"),"face-ninja");
 
     connect(this->queueList, &BabeTable::tableWidget_doubleClicked, [this] (BAE::DB_LIST list)
     {
@@ -429,8 +429,6 @@ void BabeWindow::setUpViews()
     });
     connect(this->rabbitTable->filterList, &BabeTable::saveToPlaylist,playlistTable,&PlaylistsView::saveToPlaylist);
 
-
-
     /* THE BUTTONS VIEWS */
     connect(ui->tracks_view, &QToolButton::clicked, this, &BabeWindow::collectionView);
     connect(ui->albums_view, &QToolButton::clicked, this, &BabeWindow::albumsView);
@@ -455,7 +453,7 @@ void BabeWindow::setUpCollectionViewer()
 {
     this->mainLayout = new QHBoxLayout;
 
-    this->mainToolbar = new QToolBar("Views", this);
+    this->mainToolbar = new QToolBar(tr("Views"), this);
     this->mainToolbar->setMovable(false);
     connect(this->mainToolbar, &QToolBar::topLevelChanged, [this](bool topLevel)
     {
@@ -570,8 +568,8 @@ void BabeWindow::setUpPlaylist()
                                          "QSlider::sub-page:horizontal:disabled {background: transparent;border-color: #999;}QSlider::add-page:horizontal:disabled {background: transparent;border-color: #999;}"
                                          "QSlider::handle:horizontal:disabled {background: transparent;border: 1px solid #aaa;border-radius: 4px;}").arg(this->palette().color(QPalette::Highlight).name()));
 
-    ui->hide_sidebar_btn->setToolTip("Go Mini");
-    ui->shuffle_btn->setToolTip("Shuffle");
+    ui->hide_sidebar_btn->setToolTip(tr("Go Mini"));
+    ui->shuffle_btn->setToolTip(tr("Shuffle"));
 
     playlistWidget_layout->addWidget(album_art, 0,0,Qt::AlignTop);
     playlistWidget_layout->addWidget(ui->controls, 0,0,Qt::AlignTop);
@@ -610,7 +608,7 @@ void BabeWindow::movePanel(const POSITION &pos)
             this->mainLayout->removeWidget(this->rightFrame);
 
             this->rightFrame->setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::CustomizeWindowHint);
-            this->rightFrame->setWindowTitle("Playlist");
+            this->rightFrame->setWindowTitle(tr("Playlist"));
 
             this->rightFrame->show();
             this->rightFrame->setMinimumHeight(static_cast<int>(ALBUM_SIZE)*2);
@@ -675,23 +673,23 @@ void BabeWindow::setUpRightFrame()
 void BabeWindow::setUpMenuBar()
 {
 
-    this->popPanel = new QAction("Pop panel out", this);
+    this->popPanel = new QAction(tr("Pop panel out"), this);
     this->popPanel->setShortcut(QKeySequence("Ctrl+p"));
     connect(popPanel, &QAction::triggered, [this]()
     {
         if(this->playlistSta == POSITION::OUT)
         {
             this->movePanel(POSITION::IN);
-            this->popPanel->setText("Pop panel out");
+            this->popPanel->setText(tr("Pop panel out"));
         }
         else if (this->playlistSta == POSITION::IN)
         {
             this->movePanel(POSITION::OUT);
-            this->popPanel->setText("Pop panel in");
+            this->popPanel->setText(tr("Pop panel in"));
         }
     });
 
-    auto moveIt= new QAction("Move to left", this);
+    auto moveIt= new QAction(tr("Move to left"), this);
     moveIt->setShortcut(QKeySequence("Ctrl+m"));
     connect(moveIt, &QAction::triggered,[=]()
     {
@@ -700,39 +698,39 @@ void BabeWindow::setUpMenuBar()
         if(this->playlistPos == POSITION::RIGHT)
         {
             this->movePanel(POSITION::LEFT);
-            moveIt->setText("Move to right");
+            moveIt->setText(tr("Move to right"));
 
         }else if(this->playlistPos == POSITION::LEFT)
         {
             this->movePanel(POSITION::RIGHT);
-            moveIt->setText("Move to left");
+            moveIt->setText(tr("Move to left"));
         }
     });
 
-    auto hideTimeLabels = new QAction("Hide time labels", this);
+    auto hideTimeLabels = new QAction(tr("Hide time labels"), this);
     connect (hideTimeLabels, &QAction::triggered, [hideTimeLabels, this]()
     {
         if(ui->time->isVisible() && ui->duration->isVisible())
         {
             ui->time->setVisible(false);
             ui->duration->setVisible(false);
-            hideTimeLabels->setText("Show time labels");
+            hideTimeLabels->setText(tr("Show time labels"));
         }else
         {
             ui->time->setVisible(true);
             ui->duration->setVisible(true);
-            hideTimeLabels->setText("Hide time labels");
+            hideTimeLabels->setText(tr("Hide time labels"));
         }
     });
 
-    auto refreshIt = new QAction("Calibrate...", this);
+    auto refreshIt = new QAction(tr("Calibrate..."), this);
     refreshIt->setShortcut(QKeySequence("Ctrl+b"));
-    refreshIt->setToolTip("Clean & play Babe'd tracks");
+    refreshIt->setToolTip(tr("Clean & play Babe'd tracks"));
     connect(refreshIt, &QAction::triggered, [this]() { calibrateMainList(); });
 
-    auto clearIt = new QAction("Clear out...", this);
+    auto clearIt = new QAction(tr("Clear out..."), this);
     clearIt->setShortcut(QKeySequence("Ctrl+e"));
-    clearIt->setToolTip("Remove unselected tracks");
+    clearIt->setToolTip(tr("Remove unselected tracks"));
     connect(clearIt, &QAction::triggered, [this]()
     {
         this->clearMainList();
@@ -743,22 +741,22 @@ void BabeWindow::setUpMenuBar()
         }
     });
 
-    auto cleanIt = new QAction("Clean...",this);
+    auto cleanIt = new QAction(tr("Clean..."),this);
     cleanIt->setShortcut(QKeySequence("Ctrl+c"));
-    cleanIt->setToolTip("Remove repeated tracks");
+    cleanIt->setToolTip(tr("Remove repeated tracks"));
     connect(cleanIt, &QAction::triggered, [this]()
     {
         this->mainList->removeRepeated();
     });
 
-    auto clearQueue = new QAction("Clear Queue...", this);
-    clearQueue->setToolTip("Remove queued tracks");
+    auto clearQueue = new QAction(tr("Clear Queue..."), this);
+    clearQueue->setToolTip(tr("Remove queued tracks"));
     connect(clearQueue, &QAction::triggered, [this]()
     {
         this->removeQueuedTracks();
     });
 
-    auto open = new QAction("Open...", this);
+    auto open = new QAction(tr("Open..."), this);
     open->setShortcut(QKeySequence("Ctrl+o"));
     connect(open, &QAction::triggered, this, &BabeWindow::on_open_btn_clicked);
 
@@ -778,18 +776,18 @@ void BabeWindow::setUpMenuBar()
     playlistMenu->addAction(clearQueue);
 
 
-    auto toolBarText = new QAction("Show text", this);
+    auto toolBarText = new QAction(tr("Show text"), this);
     connect(toolBarText, &QAction::triggered, [toolBarText,this]()
     {
         switch(this->mainToolbar->toolButtonStyle())
         {
             case Qt::ToolButtonStyle::ToolButtonIconOnly:
                 this->mainToolbar->setToolButtonStyle(Qt::ToolButtonStyle::ToolButtonTextBesideIcon);
-                toolBarText->setText("Hide text");
+                toolBarText->setText(tr("Hide text"));
                 break;
             case Qt::ToolButtonStyle::ToolButtonTextBesideIcon:
                 this->mainToolbar->setToolButtonStyle(Qt::ToolButtonStyle::ToolButtonIconOnly);
-                toolBarText->setText("Show text");
+                toolBarText->setText(tr("Show text"));
                 break;
             default:break;
         }
@@ -801,7 +799,7 @@ void BabeWindow::setUpMenuBar()
     auto toolBarMenu = this->menuBar()->addMenu(tr("&Toolbar"));
     toolBarMenu->addAction(toolBarText);
 
-    auto sizes = toolBarMenu->addMenu("Icon size");
+    auto sizes = toolBarMenu->addMenu(tr("Icon size"));
     auto iconSize16 = new QAction("16", this);
     auto iconSize22 = new QAction("22", this);
     auto iconSize32 = new QAction("32", this);
@@ -815,11 +813,11 @@ void BabeWindow::setUpMenuBar()
         this->setToolbarIconSize(static_cast<uint>(size));
     });
 
-    auto position = toolBarMenu->addMenu("Position");
-    auto top = new QAction("Top", this);
-    auto bottom = new QAction("Bottom", this);
-    auto left = new QAction("Left", this);
-    auto right = new QAction("Right", this);
+    auto position = toolBarMenu->addMenu(tr("Position"));
+    auto top = new QAction(tr("Top"), this);
+    auto bottom = new QAction(tr("Bottom"), this);
+    auto left = new QAction(tr("Left"), this);
+    auto right = new QAction(tr("Right"), this);
     position->addAction(top);
     position->addAction(bottom);
     position->addAction(left);
@@ -839,13 +837,13 @@ void BabeWindow::setUpMenuBar()
         this->mainToolbar->show();
     });
 
-    auto expandMode = new QAction("Collection mode", this);
+    auto expandMode = new QAction(tr("Collection mode"), this);
     connect(expandMode, &QAction::triggered, this, &BabeWindow::expand);
 
-    auto playlistMode = new QAction("Playlist mode", this);
+    auto playlistMode = new QAction(tr("Playlist mode"), this);
     connect(playlistMode, &QAction::triggered, this, &BabeWindow::go_playlistMode);
 
-    auto miniMode = new QAction("Mini mode", this);
+    auto miniMode = new QAction(tr("Mini mode"), this);
     connect(miniMode, &QAction::triggered, this, &BabeWindow::go_mini);
 
     auto viewMenu = this->menuBar()->addMenu(tr("&View"));
@@ -853,7 +851,7 @@ void BabeWindow::setUpMenuBar()
     viewMenu->addAction(playlistMode);
     viewMenu->addAction(miniMode);
 
-    auto moods = new QAction("Assign Moods", this);
+    auto moods = new QAction(tr("Assign Moods"), this);
     connect(moods, &QAction::triggered, [this]()
     {
         auto moodForm = new MoodForm(this);
@@ -861,24 +859,24 @@ void BabeWindow::setUpMenuBar()
         moodForm->show();
     });
 
-    auto pulpoDeamon = new QAction("Run Pulpo Deamon", this);
+    auto pulpoDeamon = new QAction(tr("Run Pulpo Deamon"), this);
     connect(pulpoDeamon, &QAction::triggered, this->settings_widget, &settings::fetchArt);
 
-    auto refreshCollection = new QAction("Refresh Collection", this);
+    auto refreshCollection = new QAction(tr("Refresh Collection"), this);
     connect(refreshCollection, &QAction::triggered, [this]
     {
         this->refreshTables({{TABLE::TRACKS, true}, {TABLE::ALBUMS, true}, {TABLE::ARTISTS, true}, {TABLE::PLAYLISTS, true}});
 
     });
 
-    auto cleanCollection = new QAction("Clean up Collection", this);
+    auto cleanCollection = new QAction(tr("Clean up Collection"), this);
     connect(cleanCollection, &QAction::triggered, []
     {
         if(BabeWindow::connection->cleanAlbums())
             BabeWindow::connection->cleanArtists();
     });
 
-    auto settings = new QAction("Settings", this);
+    auto settings = new QAction(tr("Settings"), this);
     connect(settings, &QAction::triggered, this, &BabeWindow::settingsView);
 
     auto toolsMenu = this->menuBar()->addMenu(tr("&Tools"));
@@ -888,10 +886,10 @@ void BabeWindow::setUpMenuBar()
     toolsMenu->addAction(cleanCollection);
     toolsMenu->addAction(settings);
 
-    auto aboutBabe = new QAction("About Babe", this);
+    auto aboutBabe = new QAction(tr("About Babe"), this);
     connect(aboutBabe, &QAction::triggered, this->settings_widget->about_ui, &About::show);
 
-    auto aboutQt = new QAction("About Qt", this);
+    auto aboutQt = new QAction(tr("About Qt"), this);
     connect(aboutQt, &QAction::triggered,  qApp, &QApplication::aboutQt);
 
     auto helpMenu = this->menuBar()->addMenu(tr("&Help"));
@@ -1118,8 +1116,8 @@ void BabeWindow::closeEvent(QCloseEvent* event)
     if(this->settings_widget->brainDeamon.isRunning())
     {
         QMessageBox msgBox;
-        msgBox.setText("Babe is still collecting important information about your collection.");
-        msgBox.setInformativeText("Do you want to quit?");
+        msgBox.setText(tr("Babe is still collecting important information about your collection."));
+        msgBox.setInformativeText(tr("Do you want to quit?"));
         msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
         msgBox.setDefaultButton(QMessageBox::No);
         switch(msgBox.exec())
@@ -1358,7 +1356,7 @@ void BabeWindow::expand()
 
     animation->start();
 
-    ui->hide_sidebar_btn->setToolTip("Go Mini");
+    ui->hide_sidebar_btn->setToolTip(tr("Go Mini"));
 
 }
 
@@ -1386,7 +1384,7 @@ void BabeWindow::go_mini()
 
     animation->start();
 
-    ui->hide_sidebar_btn->setToolTip("Expand");
+    ui->hide_sidebar_btn->setToolTip(tr("Expand"));
 }
 
 void BabeWindow::go_playlistMode()
@@ -1657,7 +1655,7 @@ void BabeWindow::update()
 void BabeWindow::removeQueuedTrack(const int &pos)
 {
     this->queueList->removeRow(pos);
-    if(this->queueList->rowCount()<1)
+    if(this->queueList->rowCount() < 1)
         this->queueList->setVisible(false);
 }
 

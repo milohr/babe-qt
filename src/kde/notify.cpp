@@ -18,8 +18,7 @@
 #include "notify.h"
 
 Notify::Notify(QObject *parent) : QObject(parent)
-{
-}
+{}
 
 Notify::~Notify()
 {
@@ -30,7 +29,7 @@ void Notify::notify(const QString &title, const QString &body)
 {
     // notification->setComponentName(QStringLiteral("Babe"));
     auto notification = new KNotification(QStringLiteral("Notify"),KNotification::CloseOnTimeout, this);
-
+    connect(notification, &KNotification::closed, notification, &KNotification::deleteLater);
     notification->setTitle(QStringLiteral("%1").arg(title));
     notification->setText(QStringLiteral("%1").arg(body));
     notification->sendEvent();
@@ -40,7 +39,8 @@ void Notify::notifySong(const BAE::DB &trackMap,  const QPixmap &pix)
 {
     this->track = trackMap;
     // notification->setComponentName(QStringLiteral("Babe"));
-   auto notification = new KNotification(QStringLiteral("Notify"),KNotification::CloseOnTimeout, this);
+    auto notification = new KNotification(QStringLiteral("Notify"),KNotification::CloseOnTimeout, this);
+    connect(notification, &KNotification::closed, notification, &KNotification::deleteLater);
 
     notification->setTitle(QStringLiteral("%1").arg(track[BAE::KEY::TITLE]));
     notification->setText(QStringLiteral("%1\n%2").arg(track[BAE::KEY::ARTIST],track[BAE::KEY::ALBUM]));
@@ -62,8 +62,8 @@ void Notify::actions(uint id)
 {
     switch(id)
     {
-    case 1: emit this->babeSong(this->track); break;
-    case 2: emit this->skipSong(); break;
-    default: break;
+        case 1: emit this->babeSong(this->track); break;
+        case 2: emit this->skipSong(); break;
+        default: break;
     }
 }

@@ -118,6 +118,7 @@ bool CollectionDB::insert(const QString &tableName, const QVariantMap &insertDat
     {
         qDebug()<<QStringLiteral("Fatal error on insert! The table name is empty!");
         return false;
+
     } else if (insertData.isEmpty())
     {
         qDebug()<<QStringLiteral("Fatal error on insert! The insertData is empty!");
@@ -543,9 +544,6 @@ DB_LIST CollectionDB::getDBData(const QString &queryTxt)
         }
 
     }else qDebug()<< query.lastError()<< query.lastQuery();
-
-
-    qDebug()<<"MAPLIST SIZE:"<<mapList.size();
 
     return mapList;
 }
