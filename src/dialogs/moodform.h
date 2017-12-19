@@ -3,10 +3,6 @@
 
 #include <QWidget>
 
-namespace Ui {
-class MoodForm;
-}
-
 class MoodForm : public QWidget
 {
     Q_OBJECT
@@ -14,9 +10,6 @@ class MoodForm : public QWidget
 public:
     explicit MoodForm(QWidget *parent = nullptr);
     ~MoodForm();
-
-private:
-    Ui::MoodForm *ui;
 
 signals:
     void saved();

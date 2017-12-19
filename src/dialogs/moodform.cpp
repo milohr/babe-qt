@@ -1,5 +1,4 @@
 #include "moodform.h"
-#include "ui_moodform.h"
 #include "../utils/bae.h"
 #include "../db/collectionDB.h"
 
@@ -12,11 +11,8 @@
 #include <QPushButton>
 
 MoodForm::MoodForm(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::MoodForm)
+    QWidget(parent)
 {
-    ui->setupUi(this);
-
     this->setWindowTitle("Moods");
     this->setWindowFlags(Qt::Dialog);
     this->setWindowModality(Qt::ApplicationModal);
@@ -56,7 +52,6 @@ MoodForm::MoodForm(QWidget *parent) :
 
         moodsLayout->addWidget(frame,i,0);
     }
-    //    moodsLayout->addStretch();
     auto acceptBtn = new QPushButton("Save", this);
     connect(acceptBtn, &QPushButton::clicked,[=]()
     {
@@ -78,6 +73,4 @@ MoodForm::MoodForm(QWidget *parent) :
 }
 
 MoodForm::~MoodForm()
-{
-    delete ui;
-}
+{}

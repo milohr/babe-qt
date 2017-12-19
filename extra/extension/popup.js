@@ -130,7 +130,7 @@ function initWebSocket()
         };
         websocket.onerror = function (evt)
         {
-             document.getElementById("warning").innerHTML = 'SERVER ERROR: ' + evt.data;
+            document.getElementById("warning").innerHTML = 'SERVER ERROR: ' + evt.data;
         };
     }catch (exception)
     {

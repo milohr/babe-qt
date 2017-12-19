@@ -29,7 +29,7 @@ CONFIG   += c++17
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = Babe
+TARGET = babe
 TEMPLATE = app
 
 
@@ -67,8 +67,7 @@ FORMS += \
     src/dialogs/playlistform.ui \
     src/settings/settings.ui \
     src/views/babewindow.ui \
-    src/views/infoview.ui \
-    src/dialogs/moodform.ui
+    src/views/infoview.ui
 
 HEADERS += \
     src/data_models/track.h \
