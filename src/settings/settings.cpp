@@ -127,10 +127,16 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
     connect(this, &settings::collectionPathChanged, this, &settings::populateDB);
 
     this->ytFetch = new YouTube(this);
-    connect(ytFetch, &YouTube::youtubeTrackReady, this, &settings::populateDB);
+    connect(ytFetch, &YouTube::done, this, &settings::fetchArt);
 
     this->babeSocket = new Socket(static_cast<quint16>(BAE::BabePort.toInt()),this);
     connect(babeSocket, &Socket::message, this->ytFetch, &YouTube::fetch);
+    connect(babeSocket, &Socket::connected,[this](const int &index)
+    {
+        auto playlists = this->connection->getPlaylists();
+        this->babeSocket->sendMessageTo(index, playlists.join(","));
+    });
+
 
     ui->remove->setEnabled(false);
     ui->progressBar->hide();

@@ -11,13 +11,13 @@ Socket::Socket(quint16 port, QObject *parent) :
     m_pWebSocketServer(new QWebSocketServer(QStringLiteral("Babe Server"),
                                             QWebSocketServer::NonSecureMode, this))
 {
-    if (m_pWebSocketServer->listen(QHostAddress::Any, port))
+    if (this->m_pWebSocketServer->listen(QHostAddress::Any, port))
     {
 
         qDebug() << "Babe listening on port" << port;
-        connect(m_pWebSocketServer, &QWebSocketServer::newConnection,
+        connect(this->m_pWebSocketServer, &QWebSocketServer::newConnection,
                 this, &Socket::onNewConnection);
-        connect(m_pWebSocketServer, &QWebSocketServer::closed, this, &Socket::closed);
+        connect(this->m_pWebSocketServer, &QWebSocketServer::closed, this, &Socket::closed);
     }
 }
 
@@ -47,7 +47,7 @@ void Socket::onNewConnection()
 
     m_clients << pSocket;
 
-    emit this->connected(pSocket->origin());
+    emit this->connected(m_clients.size()-1);
 }
 
 void Socket::processTextMessage(const QString &message)

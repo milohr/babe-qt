@@ -20,7 +20,7 @@ public:
 Q_SIGNALS:
     void closed();
     void disconnected(const QString &id);
-    void connected(const QString &host);
+    void connected(const int &index);
     void message(const QString &message);
 
 private Q_SLOTS:

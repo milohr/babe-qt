@@ -10,6 +10,7 @@
      font-weight: bold;
  }
  
+
  #btns {
      width: 100%;
      height: 48px;
@@ -25,6 +26,7 @@
      background: transparent;
  }
  
+
  a {
      text-align: center;
      text-decoration: none;
@@ -50,7 +52,13 @@
  #options_div {
      padding: 5px;
  }
- 
+
+select
+{
+    width:100%;
+}
+
+
  input {
      padding: 5px;
      /*

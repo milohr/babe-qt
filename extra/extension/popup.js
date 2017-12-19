@@ -14,6 +14,8 @@ document.addEventListener('DOMContentLoaded', function()
         var ydoc = tab[0].title;
 
         console.log(ydoc);
+
+
         if (url.includes("youtube.com/watch?v"))
         {
             initWebSocket();
@@ -70,26 +72,27 @@ document.addEventListener('DOMContentLoaded', function()
             if (id.includes("#"))
                 id = id.substring(0, id.indexOf("#"));
 
-            pageUrl = tab[0].url.replace("- YouTube", "");
-            
-            var title = document.getElementById('title').value;
-            var artist = document.getElementById('artist').value;
-            var album = document.getElementById('album').value;
-
-            var json = {
-                title: title.trim(),
-                artist: artist.trim(),
-                album:album.trim(),
-                babe: 1,
-                id: id.trim(),
-                page: pageTitle.trim()
-            }
-
             babeBtn.addEventListener('click', function()
             {
+                pageUrl = tab[0].url.replace("- YouTube", "");
+
+                var title = document.getElementById('title').value;
+                var artist = document.getElementById('artist').value;
+                var album = document.getElementById('album').value;
+                var playlist = document.getElementById("playlist").value;
+
+                var json = {
+                    title: title.trim(),
+                    artist: artist.trim(),
+                    album: album.trim(),
+                    playlist: playlist.trim(),
+                    babe: 1,
+                    id: id.trim(),
+                    page: pageTitle.trim()
+                }
+
                 sendData(json);
             });
-
 
         }else
             document.getElementById("warning").innerHTML += "This isn't a YouTube url";
@@ -126,7 +129,9 @@ function initWebSocket()
         websocket.onmessage = function (evt)
         {
             console.log( "Message received :", evt.data );
-            console.log( evt.data );
+            console.log(evt.data);
+            setPlaylists(evt.data);
+
         };
         websocket.onerror = function (evt)
         {
@@ -175,6 +180,20 @@ function checkSocket()
         console.log("WebSocket state = " + websocket.readyState + " ( " + stateStr + " )");
     }else
         console.log("WebSocket is null");
+
+}
+
+function setPlaylists(playlists)
+{
+    select = document.getElementById('playlist');
+    list = playlists.split(",");
+    for(i = 0; i < list.length; i++)
+    {
+        var opt = document.createElement('option');
+        opt.value = list[i];
+        opt.innerHTML = list[i];
+        select.appendChild(opt);
+    }
 
 }
 

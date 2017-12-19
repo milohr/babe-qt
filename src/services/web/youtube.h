@@ -34,7 +34,7 @@ private:
     const QString ydl="youtube-dl -f m4a --youtube-skip-dash-manifest -o \"$$$.%(ext)s\"";
 
 signals:
-    void youtubeTrackReady(const QString &cachePath);
+    void done();
 };
 
 #endif // YOUTUBE_H

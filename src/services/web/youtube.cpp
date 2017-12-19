@@ -20,6 +20,7 @@
 #include "../../pulpo/pulpo.h"
 #include "../../kde/notify.h"
 #include "../../views/babewindow.h"
+#include "../../db/collectionDB.h"
 
 using namespace BAE;
 
@@ -42,16 +43,18 @@ void YouTube::fetch(const QString &json)
     auto title = data.value("title").toString().trimmed();
     auto artist = data.value("artist").toString().trimmed();
     auto album = data.value("album").toString().trimmed();
+    auto playlist = data.value("playlist").toString().trimmed();
     auto page = data.value("page").toString().replace('"',"").trimmed();
 
     qDebug()<< id << title << artist;
 
     DB infoMap;
-    infoMap.insert(KEY::TITLE,title);
-    infoMap.insert(KEY::ARTIST,artist);
-    infoMap.insert(KEY::ALBUM,album);
-    infoMap.insert(KEY::URL,page);
-    infoMap.insert(KEY::ID,id);
+    infoMap.insert(KEY::TITLE, title);
+    infoMap.insert(KEY::ARTIST, artist);
+    infoMap.insert(KEY::ALBUM, album);
+    infoMap.insert(KEY::URL, page);
+    infoMap.insert(KEY::ID, id);
+    infoMap.insert(KEY::PLAYLIST, playlist);
 
     if(!this->ids.contains(infoMap[KEY::ID]))
     {
@@ -67,7 +70,6 @@ void YouTube::fetch(const QString &json)
             //                qDebug()<<"processFinished_totally"<<exitCode<<exitStatus;
             processFinished_totally(exitCode, infoMap, exitStatus);
             process->deleteLater();
-
         });
 
         BabeWindow::nof->notify("Song received!", infoMap[KEY::TITLE]+ " - "+ infoMap[KEY::ARTIST]+".\nWait a sec while the track is added to your collection :)");
@@ -89,7 +91,7 @@ void YouTube::processFinished_totally(const int &state,const DB &info,const QPro
     ids.removeAll(doneId);
     track.insert(KEY::URL,file);
 
-    qDebug()<<track[KEY::ID]<<track[KEY::TITLE]<<track[KEY::ARTIST]<<track[KEY::URL];
+    qDebug()<<track[KEY::ID]<<track[KEY::TITLE]<<track[KEY::ARTIST]<<track[KEY::PLAYLIST]<<track[KEY::URL];
 
     /*here get metadata*/
 
@@ -152,7 +154,38 @@ void YouTube::processFinished_totally(const int &state,const DB &info,const QPro
         }
     }
 
-    if(this->ids.isEmpty()) emit this->youtubeTrackReady(YoutubeCachePath);
+
+    TagInfo data(file);
+    auto album = BAE::fixString(data.getAlbum());
+    auto trackNum = data.getTrack();
+    auto title = BAE::fixString(data.getTitle()); /* to fix*/
+    auto artist = BAE::fixString(data.getArtist());
+    auto genre = data.getGenre();
+    auto sourceUrl = QFileInfo(file).dir().path();
+    auto duration = data.getDuration();
+    auto year = data.getYear();
+
+    qDebug()<<"FILE LOADER:"<< title << album << artist <<file;
+
+    BAE::DB trackMap =
+    {
+        {BAE::KEY::URL,file},
+        {BAE::KEY::TRACK,QString::number(trackNum)},
+        {BAE::KEY::TITLE,title},
+        {BAE::KEY::ARTIST,artist},
+        {BAE::KEY::ALBUM,album},
+        {BAE::KEY::DURATION,QString::number(duration)},
+        {BAE::KEY::GENRE,genre},
+        {BAE::KEY::SOURCES_URL,sourceUrl},
+        {BAE::KEY::BABE, file.startsWith(BAE::YoutubeCachePath)?"1":"0"},
+        {BAE::KEY::RELEASE_DATE,QString::number(year)}
+    };
+
+    CollectionDB con(nullptr);
+    con.addTrack(trackMap);
+    con.trackPlaylist(file, track[KEY::PLAYLIST]);
+
+    if(this->ids.isEmpty()) emit this->done();
 }
 
 
