@@ -27,8 +27,24 @@ CollectionDB::CollectionDB(QObject *parent) : QObject(parent)
 {
     this->name = QUuid::createUuid().toString();
     if(!BAE::fileExists(BAE::CollectionDBPath + BAE::DBName))
+    {
+        this->openDB(this->name);
+        qDebug()<<"Collection doesn't exists, trying to create it" << BAE::CollectionDBPath + BAE::DBName;
         this->prepareCollectionDB();
-    else this->openDB(this->name);
+    }else this->openDB(this->name);
+}
+
+CollectionDB::CollectionDB(const QString &name, QObject *parent) : QObject(parent)
+{
+    this->name = name.isEmpty()? QUuid::createUuid().toString() : name;
+    qDebug()<<"Creating DB for: "<<this->name;
+
+    if(!BAE::fileExists(BAE::CollectionDBPath + BAE::DBName))
+    {
+        qDebug()<<"Collection doesn't exists, trying to create it" << BAE::CollectionDBPath + BAE::DBName;
+        this->openDB(this->name);
+        this->prepareCollectionDB();
+    }
 }
 
 CollectionDB::~CollectionDB()
@@ -43,7 +59,7 @@ void CollectionDB::closeConnection()
 
 void CollectionDB::prepareCollectionDB()
 {
-    QSqlQuery query;
+    QSqlQuery query(this->m_db);
 
     QFile file(":/Data/src/db/script.sql");
 
@@ -132,16 +148,15 @@ bool CollectionDB::insert(const QString &tableName, const QVariantMap &insertDat
     for (int i = 0; i < totalFields; ++i)
         strValues.append("?");
 
-
     QString sqlQueryString = "INSERT INTO " + tableName + " (" + QString(fields.join(",")) + ") VALUES(" + QString(strValues.join(",")) + ")";
-    auto query = this->getQuery(sqlQueryString);
+    QSqlQuery query(this->m_db);
+    query.prepare(sqlQueryString);
 
     int k = 0;
     foreach (const QVariant &value, values)
         query.bindValue(k++, value);
 
     return query.exec();
-
 }
 
 bool CollectionDB::update(const QString &tableName, const BAE::DB &updateData, const QVariantMap &where)
@@ -199,16 +214,17 @@ void CollectionDB::openDB(const QString &name)
         this->m_db.setDatabaseName(BAE::CollectionDBPath + BAE::DBName);
     }
 
-    if (!this->m_db.isOpen())    {
+    if (!this->m_db.isOpen())
+    {
         if(!this->m_db.open())
             qDebug()<<"ERROR OPENING DB"<<this->m_db.lastError().text()<<m_db.connectionName();
     }
 }
 
-
 void CollectionDB::addTrack(const DB &track)
 {
-    if(this->getQuery("PRAGMA synchronous=OFF").exec())
+    auto query = this->getQuery("PRAGMA synchronous=OFF");
+    if(query.exec())
     {
         auto url = track[KEY::URL];
         auto title = track[KEY::TITLE];
@@ -242,25 +258,28 @@ void CollectionDB::addTrack(const DB &track)
                               {KEYMAP[KEY::WIKI],""}};
         insert(TABLEMAP[TABLE::ALBUMS],albumMap);
 
-        QVariantMap trackMap {{KEYMAP[KEY::URL],url},
-                              {KEYMAP[KEY::SOURCES_URL],sourceUrl},
-                              {KEYMAP[KEY::TRACK],trackNumber},
-                              {KEYMAP[KEY::TITLE],title},
-                              {KEYMAP[KEY::ARTIST],artist},
-                              {KEYMAP[KEY::ALBUM],album},
-                              {KEYMAP[KEY::DURATION],duration},
-                              {KEYMAP[KEY::PLAYED],0},
-                              {KEYMAP[KEY::BABE],babe},
-                              {KEYMAP[KEY::STARS],0},
-                              {KEYMAP[KEY::RELEASE_DATE],year},
-                              {KEYMAP[KEY::ADD_DATE],QDateTime::currentDateTime()},
+        QVariantMap trackMap {{KEYMAP[KEY::URL], url},
+                              {KEYMAP[KEY::SOURCES_URL], sourceUrl},
+                              {KEYMAP[KEY::TRACK], trackNumber},
+                              {KEYMAP[KEY::TITLE], title},
+                              {KEYMAP[KEY::ARTIST], artist},
+                              {KEYMAP[KEY::ALBUM], album},
+                              {KEYMAP[KEY::DURATION], duration},
+                              {KEYMAP[KEY::PLAYED], 0},
+                              {KEYMAP[KEY::BABE], babe},
+                              {KEYMAP[KEY::STARS], 0},
+                              {KEYMAP[KEY::RELEASE_DATE], year},
+                              {KEYMAP[KEY::ADD_DATE], QDateTime::currentDateTime()},
                               {KEYMAP[KEY::LYRICS],""},
-                              {KEYMAP[KEY::GENRE],genre},
-                              {KEYMAP[KEY::ART],""},
-                              {KEYMAP[KEY::WIKI],""},
-                              {KEYMAP[KEY::COMMENT],""}};
+                              {KEYMAP[KEY::GENRE], genre},
+                              {KEYMAP[KEY::ART], ""},
+                              {KEYMAP[KEY::WIKI], ""},
+                              {KEYMAP[KEY::COMMENT], ""}};
 
         insert(TABLEMAP[TABLE::TRACKS],trackMap);
+    }else
+    {
+        qDebug()<< "Failed to insert async";
     }
 
     emit trackInserted();

@@ -18,7 +18,6 @@
 #include <QApplication>
 #include "views/babewindow.h"
 
-
 int main(int argc, char *argv[])
 {
     QStringList files;

@@ -20,6 +20,7 @@
 
 
 class ScrollText;
+class CollectionDB;
 
 using namespace BAE;
 
@@ -57,7 +58,7 @@ public:
 
 private:
     QMenu *contextMenu;
-
+CollectionDB *connection;
     DB albumMap;
     bool draggable;
 

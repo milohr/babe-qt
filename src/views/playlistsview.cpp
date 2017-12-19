@@ -25,6 +25,8 @@
 
 PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
 {
+    this->connection = new CollectionDB(this);
+
     this->layout = new QGridLayout;
     this->layout->setContentsMargins(0, 0, 0, 0);
     this->layout->setSpacing(0);
@@ -183,7 +185,7 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
         {
             auto url = this->table->getRowData(row)[BAE::KEY::URL];
 
-            if(!BabeWindow::connection->removePlaylistTrack(url, this->currentPlaylist))
+            if(!this->connection->removePlaylistTrack(url, this->currentPlaylist))
                 qDebug()<<"couldn't remove "<<url<< "from:"<<this->currentPlaylist;
         }
 
@@ -263,7 +265,7 @@ void PlaylistsView::populatePlaylist(const QModelIndex &index)
             this->removeBtn->setEnabled(false);
             this->removeFromPlaylist->setVisible(false);
             this->table->showColumn(static_cast<int>(BAE::KEY::PLAYED));
-            mapList = BabeWindow::connection->getMostPlayedTracks();
+            mapList = this->connection->getMostPlayedTracks();
             break;
         }
 
@@ -272,7 +274,7 @@ void PlaylistsView::populatePlaylist(const QModelIndex &index)
             this->removeBtn->setEnabled(false);
             this->removeFromPlaylist->setVisible(false);
             this->table->showColumn(static_cast<int>(BAE::KEY::STARS));
-            mapList = BabeWindow::connection->getFavTracks();
+            mapList = this->connection->getFavTracks();
             break;
         }
 
@@ -281,7 +283,7 @@ void PlaylistsView::populatePlaylist(const QModelIndex &index)
             this->removeBtn->setEnabled(false);
             this->removeFromPlaylist->setVisible(false);
             this->table->showColumn(static_cast<int>(BAE::KEY::STARS));
-            mapList = BabeWindow::connection->getRecentTracks();
+            mapList = this->connection->getRecentTracks();
             break;
 
         }
@@ -291,7 +293,7 @@ void PlaylistsView::populatePlaylist(const QModelIndex &index)
             // table->showColumn(BabeTable::PLAYED);
             this->removeFromPlaylist->setVisible(false);
             this->removeBtn->setEnabled(true);
-            mapList = BabeWindow::connection->getBabedTracks();
+            mapList = this->connection->getBabedTracks();
             break;
         }
 
@@ -300,7 +302,7 @@ void PlaylistsView::populatePlaylist(const QModelIndex &index)
             // table->showColumn(BabeTable::PLAYED);
             this->removeFromPlaylist->setVisible(false);
             this->removeBtn->setEnabled(false);
-            mapList = BabeWindow::connection->getOnlineTracks();
+            mapList = this->connection->getOnlineTracks();
             break;
         }
 
@@ -344,7 +346,7 @@ void PlaylistsView::populatePlaylist(const QModelIndex &index)
                            "where tt.context = 'track_stat' "
                            "group by tt.url order by sum(tag) desc limit 250");
 
-            mapList = BabeWindow::connection->getDBData(query);
+            mapList = this->connection->getDBData(query);
             break;
         }
 
@@ -353,7 +355,7 @@ void PlaylistsView::populatePlaylist(const QModelIndex &index)
             this->removeBtn->setEnabled(true);
             this->removeFromPlaylist->setVisible(true);
             this->table->hideColumn(static_cast<int>(BAE::KEY::PLAYED));
-            mapList = BabeWindow::connection->getPlaylistTracks(this->currentPlaylist, KEY::ADD_DATE, W::DESC);
+            mapList = this->connection->getPlaylistTracks(this->currentPlaylist, KEY::ADD_DATE, W::DESC);
             //        queryTxt = QString("SELECT * FROM tracks t INNER JOIN tracks_playlists tpl on tpl.tracks_url = t.url INNER JOIN playlists pl on pl.title = tpl.playlists_title WHERE pl.title = \"%1\" ORDER by addDate desc").arg(currentPlaylist);
             break;
         }
@@ -381,23 +383,23 @@ void PlaylistsView::removePlaylist()
     {
         case PLAYLIST::LIST::FAVORITES:
         {
-            BabeWindow::connection->execQuery("UPDATE tracks SET stars = \"0\" WHERE stars > \"0\"");
+            this->connection->execQuery("UPDATE tracks SET stars = \"0\" WHERE stars > \"0\"");
             this->table->flushTable();
-            mapList = BabeWindow::connection->getFavTracks();
+            mapList = this->connection->getFavTracks();
             break;
 
         }
         case PLAYLIST::LIST::BABES:
         {
-            BabeWindow::connection->execQuery("UPDATE tracks SET babe = \"0\" WHERE babe > \"0\"");
+            this->connection->execQuery("UPDATE tracks SET babe = \"0\" WHERE babe > \"0\"");
             this->table->flushTable();
-            mapList = BabeWindow::connection->getBabedTracks();
+            mapList = this->connection->getBabedTracks();
             break;
 
         }
         default:
         {
-            if(BabeWindow::connection->removePlaylist(this->currentPlaylist))
+            if(this->connection->removePlaylist(this->currentPlaylist))
             {
                 this->table->flushTable();
                 delete this->list->takeItem(this->list->currentRow());
@@ -412,7 +414,7 @@ void PlaylistsView::removePlaylist()
 
 bool PlaylistsView::insertPlaylist(const QString &playlist)
 {
-    if(BabeWindow::connection->addPlaylist(playlist)) return true;
+    if(this->connection->addPlaylist(playlist)) return true;
     return false;
 
 }
@@ -420,7 +422,7 @@ bool PlaylistsView::insertPlaylist(const QString &playlist)
 void PlaylistsView::refreshCurrentPlaylist()
 {
     this->table->flushTable();
-    this->table->populateTableView(BabeWindow::connection->getPlaylistTracks(this->currentPlaylist));
+    this->table->populateTableView(this->connection->getPlaylistTracks(this->currentPlaylist));
 }
 
 void PlaylistsView::populateTagList(const QString &queryTxt)
@@ -429,7 +431,7 @@ void PlaylistsView::populateTagList(const QString &queryTxt)
     this->line_v->setVisible(true);
     this->tagList->setVisible(true);
 
-    for(auto tag :  BabeWindow::connection->getDBData(queryTxt))
+    for(auto tag :  this->connection->getDBData(queryTxt))
         this->tagList->addItem(tag[BAE::KEY::TAG]);
 }
 
@@ -461,7 +463,7 @@ void PlaylistsView::playlistName(QListWidgetItem *item)
 
 void PlaylistsView::setPlaylists()
 {
-    for (auto playlist : BabeWindow::connection->getPlaylists())
+    for (auto playlist : this->connection->getPlaylists())
     {
         auto item = new QListWidgetItem;
         item->setText(playlist);
@@ -472,7 +474,7 @@ void PlaylistsView::setPlaylists()
 
 void PlaylistsView::saveToPlaylist(const BAE::DB_LIST &tracks)
 {
-    auto form = new PlaylistForm (BabeWindow::connection->getPlaylists(), tracks);
+    auto form = new PlaylistForm (this->connection->getPlaylists(), tracks);
     connect(form, &PlaylistForm::saved, this, &PlaylistsView::addToPlaylist);
     connect(form, &PlaylistForm::created, [=](const QString &playlist)
     {
@@ -492,7 +494,7 @@ void PlaylistsView::saveToPlaylist(const BAE::DB_LIST &tracks)
 void PlaylistsView::addToPlaylist(const QString &playlist, const BAE::DB_LIST &tracks)
 {
     for (auto track : tracks)
-        if(BabeWindow::connection->trackPlaylist(track[BAE::KEY::URL], playlist))
+        if(this->connection->trackPlaylist(track[BAE::KEY::URL], playlist))
              emit this->addedToPlaylist(tracks, playlist);
         else qDebug()<<"couldn't insert track:";
 }

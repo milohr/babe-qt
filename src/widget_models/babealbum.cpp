@@ -1,12 +1,11 @@
 #include "babealbum.h"
 #include "scrolltext.h"
 #include "../db/collectionDB.h"
-#include "../views/babewindow.h"
 
 BabeAlbum::BabeAlbum(const DB &info, const AlbumSizeHint &widgetSize, const uint8_t &widgetRadius, const bool &isDraggable, QWidget *parent) : QLabel(parent)
 {
-
-    connect(this, &BabeAlbum::changedArt, BabeWindow::connection, &CollectionDB::insertArtwork);
+    this->connection = new CollectionDB(this);
+    connect(this, &BabeAlbum::changedArt, this->connection, &CollectionDB::insertArtwork);
 
     switch (widgetSize)
     {

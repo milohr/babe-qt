@@ -14,6 +14,7 @@
 
 class BabeTable;
 class PlaylistForm;
+class CollectionDB;
 
 namespace PLAYLIST
 {
@@ -58,7 +59,7 @@ public:
 
 private:
     uint ALBUM_SIZE_MEDIUM = BAE::getWidgetSizeHint(BAE::MEDIUM_ALBUM_FACTOR,BAE::AlbumSizeHint::MEDIUM_ALBUM);
-
+    CollectionDB *connection;
     QToolButton *addBtn;
     QToolButton *removeBtn;
     QGridLayout *layout;

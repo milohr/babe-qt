@@ -110,7 +110,6 @@ class BabeWindow : public QMainWindow
 public:
     explicit BabeWindow(const QStringList &files = {}, QWidget *parent = nullptr);
     ~BabeWindow() override;
-    static CollectionDB *connection;
     static Notify *nof;
 
     void start();
@@ -196,6 +195,7 @@ private:
     uint ALBUM_SIZE;
     uint iconSize = 22;
 
+    CollectionDB *connection;
 
     POSITION playlistPos = RIGHT;
     POSITION playlistSta = IN;

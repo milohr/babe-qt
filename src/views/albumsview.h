@@ -26,6 +26,7 @@
 class BabeAlbum;
 class BabeTable;
 class BabeGrid;
+class CollectionDB;
 
 namespace Ui { class AlbumsView; }
 
@@ -54,7 +55,7 @@ public:
 private:
     AlbumLoader albumLoader;
     bool extraList = false;
-
+    CollectionDB *connection;
     QFrame *albumBox_frame;
     BabeAlbum *cover;
     QListWidget *artistList;

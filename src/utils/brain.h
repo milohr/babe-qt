@@ -26,6 +26,7 @@ public:
     void stop();
     bool isRunning() const;
     void setInterval(const uint &value);
+
     void setInfo(DB_LIST dataList, PULPO::ONTOLOGY ontology, QList<PULPO::SERVICES> services, PULPO::INFO info, PULPO::RECURSIVE recursive = PULPO::RECURSIVE::ON, void (*cb)(DB) = nullptr);
 
 public slots:
@@ -40,7 +41,7 @@ public slots:
 
 private:
     QThread t;
-    static CollectionDB *con;
+    CollectionDB *con;
     Pulpo pulpo;
     uint interval = 20000;
     bool go = false;

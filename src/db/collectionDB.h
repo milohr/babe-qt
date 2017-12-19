@@ -22,15 +22,14 @@ enum sourceTypes
     LOCAL, ONLINE, DEVICE
 };
 
-
 class CollectionDB : public QObject
 {
     Q_OBJECT
 
 public:
     explicit CollectionDB(QObject *parent = nullptr);
+    explicit CollectionDB(const QString &name = QString(), QObject *parent = nullptr);
     ~CollectionDB() override;
-    static CollectionDB *instance();
 
     bool execQuery(QSqlQuery &query);
     bool execQuery(const QString &queryTxt);

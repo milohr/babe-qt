@@ -2,14 +2,13 @@
 #include "../services/local/taginfo.h"
 #include "../db/collectionDB.h"
 
-CollectionDB *Brain::con = new CollectionDB();
 
 Brain::Brain() : QObject ()
 {
     qRegisterMetaType<DB>("DB");
     qRegisterMetaType<TABLE>("TABLE");
     qRegisterMetaType<PULPO::RESPONSE>("PULPO::RESPONSE");
-
+    this->con = new CollectionDB(this);
     connect(&this->pulpo, &Pulpo::infoReady, this, &Brain::connectionParser);
 
     this->moveToThread(&t);
@@ -19,7 +18,6 @@ Brain::Brain() : QObject ()
 Brain::~Brain()
 {
     qDebug()<<"Deleting Brainz obj";
-    delete con;
     this->stop();
 }
 
@@ -113,7 +111,9 @@ void Brain::parseAlbumInfo(DB &track, const INFO_K &response)
                             con->tagsAlbum(track, tag, CONTEXT_MAP[context]);
 
                     } else if (!response[info][context].toString().isEmpty())
+                    {
                         con->tagsAlbum(track, response[info][context].toString(), CONTEXT_MAP[context]);
+                    }
                 break;
             }
 
@@ -318,7 +318,8 @@ void Brain::trackInfo()
 
     this->setInfo(con->getDBData(queryTxt), ontology, services, PULPO::INFO::LYRICS, PULPO::RECURSIVE::OFF, [](DB track)
     {
-        con->lyricsTrack(track, SLANG[W::NONE]);
+        CollectionDB conn(nullptr);
+        conn.lyricsTrack(track, SLANG[W::NONE]);
     });
 
     services = {PULPO::SERVICES::LastFm, PULPO::SERVICES::Spotify, PULPO::SERVICES::MusicBrainz, PULPO::SERVICES::Genius};
@@ -336,7 +337,8 @@ void Brain::trackInfo()
     auto artworks = con->getDBData(queryTxt);
     this->setInfo(artworks, ontology, services, PULPO::INFO::ARTWORK, PULPO::RECURSIVE::OFF, [](DB track)
     {
-        con->insertArtwork(track);
+        CollectionDB conn(nullptr);
+        conn.insertArtwork(track);
     });
 
     if(!artworks.isEmpty())
@@ -361,7 +363,8 @@ void Brain::trackInfo()
             KEYMAP[KEY::WIKI]);
     this->setInfo(con->getDBData(queryTxt), ontology, services, PULPO::INFO::WIKI, RECURSIVE::OFF, [](DB track)
     {
-        con->wikiTrack(track, SLANG[W::NONE]);
+        CollectionDB conn(nullptr);
+        conn.wikiTrack(track, SLANG[W::NONE]);
     });
 
     //        auto queryTxt =  QString("SELECT %1, %2, %3 FROM %4 WHERE %3 = 'UNKNOWN' GROUP BY %2, a.%3 ").arg(KEYMAP[KEY::TITLE],
@@ -415,7 +418,8 @@ void Brain::albumInfo()
             KEYMAP[KEY::WIKI]);
     this->setInfo(con->getDBData(queryTxt), ontology, services, PULPO::INFO::WIKI, PULPO::RECURSIVE::OFF, [](DB track)
     {
-        con->wikiAlbum(track, SLANG[W::NONE]);
+        CollectionDB conn(nullptr);
+        conn.wikiAlbum(track, SLANG[W::NONE]);
     });
 
     emit this->done(TABLE::ALBUMS);
@@ -456,8 +460,10 @@ void Brain::artistInfo()
             KEYMAP[KEY::WIKI]);
     this->setInfo(con->getDBData(queryTxt), ontology, services, PULPO::INFO::WIKI, PULPO::RECURSIVE::OFF,  [](DB track)
     {
-        con->wikiArtist(track, SLANG[W::NONE]);
+        CollectionDB conn(nullptr);
+        conn.wikiArtist(track, SLANG[W::NONE]);
     });
 
     emit this->done(TABLE::ARTISTS);
 }
+

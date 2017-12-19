@@ -21,13 +21,13 @@
 
 #include "../widget_models/babealbum.h"
 #include "../pulpo/pulpo.h"
-#include "../views/babewindow.h"
 #include "../db/collectionDB.h"
 
 
 InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView)
 {
     ui->setupUi(this);
+    this->connection = new CollectionDB(this);
 
     this->artist = new BabeAlbum(BAE::DB{{BAE::KEY::ARTWORK, ":Data/data/cover.png"}}, BAE::AlbumSizeHint::MEDIUM_ALBUM, 100,false,this);
     connect(artist,&BabeAlbum::playAlbum,[this](const BAE::DB &info)
@@ -320,10 +320,9 @@ QStringList InfoView::getTags()
 QStringList InfoView::getSimilarArtistTags()
 {
     return ui->similarArtistInfo->toPlainText().split(",");
-
 }
 
 void InfoView::on_save_clicked()
 {
-    BabeWindow::connection->lyricsTrack(this->track, this->ui->lyricsText->toHtml());
+    this->connection->lyricsTrack(this->track, this->ui->lyricsText->toHtml());
 }

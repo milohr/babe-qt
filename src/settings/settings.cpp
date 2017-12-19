@@ -27,12 +27,16 @@
 #include "../pulpo/pulpo.h"
 #include "../views/babewindow.h"
 #include "../db/collectionDB.h"
-
+#include "../utils/brain.h"
+#include "fileloader.h"
 
 settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
 {
     ui->setupUi(this);
 
+    this->connection = new CollectionDB(this);
+    this->brainDeamon = new Brain;
+    this->fileLoader = new FileLoader;
     this->about_ui = new About(this);
     /*LOAD SAVED SETTINGS*/
 
@@ -66,37 +70,30 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
     if (!youtubeCache_dir.exists())
         youtubeCache_dir.mkpath(".");
 
-    connect(&this->brainDeamon, &Brain::finished, [this]()
+    connect(this->brainDeamon, &Brain::finished, [this]()
     {
         this->movie->stop();
         ui->label->hide();
         this->ui->sourcesFrame->setEnabled(true);
-
     });
 
-    connect(&this->brainDeamon, &Brain::done, [this](const TABLE type)
+    connect(this->brainDeamon, &Brain::done, [this](const TABLE type)
     {
         emit this->refreshTables({{type,false}});
     });
 
-    connect(this->ui->pulpoBrainz_spinBox, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](const int &value)
+    connect(this->ui->pulpoBrainz_spinBox, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [](const int &value)
     {
         qDebug()<<"interval changed to:"<<value;
         BAE::saveSettings("BRAINZ_INTERVAL",value,"SETTINGS");
     });
 
-    connect(this->ui->pulpoBrainz_checkBox,static_cast<void (QCheckBox::*)(bool)>(&QCheckBox::toggled), [this](const bool &value)
+    connect(this->ui->pulpoBrainz_checkBox,static_cast<void (QCheckBox::*)(bool)>(&QCheckBox::toggled), [](const bool &value)
     {
         BAE::saveSettings("BRAINZ",value,"SETTINGS");
     });
 
-    connect(BabeWindow::connection, &CollectionDB::trackInserted, [this]()
-    {
-        fileSaver.nextTrack();
-        this->ui->progressBar->setValue(this->ui->progressBar->value()+1);
-    });
-
-    connect(&fileSaver,&FileLoader::collectionSize,[this](int size)
+    connect(fileLoader,&FileLoader::collectionSize,[this](int size)
     {
         if(size>0)
         {
@@ -112,7 +109,12 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
         }
     });
 
-    connect(&fileSaver,&FileLoader::finished,[this]()
+    connect(fileLoader, &FileLoader::trackReady, [this]()
+    {
+        this->ui->progressBar->setValue(this->ui->progressBar->value()+1);
+    });
+
+    connect(fileLoader,&FileLoader::finished,[this]()
     {
         ui->progressBar->hide();
         ui->progressBar->setValue(0);
@@ -121,8 +123,6 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
         emit refreshTables({{TABLE::TRACKS, true},{TABLE::ALBUMS, false},{TABLE::ARTISTS, false},{TABLE::PLAYLISTS, true}});
         this->fetchArt();
     });
-
-    connect(&fileSaver, &FileLoader::trackReady, BabeWindow::connection, &CollectionDB::addTrack);
 
     connect(this, &settings::collectionPathChanged, this, &settings::populateDB);
 
@@ -150,8 +150,10 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
 settings::~settings()
 {
     qDebug()<<"DELETING SETTINGS";
+    delete brainDeamon;
+    delete fileLoader;
     delete ui;
-    //    delete fileSaver;
+    //    delete fileLoader;
     //    delete this->brainDeamon;
 }
 
@@ -167,7 +169,7 @@ void settings::on_remove_clicked()
     qDebug() << this->pathToRemove;
     if (!this->pathToRemove.isEmpty())
     {
-        if(BabeWindow::connection->removeSource(this->pathToRemove))
+        if(this->connection->removeSource(this->pathToRemove))
         {
             removeSettings({"collectionPath=", this->pathToRemove});
             collectionPaths.removeAll(this->pathToRemove);
@@ -291,7 +293,7 @@ void settings::collectionWatcher()
     auto queryTxt = QString("SELECT %1 FROM %2").arg(BAE::KEYMAP[BAE::KEY::URL],BAE::TABLEMAP[BAE::TABLE::TRACKS]);
 
 
-    for (auto track :  BabeWindow::connection->getDBData(queryTxt))
+    for (auto track : this->connection->getDBData(queryTxt))
     {
         auto location = track[BAE::KEY::URL];
         if(!location.startsWith(BAE::YoutubeCachePath,Qt::CaseInsensitive)) //exclude the youtube cache folder
@@ -359,20 +361,20 @@ void settings::checkCollection()
 {   
     this->collectionWatcher();
     if(this->ui->pulpoBrainz_checkBox->isChecked())
-        this->brainDeamon.start();
+        this->brainDeamon->start();
 }
 
 void settings::populateDB(const QString &path)
 {
     qDebug() << "Function Name: " << Q_FUNC_INFO
              << "new path for database action: " << path;
-    fileSaver.requestPath(path);
+    fileLoader->requestPath(path);
     this->ui->sourcesFrame->setEnabled(false);
 }
 
 void settings::fetchArt()
 {
-    this->brainDeamon.start();
+    this->brainDeamon->start();
     BabeWindow::nof->notify("Fetching art","this might take some time depending on your collection size and internet connection speed...");
     ui->label->show();
     movie->start();

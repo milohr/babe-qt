@@ -21,15 +21,16 @@
 #include "babealbum.h"
 #include "../kde/notify.h"
 #include "../dialogs/metadataform.h"
-#include "../views/babewindow.h"
 #include "../utils/trackloader.h"
 #include "../db/collectionDB.h"
+#include "../views/babewindow.h"
 
 using namespace BABETABLE;
 
 
 BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent)
 {
+    this->connection = new CollectionDB(this);
 
     this->preview = new QMediaPlayer(this);
     this->preview->setVolume(100);
@@ -430,8 +431,8 @@ void BabeTable::removeMissing(const QString &url)
 
     auto parentDir = QFileInfo(QFileInfo(url)).dir().path();
 
-    if (!BAE::fileExists(parentDir)) BabeWindow::connection->removeSource(parentDir);
-    else BabeWindow::connection->removeTrack(url);
+    if (!BAE::fileExists(parentDir)) this->connection->removeSource(parentDir);
+    else this->connection->removeTrack(url);
 
 }
 
@@ -572,9 +573,9 @@ void BabeTable::setUpContextMenu(const int row, const int column)
     if(!rowData.isEmpty())
     {
         auto url = rowData[BAE::KEY::URL];
-        this->setRating(BabeWindow::connection->getTrackStars(url));
+        this->setRating(this->connection->getTrackStars(url));
 
-        if (BabeWindow::connection->getTrackBabe(url))
+        if (this->connection->getTrackBabe(url))
             this->contextMenu->actions().at(ACTION::BABEIT)->setText("Un-Babe it");
         else
             this->contextMenu->actions().at(ACTION::BABEIT)->setText("Babe it");
@@ -716,7 +717,7 @@ void BabeTable::keyPressEvent(QKeyEvent *event)
     case Qt::Key_I:
     {
         auto url =  this->getRowData(this->getIndex())[BAE::KEY::URL];
-        emit infoIt_clicked(BabeWindow::connection->getDBData(QStringList(url)).first());
+        emit infoIt_clicked(this->connection->getDBData(QStringList(url)).first());
         break;
     }
 
@@ -820,7 +821,7 @@ void BabeTable::rateGroup(const int &id, const bool &rightClick)
     {
         QString location = this->getRowData(row)[BAE::KEY::URL];
 
-        if (BabeWindow::connection->rateTrack(location,id))
+        if (this->connection->rateTrack(location,id))
         {
             setRating(id);
 
@@ -838,9 +839,9 @@ BAE::DB BabeTable::getRowData(const int &row)
 {
     QString url = this->model()->data(this->model()->index(row,static_cast<int>(BAE::KEY::URL))).toString();
 
-    if(BabeWindow::connection->check_existance(BAE::TABLEMAP[BAE::TABLE::TRACKS],BAE::TracksColsMap[BAE::KEY::URL],url))
+    if(this->connection->check_existance(BAE::TABLEMAP[BAE::TABLE::TRACKS],BAE::TracksColsMap[BAE::KEY::URL],url))
     {
-        auto data = BabeWindow::connection->getDBData(QStringList(url));
+        auto data = this->connection->getDBData(QStringList(url));
         return data.size() > 0 ? data.first() : BAE::DB();
     }else
     {
@@ -951,7 +952,7 @@ void BabeTable::itemEdited(const BAE::DB &map)
     auto updatedTrack = map;
     updatedTrack.remove(KEY::LYRICS);
     updatedTrack.remove(KEY::WIKI);
-    BabeWindow::connection->updateTrack(updatedTrack);
+    this->connection->updateTrack(updatedTrack);
 }
 
 void BabeTable::infoIt_action()
@@ -977,7 +978,7 @@ void BabeTable::moodIt_action(const QString &color)
         for(auto row : this->getSelectedRows())
         {
             auto url =this->getRowData(row)[BAE::KEY::URL];
-            if(BabeWindow::connection->artTrack(url,color)) qDebug()<< "moodIt was sucessful";
+            if(this->connection->artTrack(url,color)) qDebug()<< "moodIt was sucessful";
             else qDebug()<<"could not mood track: "<< url;
         }
         contextMenu->close();

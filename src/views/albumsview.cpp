@@ -3,7 +3,6 @@
 #include "../widget_models/babealbum.h"
 #include "../widget_models/babetable.h"
 #include "../widget_models/babegrid.h"
-#include "../views/babewindow.h"
 #include "../db/collectionDB.h"
 
 
@@ -11,12 +10,14 @@ AlbumsView::AlbumsView(const bool &extraList, QWidget *parent) :
     QWidget(parent), extraList(extraList)
 {
 
+    this->connection = new CollectionDB(this);
+
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     auto layout = new QGridLayout;
     layout->setMargin(0);
     layout->setSpacing(0);
     //    layout->setContentsMargins(0,6,0,6);
-//    this->BabeWindow::connection->openDB();
+//    this->this->connection->openDB();
 
     this->setAcceptDrops(false);
     this->grid = new BabeGrid(BAE::MEDIUM_ALBUM_FACTOR, BAE::AlbumSizeHint::MEDIUM_ALBUM,4,this);
@@ -163,10 +164,10 @@ void AlbumsView::filterAlbum(QModelIndex index)
     qDebug()<<album;
 
     albumTable->flushTable();
-    albumTable->populateTableView(BabeWindow::connection->getAlbumTracks(album, cover->getArtist()));
+    albumTable->populateTableView(this->connection->getAlbumTracks(album, cover->getArtist()));
     cover->setTitle(cover->getArtist(), album);
 
-    cover->putPixmap(BabeWindow::connection->getAlbumArt(album, cover->getArtist()));
+    cover->putPixmap(this->connection->getAlbumArt(album, cover->getArtist()));
 }
 
 
@@ -253,10 +254,10 @@ void AlbumsView::showAlbumInfo(const BAE::DB &albumMap)
         cover->setTitle(artist,album);
         expandBtn->setToolTip("View "+ cover->getArtist());
 
-        albumTable->populateTableView(BabeWindow::connection->getAlbumTracks(album, artist));
+        albumTable->populateTableView(this->connection->getAlbumTracks(album, artist));
 
-        auto art = BabeWindow::connection->getAlbumArt(album,artist);
-        art = art.isEmpty()? BabeWindow::connection->getArtistArt(artist) : art;
+        auto art = this->connection->getAlbumArt(album,artist);
+        art = art.isEmpty()? this->connection->getArtistArt(artist) : art;
 
         cover->putPixmap(art);
 
@@ -269,13 +270,13 @@ void AlbumsView::showAlbumInfo(const BAE::DB &albumMap)
         auto artist =albumMap[BAE::KEY::ARTIST];
         cover->setTitle(artist);
 
-        albumTable->populateTableView(BabeWindow::connection->getArtistTracks(artist));
-        auto art = BabeWindow::connection->getArtistArt(artist);
+        albumTable->populateTableView(this->connection->getArtistTracks(artist));
+        auto art = this->connection->getArtistArt(artist);
         if(!art.isEmpty()) cover->putPixmap(art);
         else cover->putDefaultPixmap();
 
         if(extraList)
-            populateExtraList(BabeWindow::connection->getArtistAlbums(artist));
+            populateExtraList(this->connection->getArtistAlbums(artist));
 
     }
 

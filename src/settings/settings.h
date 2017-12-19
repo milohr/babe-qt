@@ -19,13 +19,15 @@
 #include <iostream>
 
 #include "../utils/bae.h"
-#include "../utils/brain.h"
-#include "fileloader.h"
-
+class FileLoader;
 class Pulpo;
 class YouTube;
 class Socket;
 class About;
+class CollectionDB;
+class Brain;
+
+using namespace BAE;
 
 namespace Ui { class settings; }
 
@@ -39,8 +41,7 @@ public:
 
     About *about_ui;
     void checkCollection();
-
-    Brain brainDeamon;
+    Brain *brainDeamon;
 
     void setSettings(QStringList setting);
     void readSettings();
@@ -63,8 +64,8 @@ public slots:
 
 private:
     Ui::settings *ui;
-    FileLoader fileSaver;
-
+    FileLoader *fileLoader;
+    CollectionDB *connection;
     const QString notifyDir = BAE::NotifyDir;
     const QString settingsName = "settings.conf";
 

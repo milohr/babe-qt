@@ -34,7 +34,6 @@ public:
     void requestPath(QString path)
     {
         this->queue << path;
-
         for(auto url : this->queue)
         {
             if(!go)
@@ -63,6 +62,7 @@ public slots:
         {
             QDirIterator it(path, BAE::formats, QDir::Files, QDirIterator::Subdirectories);
             while (it.hasNext()) urls<<it.next();
+
         } else if (QFileInfo(path).isFile()) urls<<path;
 
         emit collectionSize(urls.size());
@@ -100,19 +100,19 @@ public slots:
                             {BAE::KEY::RELEASE_DATE,QString::number(year)}
                         };
 
-                        emit trackReady(trackMap);
+                        this->con->addTrack(trackMap);
+
+//                        emit trackReady(trackMap);
                         //                            while(this->wait){t.msleep(100);}
                         //                            this->wait=!this->wait;
                     }
 
                 }else break;
-
         }
 
         this->t.msleep(100);
         emit this->finished();
         this->go = false;
-
     }
 
 signals:

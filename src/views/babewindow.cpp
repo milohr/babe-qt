@@ -37,14 +37,13 @@
 #include "../data_models/tracklist.h"
 
 /*Global ststic objects*/
-CollectionDB *BabeWindow::connection = new CollectionDB();
 Notify *BabeWindow::nof = new Notify;
 
 BabeWindow::BabeWindow(const QStringList &files, QWidget *parent) : QMainWindow(parent),
     ui(new Ui::BabeWindow)
-{
+{    
+    this->connection = new CollectionDB(this);
     ui->setupUi(this);
-
     this->setWindowTitle("Babe ... \xe2\x99\xa1  \xe2\x99\xa1 \xe2\x99\xa1 ");
     this->setWindowIcon(QIcon(":Data/data/48-apps-babe.svg"));
     this->setWindowIconText("Babe...");
@@ -80,6 +79,7 @@ BabeWindow::BabeWindow(const QStringList &files, QWidget *parent) : QMainWindow(
     BAE::saveSettings("GEOMETRY", this->geometry(), "MAINWINDOW");
 
     //* SETUP BABE PARTS *//
+
     this->setUpViews();
     this->setUpPlaylist();
     this->setUpRightFrame();
@@ -118,20 +118,20 @@ BabeWindow::BabeWindow(const QStringList &files, QWidget *parent) : QMainWindow(
 
 BabeWindow::~BabeWindow()
 {
-    //BabeWindow::connection->closeConnection();
-    delete BabeWindow::connection;
     delete BabeWindow::nof;
     delete ui;
 }
 
 void BabeWindow::start()
 {   
+
+
     this->settings_widget->checkCollection();
 
     auto savedList = BAE::loadSettings("PLAYLIST","MAINWINDOW",{}).toStringList();
 
     if(!savedList.isEmpty())
-        this->addToPlaylist(BabeWindow::connection->getDBData(savedList), false, APPEND::APPENDBOTTOM);
+        this->addToPlaylist(this->connection->getDBData(savedList), false, APPEND::APPENDBOTTOM);
     else this->populateMainList();
 
     this->refreshTables({{BAE::TABLE::TRACKS, true}, {BAE::TABLE::ALBUMS, true}, {BAE::TABLE::ARTISTS, true}, {BAE::TABLE::PLAYLISTS, true}});
@@ -162,7 +162,7 @@ void BabeWindow::setUpViews()
 
     connect(this->settings_widget, &settings::refreshTables, this, &BabeWindow::refreshTables);
 
-    //    BabeWindow::connection->openDB();
+    //    this->connection->openDB();
     //    connect(&this->connection, &CollectionDB::trackInserted, [this]()
     //    {
     //        this->settings_widget->collectionWatcher();
@@ -870,10 +870,10 @@ void BabeWindow::setUpMenuBar()
     });
 
     auto cleanCollection = new QAction(tr("Clean up Collection"), this);
-    connect(cleanCollection, &QAction::triggered, []
+    connect(cleanCollection, &QAction::triggered, [this]
     {
-        if(BabeWindow::connection->cleanAlbums())
-            BabeWindow::connection->cleanArtists();
+        if(this->connection->cleanAlbums())
+            this->connection->cleanArtists();
     });
 
     auto settings = new QAction(tr("Settings"), this);
@@ -907,10 +907,10 @@ void BabeWindow::albumDoubleClicked(const BAE::DB &info)
     switch(BAE::albumType(info))
     {
         case TABLE::ARTISTS:
-            mapList = BabeWindow::connection->getArtistTracks(artist);
+            mapList = this->connection->getArtistTracks(artist);
             break;
         case TABLE::ALBUMS:
-            mapList = BabeWindow::connection->getAlbumTracks(album,artist);
+            mapList = this->connection->getAlbumTracks(album,artist);
             break;
         default: break;
     }
@@ -955,10 +955,10 @@ void BabeWindow::putAlbumOnPlay(const BAE::DB &info)
         switch(BAE::albumType(info))
         {
             case TABLE::ARTISTS:
-                mapList = BabeWindow::connection->getArtistTracks(info[BAE::KEY::ARTIST]);
+                mapList = this->connection->getArtistTracks(info[BAE::KEY::ARTIST]);
                 break;
             case TABLE::ALBUMS:
-                mapList = BabeWindow::connection->getAlbumTracks(info[BAE::KEY::ALBUM], info[BAE::KEY::ARTIST]);
+                mapList = this->connection->getAlbumTracks(info[BAE::KEY::ALBUM], info[BAE::KEY::ARTIST]);
                 break;
             default:break;
         }
@@ -989,8 +989,8 @@ void BabeWindow::putOnPlay(const BAE::DB_LIST &mapList)
 void BabeWindow::addToPlayed(const QString &url)
 {
     qDebug()<<"Song totally played"<<url;
-    if(BabeWindow::connection->check_existance(BAE::TABLEMAP[BAE::TABLE::TRACKS], BAE::KEYMAP[BAE::KEY::URL],url))
-        BabeWindow::connection->playedTrack(url);
+    if(this->connection->check_existance(BAE::TABLEMAP[BAE::TABLE::TRACKS], BAE::KEYMAP[BAE::KEY::URL],url))
+        this->connection->playedTrack(url);
 }
 
 bool BabeWindow::eventFilter(QObject *object, QEvent *event)
@@ -1082,9 +1082,9 @@ bool BabeWindow::eventFilter(QObject *object, QEvent *event)
                     auto artist = infoList.at(1).simplified();
                     auto album = infoList.at(0).simplified();
 
-                    mapList = BabeWindow::connection->getAlbumTracks(album,artist);
+                    mapList = this->connection->getAlbumTracks(album,artist);
 
-                }else mapList = BabeWindow::connection->getArtistTracks(info);
+                }else mapList = this->connection->getArtistTracks(info);
 
 
                 this->addToPlaylist(mapList, false, APPEND::APPENDBOTTOM);
@@ -1113,20 +1113,20 @@ bool BabeWindow::eventFilter(QObject *object, QEvent *event)
 
 void BabeWindow::closeEvent(QCloseEvent* event)
 {
-    if(this->settings_widget->brainDeamon.isRunning())
-    {
-        QMessageBox msgBox;
-        msgBox.setText(tr("Babe is still collecting important information about your collection."));
-        msgBox.setInformativeText(tr("Do you want to quit?"));
-        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-        msgBox.setDefaultButton(QMessageBox::No);
-        switch(msgBox.exec())
-        {
-            case QMessageBox::Yes: break;
-            case QMessageBox::No: event->ignore(); return;
-            default: event->ignore(); return;
-        }
-    }
+//    if(this->settings_widget->brainDeamon->isRunning())
+//    {
+//        QMessageBox msgBox;
+//        msgBox.setText(tr("Babe is still collecting important information about your collection."));
+//        msgBox.setInformativeText(tr("Do you want to quit?"));
+//        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+//        msgBox.setDefaultButton(QMessageBox::No);
+//        switch(msgBox.exec())
+//        {
+//            case QMessageBox::Yes: break;
+//            case QMessageBox::No: event->ignore(); return;
+//            default: event->ignore(); return;
+//        }
+//    }
 
     if(this->viewMode == FULLMODE )
         BAE::saveSettings("GEOMETRY",this->geometry(),"MAINWINDOW");
@@ -1417,7 +1417,7 @@ void BabeWindow::go_playlistMode()
 
         this->viewsWidget->setVisible(false);
 
-        ui->hide_sidebar_btn->setToolTip("Go Mini");
+        ui->hide_sidebar_btn->setToolTip(tr("Go Mini"));
     }
 }
 
@@ -1457,7 +1457,7 @@ void BabeWindow::on_shuffle_btn_clicked() //TODO
     }else if (this->shuffle_state == PLAY_MODE::SHUFFLE)
     {
         ui->shuffle_btn->setIcon(QIcon::fromTheme("media-playlist-repeat"));
-        ui->shuffle_btn->setToolTip("Consecutive");
+        ui->shuffle_btn->setToolTip(tr("Consecutive"));
         this->shuffle_state = PLAY_MODE::REGULAR;
     }
 }
@@ -1493,7 +1493,7 @@ void BabeWindow::appendFiles(const QStringList &paths, const APPEND &pos)
 
 void BabeWindow::populateMainList()
 {
-    auto results = BabeWindow::connection->getBabedTracks();
+    auto results = this->connection->getBabedTracks();
     this->mainList->populateTableView(results);
     this->mainList->resizeRowsToContents();
 }
@@ -1552,12 +1552,12 @@ void BabeWindow::loadTrack()
 
 int BabeWindow::isBabed(const BAE::DB &track)
 {
-    return BabeWindow::connection->getTrackBabe(track[BAE::KEY::URL]);
+    return this->connection->getTrackBabe(track[BAE::KEY::URL]);
 }
 
 void BabeWindow::loadMood()
 {
-    auto color = BabeWindow::connection->getTrackArt(this->current_song[BAE::KEY::URL]);
+    auto color = this->connection->getTrackArt(this->current_song[BAE::KEY::URL]);
 
     auto seekbarEffect = new QGraphicsColorizeEffect(this);
     //    auto controlsEffect = new QGraphicsColorizeEffect(this);
@@ -1578,7 +1578,7 @@ bool BabeWindow::loadCover(DB &track) //tofix separte getalbumcover from get art
     auto album = track[BAE::KEY::ALBUM];
     auto title = track[BAE::KEY::TITLE];
 
-    auto artistHead = BabeWindow::connection->getArtistArt(artist);
+    auto artistHead = this->connection->getArtistArt(artist);
 
     if(!artistHead.isEmpty())
     {
@@ -1587,7 +1587,7 @@ bool BabeWindow::loadCover(DB &track) //tofix separte getalbumcover from get art
 
     }else this->infoTable->setArtistArt(QString(":Data/data/cover.svg"));
 
-    auto albumArt = BabeWindow::connection->getAlbumArt(album, artist);
+    auto albumArt = this->connection->getAlbumArt(album, artist);
 
     this->current_song.insert(BAE::KEY::ARTWORK,albumArt.isEmpty()? "" : albumArt);
 
@@ -1807,10 +1807,10 @@ void BabeWindow::babeAlbum(const BAE::DB &info)
     switch(BAE::albumType(info))
     {
         case TABLE::ARTISTS:
-            mapList = BabeWindow::connection->getArtistTracks(artist);
+            mapList = this->connection->getArtistTracks(artist);
             break;
         case TABLE::ALBUMS:
-            mapList = BabeWindow::connection->getAlbumTracks(album, artist);
+            mapList = this->connection->getAlbumTracks(album, artist);
             break;
         default: break;
     }
@@ -1821,7 +1821,7 @@ void BabeWindow::babeAlbum(const BAE::DB &info)
 
 bool BabeWindow::unbabeIt(const BAE::DB &track)
 {
-    if(BabeWindow::connection->babeTrack(track[BAE::KEY::URL],0))
+    if(this->connection->babeTrack(track[BAE::KEY::URL],0))
     {
         nof->notify("Song unBabe'd it",track[BAE::KEY::TITLE]+" by "+track[BAE::KEY::ARTIST]);
         return  true;
@@ -1840,9 +1840,9 @@ bool BabeWindow::babeTrack(const BAE::DB &track)
 
     }else
     {
-        if(BabeWindow::connection->check_existance(BAE::TABLEMAP[BAE::TABLE::TRACKS],BAE::KEYMAP[BAE::KEY::URL],url))
+        if(this->connection->check_existance(BAE::TABLEMAP[BAE::TABLE::TRACKS],BAE::KEYMAP[BAE::KEY::URL],url))
         {
-            if(BabeWindow::connection->babeTrack(url,true))
+            if(this->connection->babeTrack(url,true))
             {
                 this->nof->notify("Song Babe'd",track[BAE::KEY::TITLE]+" by "+track[BAE::KEY::ARTIST]);
                 this->addToPlaylist({track}, true, APPEND::APPENDBOTTOM);
@@ -1856,7 +1856,7 @@ bool BabeWindow::babeTrack(const BAE::DB &track)
 
             auto newTrack = track;
             newTrack.insert(BAE::KEY::BABE, "1");
-            BabeWindow::connection->addTrack(newTrack);
+            this->connection->addTrack(newTrack);
 
             ui->fav_btn->setEnabled(true);
 
@@ -1867,11 +1867,11 @@ bool BabeWindow::babeTrack(const BAE::DB &track)
 
 void BabeWindow::loadInfo(const BAE::DB &track)
 {
-    auto lyrics = BabeWindow::connection->getTrackLyrics(track[BAE::KEY::URL]);
-    auto albumTags = BabeWindow::connection->getAlbumTags(track[BAE::KEY::ALBUM],track[BAE::KEY::ARTIST]);
-    auto albumWiki = BabeWindow::connection->getAlbumWiki(track[BAE::KEY::ALBUM],track[BAE::KEY::ARTIST]);
-    auto artistWiki = BabeWindow::connection->getArtistWiki(track[BAE::KEY::ARTIST]);
-    auto artistTags = BabeWindow::connection->getArtistTags(track[BAE::KEY::ARTIST]);
+    auto lyrics = this->connection->getTrackLyrics(track[BAE::KEY::URL]);
+    auto albumTags = this->connection->getAlbumTags(track[BAE::KEY::ALBUM],track[BAE::KEY::ARTIST]);
+    auto albumWiki = this->connection->getAlbumWiki(track[BAE::KEY::ALBUM],track[BAE::KEY::ARTIST]);
+    auto artistWiki = this->connection->getArtistWiki(track[BAE::KEY::ARTIST]);
+    auto artistTags = this->connection->getArtistTags(track[BAE::KEY::ARTIST]);
 
     this->infoTable->setTrack(track);
 
@@ -2051,9 +2051,9 @@ BAE::DB_LIST BabeWindow::searchFor(const QStringList &queries)
             searchQuery=searchQuery.trimmed();
             if(!searchQuery.isEmpty())
             {
-                mapList += BabeWindow::connection->getSearchedTracks(BAE::KEY::WIKI, searchQuery);
-                mapList += BabeWindow::connection->getSearchedTracks(BAE::KEY::TAG, searchQuery);
-                mapList += BabeWindow::connection->getSearchedTracks(BAE::KEY::LYRICS, searchQuery);
+                mapList += this->connection->getSearchedTracks(BAE::KEY::WIKI, searchQuery);
+                mapList += this->connection->getSearchedTracks(BAE::KEY::TAG, searchQuery);
+                mapList += this->connection->getSearchedTracks(BAE::KEY::LYRICS, searchQuery);
             }
 
         }else if(searchQuery.contains((BAE::SearchTMap[BAE::SearchT::SIMILAR]+":")))
@@ -2061,7 +2061,7 @@ BAE::DB_LIST BabeWindow::searchFor(const QStringList &queries)
             searchQuery=searchQuery.replace(BAE::SearchTMap[BAE::SearchT::SIMILAR]+":","").trimmed();
             searchQuery=searchQuery.trimmed();
             if(!searchQuery.isEmpty())
-                mapList += BabeWindow::connection->getSearchedTracks(BAE::KEY::TAG,searchQuery);
+                mapList += this->connection->getSearchedTracks(BAE::KEY::TAG,searchQuery);
 
         }else
         {
@@ -2085,11 +2085,11 @@ BAE::DB_LIST BabeWindow::searchFor(const QStringList &queries)
             if(!searchQuery.isEmpty())
             {
                 if(hasKey)
-                    mapList += BabeWindow::connection->getSearchedTracks(key, searchQuery);
+                    mapList += this->connection->getSearchedTracks(key, searchQuery);
                 else
                 {
                     auto queryTxt = QString("SELECT * FROM tracks WHERE title LIKE \"%"+searchQuery+"%\" OR artist LIKE \"%"+searchQuery+"%\" OR album LIKE \"%"+searchQuery+"%\"OR genre LIKE \"%"+searchQuery+"%\"OR url LIKE \"%"+searchQuery+"%\" LIMIT 1000");
-                    mapList += BabeWindow::connection->getDBData(queryTxt);
+                    mapList += this->connection->getDBData(queryTxt);
                 }
             }
         }

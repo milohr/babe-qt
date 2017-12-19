@@ -12,6 +12,7 @@
 
 class Pulpo;
 class BabeAlbum;
+class CollectionDB;
 
 namespace Ui { class InfoView; }
 
@@ -37,6 +38,7 @@ private:
     QToolButton *hideBtn;
     bool hide= false;
     bool customsearch = false;
+    CollectionDB *connection;
 
 public slots:
     void clearInfoViews();

@@ -34,6 +34,7 @@
 
 class BabeAlbum;
 class Notify;
+class CollectionDB;
 
 namespace BABETABLE
 {
@@ -60,7 +61,7 @@ private:
     TrackLoader trackLoader;
     QMediaPlayer *preview;
     int previewRow=-1;
-
+    CollectionDB *connection;
     int rRow=0;
     int rColumn=0;
     bool rowColoring=false;
