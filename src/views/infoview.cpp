@@ -22,7 +22,8 @@
 #include "../widget_models/babealbum.h"
 #include "../pulpo/pulpo.h"
 #include "../db/collectionDB.h"
-
+#include "../views/babewindow.h"
+#include "../kde/notify.h"
 
 InfoView::InfoView(QWidget *parent) : QWidget(parent), ui(new Ui::InfoView)
 {
@@ -324,5 +325,6 @@ QStringList InfoView::getSimilarArtistTags()
 
 void InfoView::on_save_clicked()
 {
-    this->connection->lyricsTrack(this->track, this->ui->lyricsText->toHtml());
+    if(this->connection->lyricsTrack(this->track, this->ui->lyricsText->toHtml()))
+        BabeWindow::nof->notify("Lyrics saved",this->track[BAE::KEY::TITLE]+" "+this->track[BAE::KEY::ARTIST]);
 }

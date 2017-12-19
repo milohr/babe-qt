@@ -107,6 +107,8 @@ void RabbitView::seed(const DB &track)
     this->flushSuggestions();
     auto queryTxt = QString(QUERY[TABLE::TRACKS][W::SIMILAR]).replace("?", track[KEY::URL]);
     this->generalSuggestion->populateTableView(queryTxt);
+    queryTxt = QString(QUERY[TABLE::TRACKS][W::TAG]).replace("?", track[KEY::GENRE]);
+    this->generalSuggestion->populateTableView(queryTxt);
 
     queryTxt = QString(QUERY[TABLE::ARTISTS][W::SIMILAR]).replace("?", track[KEY::URL]);
     this->albumLoader.requestAlbums(queryTxt);

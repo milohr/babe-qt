@@ -70,6 +70,7 @@ public slots:
         if(urls.size()>0)
         {
             for(auto url : urls)
+            {
                 if(go)
                 {
                     if(!con->check_existance(BAE::TABLEMAP[BAE::TABLE::TRACKS],BAE::KEYMAP[BAE::KEY::URL],url))
@@ -102,12 +103,13 @@ public slots:
 
                         this->con->addTrack(trackMap);
 
-//                        emit trackReady(trackMap);
+                        //                        emit trackReady(trackMap);
                         //                            while(this->wait){t.msleep(100);}
                         //                            this->wait=!this->wait;
                     }
 
                 }else break;
+            }
         }
 
         this->t.msleep(100);

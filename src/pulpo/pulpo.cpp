@@ -22,6 +22,7 @@
 #include "services/lyricwikiaService.h"
 #include "services/geniusService.h"
 #include "services/musicbrainzService.h"
+#include "services/deezerService.h"
 
 Pulpo::Pulpo(const BAE::DB &song,QObject *parent)
     : QObject(parent), track(song) {}
@@ -71,91 +72,105 @@ bool Pulpo::initServices()
 
         switch (service)
         {
-        case SERVICES::LastFm:
-        {
-            lastfm lastfm(this->track);
-            connect(&lastfm, &lastfm::infoReady, this, &Pulpo::passSignal);
-
-            if(lastfm.setUpService(this->ontology,this->info))
+            case SERVICES::LastFm:
             {
-                if(recursive== RECURSIVE::OFF) return true;
+                lastfm lastfm(this->track);
+                connect(&lastfm, &lastfm::infoReady, this, &Pulpo::passSignal);
 
-            }else qDebug()<<"error settingUp lastfm service";
+                if(lastfm.setUpService(this->ontology,this->info))
+                {
+                    if(recursive== RECURSIVE::OFF) return true;
 
-            break;
-        }
-        case SERVICES::Spotify:
-        {
-            spotify spotify(this->track);
-            connect(&spotify, &spotify::infoReady, this, &Pulpo::passSignal);
+                }else qDebug()<<"error settingUp lastfm service";
 
-            if(spotify.setUpService(this->ontology,this->info))
+                break;
+            }
+            case SERVICES::Spotify:
             {
-                if(recursive== RECURSIVE::OFF) return true;
+                spotify spotify(this->track);
+                connect(&spotify, &spotify::infoReady, this, &Pulpo::passSignal);
 
-            }else qDebug()<<"error settingUp spotify service";
+                if(spotify.setUpService(this->ontology,this->info))
+                {
+                    if(recursive== RECURSIVE::OFF) return true;
 
-            break;
-        }
-        case SERVICES::Genius:
-        {
-            genius genius(this->track);
-            connect(&genius, &genius::infoReady, this, &Pulpo::passSignal);
+                }else qDebug()<<"error settingUp spotify service";
 
-            if(genius.setUpService(this->ontology,this->info))
+                break;
+            }
+            case SERVICES::Genius:
             {
-                if(recursive== RECURSIVE::OFF) return true;
+                genius genius(this->track);
+                connect(&genius, &genius::infoReady, this, &Pulpo::passSignal);
 
-            }else qDebug()<<"error settingUp spotify service";
+                if(genius.setUpService(this->ontology,this->info))
+                {
+                    if(recursive== RECURSIVE::OFF) return true;
 
-            break;
-        }
-        case SERVICES::MusicBrainz:
-        {
-            musicBrainz musicbrainz(this->track);
-            connect(&musicbrainz, &musicBrainz::infoReady, this, &Pulpo::passSignal);
+                }else qDebug()<<"error settingUp spotify service";
 
-            if(musicbrainz.setUpService(this->ontology,this->info))
+                break;
+            }
+            case SERVICES::MusicBrainz:
             {
-                if(recursive== RECURSIVE::OFF) return true;
+                musicBrainz musicbrainz(this->track);
+                connect(&musicbrainz, &musicBrainz::infoReady, this, &Pulpo::passSignal);
 
-            }else qDebug()<<"error settingUp musicBrainz service";
+                if(musicbrainz.setUpService(this->ontology,this->info))
+                {
+                    if(recursive== RECURSIVE::OFF) return true;
 
-            break;
-        }
-        case SERVICES::iTunes:
-        {
-            break;
-        }
-        case SERVICES::WikiLyrics:
-        {
-            break;
-        }
-        case SERVICES::LyricWikia:
-        {
-            lyricWikia lyricwikia(this->track);
-            connect(&lyricwikia, &lyricWikia::infoReady, this, &Pulpo::passSignal);
+                }else qDebug()<<"error settingUp musicBrainz service";
 
-            if(lyricwikia.setUpService(this->ontology,this->info))
+                break;
+            }
+            case SERVICES::iTunes:
             {
-                if(recursive== RECURSIVE::OFF) return true;
+                break;
+            }
+            case SERVICES::WikiLyrics:
+            {
+                break;
+            }
+            case SERVICES::LyricWikia:
+            {
+                lyricWikia lyricwikia(this->track);
+                connect(&lyricwikia, &lyricWikia::infoReady, this, &Pulpo::passSignal);
 
-            }else qDebug()<<"error settingUp lyricwikia service";
+                if(lyricwikia.setUpService(this->ontology,this->info))
+                {
+                    if(recursive== RECURSIVE::OFF) return true;
 
-            break;
-        }
-        case SERVICES::Wikipedia:
-        {
-            break;
-        }
-        case SERVICES::ALL:
-        {
-            break;
-        }
-        case SERVICES::NONE:
-        {
-            break;
-        }
+                }else qDebug()<<"error settingUp lyricwikia service";
+
+                break;
+            }
+            case SERVICES::Wikipedia:
+            {
+                break;
+            }
+
+            case SERVICES::Deezer:
+            {
+                deezer deezer(this->track);
+                connect(&deezer, &deezer::infoReady, this, &Pulpo::passSignal);
+
+                if(deezer.setUpService(this->ontology, this->info))
+                {
+                    if(recursive== RECURSIVE::OFF) return true;
+
+                }else qDebug()<<"error settingUp deezer service";
+
+                break;
+            }
+            case SERVICES::ALL:
+            {
+                break;
+            }
+            case SERVICES::NONE:
+            {
+                break;
+            }
 
         }
     return false;
@@ -181,10 +196,10 @@ bool Pulpo::parseArray()
     if(this->ontology != PULPO::ONTOLOGY::NONE)
         switch(this->ontology)
         {
-        case PULPO::ONTOLOGY::ALBUM: return this->parseAlbum();
-        case PULPO::ONTOLOGY::ARTIST: return this->parseArtist();
-        case PULPO::ONTOLOGY::TRACK: return this->parseTrack();
-        default: return false;
+            case PULPO::ONTOLOGY::ALBUM: return this->parseAlbum();
+            case PULPO::ONTOLOGY::ARTIST: return this->parseArtist();
+            case PULPO::ONTOLOGY::TRACK: return this->parseTrack();
+            default: return false;
         }
 
     return false;

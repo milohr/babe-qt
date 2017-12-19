@@ -58,19 +58,35 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
         auto tag = index.data().toString();
         this->table->flushTable();
         QString query;
-        if(this->list->currentIndex().data().toString()=="Tags")
         {
-            query = QString("select * from tracks where url in (select url from tracks_tags where tag = '%1')").arg(tag);
-        }else if(this->list->currentIndex().data().toString()=="Relationships")
-        {
-            query = QString("select * from tracks where artist in (select artist from artists_tags where tag = '%1')").arg(tag);
-        }else if( this->list->currentIndex().data().toString()=="Popular")
-        {
-            query = QString("select t.* from tracks t "
-                            "inner join tracks_tags tt on tt.url = t.url "
-                            "where tt.context = 'track_stat' and t.artist = '%1' "
-                            "group by tt.url order by sum(tag) desc limit 250").arg(tag);
+            switch(this->list->currentRow())
+            {
+                case PLAYLIST::LIST::TAGS:
+                {
+                    query = QString("select * from tracks where url in (select url from tracks_tags where tag = '%1')").arg(tag);
+                    break;
 
+                }
+                case PLAYLIST::LIST::RELATIONS:
+                {
+                    query = QString("select * from tracks where artist in (select artist from artists_tags where tag = '%1')").arg(tag);
+                    break;
+                }
+                case PLAYLIST::LIST::POPULAR:
+                {
+                    query = QString("select t.* from tracks t "
+                                    "inner join tracks_tags tt on tt.url = t.url "
+                                    "where tt.context = 'track_stat' and t.artist = '%1' "
+                                    "group by tt.url order by sum(tag) desc limit 250").arg(tag);
+                    break;
+
+                }
+                case PLAYLIST::LIST::GENRES:
+                {
+                    query = QString("select * from tracks where genre = '%1'").arg(tag);
+                    break;
+                }
+            }
         }
 
         this->table->populateTableView(query);
@@ -80,7 +96,6 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
     this->tagList->setFrameShape(QFrame::NoFrame);
     this->tagList->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     this->tagList->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-
 
     this->addBtn = new QToolButton(this);
     this->removeBtn = new QToolButton(this);
@@ -246,6 +261,11 @@ void PlaylistsView::setDefaultPlaylists()
     popular->setIcon(QIcon::fromTheme("office-chart-line"));
     popular->setText(tr("Popular"));
     this->list->insertItem(PLAYLIST::LIST::POPULAR, popular);
+
+    auto genres = new QListWidgetItem;
+    genres->setIcon(QIcon::fromTheme("filename-track-amarok"));
+    genres->setText(tr("Genres"));
+    this->list->insertItem(PLAYLIST::LIST::GENRES, genres);
 }
 
 void PlaylistsView::populatePlaylist(const QModelIndex &index)
@@ -347,6 +367,16 @@ void PlaylistsView::populatePlaylist(const QModelIndex &index)
                            "group by tt.url order by sum(tag) desc limit 250");
 
             mapList = this->connection->getDBData(query);
+            break;
+        }
+
+        case PLAYLIST::LIST::GENRES:
+        {
+            this->removeFromPlaylist->setVisible(false);
+            this->removeBtn->setEnabled(false);
+
+            this->populateTagList("select distinct genre as tag from tracks order by genre");
+
             break;
         }
 
@@ -495,7 +525,7 @@ void PlaylistsView::addToPlaylist(const QString &playlist, const BAE::DB_LIST &t
 {
     for (auto track : tracks)
         if(this->connection->trackPlaylist(track[BAE::KEY::URL], playlist))
-             emit this->addedToPlaylist(tracks, playlist);
+            emit this->addedToPlaylist(tracks, playlist);
         else qDebug()<<"couldn't insert track:";
 }
 

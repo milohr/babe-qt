@@ -27,7 +27,8 @@ namespace PLAYLIST
         ONLINE = 4,
         TAGS = 5,
         RELATIONS = 6,
-        POPULAR = 7
+        POPULAR = 7,
+        GENRES = 8
     };
 }
 

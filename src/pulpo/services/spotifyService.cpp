@@ -236,5 +236,3 @@ bool spotify::parseTrack()
 
     return false;
 }
-
-

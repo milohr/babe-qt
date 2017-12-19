@@ -37,7 +37,7 @@ static const Q QUERY =
              "(SELECT artist FROM tracks "
              "WHERE url = '?') ) ))"
             },
-            {W::TAG, "" }
+            {W::TAG, "SELECT * FROM TRACKS WHERE GENRE = '?' " }
         }
     },
     {

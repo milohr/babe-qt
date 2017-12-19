@@ -3,7 +3,7 @@
 
     "name": "Babe",
     "description": "This extension connects YouTube to Babe",
-    "version": "1.0",
+    "version": "1.2",
 
     "browser_action":
     {

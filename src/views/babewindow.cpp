@@ -35,6 +35,7 @@
 #include "../settings/settings.h"
 #include "../db/collectionDB.h"
 #include "../data_models/tracklist.h"
+#include "../utils/brain.h"
 
 /*Global ststic objects*/
 Notify *BabeWindow::nof = new Notify;
@@ -123,9 +124,7 @@ BabeWindow::~BabeWindow()
 }
 
 void BabeWindow::start()
-{   
-
-
+{
     this->settings_widget->checkCollection();
 
     auto savedList = BAE::loadSettings("PLAYLIST","MAINWINDOW",{}).toStringList();
@@ -158,8 +157,6 @@ void BabeWindow::setUpViews()
 {
 
     this->settings_widget = new settings(this); //this needs to go first
-    this->settings_widget->readSettings();
-
     connect(this->settings_widget, &settings::refreshTables, this, &BabeWindow::refreshTables);
 
     //    this->connection->openDB();
@@ -228,6 +225,13 @@ void BabeWindow::setUpViews()
     this->mainList->enableRowDragging(true);
     this->mainList->enablePreview(false);
     this->mainList->setAddMusicMsg(tr("\nDrag and drop music here!"),"face-ninja");
+
+    auto contextAction = new QAction(tr("Context..."));
+    connect(contextAction, &QAction::triggered, [this]()
+    {
+        this->ui->search->setText(this->mainList->currentIndex().data().toString());
+    });
+    this->mainList->addMenuItem(contextAction);
 
     connect(this->mainList,&BabeTable::indexesMoved,[this](const int &row, const int &newRow)
     {
@@ -1113,20 +1117,20 @@ bool BabeWindow::eventFilter(QObject *object, QEvent *event)
 
 void BabeWindow::closeEvent(QCloseEvent* event)
 {
-//    if(this->settings_widget->brainDeamon->isRunning())
-//    {
-//        QMessageBox msgBox;
-//        msgBox.setText(tr("Babe is still collecting important information about your collection."));
-//        msgBox.setInformativeText(tr("Do you want to quit?"));
-//        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-//        msgBox.setDefaultButton(QMessageBox::No);
-//        switch(msgBox.exec())
-//        {
-//            case QMessageBox::Yes: break;
-//            case QMessageBox::No: event->ignore(); return;
-//            default: event->ignore(); return;
-//        }
-//    }
+    if(this->settings_widget->brainDeamon->isRunning())
+    {
+        QMessageBox msgBox;
+        msgBox.setText(tr("Babe is still collecting important information about your collection."));
+        msgBox.setInformativeText(tr("Do you want to quit?"));
+        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+        msgBox.setDefaultButton(QMessageBox::No);
+        switch(msgBox.exec())
+        {
+            case QMessageBox::Yes: break;
+            case QMessageBox::No: event->ignore(); return;
+            default: event->ignore(); return;
+        }
+    }
 
     if(this->viewMode == FULLMODE )
         BAE::saveSettings("GEOMETRY",this->geometry(),"MAINWINDOW");

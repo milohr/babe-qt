@@ -15,9 +15,6 @@
 #include <QFileSystemWatcher>
 #include <QTimer>
 
-#include <fstream>
-#include <iostream>
-
 #include "../utils/bae.h"
 class FileLoader;
 class Pulpo;
@@ -40,17 +37,9 @@ public:
     ~settings();
 
     About *about_ui;
-    void checkCollection();
     Brain *brainDeamon;
 
-    void setSettings(QStringList setting);
-    void readSettings();
-    void removeSettings(QStringList setting);
-    void refreshCollectionPaths();
-    void collectionWatcher();
-    void addToWatcher(QStringList paths);
-
-    QStringList getCollectionPath() {return collectionPaths;}
+    void checkCollection();
 
 private slots:
     void on_open_clicked();
@@ -67,17 +56,19 @@ private:
     FileLoader *fileLoader;
     CollectionDB *connection;
     const QString notifyDir = BAE::NotifyDir;
-    const QString settingsName = "settings.conf";
 
     YouTube *ytFetch;
 
-    QStringList collectionPaths = {};
     QMovie *movie;
     QString pathToRemove;
 
     QStringList dirs;
     QFileSystemWatcher *watcher;
     Socket *babeSocket;
+
+    void refreshCollectionPaths();
+    void collectionWatcher();
+    void addToWatcher(QStringList paths);
 
 signals:
     void collectionPathChanged(QString newPath);

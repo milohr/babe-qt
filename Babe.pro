@@ -106,7 +106,8 @@ HEADERS += \
     src/widget_models/babetable.h \
     src/widget_models/scrolltext.h \
     src/dialogs/moodform.h \
-    src/utils/trackloader.h
+    src/utils/trackloader.h \
+    src/pulpo/services/deezerService.h
 
 SOURCES += \
     src/data_models/track.cpp \
@@ -140,4 +141,5 @@ SOURCES += \
     src/widget_models/scrolltext.cpp \
     src/main.cpp \
     src/dialogs/moodform.cpp \
-    src/utils/brain.cpp
+    src/utils/brain.cpp \
+    src/pulpo/services/deezerService.cpp

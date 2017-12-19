@@ -1,30 +1,28 @@
-#ifndef GENIUSSERVICE_H
-#define GENIUSSERVICE_H
+#ifndef DEEZERSERVICE_H
+#define DEEZERSERVICE_H
 
 #include <QObject>
 #include "../pulpo.h"
 
-class genius : public Pulpo
+class deezer : public Pulpo
 {
     Q_OBJECT
 
 private:
-    const QString KEY = "Bearer UARllo5N6CLQYVlqFwolyauSlYiyU_07YTg7HGHkWRbimN4GWPJehPP5fzu9lXeO";
-    const QString API = "https://api.genius.com";
+    const QString API = "https://api.deezer.com/search?q=";
 
     QString getID(const QString &url);
     bool getAlbumInfo(const QByteArray &array);
     bool extractLyrics(const QByteArray &array);
 
 public:
-    explicit genius(const BAE::DB &song);
+    explicit deezer(const BAE::DB &song);
     virtual bool setUpService(const PULPO::ONTOLOGY &ontology, const PULPO::INFO &info);
-
 
 protected:
     virtual bool parseArtist();
-    virtual bool parseAlbum(){return false;}
+    virtual bool parseAlbum();
     virtual bool parseTrack();
 };
 
-#endif // GENIUSSERVICE_H
+#endif // DEEZERSERVICE_H

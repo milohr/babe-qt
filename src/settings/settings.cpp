@@ -57,14 +57,11 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
     }
 
     QDir collectionDBPath_dir(BAE::CollectionDBPath);
-    QDir settingsPath_dir(BAE::SettingPath);
     QDir cachePath_dir(BAE::CachePath);
     QDir youtubeCache_dir(BAE::YoutubeCachePath);
 
     if (!collectionDBPath_dir.exists())
         collectionDBPath_dir.mkpath(".");
-    if (!settingsPath_dir.exists())
-        settingsPath_dir.mkpath(".");
     if (!cachePath_dir.exists())
         cachePath_dir.mkpath(".");
     if (!youtubeCache_dir.exists())
@@ -93,12 +90,13 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
         BAE::saveSettings("BRAINZ",value,"SETTINGS");
     });
 
-    connect(fileLoader,&FileLoader::collectionSize,[this](int size)
+    connect(this->fileLoader, &FileLoader::collectionSize, [this](int size)
     {
         if(size>0)
         {
-            ui->progressBar->setValue(1);
-            ui->progressBar->setMaximum(size);
+            ui->progressBar->setMaximum(0);
+            ui->progressBar->setMinimum(0);
+            ui->progressBar->setValue(0);
             ui->progressBar->show();
 
         }else
@@ -109,17 +107,17 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
         }
     });
 
-    connect(fileLoader, &FileLoader::trackReady, [this]()
-    {
-        this->ui->progressBar->setValue(this->ui->progressBar->value()+1);
-    });
+//    connect(this->fileLoader, &FileLoader::trackReady, [this]()
+//    {
+//        this->ui->progressBar->setValue(this->ui->progressBar->value()+1);
+//    });
 
-    connect(fileLoader,&FileLoader::finished,[this]()
+    connect(this->fileLoader,&FileLoader::finished,[this]()
     {
         ui->progressBar->hide();
         ui->progressBar->setValue(0);
 
-        collectionWatcher();
+        this->collectionWatcher();
         emit refreshTables({{TABLE::TRACKS, true},{TABLE::ALBUMS, false},{TABLE::ARTISTS, false},{TABLE::PLAYLISTS, true}});
         this->fetchArt();
     });
@@ -130,13 +128,12 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
     connect(ytFetch, &YouTube::done, this, &settings::fetchArt);
 
     this->babeSocket = new Socket(static_cast<quint16>(BAE::BabePort.toInt()),this);
-    connect(babeSocket, &Socket::message, this->ytFetch, &YouTube::fetch);
-    connect(babeSocket, &Socket::connected,[this](const int &index)
+    connect(this->babeSocket, &Socket::message, this->ytFetch, &YouTube::fetch);
+    connect(this->babeSocket, &Socket::connected,[this](const int &index)
     {
         auto playlists = this->connection->getPlaylists();
         this->babeSocket->sendMessageTo(index, playlists.join(","));
     });
-
 
     ui->remove->setEnabled(false);
     ui->progressBar->hide();
@@ -147,10 +144,7 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
     ui->label->hide();
 
     this->watcher = new QFileSystemWatcher(this);
-    // watcher->addPath(youtubeCachePath);
-
-    connect(watcher, SIGNAL(directoryChanged(QString)), this,
-            SLOT(handleDirectoryChanged(QString)));
+    connect(this->watcher, &QFileSystemWatcher::directoryChanged, this, &settings::handleDirectoryChanged);
 }
 
 settings::~settings()
@@ -159,10 +153,7 @@ settings::~settings()
     delete brainDeamon;
     delete fileLoader;
     delete ui;
-    //    delete fileLoader;
-    //    delete this->brainDeamon;
 }
-
 
 void settings::on_collectionPath_clicked(const QModelIndex &index)
 {
@@ -177,13 +168,10 @@ void settings::on_remove_clicked()
     {
         if(this->connection->removeSource(this->pathToRemove))
         {
-            removeSettings({"collectionPath=", this->pathToRemove});
-            collectionPaths.removeAll(this->pathToRemove);
-
-            refreshCollectionPaths();
+            this->refreshCollectionPaths();
             this->dirs.clear();
             this->collectionWatcher();
-            this->watcher->removePaths(watcher->directories());            ui->remove->setEnabled(false);
+            this->watcher->removePaths(watcher->directories());  ui->remove->setEnabled(false);
             emit refreshTables({{TABLE::TRACKS, true},{TABLE::ALBUMS, true},{TABLE::ARTISTS, true},{TABLE::PLAYLISTS, true}});
         }
     }
@@ -192,98 +180,23 @@ void settings::on_remove_clicked()
 void settings::refreshCollectionPaths()
 {
     ui->collectionPath->clear();
-    ui->collectionPath->addItems(collectionPaths);
+    auto queryTxt = QString("SELECT %1 FROM %2").arg(BAE::KEYMAP[BAE::KEY::URL], BAE::TABLEMAP[BAE::TABLE::SOURCES]);
+
+    for (auto track : this->connection->getDBData(queryTxt))
+    {
+        ui->collectionPath->addItem(track[BAE::KEY::URL]);
+    }
 }
 
 void settings::on_open_clicked()
 {
     QString url = QFileDialog::getExistingDirectory(this,"Select folder...", QDir().homePath()+"/Music/");
 
-    if (!collectionPaths.contains(url) && !url.isEmpty())
+    if (!url.isEmpty())
     {
-        ui->collectionPath->addItem(QDir(url).absolutePath());
-        collectionPaths << url;
+        this->refreshCollectionPaths();
         qDebug() << "Collection dir added: " << url;
-        setSettings({"collectionPath=", url});
         emit collectionPathChanged(url);
-    }
-}
-
-void settings::setSettings(QStringList setting) {
-    std::string strNew;
-    // std::string strReplace;
-    strNew = setting.at(0).toStdString() + setting.at(1).toStdString();
-    bool replace = false;
-    /**/
-    // qDebug()<<setting.at(0);
-    std::ifstream settings(BAE::SettingPath.toStdString() +
-                           settingsName.toStdString());
-    QStringList newline;
-    std::string line;
-    while (std::getline(settings, line)) {
-        // qDebug()<<get_setting;
-        if (QString::fromStdString(line).contains(setting.at(0))) {
-            if (!QString::fromStdString(line).contains("collectionPath=")) {
-                replace = true;
-                newline << QString::fromStdString(strNew);
-            }
-
-        } else {
-            newline << QString::fromStdString(line);
-        }
-    }
-
-    if (replace) {
-        std::ofstream write(BAE::SettingPath.toStdString() + settingsName.toStdString());
-
-        for (auto ln : newline) {
-            write << ln.toStdString() << std::endl;
-        }
-
-    } else {
-        std::ofstream write(BAE::SettingPath.toStdString() + settingsName.toStdString(),
-                            std::ios::app);
-        write << strNew << std::endl;
-    }
-}
-
-void settings::removeSettings(QStringList setting) {
-    std::string strNew;
-    // std::string strReplace;
-    strNew = "";
-    bool replace = false;
-    /**/
-    // qDebug()<<setting.at(0);
-    std::ifstream settings(BAE::SettingPath.toStdString() +
-                           settingsName.toStdString());
-    QStringList newline;
-    std::string line;
-    while (std::getline(settings, line)) {
-        // qDebug()<<get_setting;
-        if (QString::fromStdString(line).contains(setting.at(0)) &&
-                QString::fromStdString(line).contains(setting.at(1))) {
-
-            replace = true;
-            newline << QString::fromStdString(strNew);
-
-        } else {
-            newline << QString::fromStdString(line);
-        }
-    }
-
-    if (replace)
-    {
-        std::ofstream write(BAE::SettingPath.toStdString() + settingsName.toStdString());
-
-        for (auto ln : newline)
-            write << ln.toStdString() << std::endl;
-
-
-    } else
-    {
-        std::ofstream write(BAE::SettingPath.toStdString() + settingsName.toStdString(),
-                            std::ios::app);
-        write << strNew << std::endl;
     }
 }
 
@@ -296,8 +209,7 @@ void settings::addToWatcher(QStringList paths)
 
 void settings::collectionWatcher()
 {
-    auto queryTxt = QString("SELECT %1 FROM %2").arg(BAE::KEYMAP[BAE::KEY::URL],BAE::TABLEMAP[BAE::TABLE::TRACKS]);
-
+    auto queryTxt = QString("SELECT %1 FROM %2").arg(BAE::KEYMAP[BAE::KEY::URL], BAE::TABLEMAP[BAE::TABLE::TRACKS]);
 
     for (auto track : this->connection->getDBData(queryTxt))
     {
@@ -321,8 +233,7 @@ void settings::collectionWatcher()
             }
         }
     }
-
-    addToWatcher(this->dirs);
+    this->addToWatcher(this->dirs);
 }
 
 void settings::handleDirectoryChanged(const QString &dir)
@@ -332,39 +243,22 @@ void settings::handleDirectoryChanged(const QString &dir)
     auto wait = new QTimer(this);
     wait->setSingleShot(true);
     wait->setInterval(1000);
+
     connect(wait, &QTimer::timeout,[=]()
     {
         emit collectionPathChanged(dir);
         wait->deleteLater();
-
     });
+
     wait->start();
 
 }
 
-void settings::readSettings()
-{
-    std::ifstream settings(BAE::SettingPath.toStdString() +
-                           settingsName.toStdString());
-    std::string line;
-    while (std::getline(settings, line))
-    {
-        auto get_setting = QString::fromStdString(line);
-        // qDebug()<<get_setting;
-        if (get_setting.contains("collectionPath="))
-        {
-            collectionPaths << get_setting.replace("collectionPath=", "");
-            //            qDebug() << "Setting the cPath: "
-            //                     << get_setting.replace("collectionPath=", "");
-            ui->collectionPath->addItem(get_setting.replace("collectionPath=", ""));
-
-        }
-    }
-}
-
-
 void settings::checkCollection()
 {   
+    /*Check youtube cache path*/
+    //    this->populateDB(YoutubeCachePath);
+    this->refreshCollectionPaths();
     this->collectionWatcher();
     if(this->ui->pulpoBrainz_checkBox->isChecked())
         this->brainDeamon->start();

@@ -17,6 +17,7 @@ enum class SERVICES : uint8_t
     LyricWikia,
     Wikipedia,
     WikiLyrics,
+    Deezer,
     ALL,
     NONE
 };

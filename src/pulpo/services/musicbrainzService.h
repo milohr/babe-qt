@@ -1,7 +1,6 @@
 #ifndef MUSICBRAINZSERVICE_H
 #define MUSICBRAINZSERVICE_H
 #include <QObject>
-#include <QString>
 #include "../pulpo.h"
 
 using namespace BAE;

@@ -332,7 +332,7 @@ bool lastfm::parseTrack()
         auto albumTitle = itemMap.value("album").toMap().value("title").toString();
         auto trackNumber = itemMap.value("album").toMap().value("@attr").toMap().value("position").toString();
 
-        emit this->infoReady(this->track, this->packResponse(ONTOLOGY::TRACK, INFO::METADATA, {{CONTEXT::TRACK_NUMBER,trackNumber},{CONTEXT::ALBUM_TITLE,albumTitle}}));
+        emit this->infoReady(this->track, this->packResponse(ONTOLOGY::TRACK, INFO::METADATA, {{CONTEXT::TRACK_NUMBER,trackNumber}, {CONTEXT::ALBUM_TITLE,albumTitle}}));
 
         if(this->info == INFO::METADATA ) return true;
     }

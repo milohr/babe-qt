@@ -1,5 +1,4 @@
 #include "geniusService.h"
-#include <QObject>
 #include "../htmlparser.h"
 
 genius::genius(const BAE::DB &song)
@@ -12,7 +11,6 @@ genius::genius(const BAE::DB &song)
 
 bool genius::setUpService(const PULPO::ONTOLOGY &ontology, const PULPO::INFO &info)
 {
-
     qDebug()<<"setting up genius service";
     this->ontology = ontology;
     this->info = info;
