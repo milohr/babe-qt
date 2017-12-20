@@ -155,17 +155,15 @@ void BabeWindow::start()
 //*HERE THE MAIN VIEWS GET SETUP WITH THEIR SIGNALS AND SLOTS**//
 void BabeWindow::setUpViews()
 {
-
     this->settings_widget = new settings(this); //this needs to go first
     connect(this->settings_widget, &settings::refreshTables, this, &BabeWindow::refreshTables);
 
-    //    this->connection->openDB();
-    //    connect(&this->connection, &CollectionDB::trackInserted, [this]()
-    //    {
-    //        this->settings_widget->collectionWatcher();
-    //        emit this->settings_widget->refreshTables({{TABLE::TRACKS, true},{TABLE::ALBUMS, false},{TABLE::ARTISTS, false},{TABLE::PLAYLISTS, true}});
-    //        this->settings_widget->fetchArt();
-    //    });
+    connect(this->connection, &CollectionDB::trackInserted, [this]()
+    {
+        this->settings_widget->collectionWatcher();
+        emit this->settings_widget->refreshTables({{TABLE::TRACKS, true},{TABLE::ALBUMS, false},{TABLE::ARTISTS, false},{TABLE::PLAYLISTS, true}});
+        this->settings_widget->fetchArt();
+    });
 
     connect(this->connection, &CollectionDB::artistsCleaned, [this](int amount)
     {
@@ -850,10 +848,30 @@ void BabeWindow::setUpMenuBar()
     auto miniMode = new QAction(tr("Mini mode"), this);
     connect(miniMode, &QAction::triggered, this, &BabeWindow::go_mini);
 
+    auto tracksView = new QAction(tr("Tracks"), this);
+    connect(tracksView, &QAction::triggered, this, &BabeWindow::collectionView);
+    auto albumsView = new QAction(tr("Albums"), this);
+    connect(albumsView, &QAction::triggered, this, &BabeWindow::albumsView);
+    auto artistsView = new QAction(tr("Artists"), this);
+    connect(artistsView, &QAction::triggered, this, &BabeWindow::artistsView);
+    auto playlistsView = new QAction(tr("Playlists"), this);
+    connect(playlistsView, &QAction::triggered, this, &BabeWindow::playlistsView);
+    auto infosView = new QAction(tr("Info"), this);
+    connect(infosView, &QAction::triggered, this, &BabeWindow::infoView);
+    auto rabbitsView = new QAction(tr("Rabbit"), this);
+    connect(rabbitsView, &QAction::triggered, this, &BabeWindow::rabbitView);
+
     auto viewMenu = this->menuBar()->addMenu(tr("&View"));
     viewMenu->addAction(expandMode);
     viewMenu->addAction(playlistMode);
     viewMenu->addAction(miniMode);
+    viewMenu->addSeparator();
+    viewMenu->addAction(tracksView);
+    viewMenu->addAction(albumsView);
+    viewMenu->addAction(artistsView);
+    viewMenu->addAction(playlistsView);
+    viewMenu->addAction(infosView);
+    viewMenu->addAction(rabbitsView);
 
     auto moods = new QAction(tr("Assign Moods"), this);
     connect(moods, &QAction::triggered, [this]()
@@ -1863,7 +1881,6 @@ bool BabeWindow::babeTrack(const BAE::DB &track)
             this->connection->addTrack(newTrack);
 
             ui->fav_btn->setEnabled(true);
-
             return true;
         }
     }

@@ -40,6 +40,7 @@ public:
     Brain *brainDeamon;
 
     void checkCollection();
+    void collectionWatcher();
 
 private slots:
     void on_open_clicked();
@@ -67,7 +68,6 @@ private:
     Socket *babeSocket;
 
     void refreshCollectionPaths();
-    void collectionWatcher();
     void addToWatcher(QStringList paths);
 
 signals:

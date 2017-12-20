@@ -368,7 +368,7 @@ void BabeTable::leaveEvent(QEvent *event)
     //    QTableWidget::leaveEvent(event);
 }
 
-void BabeTable::passStyle(QString style) { this->setStyleSheet(style); }
+void BabeTable::passStyle(const QString &style) { this->setStyleSheet(style); }
 
 int BabeTable::getIndex() { return this->currentIndex().row(); }
 

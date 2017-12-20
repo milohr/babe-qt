@@ -164,7 +164,6 @@ void InfoView::setArtistTags(const QStringList &tags)
         for(auto tag : tags) htmlTags+= "<a href=\""+tag+"\"> "+tag+"</a> , ";
         ui->similarArtistInfo->setHtml(htmlTags);
     }else ui->similarArtistInfo->setVisible(false);
-
 }
 
 void InfoView::setAlbumTags(const QStringList &tags)
@@ -181,7 +180,7 @@ void InfoView::setAlbumTags(const QStringList &tags)
 
 void InfoView::setAlbumInfo(const QString &info)
 {
-    if (!info.isEmpty())
+    if (!info.isEmpty() && info != BAE::SLANG[W::NONE])
     {
         ui->albumText->setVisible(true);
         ui->albumText->setHtml(info);
@@ -192,13 +191,11 @@ void InfoView::setAlbumArt(QByteArray array) {Q_UNUSED(array)}
 
 void InfoView::setArtistInfo(const QString &info)
 {
-
-    if(!info.isEmpty())
+    if(!info.isEmpty() && info != BAE::SLANG[W::NONE])
     {
         ui->artistText->setVisible(true);
         ui->artistText->setHtml(info);
     }else ui->artistText->setVisible(false);
-
 }
 
 void InfoView::setArtistArt(const QByteArray &array)

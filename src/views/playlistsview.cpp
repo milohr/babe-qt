@@ -51,7 +51,6 @@ PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
     this->list->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     this->list->setContextMenuPolicy(Qt::ActionsContextMenu);
 
-
     this->tagList = new QListWidget(this);
     connect(this->tagList, &QListWidget::clicked,[this](QModelIndex index)
     {
@@ -275,6 +274,8 @@ void PlaylistsView::populatePlaylist(const QModelIndex &index)
 
     this->currentPlaylist = index.data().toString();
     this->table->flushTable();
+    this->table->passStyle("QHeaderView::section{background-color: transparent}");
+
     this->tagList->setVisible(false);
     this->line_v->setVisible(false);
 
@@ -557,7 +558,10 @@ void PlaylistsView::setPlaylistsMoods()
         queryTxt = QString("SELECT DISTINCT t.* FROM tracks t INNER JOIN tracks_tags tt ON tt.url = t.url WHERE tag LIKE %1 LIMIT 100").arg(strValues.join(" OR tag LIKE "));
         qDebug()<<  queryTxt;
         this->table->populateTableView(queryTxt);
-
+        QColor color(currentPlaylist);
+        this->table->passStyle(QString("QHeaderView::section{background-color: rgba(%1, %2, %3, %4);}").arg(QString::number(color.red()), QString::number(color.green()),QString::number(color.blue()), "50"));
+        this->tagList->setVisible(false);
+        this->line_v->setVisible(false);
     });
 
     for(int i=0; i<this->moods.size(); i++)

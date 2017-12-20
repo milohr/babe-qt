@@ -94,7 +94,7 @@ public:
     void setVisibleColumn(const BAE::KEY &column);
     void addRow(const BAE::DB &map);
     void addRowAt(const int &row, const BAE::DB &map);
-    void passStyle(QString style);
+    void passStyle(const QString &style);
     void setAddMusicMsg(const QString &msg, const QString &icon= "face-sleeping");
     int getIndex();
     QTableWidgetItem *getItem(const int &row, const BAE::KEY &column);

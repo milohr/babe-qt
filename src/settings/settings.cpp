@@ -132,6 +132,7 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
     connect(this->babeSocket, &Socket::connected,[this](const int &index)
     {
         auto playlists = this->connection->getPlaylists();
+        qDebug()<<"Sending playlists to socket"<<playlists;
         this->babeSocket->sendMessageTo(index, playlists.join(","));
     });
 
