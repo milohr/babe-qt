@@ -24,76 +24,67 @@ TagInfo::TagInfo(const QString &url)
 {
     this->file = TagLib::FileRef(url.toUtf8());
     this->path = url;
-    qDebug()<<"TAGINFO::"<<path<<file.isNull()<<file.file()->isReadable(url.toStdString().c_str());
 }
 
-TagInfo::~TagInfo()
-{
-    qDebug()<<"DELETING TAGINFO";
-}
+TagInfo::~TagInfo(){}
 
-
-QString TagInfo::getAlbum()
+QString TagInfo::getAlbum() const
 {
     return !QString::fromStdWString(file.tag()->album().toWString()).isEmpty()
             ? QString::fromStdWString(file.tag()->album().toWString())
             : SLANG[W::UNKNOWN];
 }
 
-QString TagInfo::getTitle()
+QString TagInfo::getTitle() const
 {
     return !QString::fromStdWString(file.tag()->title().toWString()).isEmpty()
             ? QString::fromStdWString(file.tag()->title().toWString())
             : fileName();
 }
 
-QString TagInfo::getArtist()
+QString TagInfo::getArtist() const
 {
     return QString::fromStdWString(file.tag()->artist().toWString()).size() > 0
             ? QString::fromStdWString(file.tag()->artist().toWString())
             : SLANG[W::UNKNOWN];
 }
 
-int TagInfo::getTrack() { return static_cast<signed int>(file.tag()->track()); }
+int TagInfo::getTrack() const { return static_cast<signed int>(file.tag()->track()); }
 
-QString TagInfo::getGenre()
+QString TagInfo::getGenre() const
 {
     return QString::fromStdWString(file.tag()->genre().toWString()).size() > 0
             ? QString::fromStdWString(file.tag()->genre().toWString())
             : SLANG[W::UNKNOWN];
 }
 
-QString TagInfo::fileName()
+QString TagInfo::fileName() const
 {
     return BAE::getNameFromLocation(path);
-    //return file.file()->name();
 }
 
-uint TagInfo::getYear()
+uint TagInfo::getYear() const
 {
     //return BAE::getNameFromLocation(path);
     return file.tag()->year();
 }
 
 
-int TagInfo::getDuration()
+int TagInfo::getDuration() const
 {
     return file.audioProperties()->lengthInSeconds();
-
 }
 
-
-QString TagInfo::getComment()
+QString TagInfo::getComment() const
 {
     return QString::fromStdWString(file.tag()->comment().toWString()).size() > 0
             ? QString::fromStdWString(file.tag()->genre().toWString())
             : SLANG[W::UNKNOWN];
 }
 
-QByteArray TagInfo::getCover()
+QByteArray TagInfo::getCover() const
 {
     QByteArray array;
-
     return array;
 }
 

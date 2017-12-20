@@ -57,7 +57,7 @@ void CollectionDB::closeConnection()
     qDebug()<<"CLOSING COLLECTIONDB";
 }
 
-void CollectionDB::prepareCollectionDB()
+void CollectionDB::prepareCollectionDB() const
 {
     QSqlQuery query(this->m_db);
 
@@ -185,14 +185,14 @@ bool CollectionDB::update(const QString &tableName, const BAE::DB &updateData, c
     return query.exec();
 }
 
-bool CollectionDB::update(const QString &table,const QString &column,const QVariant &newValue,const QVariant &op, const QString &id)
+bool CollectionDB::update(const QString &table, const QString &column, const QVariant &newValue, const QVariant &op, const QString &id)
 {
     auto queryStr = QString("UPDATE %1 SET %2 = \"%3\" WHERE %4 = \"%5\"").arg(table, column, newValue.toString().replace("\"","\"\""), op.toString(), id);
     auto query = this->getQuery(queryStr);
     return query.exec();
 }
 
-bool CollectionDB::execQuery(QSqlQuery &query)
+bool CollectionDB::execQuery(QSqlQuery &query) const
 {
     if(query.exec()) return true;
     qDebug()<<"ERROR ON EXEC QUERY";

@@ -18,18 +18,18 @@ class TagInfo
 public:
     TagInfo(const QString &url);
     ~TagInfo();
-    QString getAlbum();
-    QString getTitle();
-    QString getArtist();
-    int getTrack();
-    QString getGenre();
-    QString fileName();
-    QString getComment();
-    QByteArray getCover();
-    int getDuration();
-    uint getYear();
+    QString getAlbum() const;
+    QString getTitle() const;
+    QString getArtist() const;
+    int getTrack() const;
+    QString getGenre() const;
+    QString fileName() const;
+    QString getComment() const;
+    QByteArray getCover() const;
+    int getDuration() const;
+    uint getYear() const;
 
-    void setAlbum(const QString &album);
+    void setAlbum(const QString &album) ;
     void setTitle(const QString &title);
     void setTrack(const int &track);
     void setArtist(const QString &artist);

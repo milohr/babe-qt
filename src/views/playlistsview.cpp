@@ -21,7 +21,7 @@
 #include "../widget_models/babetable.h"
 #include "../dialogs/playlistform.h"
 #include "../kde/notify.h"
-
+#include "../db/collectionDB.h"
 
 PlaylistsView::PlaylistsView(QWidget *parent) : QWidget(parent)
 {

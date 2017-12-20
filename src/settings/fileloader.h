@@ -85,8 +85,6 @@ public slots:
                         auto duration = info.getDuration();
                         auto year = info.getYear();
 
-                        qDebug()<<"FILE LOADER:"<< title << album << artist <<url;
-
                         BAE::DB trackMap =
                         {
                             {BAE::KEY::URL,url},

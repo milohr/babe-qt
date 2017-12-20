@@ -31,11 +31,11 @@ public:
     explicit CollectionDB(const QString &name = QString(), QObject *parent = nullptr);
     ~CollectionDB() override;
 
-    bool execQuery(QSqlQuery &query);
+    bool execQuery(QSqlQuery &query) const;
     bool execQuery(const QString &queryTxt);
 
     /*basic public actions*/
-    void prepareCollectionDB();
+    void prepareCollectionDB() const;
     bool check_existance(const QString &tableName, const QString &searchId, const QString &search);
 
     /* usefull actions */

@@ -30,8 +30,8 @@
 #include <QObject>
 
 #include "../utils/bae.h"
-#include "../utils/trackloader.h"
 
+class TrackLoader;
 class BabeAlbum;
 class Notify;
 class CollectionDB;
@@ -58,10 +58,11 @@ class BabeTable : public QTableWidget
     Q_OBJECT
 
 private:
-    TrackLoader trackLoader;
+    TrackLoader *trackLoader;
     QMediaPlayer *preview;
-    int previewRow=-1;
     CollectionDB *connection;
+
+    int previewRow = -1;
     int rRow=0;
     int rColumn=0;
     bool rowColoring=false;
@@ -83,6 +84,7 @@ public:
     explicit BabeTable(QWidget *parent = nullptr);
     ~BabeTable();
 
+    void setUpHeaders();
     void insertTrack(const BAE::DB &track);
     void populateTableView(const BAE::DB_LIST &mapList);
     void populateTableView(const QString &indication);
@@ -106,8 +108,6 @@ public:
     QList<int> getSelectedRows(const bool &onRightClick=true);
     void enableRowColoring(const bool &state=false);
     void enableRowDragging(const bool &state=false);
-    //void removeRow(int row);
-
     void addMenuItem(QAction *item);
 
     BAE::DB getRowData(const int &row);
@@ -116,7 +116,7 @@ public:
     BAE::DB_LIST getAllTableContent();
 
     QMenu *contextMenu;
-
+    QMenu *headerMenu;
 protected:
     virtual void enterEvent(QEvent *event);
     virtual void leaveEvent(QEvent *event);

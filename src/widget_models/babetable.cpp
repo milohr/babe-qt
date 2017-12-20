@@ -17,13 +17,14 @@
 
 
 #include "babetable.h"
-
+#include <QCheckBox>
 #include "babealbum.h"
 #include "../kde/notify.h"
 #include "../dialogs/metadataform.h"
 #include "../utils/trackloader.h"
 #include "../db/collectionDB.h"
 #include "../views/babewindow.h"
+#include "../utils/trackloader.h"
 
 using namespace BABETABLE;
 
@@ -31,16 +32,17 @@ using namespace BABETABLE;
 BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent)
 {
     this->connection = new CollectionDB(this);
+    this->trackLoader = new TrackLoader;
 
     this->preview = new QMediaPlayer(this);
     this->preview->setVolume(100);
-    connect(&trackLoader, &TrackLoader::finished, [this]()
+    connect(trackLoader, &TrackLoader::finished, [this]()
     {
         this->setSortingEnabled(true);
         emit this->finishedPopulating();
     });
 
-    connect(&trackLoader, &TrackLoader::trackReady, [this](BAE::DB track)
+    connect(trackLoader, &TrackLoader::trackReady, [this](BAE::DB track)
     {
         this->insertTrack(track);
     });
@@ -52,13 +54,8 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent)
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     this->setColumnCount(BAE::TracksColsMap.count());
 
-    QStringList cols;
-    for(auto col : BAE::TracksColsMap.values())  cols << col.left(1).toUpper()+col.mid(1);
-    this->setHorizontalHeaderLabels(cols);
+    this->setUpHeaders();
 
-    this->horizontalHeader()->setSectionsMovable(true);
-
-    this->horizontalHeader()->setDefaultSectionSize(150);
     this->verticalHeader()->setVisible(false);
     this->setEditTriggers(QAbstractItemView::NoEditTriggers);
     this->setAlternatingRowColors(true);
@@ -66,10 +63,6 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent)
     this->setShowGrid(false);
     this->setSelectionBehavior(QAbstractItemView::SelectRows);
     this->setSelectionMode(QAbstractItemView::ExtendedSelection);
-
-    this->horizontalHeader()->setHighlightSections(false);
-    this->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
-    this->horizontalHeader()->setStretchLastSection(true);
 
     this->setColumnWidth(static_cast<int>(BAE::KEY::TRACK), 20);
     this->setColumnWidth(static_cast<int>(BAE::KEY::PLAYED), 20);
@@ -220,6 +213,47 @@ BabeTable::BabeTable(QWidget *parent) : QTableWidget(parent)
 BabeTable::~BabeTable()
 {
     qDebug()<<"DELETING BABETABLE";
+    delete this->trackLoader;
+}
+
+void BabeTable::setUpHeaders()
+{
+    this->horizontalHeader()->setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
+    connect(this->horizontalHeader(), &QHeaderView::customContextMenuRequested, [this](QPoint pos)
+    {
+        Q_UNUSED(pos);
+        this->headerMenu->exec(QCursor::pos());
+    });
+
+    this->headerMenu = new QMenu(this);
+    connect(this->headerMenu, &QMenu::triggered, [this](QAction *action)
+    {
+        auto key = action->data().toInt();
+        if(action->isChecked())
+        {
+            this->showColumn(key);
+        }else this->hideColumn(key);
+    });
+
+    QStringList cols;
+    for(auto key : BAE::TracksColsMap.keys())
+    {
+        auto col = BAE::TracksColsMap[key];
+        auto colTitle = QString(col.left(1).toUpper()+col.mid(1));
+        cols << colTitle;
+        auto action = new QAction(colTitle);
+        action->setData(static_cast<int>(key));
+        action->setCheckable(true);
+        this->headerMenu->addAction(action);
+    }
+
+    this->setHorizontalHeaderLabels(cols);
+    this->horizontalHeader()->setSectionsMovable(true);
+    this->horizontalHeader()->setDefaultSectionSize(150);
+
+    this->horizontalHeader()->setHighlightSections(false);
+    this->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
+    this->horizontalHeader()->setStretchLastSection(true);
 }
 
 void BabeTable::dropEvent(QDropEvent *event)
@@ -320,7 +354,7 @@ void BabeTable::enterEvent(QEvent *event)
 {
     emit this->enterTable();
     event->accept();
-//    QTableWidget::enterEvent(event);
+    //    QTableWidget::enterEvent(event);
 }
 
 void BabeTable::leaveEvent(QEvent *event)
@@ -328,7 +362,7 @@ void BabeTable::leaveEvent(QEvent *event)
     this->stopPreview();
     emit this->leaveTable();
     event->accept();
-//    QTableWidget::leaveEvent(event);
+    //    QTableWidget::leaveEvent(event);
 }
 
 void BabeTable::passStyle(QString style) { this->setStyleSheet(style); }
@@ -460,32 +494,32 @@ void BabeTable::populateTableView(const QString &query)
 {
     qDebug() << "ON POPULATE TABLEVIEW";
     this->setSortingEnabled(false);
-    trackLoader.requestTracks(query);
+    this->trackLoader->requestTracks(query);
 }
 
 
 QString BabeTable::getStars(const int &value)
 {
     switch (value) {
-    case 0:
-        return  " ";
+        case 0:
+            return  " ";
 
-    case 1:
-        return  "\xe2\x98\x86 ";
+        case 1:
+            return  "\xe2\x98\x86 ";
 
-    case 2:
-        return "\xe2\x98\x86 \xe2\x98\x86 ";
+        case 2:
+            return "\xe2\x98\x86 \xe2\x98\x86 ";
 
-    case 3:
-        return  "\xe2\x98\x86 \xe2\x98\x86 \xe2\x98\x86 ";
+        case 3:
+            return  "\xe2\x98\x86 \xe2\x98\x86 \xe2\x98\x86 ";
 
-    case 4:
-        return  "\xe2\x98\x86 \xe2\x98\x86 \xe2\x98\x86 \xe2\x98\x86 ";
+        case 4:
+            return  "\xe2\x98\x86 \xe2\x98\x86 \xe2\x98\x86 \xe2\x98\x86 ";
 
-    case 5:
-        return "\xe2\x98\x86 \xe2\x98\x86 \xe2\x98\x86 \xe2\x98\x86 \xe2\x98\x86 ";
+        case 5:
+            return "\xe2\x98\x86 \xe2\x98\x86 \xe2\x98\x86 \xe2\x98\x86 \xe2\x98\x86 ";
 
-    default: return "error";
+        default: return "error";
     }
 
 }
@@ -588,174 +622,174 @@ void BabeTable::keyPressEvent(QKeyEvent *event)
 {
     switch (event->key())
     {
-    case Qt::Key_Return:
-    {
-        BAE::DB_LIST list;
-        for(auto row : this->getSelectedRows(false))
+        case Qt::Key_Return:
         {
-            list<<getRowData(row);
-
-            qDebug()<<row;
-        }
-
-        this->stopPreview();
-        emit tableWidget_doubleClicked(list);
-        break;
-    }
-
-    case Qt::Key_Up:
-    {
-        QModelIndex index = this->currentIndex();
-        int row = index.row() - 1;
-        int column = 1;
-        QModelIndex newIndex = this->model()->index(row, column);
-        this->selectionModel()->select(newIndex, QItemSelectionModel::Select);
-        this->setCurrentIndex(newIndex);
-        this->setFocus();
-
-        break;
-    }
-
-    case Qt::Key_Down:
-    {
-        QModelIndex index = this->currentIndex();
-        int row = index.row() + 1;
-        int column = 1;
-        QModelIndex newIndex = this->model()->index(row, column);
-        this->selectionModel()->select(newIndex, QItemSelectionModel::Select);
-        this->setCurrentIndex(newIndex);
-        this->setFocus();
-
-        break;
-    }
-
-    case Qt::Key_Space:
-    {
-        if(this->rowPreview)
-        {
-            if(preview->state()==QMediaPlayer::PlayingState) this->stopPreview();
-            else
+            BAE::DB_LIST list;
+            for(auto row : this->getSelectedRows(false))
             {
-                this->previewRow= this->getIndex();
-                this->startPreview(this->getRowData(previewRow)[BAE::KEY::URL]);
+                list<<getRowData(row);
+
+                qDebug()<<row;
             }
-        }
-        break;
-    }
 
-    case Qt::Key_Delete	:
-    {
-        auto rows = this->getSelectedRows(false);
-        auto i = 0;
-        for(auto row:rows)
+            this->stopPreview();
+            emit tableWidget_doubleClicked(list);
+            break;
+        }
+
+        case Qt::Key_Up:
         {
-            this->removeRow(row-i);
-            emit indexRemoved(row-i);
-            i++;
-        }
-        break;
-    }
+            QModelIndex index = this->currentIndex();
+            int row = index.row() - 1;
+            int column = 1;
+            QModelIndex newIndex = this->model()->index(row, column);
+            this->selectionModel()->select(newIndex, QItemSelectionModel::Select);
+            this->setCurrentIndex(newIndex);
+            this->setFocus();
 
-    case Qt::Key_Right:
-    {
-        if(preview->state()==QMediaPlayer::PlayingState)
+            break;
+        }
+
+        case Qt::Key_Down:
         {
-            auto newPos = preview->position()+1000;
-            if(newPos>=preview->duration())
-                this->stopPreview();
-            else
-                preview->setPosition(newPos);
+            QModelIndex index = this->currentIndex();
+            int row = index.row() + 1;
+            int column = 1;
+            QModelIndex newIndex = this->model()->index(row, column);
+            this->selectionModel()->select(newIndex, QItemSelectionModel::Select);
+            this->setCurrentIndex(newIndex);
+            this->setFocus();
+
+            break;
         }
-        break;
-    }
 
-    case Qt::Key_Q :
-    {
-        BAE::DB_LIST mapList;
-        for(auto row : this->getSelectedRows(false))
-            mapList<< this->getRowData(row);
-        stopPreview();
+        case Qt::Key_Space:
+        {
+            if(this->rowPreview)
+            {
+                if(preview->state()==QMediaPlayer::PlayingState) this->stopPreview();
+                else
+                {
+                    this->previewRow= this->getIndex();
+                    this->startPreview(this->getRowData(previewRow)[BAE::KEY::URL]);
+                }
+            }
+            break;
+        }
 
-        emit queueIt_clicked(mapList);
-        break;
-    }
+        case Qt::Key_Delete	:
+        {
+            auto rows = this->getSelectedRows(false);
+            auto i = 0;
+            for(auto row:rows)
+            {
+                this->removeRow(row-i);
+                emit indexRemoved(row-i);
+                i++;
+            }
+            break;
+        }
 
-    case Qt::Key_P :
-    {
-        BAE::DB_LIST mapList;
-        for(auto row : this->getSelectedRows(false))
-            mapList<< this->getRowData(row);
+        case Qt::Key_Right:
+        {
+            if(preview->state()==QMediaPlayer::PlayingState)
+            {
+                auto newPos = preview->position()+1000;
+                if(newPos>=preview->duration())
+                    this->stopPreview();
+                else
+                    preview->setPosition(newPos);
+            }
+            break;
+        }
 
-        stopPreview();
+        case Qt::Key_Q :
+        {
+            BAE::DB_LIST mapList;
+            for(auto row : this->getSelectedRows(false))
+                mapList<< this->getRowData(row);
+            stopPreview();
 
-        emit playItNow(mapList);
-        break;
-    }
+            emit queueIt_clicked(mapList);
+            break;
+        }
 
-    case Qt::Key_L :
-    {
-        BAE::DB_LIST mapList;
-        for(auto row : this->getSelectedRows(false))
-            mapList<< this->getRowData(row);
+        case Qt::Key_P :
+        {
+            BAE::DB_LIST mapList;
+            for(auto row : this->getSelectedRows(false))
+                mapList<< this->getRowData(row);
 
-        stopPreview();
-        emit appendIt(mapList);
-        break;
-    }
+            stopPreview();
 
-    case Qt::Key_S :
-    {
-        BAE::DB_LIST mapList;
-        for(auto row : this->getSelectedRows(false))
-            mapList<< this->getRowData(row);
+            emit playItNow(mapList);
+            break;
+        }
 
-        stopPreview();
-        emit saveToPlaylist(mapList);
-        break;
-    }
+        case Qt::Key_L :
+        {
+            BAE::DB_LIST mapList;
+            for(auto row : this->getSelectedRows(false))
+                mapList<< this->getRowData(row);
 
-    case Qt::Key_I:
-    {
-        auto url =  this->getRowData(this->getIndex())[BAE::KEY::URL];
-        emit infoIt_clicked(this->connection->getDBData(QStringList(url)).first());
-        break;
-    }
+            stopPreview();
+            emit appendIt(mapList);
+            break;
+        }
 
-    case Qt::Key_0:
-    {
-        this->rateGroup(0,false);
-        break;
-    }
-    case Qt::Key_1:
-    {
-        this->rateGroup(1,false);
-        break;
-    }
-    case Qt::Key_2:
-    {
-        this->rateGroup(2,false);
-        break;
-    }
-    case Qt::Key_3:
-    {
-        this->rateGroup(3,false);
-        break;
-    }
-    case Qt::Key_4:
-    {
-        this->rateGroup(4,false);
-        break;
-    }
-    case Qt::Key_5:
-    {
-        this->rateGroup(5,false);
-        break;
-    }
-    default:
-    {
-        QTableWidget::keyPressEvent(event);
-        break;
-    }
+        case Qt::Key_S :
+        {
+            BAE::DB_LIST mapList;
+            for(auto row : this->getSelectedRows(false))
+                mapList<< this->getRowData(row);
+
+            stopPreview();
+            emit saveToPlaylist(mapList);
+            break;
+        }
+
+        case Qt::Key_I:
+        {
+            auto url =  this->getRowData(this->getIndex())[BAE::KEY::URL];
+            emit infoIt_clicked(this->connection->getDBData(QStringList(url)).first());
+            break;
+        }
+
+        case Qt::Key_0:
+        {
+            this->rateGroup(0,false);
+            break;
+        }
+        case Qt::Key_1:
+        {
+            this->rateGroup(1,false);
+            break;
+        }
+        case Qt::Key_2:
+        {
+            this->rateGroup(2,false);
+            break;
+        }
+        case Qt::Key_3:
+        {
+            this->rateGroup(3,false);
+            break;
+        }
+        case Qt::Key_4:
+        {
+            this->rateGroup(4,false);
+            break;
+        }
+        case Qt::Key_5:
+        {
+            this->rateGroup(5,false);
+            break;
+        }
+        default:
+        {
+            QTableWidget::keyPressEvent(event);
+            break;
+        }
 
     }
 }
@@ -801,12 +835,12 @@ QString BabeTable::getHearts(const int &value)
 {
     QString babe;
     switch (value) {
-    case 0:
-        babe = " ";
-        break;
-    case 1:
-        babe = "\xe2\x99\xa1 ";
-        break;
+        case 0:
+            babe = " ";
+            break;
+        case 1:
+            babe = "\xe2\x99\xa1 ";
+            break;
     }
 
     return babe;
