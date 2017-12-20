@@ -222,6 +222,9 @@ void BabeTable::setUpHeaders()
     connect(this->horizontalHeader(), &QHeaderView::customContextMenuRequested, [this](QPoint pos)
     {
         Q_UNUSED(pos);
+        for(auto action : this->headerMenu->actions())
+            action->setChecked(this->horizontalHeader()->isSectionHidden(action->data().toInt()) ? false : true);
+
         this->headerMenu->exec(QCursor::pos());
     });
 
