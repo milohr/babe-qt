@@ -13,7 +13,10 @@
    version="1.1"
    id="svg24"
    sodipodi:docname="cover.svg"
-   inkscape:version="0.92.1 r">
+   inkscape:version="0.92.2 5c3e80d, 2017-08-06"
+   inkscape:export-filename="/home/camilo/Coding/qml/Babe/assets/cover.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96">
   <metadata
      id="metadata28">
     <rdf:RDF>
@@ -22,7 +25,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -35,17 +38,17 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1366"
-     inkscape:window-height="685"
+     inkscape:window-width="1920"
+     inkscape:window-height="1003"
      id="namedview26"
      showgrid="false"
-     inkscape:zoom="1.3037281"
-     inkscape:cx="40.521112"
-     inkscape:cy="84.379028"
-     inkscape:window-x="0"
-     inkscape:window-y="30"
+     inkscape:zoom="0.5"
+     inkscape:cx="321.4971"
+     inkscape:cy="21.376998"
+     inkscape:window-x="1366"
+     inkscape:window-y="26"
      inkscape:window-maximized="1"
-     inkscape:current-layer="g4559"
+     inkscape:current-layer="g4550"
      fit-margin-top="0"
      fit-margin-left="0"
      fit-margin-right="0"
@@ -85,42 +88,26 @@
         <g
            id="g4550"
            transform="matrix(1.1459122,0,0,1.0000535,-58.188023,-0.02844434)">
+          <path
+             style="opacity:0.5;vector-effect:none;fill:#aaaaaa;fill-opacity:1;stroke:none;stroke-width:3.77952743;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+             d="M 0 0 L 0 240 L 240 240 L 240 137.46094 L 214.13672 137.46094 C 205.91024 137.46094 199.28711 129.61318 199.28711 119.86523 C 199.28711 110.11729 205.91024 102.26953 214.13672 102.26953 L 240 102.26953 L 240 0 L 0 0 z M 79.601562 74.669922 L 79.607422 74.669922 L 156.74609 74.669922 C 156.72645 100.67683 156.77573 126.68485 156.7168 152.69141 C 156.52331 162.82317 145.99697 170.95845 136.14062 168.60156 C 126.17762 166.87622 119.72266 155.29636 123.49414 145.91211 C 126.71522 136.18208 139.48128 131.44399 148.16797 137.07422 L 148.16797 100.38281 L 88.171875 100.38281 C 88.152232 120.67583 88.201508 140.96913 88.142578 161.26172 C 87.949093 171.39349 77.42275 179.53063 67.566406 177.17383 C 57.603302 175.44849 51.148437 163.86863 54.919922 154.48438 C 58.141006 144.75435 70.907156 140.01626 79.59375 145.64648 L 79.601562 74.669922 z M 88.171875 83.240234 L 88.171875 91.8125 L 148.16797 91.8125 L 148.16797 83.240234 L 88.171875 83.240234 z "
+             transform="matrix(0.10181666,0,0,0.11666672,386.57,517.79999)"
+             id="rect867" />
           <use
              height="100%"
              width="100%"
              y="0"
              x="0"
-             style="fill:#aaaaaa"
+             style="opacity:0.5;fill:#aaaaaa"
              id="use12"
-             xlink:href="#b" />
-          <rect
-             style="fill:#2e3132;fill-opacity:0.294"
-             id="rect16"
-             height="1"
-             y="544.79999"
-             x="386.57001"
-             width="24.405001" />
-          <rect
-             style="fill:#ffffff;fill-opacity:0.41199999"
-             id="rect18"
-             height="1"
-             y="517.79999"
-             x="386.57001"
-             width="24.405001" />
-          <use
-             height="100%"
-             width="100%"
-             y="0"
-             x="0"
-             style="fill:url(#a)"
-             id="use20"
-             xlink:href="#b" />
+             xlink:href="#b"
+             transform="translate(-45.002965,3.266668)" />
         </g>
         <path
-           d="m 394.07451,526.51113 v 8.281 c -0.295,-0.171 -0.635,-0.281 -1,-0.281 -1.105,0 -2,0.895 -2,2 0,1.105 0.895,2 2,2 1.105,0 2,-0.895 2,-2 v -7 h 7 v 4.281 c -0.295,-0.171 -0.635,-0.281 -1,-0.281 -1.105,0 -2,0.895 -2,2 0,1.105 0.895,2 2,2 1.105,0 2,-0.895 2,-2 v -9 z m 1,1 h 7 v 1 h -7 z"
+           style="opacity:0.75;fill:#ffffff;stroke-width:1"
+           d="m 364.95193,527.08863 c 0,2.76033 0,5.52067 0,8.281 -1.0135,-0.65689 -2.50288,-0.10407 -2.87869,1.03116 -0.44003,1.09489 0.31308,2.44592 1.4755,2.64722 1.14997,0.27498 2.37805,-0.67431 2.40059,-1.85642 0.006,-2.36759 8.8e-4,-4.73532 0.003,-7.10296 2.33333,0 4.66667,0 7,0 0,1.427 0,2.854 0,4.281 -1.0135,-0.65689 -2.50288,-0.10407 -2.87869,1.03116 -0.44003,1.09489 0.31308,2.44592 1.4755,2.64722 1.14997,0.27498 2.37805,-0.67431 2.40059,-1.85642 0.006,-3.03426 8.7e-4,-6.06865 0.003,-9.10296 -3,0 -6,0 -9,0 z m 1,1 c 2.33333,0 4.66667,0 7,0 0,0.33333 0,0.66667 0,1 -2.33333,0 -4.66667,0 -7,0 0,-0.33333 0,-0.66667 0,-1 z"
            id="path14"
-           inkscape:connector-curvature="0"
-           style="opacity:0.75;fill:#ffffff;stroke-width:1" />
+           inkscape:connector-curvature="0" />
       </g>
     </g>
   </g>
