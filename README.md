@@ -64,29 +64,29 @@ In Chrome/mium go to chrome://extensions/, then enable the Developer mode check 
     -add songs to a queued special playlist if you want to play some track next
     
 
-![alt tag](https://raw.githubusercontent.com/milohr/babe-qt/master/screenshots/playlist_mode.png)
+![Playlist Mode](https://raw.githubusercontent.com/milohr/babe-qt/master/extra/screenshots/playlist_mode.png)
 
 
-![alt tag](https://raw.githubusercontent.com/milohr/babe-qt/master/screenshots/mini_mode.png)
+![Mini Mode](https://raw.githubusercontent.com/milohr/babe-qt/master/extra/screenshots/mini_mode.png)
 
 
-![alt tag](https://raw.githubusercontent.com/milohr/babe-qt/master/screenshots/collection_view.png)
+![Collection View](https://raw.githubusercontent.com/milohr/babe-qt/master/extra/screenshots/collection_view.png)
 
 
-![alt tag](https://raw.githubusercontent.com/milohr/babe-qt/master/screenshots/albums_view.png) 
+![albums View](https://raw.githubusercontent.com/milohr/babe-qt/master/extra/screenshots/albums_view.png) 
 
 
-![alt tag](https://raw.githubusercontent.com/milohr/babe-qt/master/screenshots/artists_view.png) 
+![artists View](https://raw.githubusercontent.com/milohr/babe-qt/master/extra/screenshots/artists_view.png) 
 
 
-![alt tag](https://raw.githubusercontent.com/milohr/babe-qt/master/screenshots/playlists_view.png) 
+![Playlist View](https://raw.githubusercontent.com/milohr/babe-qt/master/extra/screenshots/playlists_view.png) 
 
 
-![alt tag](https://raw.githubusercontent.com/milohr/babe-qt/master/screenshots/settings_view.png) 
+![Settings View](https://raw.githubusercontent.com/milohr/babe-qt/master/extra/screenshots/settings_view.png) 
 
 
-![alt tag](https://raw.githubusercontent.com/milohr/babe-qt/master/screenshots/about_view.png) 
+![About View](https://raw.githubusercontent.com/milohr/babe-qt/master/extra/screenshots/about_view.png) 
 
 
-![alt tag](https://raw.githubusercontent.com/milohr/babe-qt/master/screenshots/chromium_extension.png) 
+![Chromium Extension](https://raw.githubusercontent.com/milohr/babe-qt/master/extra/screenshots/chromium_extension.png) 
 
