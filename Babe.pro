@@ -44,19 +44,9 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-DISTFILES += \
-    extra/extension/background.js \
-    extra/extension/popup.js \
-    extra/extension/manifest.json \
-    src/db/queries.json \
-    src/db/script.sql \
-    extra/extension/icon_1.png \
-    extra/extension/icon_2.png \
-    extra/extension/icon_done.png \
-    extra/extension/icon_1.svg \
-    extra/extension/icon_push.svg \
-    extra/extension/style.css \
-    extra/extension/popup.html
+DISTFILES += \    
+    src/db/script.sql
+
 
 RESOURCES += \
     data.qrc
