@@ -52,7 +52,7 @@ private:
 protected:
     QByteArray array;
     BAE::DB track;
-    PULPO::INFO info = INFO::NONE;
+    PULPO::INFO info = PULPO::INFO::NONE;
     PULPO::ONTOLOGY ontology = ONTOLOGY::NONE;
     PULPO::AVAILABLE availableInfo;
 
