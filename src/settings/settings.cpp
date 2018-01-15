@@ -80,9 +80,11 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
 
     connect(this->ui->pulpoBrainz_checkBox,static_cast<void (QCheckBox::*)(bool)>(&QCheckBox::toggled), [this](const bool &value)
     {
-        if(value) {
+        if(value)
             this->startBrainz(1500);
-        }
+        else
+            this->brainDeamon->pause();
+
 
         BAE::saveSettings("BRAINZ",value,"SETTINGS");
     });
@@ -209,6 +211,9 @@ void settings::startBrainz(const uint &speed)
 {
     if(this->ui->pulpoBrainz_checkBox->isChecked())
     {
+        if(!this->brainDeamon->isRunning())
+            this->brainDeamon->resume();
+
         this->brainDeamon->setInterval(speed);
         this->brainDeamon->start();
     }

@@ -36,6 +36,16 @@ void Brain::stop()
     this->t.wait();
 }
 
+void Brain::pause()
+{
+    this->go = false;
+}
+
+void Brain::resume()
+{
+    if(!this->go) this->go = true;
+}
+
 bool Brain::isRunning() const
 {
     return this->go;
