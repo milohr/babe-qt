@@ -87,14 +87,13 @@ BabeWindow::BabeWindow(const QStringList &files, QWidget *parent) : QMainWindow(
     this->setUpCollectionViewer();
     this->setUpMenuBar();
 
-    this->nof = new Notify(this);
-    connect(this->nof,&Notify::babeSong,[this](const BAE::DB &track)
+    connect(BabeWindow::nof, &Notify::babeSong,[this](const BAE::DB &track)
     {
         if(this->babeTrack(track))
             this->babedIcon(this->isBabed(track));
     });
 
-    connect(this->nof,&Notify::skipSong,this,&BabeWindow::next);
+    connect(BabeWindow::nof, &Notify::skipSong, this, &BabeWindow::next);
 
     this->updater = new QTimer(this);
     connect(this->updater, &QTimer::timeout, this, &BabeWindow::update);
