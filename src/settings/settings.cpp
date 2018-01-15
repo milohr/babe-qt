@@ -41,7 +41,6 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
     /*LOAD SAVED SETTINGS*/
 
     this->ui->pulpoBrainz_checkBox->setChecked(BAE::loadSettings("BRAINZ","SETTINGS",true).toBool());
-    this->ui->pulpoBrainz_spinBox->setValue(BAE::loadSettings("BRAINZ_INTERVAL","SETTINGS",15).toInt());
 
     qDebug() << "Getting collectionDB info from: " << BAE::CollectionDBPath;
     qDebug() << "Getting settings info from: " << BAE::SettingPath;
@@ -79,14 +78,12 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
         emit this->refreshTables({{type,false}});
     });
 
-    connect(this->ui->pulpoBrainz_spinBox, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [](const int &value)
+    connect(this->ui->pulpoBrainz_checkBox,static_cast<void (QCheckBox::*)(bool)>(&QCheckBox::toggled), [this](const bool &value)
     {
-        qDebug()<<"interval changed to:"<<value;
-        BAE::saveSettings("BRAINZ_INTERVAL",value,"SETTINGS");
-    });
+        if(value) {
+            this->startBrainz(1500);
+        }
 
-    connect(this->ui->pulpoBrainz_checkBox,static_cast<void (QCheckBox::*)(bool)>(&QCheckBox::toggled), [](const bool &value)
-    {
         BAE::saveSettings("BRAINZ",value,"SETTINGS");
     });
 
@@ -107,10 +104,10 @@ settings::settings(QWidget *parent) : QWidget(parent), ui(new Ui::settings)
         }
     });
 
-//    connect(this->fileLoader, &FileLoader::trackReady, [this]()
-//    {
-//        this->ui->progressBar->setValue(this->ui->progressBar->value()+1);
-//    });
+    //    connect(this->fileLoader, &FileLoader::trackReady, [this]()
+    //    {
+    //        this->ui->progressBar->setValue(this->ui->progressBar->value()+1);
+    //    });
 
     connect(this->fileLoader,&FileLoader::finished,[this]()
     {
@@ -208,6 +205,15 @@ void settings::addToWatcher(QStringList paths)
     if(!paths.isEmpty()) watcher->addPaths(paths);
 }
 
+void settings::startBrainz(const uint &speed)
+{
+    if(this->ui->pulpoBrainz_checkBox->isChecked())
+    {
+        this->brainDeamon->setInterval(speed);
+        this->brainDeamon->start();
+    }
+}
+
 void settings::collectionWatcher()
 {
     auto queryTxt = QString("SELECT %1 FROM %2").arg(BAE::KEYMAP[BAE::KEY::URL], BAE::TABLEMAP[BAE::TABLE::TRACKS]);
@@ -261,8 +267,7 @@ void settings::checkCollection()
     //    this->populateDB(YoutubeCachePath);
     this->refreshCollectionPaths();
     this->collectionWatcher();
-    if(this->ui->pulpoBrainz_checkBox->isChecked())
-        this->brainDeamon->start();
+    this->startBrainz(1500);
 }
 
 void settings::populateDB(const QString &path)
@@ -275,7 +280,7 @@ void settings::populateDB(const QString &path)
 
 void settings::fetchArt()
 {
-    this->brainDeamon->start();
+    this->startBrainz(500);
     BabeWindow::nof->notify("Fetching art","this might take some time depending on your collection size and internet connection speed...");
     ui->label->show();
     movie->start();

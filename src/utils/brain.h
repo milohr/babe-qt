@@ -43,7 +43,7 @@ private:
     QThread t;
     CollectionDB *con;
     Pulpo pulpo;
-    uint interval = 20000;
+    uint interval = 500;
     bool go = false;
 
 signals:

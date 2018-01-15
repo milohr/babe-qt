@@ -41,11 +41,12 @@ include_directories (${TAGLIB_INCLUDES})
 add_subdirectory(data)
 
 set(babe_SRCS
-  src/data_models/track.cpp
+    src/data_models/track.cpp
+    src/data_models/tracklist.cpp
     src/db/collectionDB.cpp
     src/dialogs/about.cpp
+    src/dialogs/metadataform.cpp
     src/dialogs/playlistform.cpp
-    src/dialogs/moodform.cpp
     src/kde/mpris2.cpp
     src/kde/notify.cpp
     src/pulpo/services/geniusService.cpp
@@ -56,22 +57,61 @@ set(babe_SRCS
     src/pulpo/htmlparser.cpp
     src/pulpo/pulpo.cpp
     src/pulpo/webengine.cpp
+    src/services/local/socket.cpp
+    src/services/local/taginfo.cpp
+    src/services/web/youtube.cpp
     src/settings/settings.cpp
     src/views/albumsview.cpp
+    src/views/babewindow.cpp
     src/views/infoview.cpp
     src/views/playlistsview.cpp
     src/views/rabbitview.cpp
     src/widget_models/babealbum.cpp
     src/widget_models/babegrid.cpp
     src/widget_models/babetable.cpp
-    src/main.cpp
-    src/services/local/taginfo.cpp
-    src/services/local/socket.cpp
-    src/services/web/youtube.cpp
     src/widget_models/scrolltext.cpp
-    src/data_models/tracklist.cpp
-    src/dialogs/metadataform.cpp
-    src/views/babewindow.cpp
+    src/main.cpp
+    src/dialogs/moodform.cpp
+    src/utils/brain.cpp
+    src/pulpo/services/deezerService.cpp
+    src/data_models/track.h
+    src/data_models/tracklist.h
+    src/db/collectionDB.h
+    src/db/rabbithole.h
+    src/dialogs/about.h
+    src/dialogs/metadataform.h
+    src/dialogs/playlistform.h
+    src/kde/mpris2.h
+    src/kde/notify.h
+    src/pulpo/services/geniusService.h
+    src/pulpo/services/lastfmService.h
+    src/pulpo/services/lyricwikiaService.h
+    src/pulpo/services/musicbrainzService.h
+    src/pulpo/services/spotifyService.h
+    src/pulpo/enums.h
+    src/pulpo/htmlparser.h
+    src/pulpo/pulpo.h
+    src/pulpo/webengine.h
+    src/services/local/socket.h
+    src/services/local/taginfo.h
+    src/services/web/youtube.h
+    src/settings/fileloader.h
+    src/settings/settings.h
+    src/utils/albumloader.h
+    src/utils/bae.h
+    src/utils/brain.h
+    src/views/albumsview.h
+    src/views/babewindow.h
+    src/views/infoview.h
+    src/views/playlistsview.h
+    src/views/rabbitview.h
+    src/widget_models/babealbum.h
+    src/widget_models/babegrid.h
+    src/widget_models/babetable.h
+    src/widget_models/scrolltext.h
+    src/dialogs/moodform.h
+    src/utils/trackloader.h
+    src/pulpo/services/deezerService.h
 )
 
 ki18n_wrap_ui(babe_SRCS
@@ -79,8 +119,8 @@ ki18n_wrap_ui(babe_SRCS
     src/dialogs/metadataForm.ui
     src/dialogs/playlistform.ui
     src/settings/settings.ui
-    src/views/infoview.ui
     src/views/babewindow.ui
+    src/views/infoview.ui
 )
 
 qt5_add_resources(babe_SRCS data.qrc)
@@ -111,7 +151,7 @@ target_link_libraries(babe
    Qt5::Xml
    Qt5::DBus
    Qt5::WebEngineWidgets
-
+   Qt5::WebSockets
    KF5::Notifications
    KF5::I18n
    KF5::ConfigCore

@@ -44,7 +44,7 @@ bool Brain::isRunning() const
 void Brain::setInterval(const uint &value)
 {
     qDebug()<< "reseting the interval brainz";
-    this->interval = value*60000;
+    this->interval = value;
 }
 
 void Brain::setInfo(DB_LIST dataList, ONTOLOGY ontology, QList<SERVICES> services, INFO info, RECURSIVE recursive, void (*cb)(DB))
@@ -60,7 +60,7 @@ void Brain::setInfo(DB_LIST dataList, ONTOLOGY ontology, QList<SERVICES> service
         if (cb != nullptr) cb(data);
         this->pulpo.feed(data, recursive);
 
-        this->t.msleep(500);
+        this->t.msleep(this->interval);
         if(!go) return;
     }
 }

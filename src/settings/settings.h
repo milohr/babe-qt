@@ -69,6 +69,7 @@ private:
 
     void refreshCollectionPaths();
     void addToWatcher(QStringList paths);
+    void startBrainz(const uint &speed);
 
 signals:
     void collectionPathChanged(QString newPath);
