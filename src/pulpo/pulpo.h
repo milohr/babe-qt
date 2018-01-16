@@ -16,10 +16,6 @@
 #include <QNetworkRequest>
 #include <QJsonDocument>
 #include <QVariantMap>
-#include <QWebEngineView>
-#include <QWebEnginePage>
-#include <QWebEngineSettings>
-#include <QSqlQuery>
 
 #include "../utils/bae.h"
 #include "enums.h"

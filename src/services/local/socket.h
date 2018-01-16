@@ -1,10 +1,9 @@
 #ifndef SOCKET_H
 #define SOCKET_H
 
-
-#include <QtCore/QObject>
-#include <QtCore/QList>
-#include <QtCore/QByteArray>
+#include <QObject>
+#include <QList>
+#include <QByteArray>
 
 QT_FORWARD_DECLARE_CLASS(QWebSocketServer)
 QT_FORWARD_DECLARE_CLASS(QWebSocket)

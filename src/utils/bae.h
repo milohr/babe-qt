@@ -319,22 +319,22 @@ namespace BAE
     {
         //title.remove(QRegExp(QString::fromUtf8("[·-`~!@#$%^&*()_—+=|:;<>«»,.?/{}\'\"\\\[\\\]\\\\]")));
         QString title=str;
-        title=title.remove(QChar::Null);
-        title=title.contains('\u0000')?title.replace('\u0000',""):title;
-        title=title.contains("(")&&title.contains(")")?fixTitle(title,"(",")"):title;
-        title=title.contains("[")&&title.contains("]")?fixTitle(title,"[","]"):title;
-        title=title.contains("{")&&title.contains("}")?fixTitle(title,"{","}"):title;
-        title=title.contains("ft")?removeSubstring(title, "ft"):title;
-        title=title.contains("ft.")?removeSubstring(title, "ft."):title;
-        title=title.contains("featuring")?removeSubstring(title, "featuring"):title;
-        title=title.contains("feat")?removeSubstring(title, "feat"):title;
-        title=title.contains("official video")?removeSubstring(title, "official video"):title;
-        title=title.contains("live")?removeSubstring(title, "live"):title;
-        title=title.contains("...")?title.replace("...",""):title;
-        title=title.contains("|")?title.replace("|",""):title;
-        title=title.contains("|")?removeSubstring(title, "|"):title;
-        title=title.contains('"')?title.replace('"',""):title;
-        title=title.contains(":")?title.replace(":",""):title;
+        title = title.remove(QChar::Null);
+        title = title.contains(QChar('\u0000')) ? title.replace(QChar('\u0000'),"") : title;
+        title = title.contains("(") && title.contains(")") ? fixTitle(title, "(",")") : title;
+        title = title.contains("[") && title.contains("]") ? fixTitle(title, "[","]") : title;
+        title = title.contains("{") && title.contains("}") ? fixTitle(title, "{","}") : title;
+        title = title.contains("ft") ? removeSubstring(title, "ft") : title;
+        title = title.contains("ft.") ? removeSubstring(title, "ft.") : title;
+        title = title.contains("featuring") ? removeSubstring(title, "featuring"):title;
+        title = title.contains("feat") ? removeSubstring(title, "feat") : title;
+        title = title.contains("official video")?removeSubstring(title, "official video"):title;
+        title = title.contains("live") ? removeSubstring(title, "live") : title;
+        title = title.contains("...") ? title.replace("..." ,"") : title;
+        title = title.contains("|") ? title.replace("|", "") : title;
+        title = title.contains("|") ? removeSubstring(title, "|") : title;
+        title = title.contains('"') ? title.replace('"', "") : title;
+        title = title.contains(":") ? title.replace(":", "") : title;
         //    title=title.contains("&")? title.replace("&", "and"):title;
         //qDebug()<<"fixed string:"<<title;
 

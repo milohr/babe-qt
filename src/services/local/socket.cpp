@@ -1,8 +1,8 @@
 
 #include "socket.h"
-#include "QtWebSockets/qwebsocketserver.h"
-#include "QtWebSockets/qwebsocket.h"
-#include <QtCore/QDebug>
+#include <QWebSocketServer>
+#include <QWebSocket>
+#include <QDebug>
 
 QT_USE_NAMESPACE
 
