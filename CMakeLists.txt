@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project (Babe)
+project (babe)
 
 set (KF5_MIN_VERSION "5.24.0")
 find_package (ECM ${KF5_MIN_VERSION} CONFIG REQUIRED)
@@ -9,7 +9,25 @@ include(KDEInstallDirs)
 include(KDECMakeSettings)
 include(KDECompilerSettings NO_POLICY_SCOPE)
 include(ECMInstallIcons)
+include(ECMSetupVersion)
 include(FeatureSummary)
+
+
+cmake_policy(SET CMP0048 NEW)
+project(babe VERSION "1.2.0")
+
+
+ecm_setup_version(${PROJECT_VERSION}
+    VARIABLE_PREFIX BABE
+    SOVERSION ${PROJECT_VERSION_MAJOR}
+    VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/src/kde/config.h"
+)
+
+
+#usage somewhere in cmake for a library:
+#set_target_properties(kgraphviewerlib PROPERTIES VERSION ${PROJECT_VERSION} SOVERSION ${KGRAPHVIEWER_SOVERSION} OUTPUT_NAME kgraphviewer )
+
+
 
 set (QT_MIN_VERSION "5.5.0")
 # Find the required Qt libraries
@@ -83,6 +101,7 @@ set(babe_SRCS
     src/dialogs/playlistform.h
     src/kde/mpris2.h
     src/kde/notify.h
+    src/kde/config.h
     src/pulpo/services/geniusService.h
     src/pulpo/services/lastfmService.h
     src/pulpo/services/lyricwikiaService.h
@@ -171,3 +190,4 @@ feature_summary (
    INCLUDE_QUIET_PACKAGES
    FATAL_ON_MISSING_REQUIRED_PACKAGES
    )
+

@@ -13,8 +13,16 @@
 #include <QDirIterator>
 
 #include <cmath>
-using namespace std;
 
+#define BABE_MAJOR_VERSION 1
+#define BABE_MINOR_VERSION 2
+#define BABE_PATCH_VERSION 0
+
+#define BABE_VERSION_STR "1.2.0"
+
+#define BABE_VERSION KDE_MAKE_VERSION(1, 2, 0)
+
+using namespace std;
 namespace BAE
 {
     enum SearchT

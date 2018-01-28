@@ -17,6 +17,9 @@
 
 #include <QApplication>
 #include "views/babewindow.h"
+#include <QStyleFactory>
+#include "src/utils/bae.h"
+#include <QCommandLineParser>
 
 int main(int argc, char *argv[])
 {
@@ -27,9 +30,27 @@ int main(int argc, char *argv[])
             files << argv[i];
 
     QApplication a(argc, argv);
+    QApplication::setStyle(QStyleFactory::create("Breeze"));
+
     a.setApplicationName("Babe");
     a.setDesktopFileName("Babe");
-    a.setApplicationVersion("1.0");
+    a.setApplicationVersion(BABE_VERSION_STR);
+
+    QCommandLineParser parser;
+    parser.setApplicationDescription("Babe music player");
+    const QCommandLineOption versionOption = parser.addVersionOption();
+    parser.process(a);
+
+    const QStringList args = parser.positionalArguments();
+    bool version = parser.isSet(versionOption);
+
+    if(version)
+    {
+        printf("%s %s\n", qPrintable(QCoreApplication::applicationName()),
+               qPrintable(QCoreApplication::applicationVersion()));
+        return 0;
+    }
+
     BabeWindow w(files);
     w.start();
     w.show();
