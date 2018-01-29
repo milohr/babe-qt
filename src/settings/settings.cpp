@@ -190,7 +190,7 @@ void settings::refreshCollectionPaths()
 
 void settings::on_open_clicked()
 {
-    QString url = QFileDialog::getExistingDirectory(this,"Select folder...", QDir().homePath()+"/Music/");
+    QString url = QFileDialog::getExistingDirectory(this,"Select folder...", BAE::MusicPath);
 
     if (!url.isEmpty())
     {
