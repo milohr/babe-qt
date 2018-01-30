@@ -6,15 +6,16 @@
   <name>Babe</name>
   <summary>Babe is a tiny music collection manager</summary>
   <description>
-    <p>Babe will handle your whole music collection by retreaving semantic information from the web. <br> Just relax, enjoy and discover your new music </p>
-    <p>Use the Chrome extension to collect your favorite music videos from online streaming services like YouTube or Vimeo. Babe uses youtube-dl, so all the supported sites by it are also supported by Babe</p>
-    <p>Babe has a main playlist where you can drag and drop tracks, artists, albums and custom playlists to be played or put on queued. </p>
-    <p>Create your own playlists and search for music based on semantic queries.</p>
-    <ul>
-      <li>Send your music to your phone.</li>
-      <li>Add moods to your music.</li>
-      <li>Edit your file metadata with the help of the internet.</li>
-    </ul>
+        <p>Babe will handle your whole music collection by retreaving semantic information from the web.</p>
+        <p>Just relax, enjoy and discover your new music </p>
+        <p>Use the Chrome extension to collect your favorite music videos from online streaming services like YouTube or Vimeo. Babe uses youtube-dl, so all the supported sites by it are also supported by Babe</p>
+        <p>Babe has a main playlist where you can drag and drop tracks, artists, albums and custom playlists to be played or put on queued. </p>
+        <p>Create your own playlists and search for music based on semantic queries.</p>
+        <ul>
+            <li>Send your music to your phone.</li>
+            <li>Add moods to your music.</li>
+            <li>Edit your file metadata with the help of the internet.</li>
+        </ul>
   </description>
   <url type="homepage">https://babe.kde.org/</url>
   <url type="bugtracker">https://bugs.kde.org/enter_bug.cgi?format=guided&amp;product=babe</url>
