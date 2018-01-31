@@ -274,7 +274,7 @@ namespace BAE
 
     const QStringList MoodColors = {"#F0FF01","#01FF5B","#3DAEFD","#B401FF","#E91E63"};
 
-    const QStringList formats {"*.mp4","*.mp3","*.wav","*.flac","*.ogg","*.m4a"};
+    const QStringList formats {"*.mp4","*.mp3","*.wav","*.flac","*.ogg","*.m4a","*.m3u"};
 
     inline QString fixTitle(const QString &title,const QString &s,const QString &e)
     {
